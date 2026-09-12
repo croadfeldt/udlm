@@ -22,7 +22,7 @@ business data, entities at the service-definition level. There is no separate bi
 for storage, no separate dependency-graph structure, no separate business-data association. The
 authoritative edge model is [data-model-core §4](data-model-core.md); the relation vocabulary and
 its rules (`REL-001..003`) are [common-elements §9](../../../registry/common-elements.md); the
-machine shape is `dependencies[]` in `registry/realized-entity.schema.json`. This document owns
+machine shape is `dependencies[]` in `registry/state-record.schema.json` (the view carries the same block by reference). This document owns
 what builds ON that model: the cross-tenant rules (`XTA-*`), the allocated- and shared-resource
 operational models, relationship lifecycle policies, the declaration tiers, bundled expansion,
 notification traversal, and the graph itself (`ERL-*`, `REL-005+`).
@@ -36,7 +36,7 @@ notification traversal, and the graph itself (`ERL-*`, `REL-005+`).
 ## 2. The Relationship Record
 
 An edge is **declared one-sided and derived two-sided**: it lives on the declaring entity's
-record as a `dependencies[]` entry (`registry/realized-entity.schema.json`), and the inverse
+record as a `dependencies[]` entry (`registry/state-record.schema.json`), and the inverse
 reading is **computed**, never stored — every `edge_type` has a derivable inverse, so the graph
 is navigable both ways without a second record (`GRAPH-001..003`,
 `tests/check_graph_integrity.py`). There is no relationship object with its own uuid, no

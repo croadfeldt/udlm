@@ -92,7 +92,7 @@ reusable and avoids a `FreeIPA.Everything` corner.
 ## 3a. Asset vs. allocation vs. instance — don't mint redundant types
 
 Before adding a type, check whether the concept is already expressed by an existing mechanism:
-- **An instance of a type** is a **realized entity** (`registry/realized-entity.schema.json`,
+- **An instance of a type** is an **entity** — stored as one record per lifecycle state (`registry/state-record.schema.json`, ruling 071) and read as an entity view (`registry/entity-view.schema.json`,
   `registry/examples/`) — `host-01` is an instance of `Machine.BareMetalHost`. Don't create a type to
   mean "an instance of X."
 - **An allocation of a resource to a consumer** is the **Ownership/Allocation model**

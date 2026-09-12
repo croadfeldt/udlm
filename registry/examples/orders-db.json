@@ -8,55 +8,97 @@
   "lifecycle_state": "Realized",
   "generation": 1,
   "observed_generation": 1,
-
   "states": {
     "intent": {
-      "fields": { "engine": "postgres" },
+      "fields": {
+        "engine": "postgres"
+      },
       "at": "2026-06-17T15:00:00Z"
     },
     "requested": {
-      "fields": { "engine": "postgres", "version": "16", "resources": { "cpu": 1, "memory": "512MB" } },
+      "fields": {
+        "engine": "postgres",
+        "version": "16",
+        "resources": {
+          "cpu": 1,
+          "memory": "512MB"
+        }
+      },
       "at": "2026-06-17T15:00:02Z"
     },
     "realized": {
-      "fields": { "engine": "postgres", "version": "16", "resources": { "cpu": 1, "memory": "512MB" } },
-      "outputs": { "host": "orders-db.fsi.internal", "port": 5432, "connection_string": "***", "username": "orders_app" },
+      "fields": {
+        "engine": "postgres",
+        "version": "16",
+        "resources": {
+          "cpu": 1,
+          "memory": "512MB"
+        }
+      },
+      "outputs": {
+        "host": "orders-db.fsi.internal",
+        "port": 5432,
+        "connection_string": "***",
+        "username": "orders_app"
+      },
       "at": "2026-06-17T15:01:30Z",
       "provider": "rh-database-provider",
       "time_source": "rh-database-provider host clock, chrony stratum 2, NTP-traceable"
     }
   },
-
   "provenance": {
-    "engine":        [ { "source": { "kind": "actor", "id": "alice" }, "actor": "alice@example.com", "timestamp": "2026-06-17T15:00:00Z" } ],
-    "version":       [ { "source": { "kind": "layer", "id": "db-defaults", "version": "2.1.0" }, "timestamp": "2026-06-17T15:00:02Z" } ],
-    "resources.cpu": [ { "source": { "kind": "policy", "id": "sizing-policy", "version": "1.4.0" }, "timestamp": "2026-06-17T15:00:02Z", "previous_value": null } ]
+    "engine": [
+      {
+        "source": {
+          "kind": "actor",
+          "id": "alice"
+        },
+        "actor": "alice@example.com",
+        "timestamp": "2026-06-17T15:00:00Z"
+      }
+    ],
+    "version": [
+      {
+        "source": {
+          "kind": "layer",
+          "id": "db-defaults",
+          "version": "2.1.0"
+        },
+        "timestamp": "2026-06-17T15:00:02Z"
+      }
+    ],
+    "resources.cpu": [
+      {
+        "source": {
+          "kind": "policy",
+          "id": "sizing-policy",
+          "version": "1.4.0"
+        },
+        "timestamp": "2026-06-17T15:00:02Z",
+        "previous_value": null
+      }
+    ]
   },
-
-  "ownership": {
-    "engine": "actor:alice",
-    "version": "layer:db-defaults",
-    "resources.cpu": "policy:sizing-policy",
-    "host": "provider:rh-database-provider",
-    "port": "provider:rh-database-provider",
-    "connection_string": "provider:rh-database-provider"
-  },
-
   "dependencies": [],
-
-  "drift": { "detected": false, "checked_at": "2026-06-17T15:30:00Z", "fields": [] },
-
-  "sovereignty": { "zone": "fsi-eu-west", "classification": "restricted" },
-
+  "sovereignty": {
+    "zone": "fsi-eu-west",
+    "classification": "restricted"
+  },
   "status": {
     "state": "Running",
     "conditions": [
-      { "type": "Ready", "status": "True", "reason": "Provisioned", "last_transition_time": "2026-06-17T15:01:30Z" }
+      {
+        "type": "Ready",
+        "status": "True",
+        "reason": "Provisioned",
+        "last_transition_time": "2026-06-17T15:01:30Z"
+      }
     ]
   },
-
-  "audit": { "log_head": "sha256:9c1f…a2b3", "leaf_count": 4 },
-
+  "audit": {
+    "log_head": "sha256:9c1f…a2b3",
+    "leaf_count": 4
+  },
   "adopted_standards": [
     {
       "standard": "FOCUS",

@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Volume/0.11.5
+$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Volume/0.11.6
 conforms_to: udlm/0.1
 uuid: aff9e319-cfb9-44da-8c35-fa47f3ea6270
 record_type: class
 class: type
 resource_type: Storage.Volume
 parent: Storage
-version: 0.11.5
+version: 0.11.6
 family: Resource
 status: active
 metadata:
@@ -75,7 +75,7 @@ elements:
   optional: true
   state: canonical
   description: 'The Storage.Layout entry name this volume realizes — the join key paired with the realizes_layout_entry
-    edge. Instance edges carry no qualifier (realized-entity dependencies[] is a closed shape), so the
+    edge. Instance edges carry no qualifier (the dependencies[] of a record is a closed shape, state-record.schema.json), so the
     entry binding lives HERE: set exactly when realizes_layout_entry is declared, matching an entry name
     in the referenced layout. Reconvergence joins on this value to populate the layout''s realized_volumes
     map.'
@@ -83,7 +83,7 @@ elements:
     type: string
     pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$
     description: 'The Storage.Layout entry name this volume realizes — the join key paired with the realizes_layout_entry
-      edge. Instance edges carry no qualifier (realized-entity dependencies[] is a closed shape), so the
+      edge. Instance edges carry no qualifier (the dependencies[] of a record is a closed shape, state-record.schema.json), so the
       entry binding lives HERE: set exactly when realizes_layout_entry is declared, matching an entry
       name in the referenced layout. Reconvergence joins on this value to populate the layout''s realized_volumes
       map.'

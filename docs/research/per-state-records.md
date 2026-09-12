@@ -175,7 +175,7 @@ fingerprints, and what is left is a valid new order. That is how a rebuild works
 
 | Surface | Today | After |
 |---|---|---|
-| `registry/realized-entity.schema.json` | one schema, four states folded in | four record schemas sharing one wrapper; the folded shape kept only as a named read-model schema, or removed |
+| the merged instance schema (since renamed to `registry/entity-view.schema.json`) | one schema, four states folded in | four record schemas sharing one wrapper; the folded shape kept only as a named read-model schema, or removed |
 | `registry/examples/` | 12 examples in the folded shape | each becomes an order record and a built record, or is trimmed to the one state it demonstrates |
 | `registry/tools/validate.py` and four checks (`check_grant_derivation`, `check_group_invariants`, `check_offer_collapse`, `check_sovereignty_zones`) | read the built state out of one document | read the built record, or the assembled view |
 | 16 spec, flow and guide documents that name the schema | describe the folded record | describe the four records; `four-states.md` needs the least change because it already says this |

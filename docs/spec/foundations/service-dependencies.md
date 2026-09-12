@@ -165,7 +165,7 @@ The substrate stores both edge natures side-by-side; the implementation decides 
 
 ## 4. Dependency Strength
 
-Every declared dependency carries a `strength` — the same enum the realized-entity edge model uses
+Every declared dependency carries a `strength` — the same enum the state-record edge model uses
 (`strength: hard|soft` on `depends_on` edges, data-model-core §4; degrade-don't-break is DEP-006):
 
 | Strength | Description | Behavior |
@@ -433,7 +433,7 @@ catalog_item:
 
 ---
 
-> **Instance-layer vocabulary:** at the realized-entity (instance) layer the tombstone state is `lifecycle_state: Decommissioned` — the schema's enum term. "Retired" in this rule's prose names the same phase; records and validators MUST use `Decommissioned`.
+> **Instance-layer vocabulary:** at the instance layer (the entity view) the tombstone state is `lifecycle_state: Decommissioned` — the schema's enum term. "Retired" in this rule's prose names the same phase; records and validators MUST use `Decommissioned`.
 
 ## 11a. Dependency Graph Versioning (Q30)
 

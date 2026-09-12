@@ -33,7 +33,7 @@ Hold these seven concepts and the rest follows:
 | Schema | What it defines |
 |---|---|
 | `resource-type-spec.schema.json` | the meta-schema every Resource Type definition validates against |
-| `realized-entity.schema.json` | a realized instance record (the `resource_type` discriminator) |
+| `entity-view.schema.json` | a realized instance record (the `resource_type` discriminator) |
 | `layer.schema.json` | a data layer — base/overlay/reference_data; `fields`, provenance, `supersedes` lineage |
 | `data-reference.schema.json` | the data-reference shape — a URF string `uuid/<v4>[@version]?reference_data_type==<kind>` |
 | `provider-adopted-standards.schema.json` | provider capability declaration (adopted standards + per-capability blocks) |

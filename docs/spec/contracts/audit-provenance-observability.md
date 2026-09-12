@@ -37,7 +37,7 @@ Audit queries provenance to answer its questions. Observability does not use pro
 ### 2.2 Provenance Structure
 
 The shape audit reads is
-[`registry/realized-entity.schema.json`](../../../registry/realized-entity.schema.json)
+[`registry/entity-view.schema.json`](../../../registry/entity-view.schema.json)
 `provenance` — per-field ordered modification chains whose entries map 1:1 to the audit
 modification records (origin = the first entry); `source.kind` is the canonical source
 vocabulary (`layer | policy | actor | provider | discovery | rehydration | override` — a

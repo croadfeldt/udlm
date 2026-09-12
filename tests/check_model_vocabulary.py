@@ -6,11 +6,11 @@ resource-type specs — is validated by tests/validate_registry.py, so it stays 
 YAML/JSON *examples embedded in the narrative .md docs* are validated by nothing, so they drift
 from the schema freely. That is exactly how entity-relationships.md kept describing a six-type
 `relationship_type` / `nature` edge model for months after the authoritative model became the
-two-tier `edge_type` + `relation` shape that realized-entity.schema.json + every type spec use.
+two-tier `edge_type` + `relation` shape that entity-view.schema.json + every type spec use.
 
 This gate closes that gap for the relationship/edge vocabulary — the surface that drifted — by
 reading the SAME authority the registry does (the `edge_type` enum straight out of
-realized-entity.schema.json) and scanning fenced code blocks in the docs for:
+entity-view.schema.json) and scanning fenced code blocks in the docs for:
   1. RETIRED edge fields   — `relationship_type(s):`, `relationship_nature:`, edge-field `nature:`,
                              and the edge field `kind:` (retired for edges → `edge_type`, ADR-026)
   2. INVALID `edge_type:` values — any `edge_type:` whose value is not in the schema enum
@@ -36,7 +36,7 @@ import refstore  # the vocabulary's single home
 
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SCHEMA = os.path.join(REPO, "registry", "realized-entity.schema.json")
+SCHEMA = os.path.join(REPO, "registry", "state-record.schema.json")
 
 # Leading `^\s*(?:-\s*)?` so a YAML list item (`  - relationship_type: ...`) is matched too.
 _P = r"^\s*(?:-\s*)?"
@@ -89,7 +89,7 @@ TEXT_SUFFIX = (".md",)
 def live_edge_type_enum():
     """The authoritative edge_type vocabulary, read from the schema the registry validates against."""
     # Read from the vocabulary's single home rather than out of a schema that merely USES it.
-    # This used to dig the enum out of realized-entity.schema.json by literal path, with a
+    # This used to dig the enum out of entity-view.schema.json by literal path, with a
     # hardcoded four-value fallback for when that path moved — and a fallback copy is a home that
     # activates precisely when something is already wrong, so the guard would have gone on passing
     # against a stale list at the moment it mattered. If the home is unreadable, that is a failure

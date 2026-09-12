@@ -10,5 +10,5 @@ consumer:
   description: Dependency-graph visualizer — instance records as typed graph nodes; derives ordered operational sequences from edge_type semantics.
 consumes_all_types: true
 schemas:
-  - registry/realized-entity.schema.json  # edge_type vocabulary (depends_on|contained_by|binds_to|references)
+  - registry/entity-view.schema.json  # edge_type vocabulary (depends_on|contained_by|binds_to|references)
 coverage: declared

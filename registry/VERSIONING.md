@@ -24,7 +24,7 @@ classified by the entity-semver table below; the bump *existence* is this law.
 ## Spec status — pre-1.0 (`udlm/0.1`)
 
 **The UDLM spec is currently `0.1` — a `0.x`, pre-stable release.** The surface is still being
-*defined* (registry meta-schema, realized-entity, adopted-standards, the entity-type families), so
+*defined* (registry meta-schema, state-record, entity-view, adopted-standards, the entity-type families), so
 per semver §4 anything MAY change and the contract is **not yet considered stable**. Treat the
 current work as *expansion of the v0.x surface*, not refinement of a released spec.
 

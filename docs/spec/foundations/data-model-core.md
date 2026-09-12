@@ -33,19 +33,19 @@ it governs.
   `docs/spec/foundations/knowledge-family.md` §4 — the one home for that list) and **Access** (`Identity`),
   which do not carry the Atomic/Composite shape axis.
 - A **Resource Type Specification** (validates against `registry/resource-type-spec.schema.json`)
-  is the portable contract; an **instance** is a realized-entity record (validates against
-  `registry/realized-entity.schema.json`). Type names are Tier-1 vendor-neutral
+  is the portable contract; an **instance** is stored as one record per lifecycle state (validates against
+  `registry/state-record.schema.json`, ruling 071) and read as an entity view (`registry/entity-view.schema.json`). Type names are Tier-1 vendor-neutral
   `Category.Type` (single-segment permitted for cross-cutting types, e.g. `Topology`) — and
   the instance schema accepts exactly the same name grammar as the type schema.
 - **Machine-validatable surface** — the model is only as solid as its schemas. Current: type
-  spec, realized-entity, provider-adopted-standards, profile. **[D8] Committed program**, in
+  spec, state-record, entity-view, provider-adopted-standards, profile. **[D8] Committed program**, in
   priority order: (1) Tenant + grouping — **DONE** (`registry/profile.schema.json` / `Grouping` + required
   instance `tenant_uuid`; `registry/tools/validate.py` dispatches instances on `record_type`),
   (2) catalog item — **DONE** (a catalog item is a provider Class: `registry/class.schema.json`
   carrying the `registry/composition.schema.json` constituents shape, + validate.py semantic
   checks; the application model — an application IS a composition — and the ADR-016 evidence;
   `docs/spec/foundations/template-composition-model.md` §1.4/§2.5), (3) policy record + typed outputs **[DONE — registry/policy.schema.json; type-spec outputs are the referenceable typed binding surface, output-resolved by the validator]**, (4) layer record **[DONE — registry/layer.schema.json]**, (5) audit record +
-  Commit Log entry, (6) DecisionRecord **[DONE — registry/decision-record.schema.json; the WHY becomes a queryable, Data·Policy·Provider-decomposed record]**, (7) Process Resource **[DONE — the `process` execution axis on realized-entity; execution_state separate from lifecycle_state per D7; validate.py enforces it on Process-family entities]**. **The D8 schema program is COMPLETE.** Until an artifact's schema
+  Commit Log entry, (6) DecisionRecord **[DONE — registry/decision-record.schema.json; the WHY becomes a queryable, Data·Policy·Provider-decomposed record]**, (7) Process Resource **[DONE — the `process` execution axis on the realized record; execution_state separate from lifecycle_state per D7; validate.py enforces it on Process-family entities]**. **The D8 schema program is COMPLETE.** Until an artifact's schema
   exists, its prose definition is explicitly marked *pre-schema* and is not citable as
   "[enforced]".
 
@@ -76,7 +76,7 @@ it governs.
   reconciled inventory record persists until claim or retirement.
 
 *Governs:* `docs/spec/foundations/four-states.md`, `docs/spec/foundations/entity-types.md`,
-`docs/spec/foundations/resource-service-entities.md` §6, REALIZED-ENTITY.md population paths.
+`docs/spec/foundations/resource-service-entities.md` §6, ENTITY-VIEW.md population paths.
 
 ## 4. Relationships — typed data model, projectable to execution DAGs
 
@@ -183,7 +183,7 @@ One definition each; everything else defers here:
 ## 8. Conformance — the honest enforcement ledger
 
 A rule may claim **[enforced]** only if a running validator checks it. Current honest state:
-schema validation (type spec, realized-entity — incl. required `tenant_uuid` [D3] — provider
+schema validation (type spec, state-record and entity-view — incl. required `tenant_uuid` [D3] — provider
 matrices, grouping via `registry/profile.schema.json` / `Grouping` with per-class conditionals:
 tenant `ownership`/`isolation_level`/`membership_policy.exclusive: true`, cross-tenant-auth
 grant fields, and compositions via `registry/composition.schema.json` —

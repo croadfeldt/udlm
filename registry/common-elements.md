@@ -275,7 +275,7 @@ only if links ever need their own attributes (cable id, patch panel, medium).
 ## 8. Timestamps, notes, and audit-grade recording (normative)
 
 Provenance is only actionable if its times and notes are. These rules apply to **every** time
-field and note in the registry (type specs) and in instance records (realized-entity), and are
+field and note in the registry (type specs) and in instance records (state records and the entity view), and are
 enforced by pattern in both schemas.
 
 ### 8.1 Timestamps

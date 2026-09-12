@@ -1,0 +1,754 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/entity-view.schema.json",
+  "title": "UDLM entity view — the merged read model, assembled from per-state records",
+  "description": "One entity as it flows through the four states, in one document: the latest record of each state folded together (registry/tools/entity_view.py builds it; ruling 071, four-states.md §2.7). A READ MODEL: what a dashboard, a person, or a gate asks for. It is never written — the stored form is one record per state (state-record.schema.json), each with one author, and every block here is a $ref into that schema's $defs so the view cannot disagree with the records. `ownership` is gone (one author per record leaves nothing to referee) and `drift` is gone (drift is the comparison of the latest discovered record with the latest realized one, computed, never stored). Field values inside the state snapshots are typed by the entity's class, not re-validated here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uuid",
+    "tenant_uuid",
+    "conforms_to",
+    "resource_type",
+    "type_version",
+    "lifecycle_state",
+    "states"
+  ],
+  "properties": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Stable RFC 9562 identity of this entity. A Composite Entity has exactly one UUID across all four states (docs/spec/foundations/template-composition-model.md)."
+    },
+    "tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "REQUIRED owning Tenant — the uuid of an `Grouping` of group class `tenant_boundary` (registry/classes/access/grouping/_base.yaml; the group-class table is docs/spec/foundations/universal-groups.md §2.2). Every Resource/Service Entity belongs to exactly one Tenant at every lifecycle state (TEN-001/TEN-003, docs/spec/foundations/resource-grouping.md §2.2), schema-enforced per data-model-core §5 [D3]. Existing brownfield stores migrate by minting their tenants and backfilling this field."
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "resource_type": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
+      "description": "Tier-1 vendor-neutral Category.Type name; single-segment permitted for cross-cutting types (e.g. Topology) — exactly the same name grammar as the type schema (data-model-core §2)."
+    },
+    "type_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Pins the Resource Type Specification version this instance was realized against (E5) — the human-legible half of the ADR-051 pin grammar (type@version). Drift and validation are measured against this exact contract."
+    },
+    "type_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "OPTIONAL exact half of the type pin (ADR-051 — type@sha256:<hex>): sha256 over the pinned type spec revision's RFC 8785-canonical form, recorded at realization. The publish law makes type_version alone meaningful; the digest adds byte-exactness where the estate's profile demands it (fsi). A referrer field — the type spec never carries its own digest."
+    },
+    "type_ref": {
+      "type": "string",
+      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/(class/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){1,2}|[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?)/[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "The `$id` of the pinned spec this instance was realized against. TWO forms are legal, and which one appears says how far the request got: a served Resource Type Spec (`.../udlm/0.1/Machine.VM/1.0.0`) before placement resolves a provider, or a PROVIDER CLASS (`.../udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0`) once it has. After placement the spec that actually governs IS the Provider Class — its narrowed ranges are what the selection must satisfy — so no separate field records the placement. `resource_type` stays the PORTABLE two-segment name either way: the entity is a Machine.VM, and that does not change because of where it landed. A consumer parsing this MUST handle both forms."
+    },
+    "lifecycle_state": {
+      "$ref": "common-elements.schema.json#/$defs/lifecycle_state",
+      "description": "The entity's current state in the four-state model (docs/spec/foundations/four-states.md)."
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Increments on each desired-state (Intent/Requested) change."
+    },
+    "observed_generation": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The `generation` the Realized state reflects. observed_generation < generation ⇒ realization pending (the K8s drift signal)."
+    },
+    "states": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An immutable snapshot per state. Intent is captured before processing; Requested is the assembled, policy-validated, provider-ready payload; Realized is the provider-confirmed snapshot (system of record); Discovered is the actively-introspected state used for drift.",
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/state_snapshot"
+        },
+        "requested": {
+          "$ref": "#/$defs/state_snapshot"
+        },
+        "realized": {
+          "$ref": "#/$defs/realized_snapshot"
+        },
+        "discovered": {
+          "$ref": "#/$defs/realized_snapshot"
+        }
+      }
+    },
+    "provenance": {
+      "$ref": "state-record.schema.json#/$defs/provenance",
+      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; the control plane writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model. Each array is the ordered modification chain for that field: entries map 1:1 to the audit-provenance modifications[] records (origin = the first entry), with optional `sequence` for explicit ordering and `operation_type` for the write semantics.\n\nA HISTORY CLAIM ON A WORKING RECORD IS NOT CITABLE AS LINEAGE. Only sealed, chained and anchored records carry that weight (ADR-059) — this block is readable, but a consumer needing provable lineage reads the seal's `udlm_provenance` facet (`registry/facets/udlm-provenance.facet.json`), not this. `integrity` is what makes the record's own timeline verifiable on its own; this is the convenience copy of who set what."
+    },
+    "dependencies": {
+      "$ref": "state-record.schema.json#/$defs/dependencies",
+      "description": "Resolved instance-level edges (the realized form of the type's relationships). A binding records the value pulled from the target's realized output — data movement, not transformation (T4)."
+    },
+    "constituents": {
+      "$ref": "state-record.schema.json#/$defs/constituents",
+      "description": "For a Composite Entity: the constituents and their per-component realized state (docs/spec/foundations/template-composition-model.md)."
+    },
+    "expected_observation": {
+      "$ref": "state-record.schema.json#/$defs/expected_observation",
+      "description": "The DECLARED observation expectation this entity is judged against (ADR-048 — staleness as declared expectation). Staleness verdicts — current | stale_expected | stale_deviant — are DERIVED by comparing observation age (states.discovered.at / drift.checked_at) with this declaration; no verdict is ever stored. Where absent, the OBS-005 profile TTL (docs/spec/foundations/service-dependencies.md) applies as the fallback. When the expectation is composed at a coarser scope (e.g. a group-wide offline window resolved per ADR-015), this block carries the RESOLVED value — its provenance rides the standard per-field provenance record, never a hand-typed copy."
+    },
+    "sovereignty": {
+      "$ref": "state-record.schema.json#/$defs/sovereignty",
+      "description": "The sovereign placement of the realized entity. These are realized from `immutable`/createOnly type fields — they cannot change without replace + Governance-Matrix re-evaluation (cross-cutting P4)."
+    },
+    "status": {
+      "$ref": "state-record.schema.json#/$defs/status",
+      "description": "Realized-state health (OSAC-/K8s-style). Reported by the provider; not part of the four-state axis."
+    },
+    "audit": {
+      "$ref": "state-record.schema.json#/$defs/audit",
+      "description": "Linkage to the tamper-evident audit log (AUD-001/002). UDLM carries the reference (the Merkle head + leaf count); the control plane produces and proves the chain (G3)."
+    },
+    "adopted_standards": {
+      "$ref": "state-record.schema.json#/$defs/adopted_standards",
+      "description": "ADOPTED-STANDARD BINDINGS (T5): for each external standard adopted by this entity's type, the realized record of the control plane's version negotiation — the requested range, the provider's chosen version, the negotiated effective version, and whether the control plane translated between versions (ADS-003/004/008). UDLM carries this record; the control plane (Policy) produces it and writes it to the audit log. The external data itself is NOT carried here — it is referenced from its Information Provider via the identity join."
+    },
+    "portability": {
+      "$ref": "state-record.schema.json#/$defs/portability",
+      "description": "INSTANCE portability: the realized entity's actual portability, DEGRADED from the type's declared classification when the entity carries provider-specific data (Provider-Class `SharedDataElement`s — ADR-038; schema realization #199; the retired `provider_extensions` carrier is removed per #202). Base-type-declared, instance-degraded — never silently presented as fully portable. When degraded, the consumer MUST be notified before/at realization (resource-type-hierarchy Transparency principle); a portability-degradation event is emitted."
+    },
+    "handle": {
+      "$ref": "state-record.schema.json#/$defs/handle",
+      "description": "ADVISORY human-readable identity (docs/spec/contracts/identifier-scheme.md §3). The uuid is the authoritative identity; the handle aids review and drift detection (a resolved-uuid whose current handle disagrees with a reference's recorded handle is drift, not failure). Never resolve by handle alone."
+    },
+    "metadata": {
+      "$ref": "state-record.schema.json#/$defs/metadata",
+      "description": "Human-facing context. Operational commentary lives in `notes` — it is data ABOUT the record, never used for resolution."
+    },
+    "correlation_ids": {
+      "$ref": "state-record.schema.json#/$defs/correlation_ids",
+      "description": "Stable natural keys independent of any observer, for entity resolution across discovery sources (dcm ADR-017 Decision C): a new observation matching an existing entity by these keys MERGES into that entity's uuid — one real resource, one entity uuid, never a duplicate. Every discovery source MUST emit them."
+    },
+    "process": {
+      "$ref": "state-record.schema.json#/$defs/process",
+      "description": "Process-execution axis (resource-service-entities §6.3; data-model-core §3 [D7]). REQUIRED on entities whose Resource Type has family: Process (the Job class) — validate.py enforces this via the registry. The universal lifecycle_state still applies (a playbook that exists and is adopted is Realized/Discovered); execution_state is a SEPARATE axis tracking each RUN and never changes lifecycle_state."
+    },
+    "priced_by": {
+      "$ref": "state-record.schema.json#/$defs/priced_by",
+      "description": "PROPOSED (cost-metering-linkage.md; ADR-COST-002). Per-INSTANCE cost-model reference override — overrides the resource type's `priced_by` default for this entity (per-customer/contract pricing, whose lifecycle stays external). UDLM never defines the model's contents (ADR-COST-001)."
+    },
+    "integrity": {
+      "$ref": "state-record.schema.json#/$defs/integrity",
+      "description": "THE RESOURCE CHAIN — the record's own version timeline, made tamper-evident in the record (ADR-059 Decision 2). Every new version appends, whichever pathway caused it, so a Discovered write is as tamper-evident as an Intent one.\n\nWHY IT IS ON THE RECORD AND NOT ONLY IN THE LEDGER. Records are unbounded in lifetime; stores are not. A realized entity may run for a decade while audit is retained for years and observability for weeks, so an operation that reaches into the ledger to verify itself works until the day it silently does not. The chain answers `has this record been altered` without any other system — which is ADR-059's record-content test applied to integrity itself.\n\nONE-WAY BRIDGE. The ledger's seal embeds the working copy and this head; the record never references the ledger. That direction is deliberate: operations must never hang on compliance storage being reachable.\n\nCLAIMS DISCIPLINE. This is a STATE claim — `the bytes of this version, and what preceded it`. It is not provenance, lineage or history, and presenting it under such a heading is a defect (ADR-059 Decision 1). Only sealed, chained, anchored ledger records make history claims."
+    },
+    "provider_preference": {
+      "$ref": "state-record.schema.json#/$defs/provider_preference",
+      "description": "A named provider this request PREFERS — the pin (ADR-050).\n\nIT DECIDES WHICH ELIGIBLE PROVIDER, NEVER WHETHER AN INELIGIBLE ONE IS REACHED. The `effective_capabilities` ceiling applies at the dispatch boundary on every path (`PRV-009`, `PRV-011`), so a pin naming a provider that has not been admitted for what the request needs is refused with `placement.capability_mismatch` BEFORE dispatch, carrying the required-versus-declared comparison.\n\nThe pin is absolute over the CHOICE and not over CAPABILITY. That is what keeps one sentence true everywhere — the ceiling always applies — instead of true-with-an-exception, and an exception is the thing a reader cannot see from the rule.\n\nA DELIBERATE BYPASS IS POLICY'S, NOT THE MODEL'S (ADR-008 peer test). Whether an operator may dispatch outside a declared capability is an operational choice a conformant implementation is entitled to make differently, so UDLM fixes only the invariant such a bypass would be an exception TO. A field here that could waive the ceiling would move that choice into the substrate and make every implementation inherit one estate's risk appetite."
+    },
+    "entity_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "The same identity as `uuid`, under the name the per-state records use (state-record.schema.json). Present when the view was assembled from records."
+    }
+  },
+  "$defs": {
+    "adopted_standard_binding": {
+      "$ref": "state-record.schema.json#/$defs/adopted_standard_binding"
+    },
+    "state_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fields",
+        "at"
+      ],
+      "properties": {
+        "fields": {
+          "type": "object",
+          "description": "Spec field values at this state (typed by the Resource Type Spec)."
+        },
+        "at": {
+          "$ref": "state-record.schema.json#/$defs/at"
+        },
+        "time_source": {
+          "type": "string",
+          "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host01 chrony, stratum 2, NTP-traceable') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "declared",
+            "discovered-derived",
+            "backfilled"
+          ],
+          "x-extensible-enum": true,
+          "description": "How this snapshot came to be: declared (the forward flow — consumer/provider wrote it), discovered-derived (synthesized from observation, dcm ADR-017 Decision B — provider-agnostic inferred Intent for DR/portability), backfilled (tertiary Requested/Intent synthesis during greening). Consumers weight trust accordingly; inferred state is never silently presented as human-declared."
+        },
+        "roles": {
+          "$ref": "state-record.schema.json#/$defs/roles"
+        },
+        "assembly": {
+          "$ref": "state-record.schema.json#/$defs/assembly"
+        },
+        "policies": {
+          "$ref": "state-record.schema.json#/$defs/policies",
+          "description": "The requested snapshot only: the policies evaluated and what each decided."
+        }
+      }
+    },
+    "realized_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fields",
+        "outputs",
+        "at",
+        "time_source"
+      ],
+      "properties": {
+        "fields": {
+          "type": "object"
+        },
+        "outputs": {
+          "type": "object",
+          "description": "Typed realized outputs (E2) published by the provider."
+        },
+        "at": {
+          "$ref": "state-record.schema.json#/$defs/at"
+        },
+        "provider": {
+          "type": "string",
+          "description": "The provider that produced this realized state."
+        },
+        "time_source": {
+          "type": "string",
+          "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host01 chrony, stratum 2, NTP-traceable') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "declared",
+            "discovered-derived",
+            "backfilled"
+          ],
+          "x-extensible-enum": true,
+          "description": "How this snapshot came to be: declared (the forward flow — consumer/provider wrote it), discovered-derived (synthesized from observation, dcm ADR-017 Decision B — provider-agnostic inferred Intent for DR/portability), backfilled (tertiary Requested/Intent synthesis during greening). Consumers weight trust accordingly; inferred state is never silently presented as human-declared."
+        },
+        "roles": {
+          "$ref": "state-record.schema.json#/$defs/roles"
+        },
+        "policies": {
+          "$ref": "state-record.schema.json#/$defs/policies",
+          "description": "The requested snapshot only: the policies evaluated and what each decided."
+        }
+      }
+    },
+    "data_role": {
+      "$ref": "state-record.schema.json#/$defs/data_role"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "provider_preference": {
+            "properties": {
+              "strength": {
+                "const": "hard"
+              }
+            },
+            "required": [
+              "strength"
+            ]
+          }
+        },
+        "required": [
+          "provider_preference"
+        ]
+      },
+      "then": {
+        "properties": {
+          "provider_preference": {
+            "required": [
+              "provider",
+              "strength",
+              "acknowledged"
+            ]
+          }
+        }
+      },
+      "$comment": "A hard pin is the one consumer-facing choice that narrows where a request can ever be realized. Requiring the acknowledgement is how the model makes that visible at the moment it is taken, rather than discoverable later by whoever inherits it."
+    }
+  ],
+  "examples": [
+    {
+      "uuid": "2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03",
+      "entity_uuid": "2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03",
+      "states": {
+        "intent": {
+          "fields": {
+            "cpu": {
+              "count": 4
+            },
+            "memory": {
+              "size": "16Gi"
+            },
+            "guest_os": {
+              "type": "linux-server-9",
+              "version": "9.6"
+            },
+            "firmware": {
+              "type": "uefi",
+              "secure_boot": true
+            },
+            "networks": [
+              {
+                "name": "eth0",
+                "vlan": "lab/net/vlan-20"
+              }
+            ],
+            "layout_ref": "lab/storage/layout/app-01",
+            "run_state": {
+              "desired_state": "running"
+            }
+          },
+          "at": "2026-09-03T14:02:11Z",
+          "time_source": "dcm-api",
+          "origin": "declared"
+        },
+        "realized": {
+          "fields": {
+            "cpu": {
+              "count": 4,
+              "sockets": 1,
+              "cores_per_socket": 4
+            },
+            "memory": {
+              "size": "16Gi"
+            },
+            "guest_os": {
+              "type": "linux-server-9",
+              "version": "9.6"
+            },
+            "firmware": {
+              "type": "uefi",
+              "secure_boot": true,
+              "vtpm": false
+            },
+            "networks": [
+              {
+                "name": "eth0",
+                "vlan": "lab/net/vlan-20",
+                "network_ref": "lab/net/dmz"
+              }
+            ],
+            "layout_ref": "lab/storage/layout/app-01",
+            "placement": {
+              "location_ref": "lab/facility/rack-3"
+            },
+            "run_state": {
+              "desired_state": "running"
+            }
+          },
+          "outputs": {
+            "ip_addresses": [
+              "192.0.2.55"
+            ],
+            "primary_ip": "192.0.2.55",
+            "hostname": "app-01.lab.example",
+            "mac_addresses": [
+              "52:54:00:ab:12:34"
+            ],
+            "provider_handle": "app-01",
+            "observed_run_state": "running"
+          },
+          "at": "2026-09-03T14:03:40Z",
+          "time_source": "provider-callback",
+          "origin": "declared",
+          "provider": "lab/providers/libvirt-host-a"
+        },
+        "requested": {
+          "fields": {
+            "cpu": {
+              "count": 4,
+              "sockets": 1,
+              "cores_per_socket": 4
+            },
+            "memory": {
+              "size": "16Gi"
+            },
+            "guest_os": {
+              "type": "linux-server-9",
+              "version": "9.6"
+            },
+            "firmware": {
+              "type": "uefi",
+              "secure_boot": true,
+              "vtpm": false
+            },
+            "networks": [
+              {
+                "name": "eth0",
+                "vlan": "lab/net/vlan-20",
+                "network_ref": "lab/net/dmz"
+              }
+            ],
+            "layout_ref": "lab/storage/layout/app-01",
+            "placement": {
+              "location_ref": "lab/facility/rack-3"
+            },
+            "run_state": {
+              "desired_state": "running"
+            }
+          },
+          "at": "2026-09-03T14:02:14Z",
+          "time_source": "dcm-api",
+          "origin": "declared",
+          "assembly": {
+            "applied": [
+              {
+                "source": {
+                  "kind": "layer",
+                  "id": "lab/layers/tenant-location"
+                },
+                "version": "1.0.0",
+                "fields": [
+                  "placement.location_ref"
+                ]
+              },
+              {
+                "source": {
+                  "kind": "policy",
+                  "id": "lab/policy/cpu-topology-default"
+                },
+                "version": "1.2.0",
+                "fields": [
+                  "cpu.sockets",
+                  "cpu.cores_per_socket"
+                ]
+              },
+              {
+                "source": {
+                  "kind": "policy",
+                  "id": "lab/policy/firmware-baseline"
+                },
+                "version": "1.0.0",
+                "fields": [
+                  "firmware.vtpm"
+                ]
+              },
+              {
+                "source": {
+                  "kind": "policy",
+                  "id": "lab/policy/network-placement"
+                },
+                "version": "2.1.0",
+                "fields": [
+                  "networks[0].network_ref"
+                ]
+              }
+            ],
+            "unapplied": [],
+            "excluded_layers": []
+          },
+          "policies": [
+            {
+              "policy": "lab/policy/cpu-topology-default",
+              "version": "1.2.0",
+              "policy_type": "transformation",
+              "decision": "allow",
+              "fields": [
+                "cpu.sockets",
+                "cpu.cores_per_socket"
+              ]
+            },
+            {
+              "policy": "lab/policy/firmware-baseline",
+              "version": "1.0.0",
+              "policy_type": "transformation",
+              "decision": "allow",
+              "fields": [
+                "firmware.vtpm"
+              ]
+            },
+            {
+              "policy": "lab/policy/network-placement",
+              "version": "2.1.0",
+              "policy_type": "transformation",
+              "decision": "allow",
+              "fields": [
+                "networks[0].network_ref"
+              ]
+            },
+            {
+              "policy": "lab/policy/tenant-quota",
+              "version": "3.0.0",
+              "policy_type": "validation",
+              "decision": "pass",
+              "reason": "4 vCPU / 16Gi within the tenant's remaining quota"
+            }
+          ]
+        }
+      },
+      "provenance": {
+        "cpu.count": [
+          {
+            "source": {
+              "kind": "actor",
+              "id": "lab/users/app-team-lead"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:11Z"
+          }
+        ],
+        "memory.size": [
+          {
+            "source": {
+              "kind": "actor",
+              "id": "lab/users/app-team-lead"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:11Z"
+          }
+        ],
+        "guest_os": [
+          {
+            "source": {
+              "kind": "actor",
+              "id": "lab/users/app-team-lead"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:11Z"
+          }
+        ],
+        "firmware.type": [
+          {
+            "source": {
+              "kind": "actor",
+              "id": "lab/users/app-team-lead"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:11Z"
+          }
+        ],
+        "firmware.secure_boot": [
+          {
+            "source": {
+              "kind": "actor",
+              "id": "lab/users/app-team-lead"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:11Z"
+          }
+        ],
+        "networks[0].vlan": [
+          {
+            "source": {
+              "kind": "actor",
+              "id": "lab/users/app-team-lead"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:11Z"
+          }
+        ],
+        "layout_ref": [
+          {
+            "source": {
+              "kind": "actor",
+              "id": "lab/users/app-team-lead"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:11Z"
+          }
+        ],
+        "run_state.desired_state": [
+          {
+            "source": {
+              "kind": "actor",
+              "id": "lab/users/app-team-lead"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:11Z"
+          }
+        ],
+        "outputs.ip_addresses": [
+          {
+            "source": {
+              "kind": "provider",
+              "id": "lab/providers/libvirt-host-a"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:03:40Z"
+          }
+        ],
+        "outputs.mac_addresses": [
+          {
+            "source": {
+              "kind": "provider",
+              "id": "lab/providers/libvirt-host-a"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:03:40Z"
+          }
+        ],
+        "cpu.sockets": [
+          {
+            "source": {
+              "kind": "policy",
+              "id": "lab/policy/cpu-topology-default"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:14Z"
+          }
+        ],
+        "cpu.cores_per_socket": [
+          {
+            "source": {
+              "kind": "policy",
+              "id": "lab/policy/cpu-topology-default"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:14Z"
+          }
+        ],
+        "firmware.vtpm": [
+          {
+            "source": {
+              "kind": "policy",
+              "id": "lab/policy/firmware-baseline"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:14Z"
+          }
+        ],
+        "networks[0].network_ref": [
+          {
+            "source": {
+              "kind": "policy",
+              "id": "lab/policy/network-placement"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:14Z"
+          }
+        ],
+        "placement.location_ref": [
+          {
+            "source": {
+              "kind": "layer",
+              "id": "lab/layers/tenant-location"
+            },
+            "operation_type": "set",
+            "sequence": 1,
+            "timestamp": "2026-09-03T14:02:14Z"
+          }
+        ]
+      },
+      "handle": "lab/vm/app-01",
+      "tenant_uuid": "75ccf4ff-3e8d-4963-bc51-459ae1014cb7",
+      "conforms_to": "udlm/0.1",
+      "resource_type": "Machine.VM",
+      "type_version": "2.0.0",
+      "type_ref": "https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0",
+      "generation": 1,
+      "lifecycle_state": "Realized",
+      "status": {
+        "state": "Running",
+        "conditions": [
+          {
+            "type": "Ready",
+            "status": "True",
+            "reason": "GuestAgentConnected",
+            "last_transition_time": "2026-09-03T14:03:52Z"
+          }
+        ]
+      },
+      "dependencies": [
+        {
+          "edge_type": "contained_by",
+          "target_uuid": "8a4d1e6f-2b3c-4d5e-9f0a-1b2c3d4e5f60",
+          "target_handle": "lab/host/host-a",
+          "strength": "hard",
+          "resolved_at": "2026-09-03T14:03:40Z"
+        },
+        {
+          "edge_type": "depends_on",
+          "target_uuid": "9f1b3d5e-7a8c-4b0d-9e4f-8b0c2d4e6a71",
+          "target_handle": "lab/storage/vol/app-01-root",
+          "strength": "hard",
+          "resolved_at": "2026-09-03T14:03:40Z"
+        },
+        {
+          "edge_type": "depends_on",
+          "target_uuid": "a1c3e5f7-9b0d-4c2e-8f6a-0c2d4e6a8b93",
+          "target_handle": "lab/net/ip/192.0.2.55",
+          "target_field": "address",
+          "bound_field": "outputs.primary_ip",
+          "strength": "hard",
+          "resolved_at": "2026-09-03T14:03:40Z"
+        }
+      ],
+      "sovereignty": {
+        "zone": "us-mn-sovereign",
+        "classification": "internal",
+        "locality": {
+          "topology_ref": "c2e4a6b8-0d1f-4a3c-9e5b-7f9a1c3e5d70",
+          "fault_domain": "rack-3/host-a"
+        }
+      },
+      "correlation_ids": [
+        {
+          "scheme": "libvirt-domain-uuid",
+          "value": "4e2a7c19-6b3d-4f8e-a1c5-9d0b2e7f3a64"
+        },
+        {
+          "scheme": "mac",
+          "value": "52:54:00:ab:12:34"
+        }
+      ],
+      "adopted_standards": [
+        {
+          "standard": "Redfish/ComputerSystem",
+          "requested_version": ">=2023.1",
+          "provider_version": "2024.4",
+          "effective_version": "2024.4",
+          "translated": false,
+          "resolved_at": "2026-09-03T14:03:40Z"
+        }
+      ],
+      "portability": {
+        "classification": "portable",
+        "portability_breaking": false,
+        "portability_notes": "Realized entirely from Type-scope elements; strip outputs, provider and correlation ids and `fields` is a valid new intent."
+      },
+      "expected_observation": {
+        "cadence": "PT15M",
+        "on_exceeded": "finding"
+      },
+      "metadata": {
+        "display_name": "app-01 (KVM guest on host-a)"
+      },
+      "integrity": {
+        "head": "sha256:73554999e7dd2b597cb30e8dd9836450613158b3b4a64a169ce6c34a3e1f1d93",
+        "previous": "sha256:e8889df6cff24766f2dc1697342d6f7949a23c1a1364b45e6fdfb2f3eaa6b264",
+        "algorithm": "sha256-jcs"
+      },
+      "observed_generation": 1
+    }
+  ]
+}

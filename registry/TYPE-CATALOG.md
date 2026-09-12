@@ -1082,7 +1082,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 - Storage.Dataset — the datasets carved from the pool.
 - Hardware.StorageDevice — the physical member drives of the vdevs.
 
-### Storage.Volume (0.11.5)
+### Storage.Volume (0.11.6)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 

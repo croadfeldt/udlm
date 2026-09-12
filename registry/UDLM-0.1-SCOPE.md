@@ -50,11 +50,11 @@ but executed by the control plane (ADR-008).
 
 | # | Use case (handle) | UDLM basis | Status |
 |---|---|---|---|
-| 1 | libvirt-vm-provider/vm-resource-representation | `compute.vm` 0.3.0; `realized-entity` | Covered |
+| 1 | libvirt-vm-provider/vm-resource-representation | `compute.vm` 0.3.0; `state-record` / `entity-view` | Covered |
 | 2 | architecture/solution-architecture-decomposition | `catalog-item` (constituents/bindings/fulfillment); realized receipt | Covered (DSL ingestion = the control plane/Information-Provider) |
 | 3 | compute/provision-vm-standard | profile-resolution; policy §7.7; universal-audit | Covered |
 | 4 | compute/vm-intent-osac-placement | provider-contract §8 `realize_resources`; osac-better-together; provider provenance | Covered (placement algo = DCM ADR-019) |
-| 5 | libvirt-vm-provider/vm-status-provenance | `realized-entity` field-level `provenance`/`status`/`drift` | Covered |
+| 5 | libvirt-vm-provider/vm-status-provenance | per-state records: field-level `provenance`/`status`; drift computed from the latest realized and discovered records | Covered |
 | 6 | storage/provision-volume-bound-to-pool | `storage.volume`; tenancy; **quota** (now defined) | **Closed this release (P7)** |
 | 7 | dcm-core/udlm-dependency-graph-data-model | ordering `edge_type`s; ADR-010 derived fault-domain/blast-radius; graph-integrity | Covered |
 | 8 | libvirt-vm-provider/cross-provider-dependency-ordering | graph-integrity DAG; DCM ADR-009; ADR-011 reserve ordering | Covered (convergence = DCM ADR-006) |
@@ -73,7 +73,7 @@ but executed by the control plane (ADR-008).
 | 21 | docs/spec/governance/audit-chain-proofs-capability | universal-audit §8 (single-signer v1; witness = follow-up) | Covered |
 
 **Net:** all 21 are enabled at the UDLM layer. Residual items for this set are either already closed
-by the merged spec (ADR-010 / §8.1a / realized-entity) or are control-plane-runtime by the ADR-008 boundary.
+by the merged spec (ADR-010 / §8.1a / state-record) or are control-plane-runtime by the ADR-008 boundary.
 
 ## 4. September `P#` gap tracker — consolidated
 

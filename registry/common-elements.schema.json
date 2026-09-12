@@ -371,6 +371,16 @@
         "fail"
       ],
       "description": "What a policy evaluation decided (policy-contract §8, the validation output shape). One home (VOC-001): policy.schema.json's validation output and the requested record's `policies[]` both reference it. A transformation policy's effect is what it changed, recorded per field in provenance; its decision here is allow or pass."
+    },
+    "lifecycle_state": {
+      "enum": [
+        "Intent",
+        "Requested",
+        "Realized",
+        "Discovered",
+        "Decommissioned"
+      ],
+      "description": "The five-value lifecycle state of an entity (data-model-core §3): the four states plus the tombstone. One home (VOC-001); the entity view's `lifecycle_state` and a composite's per-constituent state reference it."
     }
   }
 }

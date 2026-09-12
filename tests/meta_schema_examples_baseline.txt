@@ -13,7 +13,6 @@ function-capability-matrix.schema.json
 layer.schema.json
 policy.schema.json
 provider-adopted-standards.schema.json
-realized-entity.schema.json
 regeneration-manifest.schema.json
 resource-type-spec.schema.json
 rule-id-registry.schema.json

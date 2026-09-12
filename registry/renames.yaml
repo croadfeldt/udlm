@@ -122,6 +122,54 @@ renames:
   # to the layer example set; `covers` now carries the assignment the old indirection layer carried.
   registry/examples/example-reference-data-app-profile.yaml: registry/examples/example-layer-app-profile.yaml
 
+
+  # 2026-09-03 — Container leaves Compute and becomes its own Base Class. Compute grouped four
+  # things with four different portability contracts; a Container inherited `guest_os`, which no
+  # container provider can honor, and carried `instance_size`/`cpu`/`memory` both at top level and
+  # inside its own `resources` object. A Base is earned by a shared portability contract
+  # (maintainer ruling 2026-09-03), and "run this image" is its own contract.
+  registry/classes/resource/compute/container.yaml: registry/classes/resource/container/_base.yaml
+
+  # 2026-09-10 — Compute.Cluster leaves Compute and becomes the KubernetesCluster Base Class
+  # (ADR-068 applied clause). Its contract is the Kubernetes API: pod_cidr and
+  # service_cidr are Kubernetes vocabulary no VM or bare-metal provider can honor, so it shares
+  # nothing with the machines it sat beside. Named for the standard, never for a product;
+  # distributions become its Types. Same uuid, version reset to 1.0.0 as a new Base.
+  registry/classes/resource/compute/cluster.yaml: registry/classes/resource/kubernetes-cluster/_base.yaml
+
+  # 2026-09-10 — Compute becomes Machine (ADR-068 applied clause; the Base test is ADR-069). With
+  # Container and KubernetesCluster gone, what remained under Compute was VM and BareMetalHost, the
+  # two forms of one deliverable — an image booted onto cpu, memory, disk and network — and Nova/Ironic,
+  # Cluster API's Machine and TOSCA's Compute already treat them as one thing. Named for the deliverable.
+  # LPAR joins as the third form. Same uuids; MAJOR on the Base (the name is in every $id) and on VM
+  # (guest firmware `bios` -> `legacy`, the Redfish spelling BareMetalHost already used).
+  registry/classes/resource/compute/_base.yaml: registry/classes/resource/machine/_base.yaml
+  registry/classes/resource/compute/vm.yaml: registry/classes/resource/machine/vm.yaml
+  registry/classes/resource/compute/bare-metal-host.yaml: registry/classes/resource/machine/bare-metal-host.yaml
+  registry/examples/classes/resource/compute/vm/cexample-cloud.yaml: registry/examples/classes/resource/machine/vm/cexample-cloud.yaml
+
+  # 2026-09-11 — Platform.Namespace and Platform.NodePool become Bases of their own (ADR-068 applied;
+  # the Base test is ADR-069). Platform was a folder — "Kubernetes clusters, application platforms" — and
+  # both members are deliverables a tenant orders and manages on their own, on any conformant cluster,
+  # which is what earns a Base. Named for the standard, never a product. Same uuids; version reset to
+  # 1.0.0 as new Bases. The rest of Platform (ResourceQuota, StorageClass, Hub) folds in the next change.
+  registry/classes/resource/platform/namespace.yaml: registry/classes/resource/kubernetes-namespace/_base.yaml
+  registry/classes/resource/platform/node-pool.yaml: registry/classes/resource/kubernetes-node-pool/_base.yaml
+
+  # 2026-09-11 — Platform dissolves (maintainer ruling; ADR-068/069). StorageClass moves under Storage:
+  # a storage class is published by a storage provider and selected by a volume, never ordered, and it
+  # is where the provider reports tier and capabilities. Hub and ResourceQuota are DEPRECATED with
+  # successors (Software.Service fleet-manager; KubernetesNamespace#hard) rather than deleted —
+  # registry-governance REG-DP-004 — and stay at their paths until the sunset window closes.
+  registry/classes/resource/platform/storage-class.yaml: registry/classes/resource/storage/class.yaml
+
+  # 2026-09-12 — the merged instance schema becomes the entity VIEW (ruling 071): a read model
+  # assembled from per-state records, never written. Every shared block moved into
+  # state-record.schema.json's $defs; the view references them. drift and ownership are gone from it.
+  registry/realized-entity.schema.json: registry/entity-view.schema.json
+  registry/REALIZED-ENTITY.md: registry/ENTITY-VIEW.md
+
+
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
   # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),
@@ -163,43 +211,3 @@ retired:
   # 2026-08-09 — the orderable composite tier is a Template; the document naming it Composite
   # Service described a concept that does not exist beside it. Rule IDs are unchanged (CMP-*).
   docs/spec/foundations/composite-service-model.md: docs/spec/foundations/template-composition-model.md
-
-  # 2026-09-03 — Container leaves Compute and becomes its own Base Class. Compute grouped four
-  # things with four different portability contracts; a Container inherited `guest_os`, which no
-  # container provider can honor, and carried `instance_size`/`cpu`/`memory` both at top level and
-  # inside its own `resources` object. A Base is earned by a shared portability contract
-  # (maintainer ruling 2026-09-03), and "run this image" is its own contract.
-  registry/classes/resource/compute/container.yaml: registry/classes/resource/container/_base.yaml
-
-  # 2026-09-10 — Compute.Cluster leaves Compute and becomes the KubernetesCluster Base Class
-  # (ADR-068 applied clause). Its contract is the Kubernetes API: pod_cidr and
-  # service_cidr are Kubernetes vocabulary no VM or bare-metal provider can honor, so it shares
-  # nothing with the machines it sat beside. Named for the standard, never for a product;
-  # distributions become its Types. Same uuid, version reset to 1.0.0 as a new Base.
-  registry/classes/resource/compute/cluster.yaml: registry/classes/resource/kubernetes-cluster/_base.yaml
-
-  # 2026-09-10 — Compute becomes Machine (ADR-068 applied clause; the Base test is ADR-069). With
-  # Container and KubernetesCluster gone, what remained under Compute was VM and BareMetalHost, the
-  # two forms of one deliverable — an image booted onto cpu, memory, disk and network — and Nova/Ironic,
-  # Cluster API's Machine and TOSCA's Compute already treat them as one thing. Named for the deliverable.
-  # LPAR joins as the third form. Same uuids; MAJOR on the Base (the name is in every $id) and on VM
-  # (guest firmware `bios` -> `legacy`, the Redfish spelling BareMetalHost already used).
-  registry/classes/resource/compute/_base.yaml: registry/classes/resource/machine/_base.yaml
-  registry/classes/resource/compute/vm.yaml: registry/classes/resource/machine/vm.yaml
-  registry/classes/resource/compute/bare-metal-host.yaml: registry/classes/resource/machine/bare-metal-host.yaml
-  registry/examples/classes/resource/compute/vm/cexample-cloud.yaml: registry/examples/classes/resource/machine/vm/cexample-cloud.yaml
-
-  # 2026-09-11 — Platform.Namespace and Platform.NodePool become Bases of their own (ADR-068 applied;
-  # the Base test is ADR-069). Platform was a folder — "Kubernetes clusters, application platforms" — and
-  # both members are deliverables a tenant orders and manages on their own, on any conformant cluster,
-  # which is what earns a Base. Named for the standard, never a product. Same uuids; version reset to
-  # 1.0.0 as new Bases. The rest of Platform (ResourceQuota, StorageClass, Hub) folds in the next change.
-  registry/classes/resource/platform/namespace.yaml: registry/classes/resource/kubernetes-namespace/_base.yaml
-  registry/classes/resource/platform/node-pool.yaml: registry/classes/resource/kubernetes-node-pool/_base.yaml
-
-  # 2026-09-11 — Platform dissolves (maintainer ruling; ADR-068/069). StorageClass moves under Storage:
-  # a storage class is published by a storage provider and selected by a volume, never ordered, and it
-  # is where the provider reports tier and capabilities. Hub and ResourceQuota are DEPRECATED with
-  # successors (Software.Service fleet-manager; KubernetesNamespace#hard) rather than deleted —
-  # registry-governance REG-DP-004 — and stay at their paths until the sunset window closes.
-  registry/classes/resource/platform/storage-class.yaml: registry/classes/resource/storage/class.yaml

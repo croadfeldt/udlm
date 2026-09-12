@@ -89,8 +89,8 @@ The model separates what was *asked for* from what *exists*. Intent (declarative
 `intent → requested`; a **provider populates the realized plane** with what it actually built —
 discovered runs alongside as ground truth. The full lifecycle is in
 [`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md); the realized shape is
-[`registry/realized-entity.schema.json`](../../registry/realized-entity.schema.json) (narrated in
-[`registry/REALIZED-ENTITY.md`](../../registry/REALIZED-ENTITY.md)).
+[`registry/entity-view.schema.json`](../../registry/entity-view.schema.json) (narrated in
+[`registry/ENTITY-VIEW.md`](../../registry/ENTITY-VIEW.md)).
 
 Read the plane your job needs, and know which it is. A control plane assembling a request reads
 **intent**. A dashboard reporting what is running, or a drift check, reads **realized/discovered**. A

@@ -152,6 +152,27 @@ def accepted_edits():
     return out
 
 
+def _renames():
+    """old path -> new path, from registry/renames.yaml — the rename-map discipline: a rename ships
+    with an explicit map so no gate is left resolving one by guesswork."""
+    try:
+        import yaml
+        doc = yaml.safe_load(open(os.path.join(REPO, "registry", "renames.yaml"), encoding="utf-8")) or {}
+        return doc.get("renames") or {}
+    except Exception:
+        return {}
+
+
+def _through_renames(path):
+    """A path an immutable record names, followed through the rename map. A decision record names the
+    surface as it stood (ADR-REAL-004 keeps it that way); the map says where that surface is now."""
+    ren, seen = _renames(), set()
+    while path in ren and path not in seen:
+        seen.add(path)
+        path = ren[path]
+    return path
+
+
 def main():
     fails = []
     quad = {}
@@ -187,7 +208,7 @@ def main():
 
         if realized and not by_design:
             for p in PATH.findall(claim):
-                if not os.path.exists(os.path.join(REPO, p)):
+                if not os.path.exists(os.path.join(REPO, _through_renames(p))):
                     fails.append(f"ADR-REAL-002 {rel}: names `{p}`, which does not exist. A "
                                  f"realization claim pointing at a missing file is worse than "
                                  f"`_not yet_` — it reads as done")
