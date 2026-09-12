@@ -45,8 +45,8 @@ flowchart TD
     P -->|"not yet converged — round again on placement-informed data"| A
   end
 
-  I -.->|"stored on receipt, never modified"| DI[("Intent state")]
-  CONV -.->|"the CONVERGED request, before dispatch"| DR[("Requested state")]
+  I -.->|"stored on receipt, never modified"| DI[("Intent record")]
+  CONV -.->|"the CONVERGED request, before dispatch"| DR[("Requested record")]
 
   CONV -->|"converged — every policy valid and complete"| R
   subgraph R["VALIDATE + RESERVE — per component"]
@@ -58,7 +58,7 @@ flowchart TD
   end
   R -->|"every component held"| C["Commit — build it, passing data between components"]
   C --> RC["Reconcile — store what came back, MATCH it against requested"]
-  RC -.->|"the payload the provider returned — success only"| DZ[("Realized state")]
+  RC -.->|"the payload the provider returned — success only"| DZ[("Realized record")]
   RC -->|"matches"| U["Status to the user"]
   RC -.->|"realized DIFFERS — policies decide the action"| CONV
   C -. "realization failed — nothing written to realized" .-> CONV
@@ -73,7 +73,7 @@ data the earlier steps have not seen. There is no separate post-placement phase:
 work is the next iteration.** Only once it converges does each component validate and reserve, and only
 when all of them hold does anything commit.
 
-**Three stores, three moments.** The **intent** is what the consumer asked for, stored on receipt and
+**Three records, three moments** (a fourth, the discovered record, is written by every later discovery sweep — see the four records below). The **intent** is what the consumer asked for, stored on receipt and
 never modified. The **requested** state is what the system decided to ask the providers for — it exists
 only once the loop converges, which is what makes it storable. The **realized** state is the payload the
 provider returned, stored on success only.
@@ -208,16 +208,24 @@ The clearest answer to *when*:
 Same mechanism, three moments. Neither UDLM nor DCM has a built-in action for (2) or (3): the model
 carries the facts, policy carries the decision. A profile may extend what the options are.
 
-### The three stores
+### The four records
 
-| Store | What it holds | Written |
-|---|---|---|
-| **Intent** | what the consumer asked for | on receipt, never modified afterwards |
-| **Requested** | what the system decided to ask the providers for | once the loop converges — that is what makes it storable |
-| **Realized** | the payload the provider returned | on success only |
+Each state of an entity is its own record, written once by one party and never edited
+(`registry/state-record.schema.json`; four-states.md §2.7). This flow writes the first three; discovery
+writes the fourth for the rest of the entity's life.
 
-Reconcile matches **realized against requested** — which is why the middle one has to exist as a stored
-record rather than a transient payload.
+| Record | Who writes it | When | What it says |
+|---|---|---|---|
+| **Intent** | the consumer | on receipt, never modified afterwards | what was asked for, and who set each field |
+| **Requested** | the control plane | once the loop converges — that is what makes it storable | what will be asked of the provider; which layers and policies contributed and what each decided; the intent it came from |
+| **Realized** | the provider, through the system | after commit, on success only | what was built, the outputs others bind to, which provider instance built it, health; the requested record it realizes |
+| **Discovered** | discovery | every sweep, for as long as the entity exists | what is there right now, and how it was matched to the entity |
+
+Reconcile matches **the realized record against the requested record** — which is why the middle one
+has to exist as a stored record rather than a transient payload. Drift, later, is the same idea between
+the newest discovered record and the newest realized one: a comparison, never a stored field. Anyone
+who wants "the entity" in one piece asks for the entity view, which the system assembles from these
+records and never writes (`registry/entity-view.schema.json`).
 
 ---
 
@@ -388,4 +396,4 @@ The performance: [dcm-project/dcm `docs/flows/request-realization.md`](https://g
 | Data layers + provider-aware enrichment | [`docs/spec/foundations/layering-and-versioning.md`](../spec/foundations/layering-and-versioning.md) |
 | Enrichment as a policy | `docs/spec/contracts/policy-contract.md` §12 |
 | Reserve-then-commit (check before build) | [ADR-011](../adr/ADR-011-validate-and-reserve.md) |
-| The four states (Intent → Requested → Realized) | [`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md) |
+| The four states, one record each | [`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md) §2.7; `registry/state-record.schema.json` |
