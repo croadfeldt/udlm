@@ -4,7 +4,7 @@
 A citation to a schema file that is not there is a silent lie: it reads as a pointer to an
 authoritative shape and resolves to nothing. This landed as a real defect —
 `registry/dcm-group.schema.json` was superseded by `Access.Grouping` and deleted, and three
-citations survived it, including the description of `realized-entity.schema.json`'s own
+citations survived it, including the description of `entity-view.schema.json`'s own
 `tenant_uuid`. The single most load-bearing field in the tenancy model pointed at a missing file,
 and every gate in the repo passed.
 
@@ -135,6 +135,8 @@ def scan():
             continue            # generated artifacts mirror their sources; the source is the subject
         if _is_decision_record(path):
             continue            # see _is_decision_record — a record cites what existed then
+        if path.endswith(os.path.join("registry", "renames.yaml")):
+            continue            # the rename map's KEYS are paths that no longer exist, by construction
         for citation, rel in citations_in(path):
             if (citation, rel) in seen:
                 continue

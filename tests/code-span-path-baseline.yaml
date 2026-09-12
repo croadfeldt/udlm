@@ -24,9 +24,9 @@ known:
   path: operations/rehydration.md
 - file: docs/spec/foundations/resource-type-hierarchy.md
   path: registry/classes/resource/machine/vm/cexample-cloud.yaml
-- file: registry/REALIZED-ENTITY.md
+- file: registry/ENTITY-VIEW.md
   path: instances/example-tenant.yaml
-- file: registry/REALIZED-ENTITY.md
+- file: registry/ENTITY-VIEW.md
   path: instances/orders-db.json
 - file: registry/standards-adoption-register.md
   path: docs/spec/contracts/capability-discovery.md

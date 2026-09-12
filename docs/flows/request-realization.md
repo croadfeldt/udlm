@@ -23,7 +23,7 @@ Provider-specific details get added *on top* of that base, and there are two way
 - **The system adds them** after it picks a provider — the usual path, and the flow below.
 - **The consumer adds them at intent time** — a consumer *may* pin a `namespace`, a vendor QoS class, any
   provider-specific element, right in the request. That's allowed and honored; it's simply **flagged as
-  breaking portability** so the trade is explicit (realized-entity `portability` block).
+  breaking portability** so the trade is explicit (the realized record's `portability` block).
 
 So the base is always portable, and going beyond it is a choice made with eyes open. The running example
 takes the common path: *the user gave cpu and memory, left the Kubernetes specifics to the system, and
@@ -348,7 +348,7 @@ Whatever engine runs this flow:
 
 - **The required data is portable** — the user is never *required* to supply anything provider-specific; the
   portable base is always enough. They *may* add provider-specific elements at intent time — that's allowed
-  and honored, and flagged as breaking portability ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); realized-entity `portability` block).
+  and honored, and flagged as breaking portability ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); the realized record's `portability` block).
 - **How much to pin down is the user's dial, and it only narrows** — every request from abstract to finite
   is valid; more detail means fewer providers fit, never more.
 - **Nothing is built until it's complete** — reserve checks the filled-in request against the provider's
@@ -357,7 +357,7 @@ Whatever engine runs this flow:
   `enrichment_status` says honestly whether it is `pending`, `partial`, or `complete`.
 - **Provider-specific values stay off the portable type** — they are Provider-Class `SharedDataElement`s
   (ADR-038; the retired `provider_extensions` carrier is removed), flagged as non-portable
-  ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); realized-entity `portability` block).
+  ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); the realized record's `portability` block).
 - **"Enough" is the provider's to define** — the provider's required-data schema is what "provider-ready"
   means; the system doesn't guess it.
 

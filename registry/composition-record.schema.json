@@ -74,7 +74,7 @@
             "declared",
             "discovered-derived"
           ],
-          "description": "Whether a human wrote this composition or it was synthesized from an external artifact — the SAME vocabulary the realized-entity states carry, and for the same reason: inferred content is never silently presented as human-declared. An ingested diagram is `discovered-derived` however clean the mapping was."
+          "description": "Whether a human wrote this composition or it was synthesized from an external artifact — the SAME vocabulary the entity's state records carry, and for the same reason: inferred content is never silently presented as human-declared. An ingested diagram is `discovered-derived` however clean the mapping was."
         },
         "source_ref": {
           "type": "string",

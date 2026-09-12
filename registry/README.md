@@ -17,7 +17,8 @@ registry/
   profiles/                        # the deployment PROFILES — activatable postures (six built-in)
   instances/                       # worked example records (realized entities, policies, layers, …)
                                    #   and the shipped decision/taxonomy records
-  realized-entity.schema.json      # the instance meta-schema (four states + ownership)
+  state-record.schema.json     # the instance meta-schema: one record per lifecycle state (ruling 071)
+  entity-view.schema.json      # the merged read model, assembled from state records — never written
   VERSIONING.md                    # two-axis versioning + the publish law
   pin-manifest.json                # the digest referrer behind the publish law (append-only)
   rule-id-registry.yaml            # every normative rule family and its one home file

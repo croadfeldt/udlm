@@ -90,7 +90,7 @@ permitted (ADR-059's claims discipline).
 ### 4.4 Provenance Metadata Structure
 
 The field-level provenance shape has **one home**:
-[`registry/realized-entity.schema.json`](../../../registry/realized-entity.schema.json)
+[`registry/entity-view.schema.json`](../../../registry/entity-view.schema.json)
 `provenance` — keyed by dot-path into the spec, an ordered modification chain per field, each
 entry carrying `source.kind` (the canonical vocabulary:
 `layer | policy | actor | provider | discovery | rehydration | override`), the source uuid,

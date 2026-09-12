@@ -10,6 +10,7 @@ consumer:
   description: Records-repository CI — validates instance records (envelope checks + edge vocabulary) against the registry on every change.
 consumes_all_types: true
 schemas:
-  - registry/realized-entity.schema.json  # edge_type vocabulary + record envelope
+  - registry/state-record.schema.json  # the stored form: record envelope + edge_type vocabulary
+  - registry/entity-view.schema.json   # the read model
   - registry/resource-type-spec.schema.json  # TODO verify — whether the CI loads the meta-schema or only the per-type specs
 coverage: declared

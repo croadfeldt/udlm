@@ -6,7 +6,7 @@ consumer's intent record, the control plane's requested record, the provider's r
 discovery's discovered records. Nothing writes the merged "entity as it flows through the four
 states" shape; a dashboard, a person, or a gate that wants to reason about one entity asks for the
 view, and this module builds it: the latest record of each state, folded into one dict keyed by the
-entity's uuid, in the shape realized-entity.schema.json describes.
+entity's uuid, in the shape entity-view.schema.json describes.
 
 Every gate that used to read `record["states"]["realized"]["fields"]` off a stored document reads
 the same path off a view. A document already in the folded shape (a must-reject fixture, a

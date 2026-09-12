@@ -258,7 +258,7 @@ Each hard constraint cites the UDLM contract it derives from.
     evaluated and not adopted is recorded with the same rigor, so the next reader doesn't
     re-run the evaluation.
 
-32. **Tenancy is schema-enforced.** Every realized-entity instance carries a required
+32. **Tenancy is schema-enforced.** Every state record and entity view carries a required
     `tenant_uuid` — the uuid of a `tenant_boundary` grouping validating against
     `registry/profile.schema.json` / `Grouping` (TEN-001/TEN-003, `docs/spec/foundations/resource-grouping.md` §2.2;
     `docs/spec/foundations/data-model-core.md` §5 [D3]). **[enforced]** (`registry/tools/validate.py`;

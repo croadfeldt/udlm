@@ -27,7 +27,7 @@ Getting this model right is foundational. It governs decommission safety (can th
 > `ownership_model:` shown in the examples below expresses *intent*; it is a **deferred candidate data
 > point** (see `registry/SPEC-DESIGN-REQUIREMENTS.md` → *Candidate / deferred data points*), not a
 > validated field on a Resource Type Spec today — the patterns are currently expressed through
-> relationships (pools, stakes) and the realized-entity `ownership`. If adopted it will be
+> relationships (pools, stakes) and the per-field `ownership` block the merged instance schema used to carry (removed by ruling 071: one author per state record leaves nothing to referee). If adopted it will be
 > `ownership_model` (snake_case, per `registry/naming-conventions.md` §4; hyphenated enum values). Treat the examples as illustrative.
 
 ### 2.1 Whole Allocation (Consumer Owns the Entity)

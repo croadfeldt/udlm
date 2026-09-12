@@ -1,14 +1,14 @@
-# UDLM Realized Entity (instance) schema
+# UDLM Entity View — the merged read model
 
-> **Read model, not the stored form (ruling 071, 2026-09-12).** An entity's four states are four
-> records — `registry/state-record.schema.json`, four-states.md §2.7 — each written by one party and
-> never edited. This merged shape is what a dashboard or a person asks for: the latest record of each
-> state, assembled. It is never written. The schema's rename to say so follows; until then read every
-> `states.*` below as "the body of that state's record".
+> **Read model, not the stored form (ruling 071).** An entity's four states are four records —
+> `registry/state-record.schema.json`, four-states.md §2.7 — each written by one party and never
+> edited. This merged shape is what a dashboard, a person, or a gate asks for: the latest record of
+> each state, assembled by `registry/tools/entity_view.py`. It is never written. Every `states.*`
+> below is the body of that state's record; `drift` and `ownership` are gone (computed; no writers to
+> referee). `examples/orders-db.json` is a worked VIEW, not a stored record.
 
-`resource-type-spec.schema.json` defines a **type**; `realized-entity.schema.json` defines an
-**instance** — the operational record of one entity (or Composite Entity) as it flows through the four
-states. It is the data substrate **the control plane reads and writes**; UDLM carries the records, the control plane applies the
+`resource-type-spec.schema.json` defines a **type**; `entity-view.schema.json` defines the
+**entity view** — one entity (or Composite Entity) as it flows through the four states, in one document. It is the data substrate **the control plane reads and writes**; UDLM carries the records, the control plane applies the
 policy that produces them (`core-tenets.md` G3). Validate instances with `tools/validate.py`
 (`registry/examples/*`); `instances/orders-db.json` is a worked example.
 
@@ -35,7 +35,7 @@ policy that produces them (`core-tenets.md` G3). Validate instances with `tools/
 
 That set is what the **v1.0 surface** must carry to be **complete for control-plane capabilities**: lifecycle,
 audit, observability, dependency graph, sovereignty, field ownership, drift, and version pinning all
-have a home in the data. (UDLM v1.0 is still being defined — this realized-entity schema is part of
+have a home in the data. (UDLM v1.0 is still being defined — this entity-view schema is part of
 *expanding* that initial surface, not a post-1.0 refinement.)
 
 ## The boundary (where each piece is produced)

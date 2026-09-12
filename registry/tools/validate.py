@@ -3,7 +3,7 @@
   - registry/generated/*       against  resource-type-spec.schema.json        (served TYPE projections)
   - registry/profiles/*        against  profile.schema.json                   (deployment PROFILES)
   - registry/taxonomies/*      against  the taxonomy-seed shape               (governed VOCABULARY seeds)
-  - registry/examples/*        against  realized-entity.schema.json           (worked EXAMPLE records)
+  - registry/examples/*        against  state-record.schema.json (per-state records) or entity-view.schema.json (a view)
                         or against  policy / layer / audit / accreditation schemas
                         or against  profile.schema.json                       (PROFILE records — activatable postures)
 Instance dispatch: `record_type` is the dispatch key; legacy discriminators remain — a
@@ -57,7 +57,7 @@ def _validator(name):
 
 
 TYPE_VALIDATOR = _validator("resource-type-spec.schema.json")
-INSTANCE_VALIDATOR = _validator("realized-entity.schema.json")
+INSTANCE_VALIDATOR = _validator("entity-view.schema.json")
 PROFILE_VALIDATOR = _validator("profile.schema.json")
 CONFORMANCE_DECL_VALIDATOR = _validator("conformance-declaration.schema.json")
 POLICY_VALIDATOR = _validator("policy.schema.json")

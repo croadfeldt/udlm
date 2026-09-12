@@ -1294,7 +1294,7 @@
   }
  },
  "type:Storage.Volume": {
-  "current": "0.11.5",
+  "current": "0.11.6",
   "path": "registry/classes/resource/storage/volume.yaml",
   "versions": {
    "0.10.0": "sha256:50a51fdb67116bff1ce5d5aabeb07db426f5898f91bf7ff4f6c01faf6637f907",
@@ -1304,6 +1304,7 @@
    "0.11.3": "sha256:f9401e00d7cf91ece9efc2d492cb6ea0936bdbbcb05a541c7b52686d21cb1377",
    "0.11.4": "sha256:dcb1e63dab3afbce6e990db21fa6c1d87e930aa3121e0e806093f67cfae7383c",
    "0.11.5": "sha256:12e67ba813eafceea36e31d080e782c52e7474bc055366754a42f6309ad71a0f",
+   "0.11.6": "sha256:7d308b9fd829a94edd38dce626ce01b73321a26f519114ad79252c310290f73f",
    "0.5.3": "sha256:20f85c1553b93f39ae3b07006d52edf8a2d18f7f70baa5928b73f247d488dfe4",
    "0.6.0": "sha256:dae830eaf4cda9f2cf6a439ea76468766f200675328e549e1d1e14419d465d7c",
    "0.7.0": "sha256:179af22c086b50852904c7042aaf28703f864b57f51a103fed3e6826b4edf363",

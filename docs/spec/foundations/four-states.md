@@ -171,11 +171,11 @@ The **Discovered State** is what is observed actually existing through active di
 
 **Raw / unallocated resources (discovered-first entry).** A resource MAY exist with **only** its Discovered State populated and **no Intent** — a freshly racked server, a spare drive, any brownfield asset that physically exists but has not been allocated. This is the **discovered-first** lifecycle entry, the peer of intent-first (declare → realize): the estate ingests the raw resource purely for **inventory and tracking**, carrying `lifecycle_state: available` (unallocated). The resource is later **adopted** — an Intent is attached (allocation / brownfield ingestion), moving it into the managed lifecycle — and adoption **preserves the Entity UUID** (§3), so all inventory history accrues to the same entity.
 
-**Discovered has a dual role (dcm ADR-017 Decision A, #222).** Discovered is (1) the **ephemeral per-cycle snapshot stream** consumed by drift detection, *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what exists*, including discovered-but-**unclaimed** resources (no provider attached). These are one domain, not two stores: the durable inventory record is the latest reconciled observation per entity; the snapshot stream is its history. The durable-inventory role is exempt from snapshot-stream retention ceilings; the reconciled inventory record persists until claim or retirement ([data-model-core](data-model-core.md) §3). **Unclaimed = inventoried, not managed** (queryable, excluded from lifecycle operations); a provider claim/adoption moves the entity Discovered → Realized preserving its UUID, and a long-lived unclaimed resource is surfaced as visible inventory debt — its age is the signal; claiming or retiring it is the estate's decision (advisory best practice, never an imperative). Multiple discovery sources correlate to ONE entity via `correlation_ids` (realized-entity.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../../../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and the canonical `lifecycle_state` element (`registry/common-elements.md` §6).
+**Discovered has a dual role (dcm ADR-017 Decision A, #222).** Discovered is (1) the **ephemeral per-cycle snapshot stream** consumed by drift detection, *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what exists*, including discovered-but-**unclaimed** resources (no provider attached). These are one domain, not two stores: the durable inventory record is the latest reconciled observation per entity; the snapshot stream is its history. The durable-inventory role is exempt from snapshot-stream retention ceilings; the reconciled inventory record persists until claim or retirement ([data-model-core](data-model-core.md) §3). **Unclaimed = inventoried, not managed** (queryable, excluded from lifecycle operations); a provider claim/adoption moves the entity Discovered → Realized preserving its UUID, and a long-lived unclaimed resource is surfaced as visible inventory debt — its age is the signal; claiming or retiring it is the estate's decision (advisory best practice, never an imperative). Multiple discovery sources correlate to ONE entity via `correlation_ids` (entity-view.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../../../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and the canonical `lifecycle_state` element (`registry/common-elements.md` §6).
 
 ### 2.5 Recovery Conditions — a `status.conditions` overlay, NOT lifecycle states
 
-**Recovery and health are `status.conditions`, not lifecycle states** ([data-model-core](data-model-core.md) §3): `lifecycle_state` never leaves its five canonical values (`Intent → Requested → Realized ↔ Discovered` + `Decommissioned`). When the normal provisioning lifecycle encounters timeouts, cancellation failures, or partial realization on an Resource, the situation is expressed as a **condition type** on the entity's `status.conditions` (realized-entity.schema.json `status`) — an overlay on whatever lifecycle state the entity is in. Conditions are governed by Recovery Policies.
+**Recovery and health are `status.conditions`, not lifecycle states** ([data-model-core](data-model-core.md) §3): `lifecycle_state` never leaves its five canonical values (`Intent → Requested → Realized ↔ Discovered` + `Decommissioned`). When the normal provisioning lifecycle encounters timeouts, cancellation failures, or partial realization on an Resource, the situation is expressed as a **condition type** on the entity's `status.conditions` (entity-view.schema.json `status`) — an overlay on whatever lifecycle state the entity is in. Conditions are governed by Recovery Policies.
 
 | Condition type | Meaning | Entry Trigger |
 |----------------|---------|--------------|
@@ -193,7 +193,7 @@ The complete recovery-condition machine and Recovery Policy model — how an imp
 
 To make the records concrete, here is a single `Machine.VM` (entity UUID `…a1b2`) as it moves
 through the lifecycle. Each state is a **separate, immutable record**; the shared UUID links them. Field
-values are illustrative — the normative shapes are the resource-type spec + `registry/state-record.schema.json` (§2.7); `realized-entity.schema.json` is the merged read model.
+values are illustrative — the normative shapes are the resource-type spec + `registry/state-record.schema.json` (§2.7); `entity-view.schema.json` is the merged read model.
 
 | State | The record (illustrative) | Who wrote it |
 |-------|---------------------------|--------------|
@@ -241,7 +241,7 @@ and nobody edits one.
 **Three consequences.** A realized record stands alone: a load balancer, a rebuild, an inventory
 reads it and nothing else. Drift is a comparison — the latest discovered record against the latest
 realized one (§6) — not a field on a record. And the merged "entity as it flows through the four
-states" shape (`realized-entity.schema.json`) is a **read model** assembled from the four records
+states" shape (`entity-view.schema.json`) is a **read model** assembled from the four records
 for a dashboard or a person; it is never written. Where the merged schema kept an `ownership`
 block to referee several writers on one document, the per-state records need none: one author
 each.
@@ -280,7 +280,7 @@ All four states are distinct data domains, each with specific immutability rules
 
 **Audit records** are stored as leaves of an **RFC 9162 (Certificate Transparency v2.0) Merkle tree** — per-leaf signatures, signed tree heads, O(log n) inclusion and consistency proofs (ruling D2; see [universal-audit](../contracts/universal-audit.md) `AUD-006`) — append-only with per-entity chain sequence numbers. The Merkle audit model is the data-model audit contract; its storage binding is implementation architecture.
 
-**The Realized snapshot model — snapshots, not deltas.** The Realized domain uses a **snapshot model**: each record is a complete entity state, not a delta. This makes rehydration a direct lookup rather than an event replay, and makes point-in-time queries ("what was the state on March 15?") direct lookups. The authoritative snapshot shape is [`realized-entity.schema.json`](../../../registry/realized-entity.schema.json) (`realized_uuid`, `entity_uuid`, `source_type` + `request_uuid` — mandatory, never nullable — versioning, `is_current`, complete `fields`, and `provider_metadata`).
+**The Realized snapshot model — snapshots, not deltas.** The Realized domain uses a **snapshot model**: each record is a complete entity state, not a delta. This makes rehydration a direct lookup rather than an event replay, and makes point-in-time queries ("what was the state on March 15?") direct lookups. The authoritative snapshot shape is [`entity-view.schema.json`](../../../registry/entity-view.schema.json) (`realized_uuid`, `entity_uuid`, `source_type` + `request_uuid` — mandatory, never nullable — versioning, `is_current`, complete `fields`, and `provider_metadata`).
 
 ---
 

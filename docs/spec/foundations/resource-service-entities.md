@@ -242,7 +242,7 @@ All terminal states are permanent. The execution record is immutable after reach
 
 ### 6.3 Process Data Model
 
-> **Machine-validatable:** the Process execution axis is the `process` block on `registry/realized-entity.schema.json` (`execution_state` + `affected_entities`). It is a SEPARATE axis from the four-state `lifecycle_state` (data-model-core §3 [D7]); `registry/tools/validate.py` requires it on `family: Process` instances and forbids it elsewhere. Everything else about a run lives where the Job class puts it: the intent in `spec` fields (`definition_ref`, `parameters`, `targets`, `max_execution_time`, `on_max_exceeded`, `trigger`, `schedule`), the run facts in typed `outputs` (`started_at`, `completed_at`, `results`), the executing provider in the record's provider field, and the authorizing policy in the write's seal (ADR-059 — authorization is a ledger claim, not record state).
+> **Machine-validatable:** the Process execution axis is the `process` block on `registry/entity-view.schema.json` (`execution_state` + `affected_entities`). It is a SEPARATE axis from the four-state `lifecycle_state` (data-model-core §3 [D7]); `registry/tools/validate.py` requires it on `family: Process` instances and forbids it elsewhere. Everything else about a run lives where the Job class puts it: the intent in `spec` fields (`definition_ref`, `parameters`, `targets`, `max_execution_time`, `on_max_exceeded`, `trigger`, `schedule`), the run facts in typed `outputs` (`started_at`, `completed_at`, `results`), the executing provider in the record's provider field, and the authorizing policy in the write's seal (ADR-059 — authorization is a ledger claim, not record state).
 
 ```yaml
 job_record:

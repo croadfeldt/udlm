@@ -51,7 +51,7 @@ def vocabulary(name):
 
     A gate that needs `edge_type` reads it HERE rather than digging it out of whichever schema
     happens to use it. Two gates used to reach into `resource-type-spec.schema.json` and
-    `realized-entity.schema.json` by literal path, which meant the vocabulary had two more de-facto
+    `entity-view.schema.json` by literal path, which meant the vocabulary had two more de-facto
     homes: move the declaration and they break; change one copy and they silently disagree."""
     defs = json.loads((ROOT / "common-elements.schema.json").read_text(encoding="utf-8"))["$defs"]
     if name not in defs or "enum" not in defs[name]:

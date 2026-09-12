@@ -93,7 +93,7 @@ filed as issues, not hand-waved. The **policy role** column separates policies t
 
 | Decision / step | Model surface read | Status | Policy role — decides or enriches what |
 |---|---|---|---|
-| Impact set (the ten clients) | realized-entity `dependencies[]` edges targeting the shares | **EXISTS** — validated: the estate's edge surface, same as shutdown order | Enriches: none needed — structure supplies the set; a policy may only widen review, never shrink the set |
+| Impact set (the ten clients) | the entities' `dependencies[]` edges (state records) targeting the shares | **EXISTS** — validated: the estate's edge surface, same as shutdown order | Enriches: none needed — structure supplies the set; a policy may only widen review, never shrink the set |
 | Tolerance split (7 window / 3 continuity) | each client's availability policy (a Policy object `match`ed to the client) | Policy object + match **EXIST**; the tolerance-class vocabulary **PENDING-ADR** | Enriches (`transformation`): stamps each client's class; then Decides which path each takes |
 | DR gate (replica healthy, current, sized) | replica pool's declared outputs: `redundancy_status`, `degraded`, `fault_tolerance_remaining`, `spares_available` — **and the DR-pairing edge naming which pool is the replica** | Health outputs **EXIST** (Storage.Pool 0.3.x); the DR-pairing relationship **MISSING — issue #250** | Decides (`gating`): maintenance may not be scheduled until the gate passes |
 | Cutover re-bind | replica shares' declared outputs (the [D8.3] binding surface) | Mechanism **EXISTS**; FileShare's surface is **THIN — `mount_uri` only, issue #251** (re-bind possible, share-side verification is not) | Decides (`validation`): cutover verified or rolled back |
