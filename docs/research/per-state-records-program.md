@@ -72,9 +72,11 @@ than done here.
 - The four-state vocabulary has one home; do not restate it.
 - `bash scripts/signoff.sh`, untruncated, before opening the PR. Merging is the maintainer's action.
 
-## Status — 2026-09-12
+## Status — 2026-09-12, evening
 
 | PR | State |
 |---|---|
-| 1 (#582) | open |
-| 2, 3, 4 | not started |
+| 1 (#582) | merged |
+| 2 (#584) | merged |
+| 3 (#585) | merged |
+| 4 | open — the flows say who writes which record |

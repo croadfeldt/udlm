@@ -578,6 +578,13 @@ satisfiable or the system determines it cannot be fulfilled.
 
 After commit, the provider reports the **realized state** — the receipt of what was actually created.
 
+That report becomes the entity's **realized record** (`registry/state-record.schema.json`): written once,
+by the provider through the system, naming the requested record it realizes. It carries the fields as built,
+the outputs other resources bind to, which provider instance built it, its health, and the natural keys a
+later discovery sweep will recognize it by. It is never edited — a later change is a new realized record
+that names this one as its predecessor. The system authors the dependency edges into it from the
+relationships the provider reports.
+
 **What the provider returns:**
 
 | What | Why |
@@ -632,8 +639,10 @@ correlation, the system sets the edges in the graph.
 After implementation, the provider has ongoing obligations:
 
 **Discovered-state reporting.** Periodically (or on change), report the current state of every resource
-the provider manages. The system compares discovered state against realized state — mismatches are drift,
-and policies determine the response (alert, re-converge, or escalate).
+the provider manages. Each report is a **discovered record** — what is there right now, and which keys
+matched it to the entity. The system compares the newest discovered record against the newest realized
+record; a mismatch is drift. Drift is that comparison, computed when asked, never a field stored on a
+record. Policies determine the response (alert, re-converge, or escalate).
 
 **Lifecycle actions.** Respond to system-driven lifecycle actions:
 - **Converge** — the system asks the provider to bring a drifted resource back to its intended state
