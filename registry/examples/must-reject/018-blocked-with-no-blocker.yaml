@@ -1,21 +1,26 @@
 must_reject:
   rule: FUL-002
   gate: check_fulfillment_conditions
-  because: >-
-    A member that says it is blocked and does not say by what. This is the case the whole family
-    exists to prevent: an operator reading it learns that something is wrong and nothing about what
-    to do, and the root-naming obligation is unsatisfiable because there is no first hop to walk.
-    "Blocked" alone is indistinguishable from "we have not looked".
+  because: 'A member that says it is blocked and does not say by what. This is the case the whole family exists
+    to prevent: an operator reading it learns that something is wrong and nothing about what to do, and the root-naming
+    obligation is unsatisfiable because there is no first hop to walk. "Blocked" alone is indistinguishable from
+    "we have not looked".'
 record:
-  uuid: 5c2e7a91-4d38-4b6f-9e02-8a1f3c6d5b70
+  record_type: requested_record
+  state: Requested
+  entity_uuid: 5c2e7a91-4d38-4b6f-9e02-8a1f3c6d5b70
+  record_uuid: 01a09403-f230-7108-8dbe-bb6d4bab070e
   handle: cexample/app/mystery
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
   conforms_to: udlm/0.1
   resource_type: Container
-  lifecycle_state: Requested
-  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  type_version: 1.0.0
+  at: '2026-08-10T09:00:00Z'
+  time_source: authored example — no clock claim
+  fields: {}
   status:
     state: pending
     conditions:
-      - type: blocked-transient
-        status: 'True'
-        reason: waiting
+    - type: blocked-transient
+      status: 'True'
+      reason: waiting

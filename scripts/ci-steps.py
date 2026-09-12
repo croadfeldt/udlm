@@ -34,6 +34,7 @@ NAMES = {
     "python3 tests/check_duplicate_yaml_keys.py": "no duplicate YAML mapping keys (DUP-001)",
     "python3 tests/check_precedence_ladders.py": "no third ordering ladder (LAD-001)",
     "python3 tests/check_integrity_chain.py": "declared integrity chains verify (INT-001/002/003)",
+    "python3 tests/check_state_records_only.py": "one record per state, never a folded record (RHY-006)",
     "python3 tests/check_status_claims.py": "a completion claim cites an artifact that exists (STA-001)",
     "python3 tests/check_seal_facets.py": "seal facets are OpenLineage facets; the admission rule is structural (SEAL-001..004)",
     "python3 tests/check_adr_realization.py": "a decision says where it is realized; Accepted requires it (ADR-REAL-001..003)",
