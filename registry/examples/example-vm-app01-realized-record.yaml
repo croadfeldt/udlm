@@ -1,9 +1,10 @@
 # asserts: INT-001, ENT-006
 # proves: what the provider built stands alone — a load balancer or a rebuild reads this and nothing else — and it is sealed (head over the record minus `integrity`, previous null = chain root for this state's stream).
+# Supersedes the first record of this state (named in `supersedes`): the zone handle and the guest_os reference were corrected — a published record is never edited (ADR-051).
 record_type: realized_record
 state: Realized
-record_uuid: 01a08ec1-3fb5-75a4-9db3-6b3f36dea84b
-requested_ref: 01a08ec1-3fb5-75a4-9db3-6b3e4b18f737
+record_uuid: 01a09398-433d-756d-a0a3-f5fee7023864
+requested_ref: 01a09398-433d-756d-a0a3-f5fdbd8d6812
 entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
@@ -114,7 +115,9 @@ provenance:
     operation_type: set
     sequence: 1
     timestamp: '2026-09-03T14:03:40Z'
+supersedes:
+- 01a08ec1-3fb5-75a4-9db3-6b3f36dea84b
 integrity:
-  head: sha256:5176f5779240eaea164947f6da195b11f898c72520b3e8b36ff09b02d18fad84
-  previous: null
+  head: sha256:73554999e7dd2b597cb30e8dd9836450613158b3b4a64a169ce6c34a3e1f1d93
+  previous: sha256:e8889df6cff24766f2dc1697342d6f7949a23c1a1364b45e6fdfb2f3eaa6b264
   algorithm: sha256-jcs
