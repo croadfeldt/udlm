@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNamespace/1.1.1
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNamespace/1.1.2
 conforms_to: udlm/0.1
 uuid: ae8d0510-221a-4500-b201-3b3e429c34e8
 record_type: class
 class: base
 resource_type: KubernetesNamespace
 short_name: K8sNamespace
-version: 1.1.1
+version: 1.1.2
 family: Resource
 status: active
 metadata:
@@ -77,8 +77,8 @@ elements:
   state: canonical
   description: 'Hard aggregate limits on what the namespace may consume — what Kubernetes carries as a ResourceQuota.
     Folded into the namespace (maintainer ruling 2026-09-11, applying ADR-069): a quota never exists apart from
-    its namespace, so it is an element here and not a class of its own; the former Platform.ResourceQuota is deprecated
-    with this as its successor. Any key is a Kubernetes resource name.'
+    its namespace, so it is an element here and not a class of its own; the former Platform.ResourceQuota (retired
+    2026-09-13) named this as its successor. Any key is a Kubernetes resource name.'
   schema:
     type: object
     description: Hard resource limits. Any key is a Kubernetes resource name.

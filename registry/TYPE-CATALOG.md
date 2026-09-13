@@ -442,7 +442,7 @@ The request for a control plane: which release and what internal network ranges 
 
 ## KubernetesNamespace
 
-### KubernetesNamespace (1.1.1)
+### KubernetesNamespace (1.1.2)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
