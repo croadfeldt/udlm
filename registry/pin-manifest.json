@@ -1361,14 +1361,14 @@
   "current": "0.2.0",
   "path": "registry/classes/knowledge/test-evidence/_base.yaml",
   "versions": {
-   "0.2.0": "sha256:ec7ef66d42e7b7beefe19360c66acdcf34cb183a2b26e71f82bac26dc70a7035"
+   "0.2.0": "sha256:147611b6ea1d689fbb31825bf8a1068461d3958ff640252db17286879c7a11fd"
   }
  },
  "type:TestEvidence.VulnerabilityCheck": {
   "current": "0.1.0",
   "path": "registry/classes/knowledge/test-evidence/vulnerability-check/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:70c2d17060e3f1d363b33a9f9f8a8ef1cd8a1868b0c42096dacc8102754f554f"
+   "0.1.0": "sha256:83747200a352086938ffa48e03486a52586d2c1a6878f0affa30d567345e95d5"
   }
  },
  "type:TestEvidence.VulnerabilityCheck.AiTestHarness": {

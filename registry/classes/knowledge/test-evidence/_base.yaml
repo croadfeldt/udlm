@@ -71,9 +71,9 @@ elements:
         type: string
         enum: [ctrf, junit-xml]
         description: The adopted report format the full result is in.
-      report_url:
+      report_ref:
         type: string
-        description: Where the full report is, relative to the run's artifacts or absolute.
+        description: 'Where the full report is: a path relative to the run''s artifacts, or a reference.'
       report_digest:
         type: string
         pattern: ^sha256:[0-9a-f]{64}$
@@ -121,7 +121,7 @@ adopts:
 - standard: CTRF
   version: '1.0'
   standard_name: Common Test Report Format
-  role: the preferred full-result body, pointed at by result.report_url and summarized in result; the first test-report format adopted here
+  role: the preferred full-result body, pointed at by result.report_ref and summarized in result; the first test-report format adopted here
   source: https://ctrf.io/
   license: MIT
   license_compatibility: compatible-reference
@@ -129,7 +129,7 @@ adopts:
 - standard: JUnit XML
   version: xunit2
   standard_name: JUnit XML test report
-  role: the accepted full-result body every CI tool emits, pointed at by result.report_url
+  role: the accepted full-result body every CI tool emits, pointed at by result.report_ref
   source: https://github.com/testmoapp/junitxml
   license: reference-only
   license_compatibility: reference-only

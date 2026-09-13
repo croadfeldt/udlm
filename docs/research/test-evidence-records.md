@@ -39,9 +39,10 @@ a CI run of unit tests, a role tested with Molecule, a conformance suite against
 against a host. It names the test, its subject by reference to any entity, a generic kind, the result
 in an adopted report format (CTRF preferred, JUnit XML accepted; the first test-report format adopted
 here, so the standards register can follow), and the producing run. The type narrows the subject to a
-package and adds the vulnerability, its role, the VEX statement, and the version range. A suite with no vulnerability in view binds at a type of its own
-when one is declared; the base itself carries no served surface once it has children. The provider
-class carries what only the harness knows: the application revision, the call sites, and the
+package and adds the vulnerability, its role, the VEX statement, and the version range. A suite with no vulnerability in view binds at the base, as any
+producer needing nothing beyond the base does; one tooling gap applies today: the generator emits flat
+specs for types only, so a record bound at the base validates its envelope and not its fields until the
+generator emits a flat spec for a base. The provider class carries what only the harness knows: the application revision, the call sites, and the
 generation-time validation with its mutation and flake numbers. Every record the harness makes today
 binds at the provider class and stays valid; the signed statement is adopted on the base, since any
 producer can sign a result.
