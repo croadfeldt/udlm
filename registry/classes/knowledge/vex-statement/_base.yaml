@@ -22,21 +22,21 @@ elements:
 - element: vulnerability_ref
   scope: VexStatement
   optional: false
-  state: canonical
+  state: proposed
   description: The Vulnerability (one record per CVE) this statement is about.
   schema:
     $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: software_package_ref
   scope: VexStatement
   optional: false
-  state: canonical
+  state: proposed
   description: The SoftwarePackage (one record per purl) this statement is about.
   schema:
     $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: status
   scope: VexStatement
   optional: false
-  state: canonical
+  state: proposed
   description: The OpenVEX status codelist, adopted by reference (adopts entry below), not a UDLM vocabulary.
   schema:
     type: string
@@ -45,7 +45,7 @@ elements:
 - element: justification
   scope: VexStatement
   optional: true
-  state: canonical
+  state: proposed
   description: The OpenVEX justification label for a not_affected status, the standard's own codelist carried by reference.
   schema:
     type: string
@@ -54,7 +54,7 @@ elements:
 - element: status_notes
   scope: VexStatement
   optional: true
-  state: canonical
+  state: proposed
   description: The basis for the status in plain words, for the reviewer.
   schema:
     type: string
@@ -62,7 +62,7 @@ elements:
 - element: evidence_refs
   scope: VexStatement
   optional: true
-  state: canonical
+  state: proposed
   description: The TestEvidence records this status rests on. A status of fixed or affected backed by no evidence is a claim, and says so by being empty here.
   schema:
     type: array
@@ -72,7 +72,7 @@ elements:
 - element: document_url
   scope: VexStatement
   optional: true
-  state: canonical
+  state: proposed
   description: Where the OpenVEX document carrying this statement is published, once it is.
   schema:
     type: string

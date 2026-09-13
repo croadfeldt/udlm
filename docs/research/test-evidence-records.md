@@ -70,7 +70,11 @@ dependency-fix pull request:
 
 The harness side of this is in `croadfeldt/ai-test-harness`: the attestation stage would emit these
 records and compute the head with UDLM's canonicalization, and the packet would cite the record
-uuids.
+uuids. Two gaps on the harness side are visible in the Job record: the sandbox it ran in is named by
+its resource type, `Container`, because the harness does not yet model that container as an entity to
+reference; and the sandbox image is pinned by digest here only because the digest was looked up for
+this example. The harness will record the digest at attestation time and reference the execution
+entity once it exists.
 
 ## What this changes for SLSA
 
@@ -83,8 +87,9 @@ versions.
 
 ## Decisions for the maintainer
 
-1. **Accept `TestEvidence` and `VexStatement` as Knowledge base classes** at version 0.1.0, status
-   proposed until the harness emits real records against them.
+1. **Accept `TestEvidence` and `VexStatement` as Knowledge base classes** at version 0.1.0. Every
+   element is marked proposed, the data's way of saying a first producer's class is not yet settled;
+   promotion to canonical follows real records from the harness.
 2. **Confirm the lifecycle mapping**: candidate = intent, accepted and standard = realized with
    `scope`, retired = deprecated. No fifth state, no lifecycle field.
 3. **Confirm the enums stay on the classes** (category, differential, role, scope) as closed sets the

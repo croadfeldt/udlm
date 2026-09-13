@@ -91,6 +91,8 @@ outputs:
     tests_accepted: 7
     fix_pinning_confirmed: 1
     mutation_score: 0.417
+    sandbox_image_digest: sha256:d6b046b27fe57002af7655dd6aa4ce3bc8a42a4621d7a5b4056a417e0d9952f5
+    execution_target: Container
 process:
   execution_state: COMPLETED
   affected_entities:
@@ -98,6 +100,6 @@ process:
     effect_type: read
     effect_description: downloaded and ran the package in a sealed sandbox on two versions
 integrity:
-  head: sha256:564b757d30a881ec3369da62d6ecb58a8da283168dfadc3f1440253e94e551da
+  head: sha256:b385c189d00a5436f456db245d062877f77176499c78e07a1c6c3e8577ba2591
   previous: null
   algorithm: sha256-jcs
