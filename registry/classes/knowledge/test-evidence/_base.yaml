@@ -1,0 +1,239 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.1.0
+conforms_to: udlm/0.1
+uuid: 3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63
+record_type: class
+class: base
+resource_type: TestEvidence
+version: 0.1.0
+family: Knowledge
+status: active
+metadata:
+  display_name: Test Evidence
+  description: 'One generated test and what it proved about one software package version, as a Knowledge-family
+    fact: the file and its digest, the category, the package and vulnerability it is evidence about (by reference),
+    how it was validated (built, ran, differential against the other version, mutants it killed, flake runs),
+    and the run that produced it (a Job, by reference). Knowledge, not a Resource: it is discovered by running
+    the test and curated by a reviewer, never provider-realized. Lifecycle is the family''s curation reading of
+    the four states (knowledge-family.md §2): the intent record is a candidate the generator proposes; the
+    realized record is a reviewer-accepted test, with `scope` saying whether it lives in the package''s overlay
+    or the product-wide standard suite; deprecated marks a retired test, reason kept. ADOPT by reference (T5):
+    the signed projection of the realized record is an in-toto Statement with the test-result/v0.1 predicate,
+    whose subject is this record''s integrity head. The join runs one way, statement to record: the record
+    carries nothing about the statement, because the head it is verified against covers the whole record. The
+    statement schema is not restated. Origin: the AI Test Harness (ai-test-harness) as the first producer; any test
+    generator can produce these records.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-09-13T00:00:00Z'
+entity_type: TestEvidence
+elements:
+- element: test_id
+  scope: TestEvidence
+  optional: false
+  state: canonical
+  description: Stable identifier of the test across edits, as the producer names it (package, test function, first twelve hex of the first file digest).
+  schema:
+    type: string
+    description: Stable identifier of the test across edits, as the producer names it.
+- element: file_path
+  scope: TestEvidence
+  optional: false
+  state: canonical
+  description: Path of the test file within the overlay or suite it belongs to.
+  schema:
+    type: string
+    description: Path of the test file within the overlay or suite it belongs to.
+- element: file_digest
+  scope: TestEvidence
+  optional: false
+  state: canonical
+  description: Digest of the test file, sha256 with the same prefix the integrity block uses.
+  schema:
+    type: string
+    pattern: ^sha256:[0-9a-f]{64}$
+    description: Digest of the test file, sha256 with the same prefix the integrity block uses.
+- element: category
+  scope: TestEvidence
+  optional: false
+  state: canonical
+  description: What kind of test this is. A closed set the producing harness owns.
+  schema:
+    type: string
+    enum: [unit, functional, negative, cve, fuzz, harness]
+    description: What kind of test this is.
+- element: software_package_ref
+  scope: TestEvidence
+  optional: false
+  state: canonical
+  description: The SoftwarePackage (one record per purl) this test is evidence about. A reference, never the purl restated.
+  schema:
+    $ref: ../../../common-elements.schema.json#/$defs/Reference
+- element: version_range
+  scope: TestEvidence
+  optional: true
+  state: canonical
+  description: The package version range the test is known to apply to, as a version specifier.
+  schema:
+    type: string
+    description: The package version range the test is known to apply to.
+- element: call_sites
+  scope: TestEvidence
+  optional: true
+  state: canonical
+  description: First-party code paths this test mirrors, relative to the consuming application's repository.
+  schema:
+    type: array
+    items:
+      type: string
+    description: First-party code paths this test mirrors.
+- element: source_version
+  scope: TestEvidence
+  optional: false
+  state: canonical
+  description: The commit or manifest revision of the consuming application the test was generated against, so the run can be replayed.
+  schema:
+    type: string
+    description: The commit or manifest revision the test was generated against.
+- element: job_ref
+  scope: TestEvidence
+  optional: false
+  state: canonical
+  description: The Job (Process family) that produced this evidence. Its realized record carries the model, prompt digest, tool versions, image and execution target; none of that is restated here.
+  schema:
+    $ref: ../../../common-elements.schema.json#/$defs/Reference
+- element: vulnerability_ref
+  scope: TestEvidence
+  optional: true
+  state: canonical
+  description: For a cve-category test, the Vulnerability record (one per CVE) it is evidence about. Advisory aliases are the Vulnerability's, not fields here.
+  schema:
+    $ref: ../../../common-elements.schema.json#/$defs/Reference
+- element: vulnerability_role
+  scope: TestEvidence
+  optional: true
+  state: canonical
+  description: 'For a cve-category test: exposure (mirrors the application''s call pattern with the known trigger) or fix-pinning (fails on the vulnerable version, passes on the fixed one).'
+  schema:
+    type: string
+    enum: [exposure, fix-pinning]
+    description: exposure or fix-pinning.
+- element: vex_statement_ref
+  scope: TestEvidence
+  optional: true
+  state: canonical
+  description: The VexStatement this test is cited as evidence for, when one exists.
+  schema:
+    $ref: ../../../common-elements.schema.json#/$defs/Reference
+- element: validation
+  scope: TestEvidence
+  optional: false
+  state: canonical
+  description: Why the test was kept, measured at generation time in a sealed sandbox.
+  schema:
+    type: object
+    additionalProperties: false
+    required: [baseline_pass, flake_runs, differential]
+    properties:
+      baseline_pass:
+        type: boolean
+        description: The test passes on the version it was written for.
+      coverage_delta:
+        type: number
+        description: Lines of the package the test adds to coverage, as a delta against the existing suite (0 when there is no baseline suite yet).
+      mutants_killed:
+        type: integer
+        description: Sampled mutants of the package this test made fail.
+      unique_mutants_killed:
+        type: integer
+        description: Mutants only this test killed.
+      flake_runs:
+        type: integer
+        description: How many repeated runs agreed with the first.
+      differential:
+        type: string
+        enum: [na, same, changed]
+        description: Whether the outcome differs between the two package versions run (na when only one version ran).
+    description: Why the test was kept.
+- element: scope
+  scope: TestEvidence
+  optional: true
+  state: canonical
+  description: 'On the realized record only. Where an accepted test lives: overlay (the package version''s overlay, one reviewer) or standard (the product-wide suite, two reviewers).'
+  schema:
+    type: string
+    enum: [overlay, standard]
+    description: overlay or standard.
+outputs:
+  bumps_survived:
+    type: integer
+    description: Package version changes this test has passed through unchanged since it was accepted.
+  regressions_caught:
+    type: integer
+    description: Real regressions this test caught after acceptance. The number a quarterly report counts.
+spec_examples:
+- test_id: python-jose::test_ghsa_cjwg_qfpm_7377_fix_pinning::5645aafeb0e8
+  file_path: tests/test_python_jose_cve_cve_2024_33664.py
+  file_digest: sha256:5645aafeb0e88272a82afa9b176fa8b6c8a528c82948369193daefcb223df966
+  category: cve
+  software_package_ref: estate/cexample/knowledge/software-package/python-jose-3-4-0
+  version_range: '==3.4.0'
+  call_sites:
+  - app/auth.py
+  source_version: requirements.txt@cfa8f4a3292b
+  job_ref: estate/cexample/jobs/ai-test-harness-run-76a3fa863e76
+  vulnerability_ref: estate/cexample/knowledge/vulnerability/cve-2024-33664
+  vulnerability_role: fix-pinning
+  validation:
+    baseline_pass: true
+    coverage_delta: 0.0
+    mutants_killed: 1
+    unique_mutants_killed: 0
+    flake_runs: 2
+    differential: changed
+relationships:
+- edge_type: references
+  target: SoftwarePackage
+  cardinality: 1..1
+  description: evidence_about — the package version the test characterizes or protects.
+- edge_type: references
+  target: Vulnerability
+  cardinality: 0..1
+  description: evidence_for — the vulnerability a cve-category test triggers or pins.
+- edge_type: references
+  target: Job
+  cardinality: 1..1
+  description: produced_by — the run that generated and validated the test.
+- edge_type: references
+  target: VexStatement
+  cardinality: 0..1
+  description: cited_by — the VEX statement that uses this test as evidence.
+adopts:
+- standard: in-toto Attestation Framework
+  version: '1.0'
+  standard_name: in-toto Statement with the test-result/v0.1 predicate
+  role: the signed projection of the realized record; its subject digest is this record's integrity head, carried as an output, the statement schema is not restated
+  source: https://in-toto.io/attestation/test-result/v0.1
+  license: Apache-2.0
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+- standard: SLSA
+  version: '1.2'
+  standard_name: Build and Source provenance levels
+  role: the level claims a consumer may derive from the signed projection and the producing Job's own provenance; carried by reference, never asserted on this record
+  source: https://slsa.dev/spec/v1.2/
+  license: CC-BY-4.0
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+context:
+  purpose: Records what one automated test proved about one software package version, so the proof can be
+    referenced, verified, and curated like any other fact.
+  plain_description: 'One test, one record per lifecycle state. It says which file the test is, what package
+    and vulnerability it is about (by reference), which run produced it (a Job, by reference), and how it was
+    validated: did it pass on its own version, did the outcome differ between the two versions, how many
+    injected faults did it catch, how many repeated runs agreed. A candidate the generator proposes is the intent
+    record; a test a reviewer accepts is the realized record, which says whether it lives in the package''s
+    overlay or the product-wide suite; a retired test is deprecated with its reason. The signed in-toto
+    statement about the test uses this record''s integrity head as its subject.'
+  use_when:
+  - A test generator (an AI harness or a person) has produced a test whose result should count as evidence about a dependency.
+  - A reviewer accepts, promotes, or retires such a test and the decision must be traceable.
+  - A consumer needs to verify a claim that a vulnerability is fixed, or that a version is exposed, back to a test that ran.

@@ -1,0 +1,142 @@
+# asserts: RHY-006, ENT-006, INT-001, PVD-001
+# proves: one generated test is three records sharing an entity uuid — the generator's candidate (intent), the reviewer's queue (requested) and the acceptance (realized, scope on the record) — with the package, vulnerability, VEX statement and producing Job all by reference; category, role and differential are closed enums the class owns; the realized record is sealed and its head is the subject of the signed in-toto statement.
+---
+record_type: intent_record
+state: Intent
+entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
+record_uuid: 01a09a05-1239-7005-a005-0e5f3a2b1c52
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: TestEvidence
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.1.0
+handle: cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
+at: '2026-09-13T13:17:27Z'
+time_source: example clock, NTP-synced
+origin: declared
+fields:
+  test_id: python-jose::test_ghsa_cjwg_qfpm_7377_fix_pinning::5645aafeb0e8
+  file_path: tests/test_python_jose_cve_cve_2024_33664.py
+  file_digest: sha256:5645aafeb0e88272a82afa9b176fa8b6c8a528c82948369193daefcb223df966
+  category: cve
+  software_package_ref: estate/cexample/knowledge/software-package/python-jose-3-4-0
+  version_range: ==3.4.0
+  call_sites:
+  - app/auth.py
+  source_version: requirements.txt@cfa8f4a3292b
+  job_ref: estate/cexample/jobs/ai-test-harness-run-76a3fa863e76
+  vulnerability_ref: estate/cexample/knowledge/vulnerability/cve-2024-33664
+  vulnerability_role: fix-pinning
+  vex_statement_ref: estate/cexample/knowledge/vex-statement/cve-2024-33664-python-jose-3-4-0
+  validation:
+    baseline_pass: true
+    coverage_delta: 0.0
+    mutants_killed: 1
+    unique_mutants_killed: 0
+    flake_runs: 2
+    differential: changed
+provenance:
+  fields.validation:
+  - source:
+      kind: provider
+      id: cexample/providers/ai-test-harness
+    operation_type: set
+    sequence: 1
+    timestamp: '2026-09-13T13:17:27Z'
+
+---
+record_type: requested_record
+state: Requested
+entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
+record_uuid: 01a09a0b-123f-700b-a00b-0e5f3a2b1c58
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: TestEvidence
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.1.0
+handle: cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
+at: '2026-09-13T13:17:27Z'
+time_source: example clock, NTP-synced
+fields:
+  test_id: python-jose::test_ghsa_cjwg_qfpm_7377_fix_pinning::5645aafeb0e8
+  file_path: tests/test_python_jose_cve_cve_2024_33664.py
+  file_digest: sha256:5645aafeb0e88272a82afa9b176fa8b6c8a528c82948369193daefcb223df966
+  category: cve
+  software_package_ref: estate/cexample/knowledge/software-package/python-jose-3-4-0
+  version_range: ==3.4.0
+  call_sites:
+  - app/auth.py
+  source_version: requirements.txt@cfa8f4a3292b
+  job_ref: estate/cexample/jobs/ai-test-harness-run-76a3fa863e76
+  vulnerability_ref: estate/cexample/knowledge/vulnerability/cve-2024-33664
+  vulnerability_role: fix-pinning
+  vex_statement_ref: estate/cexample/knowledge/vex-statement/cve-2024-33664-python-jose-3-4-0
+  validation:
+    baseline_pass: true
+    coverage_delta: 0.0
+    mutants_killed: 1
+    unique_mutants_killed: 0
+    flake_runs: 2
+    differential: changed
+intent_ref: 01a09a05-1239-7005-a005-0e5f3a2b1c52
+
+---
+record_type: realized_record
+state: Realized
+entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
+record_uuid: 01a09a06-123a-7006-a006-0e5f3a2b1c53
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: TestEvidence
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.1.0
+handle: cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
+at: '2026-09-14T09:30:00Z'
+time_source: example clock, NTP-synced
+origin: declared
+fields:
+  test_id: python-jose::test_ghsa_cjwg_qfpm_7377_fix_pinning::5645aafeb0e8
+  file_path: tests/test_python_jose_cve_cve_2024_33664.py
+  file_digest: sha256:5645aafeb0e88272a82afa9b176fa8b6c8a528c82948369193daefcb223df966
+  category: cve
+  software_package_ref: estate/cexample/knowledge/software-package/python-jose-3-4-0
+  version_range: ==3.4.0
+  call_sites:
+  - app/auth.py
+  source_version: requirements.txt@cfa8f4a3292b
+  job_ref: estate/cexample/jobs/ai-test-harness-run-76a3fa863e76
+  vulnerability_ref: estate/cexample/knowledge/vulnerability/cve-2024-33664
+  vulnerability_role: fix-pinning
+  vex_statement_ref: estate/cexample/knowledge/vex-statement/cve-2024-33664-python-jose-3-4-0
+  validation:
+    baseline_pass: true
+    coverage_delta: 0.0
+    mutants_killed: 1
+    unique_mutants_killed: 0
+    flake_runs: 2
+    differential: changed
+  scope: overlay
+requested_ref: 01a09a0b-123f-700b-a00b-0e5f3a2b1c58
+provider: cexample/providers/ai-test-harness
+provenance:
+  fields.scope:
+  - source:
+      kind: actor
+      id: cexample/people/reviewer-1
+    operation_type: set
+    sequence: 1
+    timestamp: '2026-09-14T09:30:00Z'
+adopted_standards:
+- standard: in-toto test-result
+  requested_version: '0.1'
+  provider_version: '0.1'
+  effective_version: '0.1'
+  translated: false
+  resolved_at: '2026-09-14T09:30:00Z'
+outputs:
+  bumps_survived: 0
+  regressions_caught: 0
+integrity:
+  head: sha256:5599a500bcc9354b291b6ba885f0fd904fa0ff231ea1dc4fbb3386b7451077ad
+  previous: null
+  algorithm: sha256-jcs

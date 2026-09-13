@@ -1,0 +1,103 @@
+# asserts: ENT-006, INT-001
+# proves: a test-harness run is an ordinary Job — the definition it executes gives the domain; the model, prompt digest, tool versions and sandbox image are the run's results, so no TestEvidence record has to repeat them.
+---
+record_type: requested_record
+state: Requested
+entity_uuid: 9c4e2b7a-1d3f-4a5b-8c6d-0e1f2a3b4c5d
+record_uuid: 01a09a03-1237-7003-a003-0e5f3a2b1c50
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Job
+type_version: 1.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Job/1.0.0
+handle: cexample/jobs/ai-test-harness-run-76a3fa863e76
+at: '2026-09-13T12:00:00Z'
+time_source: example clock, NTP-synced
+fields:
+  definition_ref: estate/cexample/automation/ai-test-harness-pipeline
+  parameters:
+    repository: cexample/apps/scheduler
+    base: main
+    head: deps/fix-known-vulns
+    stages:
+    - intake
+    - analyze
+    - generate
+    - execute
+    - mutate
+    - triage
+    - packet
+    - attest
+  targets:
+  - estate/cexample/knowledge/software-package/python-jose-3-4-0
+  max_execution_time: PT3H
+  on_max_exceeded: terminate
+  trigger: manual
+intent_ref: 01a09a0a-123e-700a-a00a-0e5f3a2b1c57
+
+---
+record_type: realized_record
+state: Realized
+entity_uuid: 9c4e2b7a-1d3f-4a5b-8c6d-0e1f2a3b4c5d
+record_uuid: 01a09a04-1238-7004-a004-0e5f3a2b1c51
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Job
+type_version: 1.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Job/1.0.0
+handle: cexample/jobs/ai-test-harness-run-76a3fa863e76
+at: '2026-09-13T13:17:27Z'
+time_source: example clock, NTP-synced
+fields:
+  definition_ref: estate/cexample/automation/ai-test-harness-pipeline
+  parameters:
+    repository: cexample/apps/scheduler
+    base: main
+    head: deps/fix-known-vulns
+    stages:
+    - intake
+    - analyze
+    - generate
+    - execute
+    - mutate
+    - triage
+    - packet
+    - attest
+  targets:
+  - estate/cexample/knowledge/software-package/python-jose-3-4-0
+  max_execution_time: PT3H
+  on_max_exceeded: terminate
+  trigger: manual
+requested_ref: 01a09a03-1237-7003-a003-0e5f3a2b1c50
+provider: cexample/providers/ai-test-harness
+outputs:
+  started_at: '2026-09-13T12:00:04Z'
+  completed_at: '2026-09-13T13:17:27Z'
+  results:
+    status: COMPLETED
+    run_id: 76a3fa863e76
+    model_id: qwen/qwen3.8-27b
+    model_reasoning: 'off'
+    prompt_sha256: sha256:0f7c2e6b9a1d4c8e5b3a7f9d2c4e6a8b0d1f3e5c7a9b2d4f6e8a0c1b3d5f7e9a
+    tool_versions:
+      python: 3.14.7
+      pip: 26.0.1
+      git: 2.55.0
+    sandbox_image: docker.io/library/python:3.12-slim
+    selfcheck:
+      passed: true
+      checks: 19
+    tests_produced: 16
+    tests_accepted: 7
+    fix_pinning_confirmed: 1
+    mutation_score: 0.417
+process:
+  execution_state: COMPLETED
+  affected_entities:
+  - entity_uuid: 6f2d8a1e-4b3c-4d5e-9f6a-7b8c9d0e1f2a
+    effect_type: read
+    effect_description: downloaded and ran the package in a sealed sandbox on two versions
+integrity:
+  head: sha256:564b757d30a881ec3369da62d6ecb58a8da283168dfadc3f1440253e94e551da
+  previous: null
+  algorithm: sha256-jcs

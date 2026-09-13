@@ -571,7 +571,9 @@
               "SoftwareImage",
               "SoftwarePackage",
               "Vulnerability",
-              "SovereigntyZone"
+              "SovereigntyZone",
+              "TestEvidence",
+              "VexStatement"
             ]
           }
         },
