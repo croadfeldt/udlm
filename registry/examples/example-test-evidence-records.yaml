@@ -22,7 +22,7 @@ fields:
     outcome: passed
     duration_ms: 21
     format: junit-xml
-    report_url: execute/python-jose/new/junit.xml
+    report_ref: execute/python-jose/new/junit.xml
     report_digest: sha256:9e1f3a5b7c9d1e3f5a7b9c1d3e5f7a9b1c3d5e7f9a1b3c5d7e9f1a3b5c7d9e1f
   job_ref: estate/cexample/jobs/ai-test-harness-run-76a3fa863e76
   file_path: tests/test_python_jose_cve_cve_2024_33664.py
@@ -71,7 +71,7 @@ fields:
     outcome: passed
     duration_ms: 21
     format: junit-xml
-    report_url: execute/python-jose/new/junit.xml
+    report_ref: execute/python-jose/new/junit.xml
     report_digest: sha256:9e1f3a5b7c9d1e3f5a7b9c1d3e5f7a9b1c3d5e7f9a1b3c5d7e9f1a3b5c7d9e1f
   job_ref: estate/cexample/jobs/ai-test-harness-run-76a3fa863e76
   file_path: tests/test_python_jose_cve_cve_2024_33664.py
@@ -114,7 +114,7 @@ fields:
     outcome: passed
     duration_ms: 21
     format: junit-xml
-    report_url: execute/python-jose/new/junit.xml
+    report_ref: execute/python-jose/new/junit.xml
     report_digest: sha256:9e1f3a5b7c9d1e3f5a7b9c1d3e5f7a9b1c3d5e7f9a1b3c5d7e9f1a3b5c7d9e1f
   job_ref: estate/cexample/jobs/ai-test-harness-run-76a3fa863e76
   file_path: tests/test_python_jose_cve_cve_2024_33664.py
@@ -155,6 +155,6 @@ outputs:
   bumps_survived: 0
   regressions_caught: 0
 integrity:
-  head: sha256:4a887129f44cbb568d013e80e1f75bd1d74a44d3fa2fd48b77abc6430652b852
+  head: sha256:8fed0d55fb2868ebec6f4eff551dde6e678606d3a428848469e86b661a33e156
   previous: null
   algorithm: sha256-jcs
