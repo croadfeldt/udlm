@@ -127,16 +127,16 @@ provenance:
     sequence: 1
     timestamp: '2026-09-14T09:30:00Z'
 adopted_standards:
-- standard: in-toto test-result
-  requested_version: '0.1'
-  provider_version: '0.1'
-  effective_version: '0.1'
+- standard: in-toto Attestation Framework
+  requested_version: '1.0'
+  provider_version: '1.0'
+  effective_version: '1.0'
   translated: false
   resolved_at: '2026-09-14T09:30:00Z'
 outputs:
   bumps_survived: 0
   regressions_caught: 0
 integrity:
-  head: sha256:5599a500bcc9354b291b6ba885f0fd904fa0ff231ea1dc4fbb3386b7451077ad
+  head: sha256:0bcb0bde0ff83a39549957d2fecf0324a89f01a5142a89d1c2c72ca60d73fe2a
   previous: null
   algorithm: sha256-jcs

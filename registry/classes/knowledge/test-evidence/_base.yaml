@@ -29,7 +29,7 @@ elements:
 - element: test_id
   scope: TestEvidence
   optional: false
-  state: canonical
+  state: proposed
   description: Stable identifier of the test across edits, as the producer names it (package, test function, first twelve hex of the first file digest).
   schema:
     type: string
@@ -37,7 +37,7 @@ elements:
 - element: file_path
   scope: TestEvidence
   optional: false
-  state: canonical
+  state: proposed
   description: Path of the test file within the overlay or suite it belongs to.
   schema:
     type: string
@@ -45,7 +45,7 @@ elements:
 - element: file_digest
   scope: TestEvidence
   optional: false
-  state: canonical
+  state: proposed
   description: Digest of the test file, sha256 with the same prefix the integrity block uses.
   schema:
     type: string
@@ -54,7 +54,7 @@ elements:
 - element: category
   scope: TestEvidence
   optional: false
-  state: canonical
+  state: proposed
   description: What kind of test this is. A closed set the producing harness owns.
   schema:
     type: string
@@ -63,14 +63,14 @@ elements:
 - element: software_package_ref
   scope: TestEvidence
   optional: false
-  state: canonical
+  state: proposed
   description: The SoftwarePackage (one record per purl) this test is evidence about. A reference, never the purl restated.
   schema:
     $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: version_range
   scope: TestEvidence
   optional: true
-  state: canonical
+  state: proposed
   description: The package version range the test is known to apply to, as a version specifier.
   schema:
     type: string
@@ -78,7 +78,7 @@ elements:
 - element: call_sites
   scope: TestEvidence
   optional: true
-  state: canonical
+  state: proposed
   description: First-party code paths this test mirrors, relative to the consuming application's repository.
   schema:
     type: array
@@ -88,7 +88,7 @@ elements:
 - element: source_version
   scope: TestEvidence
   optional: false
-  state: canonical
+  state: proposed
   description: The commit or manifest revision of the consuming application the test was generated against, so the run can be replayed.
   schema:
     type: string
@@ -96,21 +96,21 @@ elements:
 - element: job_ref
   scope: TestEvidence
   optional: false
-  state: canonical
+  state: proposed
   description: The Job (Process family) that produced this evidence. Its realized record carries the model, prompt digest, tool versions, image and execution target; none of that is restated here.
   schema:
     $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: vulnerability_ref
   scope: TestEvidence
   optional: true
-  state: canonical
+  state: proposed
   description: For a cve-category test, the Vulnerability record (one per CVE) it is evidence about. Advisory aliases are the Vulnerability's, not fields here.
   schema:
     $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: vulnerability_role
   scope: TestEvidence
   optional: true
-  state: canonical
+  state: proposed
   description: 'For a cve-category test: exposure (mirrors the application''s call pattern with the known trigger) or fix-pinning (fails on the vulnerable version, passes on the fixed one).'
   schema:
     type: string
@@ -119,14 +119,14 @@ elements:
 - element: vex_statement_ref
   scope: TestEvidence
   optional: true
-  state: canonical
+  state: proposed
   description: The VexStatement this test is cited as evidence for, when one exists.
   schema:
     $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: validation
   scope: TestEvidence
   optional: false
-  state: canonical
+  state: proposed
   description: Why the test was kept, measured at generation time in a sealed sandbox.
   schema:
     type: object
@@ -156,7 +156,7 @@ elements:
 - element: scope
   scope: TestEvidence
   optional: true
-  state: canonical
+  state: proposed
   description: 'On the realized record only. Where an accepted test lives: overlay (the package version''s overlay, one reviewer) or standard (the product-wide suite, two reviewers).'
   schema:
     type: string
