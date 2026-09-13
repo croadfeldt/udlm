@@ -120,8 +120,8 @@ test clause; row 069 in PR 1 supersedes it.
 
 - `KubernetesCluster.node_pools` (inline) versus `KubernetesNodePool` (class): ruled 2026-09-12, row 072 —
   records only; the cluster's inline list is removed.
-- Removing `Platform`, `Platform.Hub` and `Platform.ResourceQuota` after the sunset window
-  (REG-DP-002, twelve months for Tier 1) or on a pre-1.0 override.
+- Removing `Platform`, `Platform.Hub` and `Platform.ResourceQuota`: done 2026-09-13 on a pre-1.0
+  override of the sunset window (row 073).
 
 **Follow-ups outside the series**
 

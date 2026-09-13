@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 57,
+    "types": 55,
     "by_family": {
       "Access": 7,
       "Knowledge": 6,
       "Process": 2,
-      "Resource": 42
+      "Resource": 40
     }
   },
   "discrimination": {
-    "mutations_attempted": 4769,
-    "mutations_rejected": 4769,
+    "mutations_attempted": 4699,
+    "mutations_rejected": 4699,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -167,14 +167,6 @@
         "attempted": 52,
         "rejected": 52
       },
-      "Platform.Hub": {
-        "attempted": 22,
-        "rejected": 22
-      },
-      "Platform.ResourceQuota": {
-        "attempted": 48,
-        "rejected": 48
-      },
       "Security.CredentialRef": {
         "attempted": 70,
         "rejected": 70
@@ -246,8 +238,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 57,
-    "total": 57
+    "strict_specs": 55,
+    "total": 55
   },
   "outputs": {
     "per_type": {
@@ -289,8 +281,6 @@
       "Network.VLAN": 1,
       "Network.VirtualNetwork": 1,
       "Observability.LogShipper": 3,
-      "Platform.Hub": 3,
-      "Platform.ResourceQuota": 1,
       "Security.CredentialRef": 3,
       "Security.DirectoryService": 3,
       "Software.Service": 1,
@@ -337,7 +327,6 @@
       "Network.IPAddress",
       "Network.VLAN",
       "Network.VirtualNetwork",
-      "Platform.ResourceQuota",
       "Software.Service",
       "Storage.Class",
       "Storage.Dataset",
@@ -349,13 +338,13 @@
     ]
   },
   "context": {
-    "with_context": 57,
-    "total": 57,
+    "with_context": 55,
+    "total": 55,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 46,
-    "total": 57,
+    "with_relationships": 44,
+    "total": 55,
     "missing": [
       "Access.Grouping",
       "Automation.OSPatch",
@@ -426,8 +415,6 @@
       "Network.Subnet",
       "Network.Switch",
       "Network.VLAN",
-      "Platform.Hub",
-      "Platform.ResourceQuota",
       "SovereigntyZone",
       "Storage.Cluster",
       "Storage.Layout",
@@ -494,8 +481,6 @@
       "Network.VLAN",
       "Network.VirtualNetwork",
       "Observability.LogShipper",
-      "Platform.Hub",
-      "Platform.ResourceQuota",
       "Security.CredentialRef",
       "Security.DirectoryService",
       "Software.Service",
@@ -513,7 +498,7 @@
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 57
+    "consumed_by_at_least_one": 55
   },
   "expressibility_coverage": {
     "value": null,

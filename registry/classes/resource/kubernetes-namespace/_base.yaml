@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNamespace/1.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNamespace/1.1.1
 conforms_to: udlm/0.1
 uuid: ae8d0510-221a-4500-b201-3b3e429c34e8
 record_type: class
 class: base
 resource_type: KubernetesNamespace
 short_name: K8sNamespace
-version: 1.1.0
+version: 1.1.1
 family: Resource
 status: active
 metadata:

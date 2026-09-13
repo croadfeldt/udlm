@@ -130,7 +130,7 @@ The control plane ships with a default set of Resource Type Categories. Implemen
 | `KubernetesCluster` | Kubernetes clusters — the Kubernetes API as one orderable deliverable |
 | `Network` | Networking resources — IP addresses, VLANs, firewall rules, load balancers |
 | `Storage` | Storage resources — block, object, file, databases |
-| `Platform` | *Deprecated 2026-09-11* — a folder, dissolved: clusters, namespaces and node pools are the Kubernetes Bases above; a storage class is `Storage.Class`; a fleet hub is a `Software.Service` |
+| `Platform` | *Retired 2026-09-13* (deprecated 2026-09-11) — a folder, dissolved: clusters, namespaces and node pools are the Kubernetes Bases above; a storage class is `Storage.Class`; a fleet hub is a `Software.Service` |
 | `Security` | Security resources — certificates, secrets, HSMs, identity |
 | `Observability` | Monitoring and logging resources |
 | `Data` | Data services — streams, queues, pipelines |

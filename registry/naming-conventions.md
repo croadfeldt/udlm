@@ -37,7 +37,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
 ## 2. Categories
 
 The canonical categories (`docs/spec/foundations/resource-type-hierarchy.md` §2.2). Resource categories:
-`Machine`, `Container`, `KubernetesCluster`, `KubernetesNamespace`, `KubernetesNodePool`, `Network`, `Storage`, `Security`, `Observability`, `Data` (`Platform` is deprecated — a dissolved folder). Information
+`Machine`, `Container`, `KubernetesCluster`, `KubernetesNamespace`, `KubernetesNodePool`, `Network`, `Storage`, `Security`, `Observability`, `Data` (`Platform` was a folder, dissolved and retired 2026-09-13). Information
 categories: `Business`, `Identity`, `Compliance`, `Operations`.
 
 **Adding a category** is permitted ("implementors may define additional categories following the
