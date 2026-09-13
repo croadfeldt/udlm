@@ -211,3 +211,16 @@ retired:
   # 2026-08-09 — the orderable composite tier is a Template; the document naming it Composite
   # Service described a concept that does not exist beside it. Rule IDs are unchanged (CMP-*).
   docs/spec/foundations/composite-service-model.md: docs/spec/foundations/template-composition-model.md
+
+  # 2026-09-13 — the deprecated Platform records are retired (maintainer decision; the REG-DP-002
+  # sunset window overridden pre-1.0). Each was deprecated 2026-09-11 with its successor declared.
+  registry/classes/resource/platform/_base.yaml#84aca79d-e5fe-4a87-8fce-59fe0483a390: >-
+    retired 2026-09-13 — a dissolved folder; its members are KubernetesCluster, KubernetesNamespace,
+    KubernetesNodePool, Storage.Class, and a fleet-manager Software.Service (rows 069, 071-072)
+  registry/classes/resource/platform/hub.yaml#e22decb9-0931-43ee-897e-6548459fd35a: >-
+    retired 2026-09-13 — superseded by Software.Service (service_kind fleet-manager,
+    uuid 905fef1c-3384-4a49-9c44-71420d07eedd); the cluster's hub edges already target it
+  registry/classes/resource/platform/resource-quota.yaml#a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a: >-
+    retired 2026-09-13 — superseded by KubernetesNamespace#hard
+    (uuid ae8d0510-221a-4500-b201-3b3e429c34e8)
+

@@ -442,7 +442,7 @@ The request for a control plane: which release and what internal network ranges 
 
 ## KubernetesNamespace
 
-### KubernetesNamespace (1.1.0)
+### KubernetesNamespace (1.1.1)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
@@ -785,47 +785,6 @@ A statement of outcome: logs from a target host — the `target` object naming i
 **Works with:**
 - Machine.BareMetalHost / Machine.VM — the target host whose logs are shipped.
 - Software.Service — the central log store the sink URL points at.
-
-## Platform
-
-### Platform.Hub (0.4.0)
-
-**Purpose:** The multi-cluster management plane: the thing that provisions, imports, and lifecycle-manages a fleet of clusters.
-
-A Hub is whatever sits above your clusters and manages them as a fleet — an OCM-style hub, a hosted-control-planes management cluster, a standalone fleet manager, or a hosted fleet-management service. It may itself run on a cluster (including, in the self-managed pattern, the very cluster it manages) or be standalone software. Model the hub as its own entity; whether it lives on a cluster is just an edge.
-
-**Use when:**
-- you need to record which management plane provisioned or now manages a cluster
-- a cluster's lifecycle operations flow through a fleet manager and shutdown/startup order must respect it
-- you need the management plane's own sovereignty position (which jurisdiction governs the manager, distinct from its spokes)
-
-**Not for:**
-- the cluster a hub happens to run on — that host is a plain KubernetesCluster, and hub-ness on it is a derived role marker, never authored
-- single-cluster platform services (GitOps controllers, ingress operators) — those are Software.Service on the cluster
-- a peer control plane instance in federation — that is the federate capability on the provider contract, not a Hub
-
-**Works with:**
-- KubernetesCluster — spokes point at the hub (contained_by when hub-provisioned/hosted-control-plane; depends_on soft when imported), and a hosted hub points contained_by at its own host cluster
-- Facility.Location — where the hub's control plane runs, for the sovereignty question
-- Security.CredentialRef — the fleet-management credentials the hub holds are references, never inline
-
-### Platform.ResourceQuota (0.6.0)
-
-**Purpose:** Declares hard consumption limits for one namespace so capacity questions are answerable before a workload is dispatched.
-
-The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod count, storage, and object-count ceilings for a single namespace — the ceilings live under `hard`, in Kubernetes' own resource-name spelling, and the namespace is bound in the spec by the required `namespace_ref`, not by a relationship edge alone. Discovered usage is reported against the limits, so whether a namespace has room for a request is a data question a placement policy answers up front — and quota pressure is visible for capacity planning.
-
-**Use when:**
-- You need per-namespace ceilings on aggregate consumption enforced and visible.
-- You need admission or placement to check remaining headroom before dispatching a workload.
-
-**Not for:**
-- Per-container resource requests — those live on the workload (Container resources).
-- Node capacity — KubernetesNodePool advertises capacity; a quota caps consumption within a namespace.
-
-**Works with:**
-- KubernetesNamespace — the one namespace this quota constrains.
-- Container — workloads whose aggregate consumption the quota caps.
 
 ## Security
 
@@ -1189,4 +1148,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*57 types; 57 with context, 0 pending.*
+*55 types; 55 with context, 0 pending.*
