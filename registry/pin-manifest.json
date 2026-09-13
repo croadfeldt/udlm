@@ -797,12 +797,13 @@
   }
  },
  "type:KubernetesNamespace": {
-  "current": "1.1.1",
+  "current": "1.1.2",
   "path": "registry/classes/resource/kubernetes-namespace/_base.yaml",
   "versions": {
    "1.0.0": "sha256:55ac98400ff778439395fcd60fe85712312b867c613b695aea2ccf98b77f2d30",
    "1.1.0": "sha256:eb7a860c2bd20d8937eb343a36ce250c1a518b68d8d72c9256fdf96a94518c19",
-   "1.1.1": "sha256:e2257af7ccb8f3f2d516b1bb6a26a492bd49875d56f6c6f246155394e373851e"
+   "1.1.1": "sha256:e2257af7ccb8f3f2d516b1bb6a26a492bd49875d56f6c6f246155394e373851e",
+   "1.1.2": "sha256:7a41ef423c87dc54284ecc8509504006792392d18f0369076aa30a9033f77eb3"
   }
  },
  "type:KubernetesNodePool": {
