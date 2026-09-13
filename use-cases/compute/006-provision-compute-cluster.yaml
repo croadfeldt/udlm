@@ -2,15 +2,13 @@ uuid: uc-0741a98b-92ca-489f-85f3-2dc0ef2898cc
 handle: compute/provision-compute-cluster
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a KubernetesCluster by intent — a node count and a Kubernetes
-    version — without naming individual nodes, a control-plane host, or provider-native cluster internals.
-    The compute provider provisions the control plane and the declared number of worker nodes at the declared
-    version, and the cluster reaches Realized with those properties published on its outputs (Kubernetes
-    version, ready node count, API endpoint). This stresses that a Cluster is portable intent expressed as a
-    node count and version, not an enumeration of machines: the declared count/version ARE the build
-    instruction, the realized topology is readable from the record rather than inferred from the provider, a
+  description: 'A platform engineer requests a KubernetesCluster by intent — a Kubernetes release and network ranges — without naming individual nodes, a control-plane host, or provider-native cluster internals.
+    The provider provisions the control plane at the declared release; the worker nodes are separate KubernetesNodePool
+    orders contained by the cluster (ruling 072), and the cluster reaches Realized with those properties published on its outputs (Kubernetes
+    version, API endpoint). This stresses that a Cluster is portable intent expressed as a release and
+    network ranges, not an enumeration of machines: the declared release IS the build instruction, the realized topology is readable from the record rather than inferred from the provider, a
     downstream consumer binds on the ready-node output, and the cluster rehydrates by replaying the same
-    count-and-version intent against an eligible provider.'
+    release intent, then its pool orders, against an eligible provider.'
   actor:
     persona: platform-engineer
     profile: standard

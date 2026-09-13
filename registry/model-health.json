@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 4801,
-    "mutations_rejected": 4801,
+    "mutations_attempted": 4769,
+    "mutations_rejected": 4769,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -96,16 +96,16 @@
         "rejected": 85
       },
       "KubernetesCluster": {
-        "attempted": 104,
-        "rejected": 104
+        "attempted": 37,
+        "rejected": 37
       },
       "KubernetesNamespace": {
         "attempted": 71,
         "rejected": 71
       },
       "KubernetesNodePool": {
-        "attempted": 110,
-        "rejected": 110
+        "attempted": 145,
+        "rejected": 145
       },
       "Machine.BareMetalHost": {
         "attempted": 215,

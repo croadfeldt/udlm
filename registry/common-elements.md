@@ -7,7 +7,7 @@ A type that needs a shared concept references the canonical shape here rather th
 
 ## 1. Conventions (the rules, restated)
 
-- **Field names:** `snake_case` (canonical data model + AEP-conformant; `guest_os`, `node_pools`, `ip_address`, `api_url`) — naming-conventions.md §4.
+- **Field names:** `snake_case` (canonical data model + AEP-conformant; `guest_os`, `cluster_ref`, `ip_address`, `api_url`) — naming-conventions.md §4.
 - **Type names:** `Category.Type`, vendor-neutral (SPEC-DESIGN-REQUIREMENTS §6).
 - **Quantities:** an explicit unit in the value, never a bare number whose unit is implied by the field
   name (so memory is `"16GB"`, not `memoryGib: 16`). One `Quantity` pattern, registry-wide.
@@ -105,11 +105,11 @@ How the existing types express shared concepts today, and the drift to normalize
 | Type | compute sizing | naming notes |
 |---|---|---|
 | `Machine.VM` | `vcpu` + `memory.size` (Quantity) + `disks[]` | `vcpu` ≠ canonical `cpu.count` |
-| `KubernetesCluster` | `node_pools[]` (each carries its own cpu/memory) | node-pool sizing not a shared shape |
+| `KubernetesNodePool` | `node_resources` — ComputeResources per pool record (the cluster carries no pools — ruling 072) | uses the shared shape |
 | `Data.Database` | `resources` block | a *third* spelling of cpu/memory |
 | `Network.IPAddress` | — | `family` ≠ canonical `ip_family` |
 
-**Findings:** CPU/memory is expressed **three different ways** (`vcpu`/`memory`, `node_pools.*`,
+**Findings:** CPU/memory is expressed **three different ways** (`vcpu`/`memory`, the pool record's `node_resources`,
 `resources`); no shared `ComputeResources`. `family` vs the canonical `ip_family`. Outputs are already
 consistently `snake_case` (`ip_address`/`api_url`/`console_url`/`connection_string`) — good.
 
