@@ -300,16 +300,15 @@ def check(by_name):
             if path.split(".")[0] not in own:
                 fails.append(f"{name}: immutable path {path!r} does not name an element declared at this class "
                              f"(own-tier only — tighten at your scope, never above)")
-        # context/spec_examples/spec_constraints (#323 + Job ruling): type tier, or a CHILDLESS
-        # base (an instantiable base with no descendants is served directly); never provider,
-        # never a base that has children (its types own the served surface).
-        has_children = any(c.get("parent") == name for c in by_name.values())
+        # context/spec_examples/spec_constraints (#323 + Job ruling; CLS-003): the served tiers —
+        # every type, and every base a producer may bind at (CLS-002 (c)). Never a provider class,
+        # and never a folder (`instantiable: false`), which has no served surface of its own.
         for key in ("context", "spec_examples", "spec_constraints"):
             if not cls.get(key):
                 continue
             tier = cls.get("class")
-            if tier == "provider" or (tier == "base" and has_children):
-                why = "provider tier carries no served prose" if tier == "provider" else                       f"base with children ({name} has descendants) — its types own the served surface"
+            if tier == "provider" or (tier == "base" and cls.get("instantiable") is False):
+                why = "provider tier carries no served prose" if tier == "provider" else                       f"a folder ({name} is `instantiable: false`) has no served surface — its members own it"
                 fails.append(f"{name}: `{key}` not permitted here — {why}")
     return fails, n
 

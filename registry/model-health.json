@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 58,
+    "types": 62,
     "by_family": {
-      "Access": 7,
+      "Access": 8,
       "Knowledge": 9,
-      "Process": 2,
-      "Resource": 40
+      "Process": 3,
+      "Resource": 42
     }
   },
   "discrimination": {
-    "mutations_attempted": 5034,
-    "mutations_rejected": 5034,
+    "mutations_attempted": 5270,
+    "mutations_rejected": 5270,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -22,6 +22,10 @@
       "Access.IdentityEscrow": {
         "attempted": 130,
         "rejected": 130
+      },
+      "Automation": {
+        "attempted": 77,
+        "rejected": 77
       },
       "Automation.OSPatch": {
         "attempted": 122,
@@ -46,6 +50,10 @@
       "Facility.PowerFeed": {
         "attempted": 52,
         "rejected": 52
+      },
+      "Grouping": {
+        "attempted": 56,
+        "rejected": 56
       },
       "Grouping.Authorization": {
         "attempted": 112,
@@ -107,13 +115,17 @@
         "attempted": 145,
         "rejected": 145
       },
+      "Machine": {
+        "attempted": 112,
+        "rejected": 112
+      },
       "Machine.BareMetalHost": {
-        "attempted": 215,
-        "rejected": 215
+        "attempted": 218,
+        "rejected": 218
       },
       "Machine.LPAR": {
-        "attempted": 187,
-        "rejected": 187
+        "attempted": 189,
+        "rejected": 189
       },
       "Machine.VM": {
         "attempted": 246,
@@ -223,13 +235,17 @@
         "attempted": 61,
         "rejected": 61
       },
+      "Template": {
+        "attempted": 41,
+        "rejected": 41
+      },
       "Template.Application": {
         "attempted": 69,
         "rejected": 69
       },
       "TestEvidence": {
-        "attempted": 151,
-        "rejected": 151
+        "attempted": 96,
+        "rejected": 96
       },
       "TestEvidence.VulnerabilityCheck": {
         "attempted": 124,
@@ -250,19 +266,21 @@
     }
   },
   "strictness": {
-    "strict_specs": 58,
-    "total": 58
+    "strict_specs": 62,
+    "total": 62
   },
   "outputs": {
     "per_type": {
       "Access.Grouping": 0,
       "Access.IdentityEscrow": 4,
+      "Automation": 0,
       "Automation.OSPatch": 3,
       "Capability": 1,
       "Container": 2,
       "Data.Database": 5,
       "Facility.Location": 1,
       "Facility.PowerFeed": 3,
+      "Grouping": 0,
       "Grouping.Authorization": 0,
       "Grouping.Tenant": 0,
       "Hardware.BMC": 1,
@@ -278,8 +296,9 @@
       "KubernetesCluster": 4,
       "KubernetesNamespace": 2,
       "KubernetesNodePool": 2,
-      "Machine.BareMetalHost": 5,
-      "Machine.LPAR": 3,
+      "Machine": 3,
+      "Machine.BareMetalHost": 8,
+      "Machine.LPAR": 5,
       "Machine.VM": 7,
       "Network.AddressService": 1,
       "Network.ConnectionProfile": 2,
@@ -307,8 +326,9 @@
       "Storage.Pool": 5,
       "Storage.Volume": 2,
       "TaxonomyTerm": 1,
+      "Template": 0,
       "Template.Application": 1,
-      "TestEvidence": 2,
+      "TestEvidence": 0,
       "TestEvidence.VulnerabilityCheck": 0,
       "Topology": 1,
       "VexStatement": 0,
@@ -316,6 +336,8 @@
     },
     "zero_output_types": [
       "Access.Grouping",
+      "Automation",
+      "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Hardware.GraphicsProcessor",
@@ -323,6 +345,8 @@
       "SoftwareImage",
       "SoftwarePackage",
       "SovereigntyZone",
+      "Template",
+      "TestEvidence",
       "TestEvidence.VulnerabilityCheck",
       "VexStatement",
       "Vulnerability"
@@ -355,22 +379,26 @@
     ]
   },
   "context": {
-    "with_context": 58,
-    "total": 58,
+    "with_context": 62,
+    "total": 62,
     "missing": []
   },
   "relationships": {
     "with_relationships": 47,
-    "total": 58,
+    "total": 62,
     "missing": [
       "Access.Grouping",
+      "Automation",
       "Automation.OSPatch",
       "Facility.PowerFeed",
+      "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
+      "Machine",
       "Observability.LogShipper",
       "SovereigntyZone",
       "Storage.Layout",
+      "Template",
       "Template.Application",
       "Topology",
       "Vulnerability"
@@ -380,6 +408,7 @@
     "files_scanned": 149,
     "covered": [
       "Access.IdentityEscrow",
+      "Automation",
       "Automation.OSPatch",
       "Capability",
       "Container",
@@ -388,6 +417,7 @@
       "KubernetesCluster",
       "KubernetesNamespace",
       "KubernetesNodePool",
+      "Machine",
       "Machine.BareMetalHost",
       "Machine.VM",
       "Network.AddressService",
@@ -417,6 +447,7 @@
       "Access.Grouping",
       "Facility.Location",
       "Facility.PowerFeed",
+      "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Hardware.BMC",
@@ -435,6 +466,7 @@
       "SovereigntyZone",
       "Storage.Cluster",
       "Storage.Layout",
+      "Template",
       "Template.Application",
       "TestEvidence",
       "TestEvidence.VulnerabilityCheck",
@@ -469,10 +501,12 @@
     "named_by_none": [
       "Access.Grouping",
       "Access.IdentityEscrow",
+      "Automation",
       "Automation.OSPatch",
       "Capability",
       "Facility.Location",
       "Facility.PowerFeed",
+      "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Hardware.BMC",
@@ -487,6 +521,7 @@
       "Job",
       "KubernetesNamespace",
       "KubernetesNodePool",
+      "Machine",
       "Machine.BareMetalHost",
       "Machine.LPAR",
       "Network.AddressService",
@@ -514,6 +549,7 @@
       "Storage.Layout",
       "Storage.Pool",
       "TaxonomyTerm",
+      "Template",
       "Template.Application",
       "TestEvidence",
       "TestEvidence.VulnerabilityCheck",
@@ -521,7 +557,7 @@
       "VexStatement",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 58
+    "consumed_by_at_least_one": 62
   },
   "expressibility_coverage": {
     "value": null,

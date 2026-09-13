@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.3.0
 conforms_to: udlm/0.1
 uuid: 3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63
 record_type: class
 class: base
 resource_type: TestEvidence
-version: 0.2.0
+version: 0.3.0
 family: Knowledge
 status: active
 metadata:
@@ -150,3 +150,29 @@ adopts:
   license: CC-BY-4.0
   license_compatibility: compatible-reference
   disposition: tier1_value
+context:
+  purpose: Records the evidence a test provides about a subject — any test, from any suite, in the result format
+    the suite already emits.
+  plain_description: 'One test, what it was about, and how it went: the subject it exercised, the kind of test,
+    the outcome and duration as a CTRF or JUnit report states them, and the run that produced it. A suite with nothing
+    more to say binds here; a suite that checks a vulnerability binds at TestEvidence.VulnerabilityCheck; a producer
+    with metrics of its own binds at its Provider Class.'
+  use_when:
+  - Any test suite's results need to live in the estate as evidence with provenance.
+  - A test result should be citable by other records (a VEX statement, a finding) by uuid.
+  not_for:
+  - The run — that is a Job.
+  - A vulnerability claim — that is VexStatement, which cites this evidence.
+  works_with:
+  - Job — the run that produced the evidence.
+  - TestEvidence.VulnerabilityCheck — the Type for CVE checks.
+  - VexStatement — cites evidence records.
+spec_examples:
+- test_id: scheduler::test_reserve_slot
+  subject_ref: estate/cexample/apps/scheduler
+  category: unit
+  result:
+    outcome: passed
+    duration_ms: 12
+    format: junit-xml
+  job_ref: estate/cexample/jobs/ci-run-000123

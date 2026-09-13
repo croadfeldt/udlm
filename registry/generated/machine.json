@@ -1,16 +1,19 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.LPAR/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine/2.1.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "6d2f8c1a-3b47-4e9d-a5c0-8f1e2b7d4a63",
-  "resource_type": "Machine.LPAR",
-  "version": "0.1.0",
+  "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9",
+  "resource_type": "Machine",
+  "version": "2.1.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
-    "display_name": "Logical Partition",
-    "description": "A logical partition — the third form a Machine takes, beside a VM and a bare-metal host (ADR-068, ADR-069). An LPAR is an OS-bearing slice of a partitioned system (IBM Power via PowerVM and the HMC; IBM Z via PR/SM) that boots an image onto entitled processor capacity, memory and virtual I/O. It honors every Machine Base element: `cpu.count` is the virtual-processor count, `memory` the partition memory, `guest_os` the image, `storage` and `storage_tier` the disk requirement. What it adds is the partitioning vocabulary no VM or bare-metal host has — fractional processor entitlement, capped or uncapped sharing, a shared processor pool, and VIOS-backed virtual adapters. Those are Type-tier elements (conditional, class-tiers §7): Redfish has no partition profile beyond `SystemType`, so the names follow the HMC vocabulary. Dialects (PowerVM, PR/SM) and offerings land at the Provider tier.",
-    "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-09-10T00:00:00Z",
+    "authority": "canonical",
+    "display_name": "Machine Base Class",
+    "maintainer": "UDLM maintainers",
+    "origination_timestamp": "2026-07-27T21:00:00Z",
+    "title": "Machine Base Class",
+    "description": "The Machine Base Class (renamed from Compute — ADR-068; the Base test is ADR-069, home docs/spec/foundations/class-tiers.md). A Machine is an OS-bearing execution environment ordered as one deliverable: an image booted onto cpu, memory, disk and network. Its members are the forms that deliverable takes — Machine.VM, Machine.BareMetalHost, Machine.LPAR — and any provider offering one of them can realize an order placed here; OpenStack Nova with Ironic, Cluster API's Machine, and TOSCA's Compute node type are the industry abstractions that already treat them as one thing. Every element here is a SharedDataElement at `Machine` scope, honorable by every form. Containers and Kubernetes clusters are NOT machines: they left this Base because they cannot honor `guest_os` (Container) or carry Kubernetes-only vocabulary (KubernetesCluster).",
+    "prompt_version": "class-p0-keystone-2026-07-27",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -19,11 +22,6 @@
           "class": "Machine",
           "version": "2.1.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
-        },
-        {
-          "class": "Machine.LPAR",
-          "version": "0.1.0",
-          "uuid": "6d2f8c1a-3b47-4e9d-a5c0-8f1e2b7d4a63"
         }
       ]
     }
@@ -144,83 +142,6 @@
             ]
           }
         ]
-      },
-      "processor": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "entitled_capacity": {
-            "type": "number",
-            "minimum": 0.05,
-            "description": "Entitled processing units (fractions of a physical core; PowerVM minimum 0.05 per virtual processor)."
-          },
-          "sharing_mode": {
-            "enum": [
-              "dedicated",
-              "capped",
-              "uncapped"
-            ],
-            "description": "Dedicated cores, or shared capacity that is capped at the entitlement or may exceed it when the pool has headroom."
-          },
-          "uncapped_weight": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 255,
-            "description": "Priority for excess pool capacity; meaningful only with sharing_mode uncapped."
-          },
-          "shared_pool": {
-            "type": "string",
-            "description": "The shared processor pool the partition draws from, as the provider names it."
-          }
-        },
-        "description": "Processor entitlement for the partition — the HMC partition-profile processor settings. A request states how much physical capacity the partition is entitled to and how it shares; `cpu.count` (inherited) is the number of virtual processors the OS sees."
-      },
-      "virtual_io": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "vios_backed": {
-            "type": "boolean",
-            "description": "Storage and network are served through Virtual I/O Servers rather than dedicated adapters."
-          },
-          "adapters": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": [
-                "kind"
-              ],
-              "properties": {
-                "kind": {
-                  "enum": [
-                    "vscsi",
-                    "npiv",
-                    "vnic",
-                    "sriov",
-                    "virtual_ethernet"
-                  ]
-                },
-                "count": {
-                  "type": "integer",
-                  "minimum": 1
-                }
-              }
-            }
-          }
-        },
-        "description": "Virtual I/O the partition is served through — VIOS-backed virtual SCSI, NPIV fibre channel, or virtual/SR-IOV network adapters. A requirement descriptor the provider satisfies from its VIOS pair; never a reference to a registered device."
-      },
-      "run_state": {
-        "type": "object",
-        "properties": {
-          "desired_state": {
-            "enum": [
-              "running",
-              "stopped"
-            ]
-          }
-        },
-        "description": "Desired partition run state the provider drives to (HMC activate / shut down). Distinct from the four-state lifecycle_state."
       }
     },
     "examples": [
@@ -229,41 +150,20 @@
           "count": 4
         },
         "memory": {
-          "size": "64Gi"
+          "size": "16Gi"
         },
         "guest_os": {
           "type": "linux-server-9",
           "version": "9.6"
         },
-        "processor": {
-          "entitled_capacity": 2.0,
-          "sharing_mode": "uncapped",
-          "uncapped_weight": 128,
-          "shared_pool": "DefaultPool"
-        },
-        "virtual_io": {
-          "vios_backed": true,
-          "adapters": [
-            {
-              "kind": "npiv",
-              "count": 2
-            },
-            {
-              "kind": "virtual_ethernet",
-              "count": 1
-            }
-          ]
-        },
-        "run_state": {
-          "desired_state": "running"
-        }
+        "storage_tier": "performance"
       }
     ]
   },
   "outputs": {
     "provider_handle": {
       "type": "string",
-      "description": "The provider-native partition name (opaque; correlation only)."
+      "description": "The provider-native identifier of the realized machine (opaque; correlation and operations only — never a portable reference). Promoted from Machine.VM: every form has one."
     },
     "primary_ip": {
       "type": "string",
@@ -272,30 +172,8 @@
     "hostname": {
       "type": "string",
       "description": "Realized hostname (FQDN where the realm provides one). Promoted from Machine.VM."
-    },
-    "partition_id": {
-      "type": "integer",
-      "description": "The partition identifier the managing system assigned."
-    },
-    "observed_run_state": {
-      "type": "string",
-      "description": "Observed partition state as the provider reports it."
     }
   },
-  "relationships": [
-    {
-      "edge_type": "contained_by",
-      "target": "Machine.BareMetalHost",
-      "cardinality": "1..1",
-      "description": "The partitioned system (the frame or CEC) the partition runs on — a managed bare-metal host."
-    },
-    {
-      "edge_type": "references",
-      "target": "Facility.Location",
-      "cardinality": "0..1",
-      "description": "Placement, as for any Machine."
-    }
-  ],
   "adopts": [
     {
       "standard": "Redfish",
@@ -309,21 +187,19 @@
     }
   ],
   "context": {
-    "purpose": "Declares a logical partition on a partitioned system as one provisionable Machine.",
-    "plain_description": "The request for a slice of a big partitioned server: how much processor capacity it is entitled to and whether it may borrow more, how much memory, which image, and how its disks and network are served. The provider (an HMC-managed Power system, a PR/SM-managed mainframe) activates the partition and reports its identifier and state.",
+    "purpose": "Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.",
+    "plain_description": "The most portable way to ask for a machine: how big, what image, what storage tier. Placement decides the form (VM, bare metal, LPAR) and the provider; policy fills what the form needs. A producer bound at any of the three forms must accept this order (class-tiers CLS-002 (c)).",
     "use_when": [
-      "You need an OS instance on a partitioned system and want to state entitlement rather than pick a frame.",
-      "You are rebuilding an estate whose workloads run on Power or Z and need those hosts in the same graph as VMs and bare metal."
+      "You need a host and do not care whether it is virtual or physical.",
+      "A rebuild after loss where the original form is not worth preserving."
     ],
     "not_for": [
-      "A VM on a hypervisor — that is Machine.VM.",
-      "The partitioned system itself — that is Machine.BareMetalHost; the partition is contained_by it."
+      "A container (Container) or a Kubernetes cluster (KubernetesCluster) — neither can honor `guest_os`.",
+      "When the form matters — order Machine.VM, Machine.BareMetalHost or Machine.LPAR."
     ],
     "works_with": [
-      "Machine.BareMetalHost — the frame that hosts the partition.",
-      "Storage.Volume — the disks served through virtual I/O.",
-      "Network.VirtualNetwork — the network a virtual adapter attaches to."
+      "Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.",
+      "Storage.Volume and Network.VirtualNetwork — what the realized machine attaches to."
     ]
-  },
-  "ownership_model": "whole_allocation"
+  }
 }

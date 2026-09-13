@@ -360,10 +360,11 @@
   }
  },
  "type:Access": {
-  "current": "1.0.0",
+  "current": "1.1.0",
   "path": "registry/classes/access/_base.yaml",
   "versions": {
-   "1.0.0": "sha256:415e03eb062518d7353e90cd0aa42f737d79752ceb6c6c66c55ab5342d3fd069"
+   "1.0.0": "sha256:415e03eb062518d7353e90cd0aa42f737d79752ceb6c6c66c55ab5342d3fd069",
+   "1.1.0": "sha256:86fe4ade79cc8be0a25a2be2e9648bb69fc4832f74c9c1367f0913bd495c0169"
   }
  },
  "type:Access.Grouping": {
@@ -388,10 +389,11 @@
   }
  },
  "type:Automation": {
-  "current": "1.1.0",
+  "current": "1.2.0",
   "path": "registry/classes/process/automation/_base.yaml",
   "versions": {
-   "1.1.0": "sha256:7f002f5f04f12e997ea555ac373e4123dfae685715403e68dc8b1a21bb1546ba"
+   "1.1.0": "sha256:7f002f5f04f12e997ea555ac373e4123dfae685715403e68dc8b1a21bb1546ba",
+   "1.2.0": "sha256:598d342f7f6b892ca631370e1206942a9455334f2e295fcb8136bd159abde071"
   }
  },
  "type:Automation.Job": {
@@ -610,10 +612,11 @@
   }
  },
  "type:Grouping": {
-  "current": "0.2.0",
+  "current": "0.3.0",
   "path": "registry/classes/access/grouping/_base.yaml",
   "versions": {
-   "0.2.0": "sha256:00141d763206ad31a3c32eeffc8e2a5251a711115b958f115ae6766d93fba4a2"
+   "0.2.0": "sha256:00141d763206ad31a3c32eeffc8e2a5251a711115b958f115ae6766d93fba4a2",
+   "0.3.0": "sha256:7845995aaba0dace2aff2da2ebde357a63fbf163bd510ebd9a5d8ce8d91a37d7"
   }
  },
  "type:Grouping.Authorization": {
@@ -717,10 +720,11 @@
   }
  },
  "type:Identity": {
-  "current": "1.0.0",
+  "current": "1.1.0",
   "path": "registry/classes/access/identity/_base.yaml",
   "versions": {
-   "1.0.0": "sha256:761faab11015e2503c929f28dac07d5772ffa5d8e644b10740a0a864929bfbc4"
+   "1.0.0": "sha256:761faab11015e2503c929f28dac07d5772ffa5d8e644b10740a0a864929bfbc4",
+   "1.1.0": "sha256:909defaf6568c43b764842f45651a594045a4569e4eb31dbf3babe84e2331962"
   }
  },
  "type:Identity.Group": {
@@ -815,10 +819,11 @@
   }
  },
  "type:Machine": {
-  "current": "2.0.0",
+  "current": "2.1.0",
   "path": "registry/classes/resource/machine/_base.yaml",
   "versions": {
-   "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43"
+   "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
+   "2.1.0": "sha256:d23b79fabe69e262ad82946fedccedbf7b46a3e88b91cf0febd08740de7705fb"
   }
  },
  "type:Machine.BareMetalHost": {
@@ -1332,10 +1337,11 @@
   }
  },
  "type:Template": {
-  "current": "0.1.0",
+  "current": "0.2.0",
   "path": "registry/classes/resource/template/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:e4444c14feffc0c177d17e1f1a655613b9447e6a94b573193cfde22197f2ad5d"
+   "0.1.0": "sha256:e4444c14feffc0c177d17e1f1a655613b9447e6a94b573193cfde22197f2ad5d",
+   "0.2.0": "sha256:c2be29dba31518a8b2eaf61fb293219479e188be0fc362296a7ea8fea63b782f"
   }
  },
  "type:Template.Application": {
@@ -1358,10 +1364,11 @@
   }
  },
  "type:TestEvidence": {
-  "current": "0.2.0",
+  "current": "0.3.0",
   "path": "registry/classes/knowledge/test-evidence/_base.yaml",
   "versions": {
-   "0.2.0": "sha256:147611b6ea1d689fbb31825bf8a1068461d3958ff640252db17286879c7a11fd"
+   "0.2.0": "sha256:147611b6ea1d689fbb31825bf8a1068461d3958ff640252db17286879c7a11fd",
+   "0.3.0": "sha256:21c270f7e25d219fcbec447432b912ba0832d976480829c9606c8c2385549ba4"
   }
  },
  "type:TestEvidence.VulnerabilityCheck": {

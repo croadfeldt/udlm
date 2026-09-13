@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/TestEvidence/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/TestEvidence/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63",
   "resource_type": "TestEvidence",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
     "display_name": "Test Evidence",
-    "description": "One generated test and what it proved about one software package version, as a Knowledge-family fact: the file and its digest, the category, the package and vulnerability it is evidence about (by reference), how it was validated (built, ran, differential against the other version, mutants it killed, flake runs), and the run that produced it (a Job, by reference). Knowledge, not a Resource: it is discovered by running the test and curated by a reviewer, never provider-realized. Lifecycle is the family's curation reading of the four states (knowledge-family.md §2): the intent record is a candidate the generator proposes; the realized record is a reviewer-accepted test, with `scope` saying whether it lives in the package's overlay or the product-wide standard suite; deprecated marks a retired test, reason kept. ADOPT by reference (T5): the signed projection of the realized record is an in-toto Statement with the test-result/v0.1 predicate, whose subject is this record's integrity head. The join runs one way, statement to record: the record carries nothing about the statement, because the head it is verified against covers the whole record. The statement schema is not restated. Origin: the AI Test Harness (ai-test-harness) as the first producer; any test generator can produce these records.",
+    "description": "One test and its outcome about one subject, as a Knowledge-family fact any test suite can produce: a CI run of unit tests, a role tested with Molecule, a conformance suite against a cluster, a burn-in against a host, or a generated test against a dependency. It says what the test is, what it is about (a reference to any entity), what kind of test it is, what happened (the result, in an adopted test-report format), and which run produced it (a Job, by reference). Knowledge, not a Resource: it is observed by running the test and curated by a reviewer. Lifecycle is the family's curation reading of the four states (knowledge-family.md §2): a proposed test is an intent record, one under review is a requested record, an accepted test is a realized record with `scope`, a retired one is deprecated with its reason. ADOPT by reference (T5): the result body is CTRF (preferred) or JUnit XML, pointed at and summarized, never restated; the signed projection of a realized record is an in-toto Statement with the test-result/v0.1 predicate whose subject is this record's integrity head. The join runs one way, statement to record. Types narrow the subject and the purpose; a Provider Class carries what only one producer knows.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-09-13T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "TestEvidence",
-          "version": "0.1.0",
+          "version": "0.3.0",
           "uuid": "3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63"
         }
       ]
@@ -29,16 +29,11 @@
     "properties": {
       "test_id": {
         "type": "string",
-        "description": "Stable identifier of the test across edits, as the producer names it."
+        "description": "Stable identifier of the test across edits."
       },
-      "file_path": {
-        "type": "string",
-        "description": "Path of the test file within the overlay or suite it belongs to."
-      },
-      "file_digest": {
-        "type": "string",
-        "pattern": "^sha256:[0-9a-f]{64}$",
-        "description": "Digest of the test file, sha256 with the same prefix the integrity block uses."
+      "subject_ref": {
+        "$ref": "../common-elements.schema.json#/$defs/Reference",
+        "description": "What the test is about, as a reference to any entity — a software package, a service, a class record, a host, a cluster."
       },
       "category": {
         "type": "string",
@@ -46,91 +41,68 @@
           "unit",
           "functional",
           "negative",
-          "cve",
           "fuzz",
-          "harness"
+          "integration",
+          "conformance",
+          "performance",
+          "security"
         ],
-        "description": "What kind of test this is."
+        "description": "The kind of test."
       },
-      "software_package_ref": {
-        "$ref": "../common-elements.schema.json#/$defs/Reference",
-        "description": "The SoftwarePackage (one record per purl) this test is evidence about. A reference, never the purl restated."
-      },
-      "version_range": {
-        "type": "string",
-        "description": "The package version range the test is known to apply to."
-      },
-      "call_sites": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "description": "First-party code paths this test mirrors."
-      },
-      "source_version": {
-        "type": "string",
-        "description": "The commit or manifest revision the test was generated against."
-      },
-      "job_ref": {
-        "$ref": "../common-elements.schema.json#/$defs/Reference",
-        "description": "The Job (Process family) that produced this evidence. Its realized record carries the model, prompt digest, tool versions, image and execution target; none of that is restated here."
-      },
-      "vulnerability_ref": {
-        "$ref": "../common-elements.schema.json#/$defs/Reference",
-        "description": "For a cve-category test, the Vulnerability record (one per CVE) it is evidence about. Advisory aliases are the Vulnerability's, not fields here."
-      },
-      "vulnerability_role": {
-        "type": "string",
-        "enum": [
-          "exposure",
-          "fix-pinning"
-        ],
-        "description": "exposure or fix-pinning."
-      },
-      "vex_statement_ref": {
-        "$ref": "../common-elements.schema.json#/$defs/Reference",
-        "description": "The VexStatement this test is cited as evidence for, when one exists."
-      },
-      "validation": {
+      "result": {
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "baseline_pass",
-          "flake_runs",
-          "differential"
+          "outcome",
+          "format"
         ],
         "properties": {
-          "baseline_pass": {
-            "type": "boolean",
-            "description": "The test passes on the version it was written for."
-          },
-          "coverage_delta": {
-            "type": "number",
-            "description": "Lines of the package the test adds to coverage, as a delta against the existing suite (0 when there is no baseline suite yet)."
-          },
-          "mutants_killed": {
-            "type": "integer",
-            "description": "Sampled mutants of the package this test made fail."
-          },
-          "unique_mutants_killed": {
-            "type": "integer",
-            "description": "Mutants only this test killed."
-          },
-          "flake_runs": {
-            "type": "integer",
-            "description": "How many repeated runs agreed with the first."
-          },
-          "differential": {
+          "outcome": {
             "type": "string",
             "enum": [
-              "na",
-              "same",
-              "changed"
+              "passed",
+              "failed",
+              "skipped",
+              "error"
             ],
-            "description": "Whether the outcome differs between the two package versions run (na when only one version ran)."
+            "description": "The test's outcome on the subject, as the report format defines it."
+          },
+          "duration_ms": {
+            "type": "integer",
+            "description": "Wall time of the test in milliseconds."
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "ctrf",
+              "junit-xml"
+            ],
+            "description": "The adopted report format the full result is in."
+          },
+          "report_ref": {
+            "type": "string",
+            "description": "Where the full report is: a path relative to the run's artifacts, or a reference."
+          },
+          "report_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "description": "Digest of the full report, sha256 with the same prefix the integrity block uses."
           }
         },
-        "description": "Why the test was kept."
+        "description": "What happened."
+      },
+      "job_ref": {
+        "$ref": "../common-elements.schema.json#/$defs/Reference",
+        "description": "The Job (Process family) that ran the test. Its realized record carries the runner, its versions, and where it ran; none of that is restated here."
+      },
+      "file_path": {
+        "type": "string",
+        "description": "Path of the test's source within its suite."
+      },
+      "file_digest": {
+        "type": "string",
+        "pattern": "^sha256:[0-9a-f]{64}$",
+        "description": "Digest of the test's source file."
       },
       "scope": {
         "type": "string",
@@ -143,82 +115,60 @@
     },
     "required": [
       "category",
-      "file_digest",
-      "file_path",
       "job_ref",
-      "software_package_ref",
-      "source_version",
-      "test_id",
-      "validation"
+      "result",
+      "subject_ref",
+      "test_id"
     ],
     "examples": [
       {
-        "test_id": "python-jose::test_ghsa_cjwg_qfpm_7377_fix_pinning::5645aafeb0e8",
-        "file_path": "tests/test_python_jose_cve_cve_2024_33664.py",
-        "file_digest": "sha256:5645aafeb0e88272a82afa9b176fa8b6c8a528c82948369193daefcb223df966",
-        "category": "cve",
-        "software_package_ref": "estate/cexample/knowledge/software-package/python-jose-3-4-0",
-        "version_range": "==3.4.0",
-        "call_sites": [
-          "app/auth.py"
-        ],
-        "source_version": "requirements.txt@cfa8f4a3292b",
-        "job_ref": "estate/cexample/jobs/ai-test-harness-run-76a3fa863e76",
-        "vulnerability_ref": "estate/cexample/knowledge/vulnerability/cve-2024-33664",
-        "vulnerability_role": "fix-pinning",
-        "validation": {
-          "baseline_pass": true,
-          "coverage_delta": 0.0,
-          "mutants_killed": 1,
-          "unique_mutants_killed": 0,
-          "flake_runs": 2,
-          "differential": "changed"
-        }
+        "test_id": "scheduler::test_reserve_slot",
+        "subject_ref": "estate/cexample/apps/scheduler",
+        "category": "unit",
+        "result": {
+          "outcome": "passed",
+          "duration_ms": 12,
+          "format": "junit-xml"
+        },
+        "job_ref": "estate/cexample/jobs/ci-run-000123"
       }
     ]
   },
-  "outputs": {
-    "bumps_survived": {
-      "type": "integer",
-      "description": "Package version changes this test has passed through unchanged since it was accepted."
-    },
-    "regressions_caught": {
-      "type": "integer",
-      "description": "Real regressions this test caught after acceptance. The number a quarterly report counts."
-    }
-  },
+  "outputs": {},
   "relationships": [
-    {
-      "edge_type": "references",
-      "target": "SoftwarePackage",
-      "cardinality": "1..1",
-      "description": "evidence_about — the package version the test characterizes or protects."
-    },
-    {
-      "edge_type": "references",
-      "target": "Vulnerability",
-      "cardinality": "0..1",
-      "description": "evidence_for — the vulnerability a cve-category test triggers or pins."
-    },
     {
       "edge_type": "references",
       "target": "Job",
       "cardinality": "1..1",
-      "description": "produced_by — the run that generated and validated the test."
-    },
-    {
-      "edge_type": "references",
-      "target": "VexStatement",
-      "cardinality": "0..1",
-      "description": "cited_by — the VEX statement that uses this test as evidence."
+      "description": "produced_by — the run that executed the test."
     }
   ],
   "adopts": [
     {
+      "standard": "CTRF",
+      "version": "1.0",
+      "standard_name": "Common Test Report Format",
+      "role": "the preferred full-result body, pointed at by result.report_ref and summarized in result; the first test-report format adopted here",
+      "source": "https://ctrf.io/",
+      "license": "MIT",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "JUnit XML",
+      "version": "xunit2",
+      "standard_name": "JUnit XML test report",
+      "role": "the accepted full-result body every CI tool emits, pointed at by result.report_ref",
+      "source": "https://github.com/testmoapp/junitxml",
+      "license": "reference-only",
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
+    },
+    {
       "standard": "in-toto Attestation Framework",
       "version": "1.0",
       "standard_name": "in-toto Statement with the test-result/v0.1 predicate",
-      "role": "the signed projection of the realized record; its subject digest is this record's integrity head, carried as an output, the statement schema is not restated",
+      "role": "the signed projection of the realized record; its subject digest is this record's integrity head; the statement schema is not restated",
       "source": "https://in-toto.io/attestation/test-result/v0.1",
       "license": "Apache-2.0",
       "license_compatibility": "compatible-reference",
@@ -237,12 +187,20 @@
   ],
   "entity_type": "TestEvidence",
   "context": {
-    "purpose": "Records what one automated test proved about one software package version, so the proof can be referenced, verified, and curated like any other fact.",
-    "plain_description": "One test, one record per lifecycle state. It says which file the test is, what package and vulnerability it is about (by reference), which run produced it (a Job, by reference), and how it was validated: did it pass on its own version, did the outcome differ between the two versions, how many injected faults did it catch, how many repeated runs agreed. A candidate the generator proposes is the intent record; a test a reviewer accepts is the realized record, which says whether it lives in the package's overlay or the product-wide suite; a retired test is deprecated with its reason. The signed in-toto statement about the test uses this record's integrity head as its subject.",
+    "purpose": "Records the evidence a test provides about a subject — any test, from any suite, in the result format the suite already emits.",
+    "plain_description": "One test, what it was about, and how it went: the subject it exercised, the kind of test, the outcome and duration as a CTRF or JUnit report states them, and the run that produced it. A suite with nothing more to say binds here; a suite that checks a vulnerability binds at TestEvidence.VulnerabilityCheck; a producer with metrics of its own binds at its Provider Class.",
     "use_when": [
-      "A test generator (an AI harness or a person) has produced a test whose result should count as evidence about a dependency.",
-      "A reviewer accepts, promotes, or retires such a test and the decision must be traceable.",
-      "A consumer needs to verify a claim that a vulnerability is fixed, or that a version is exposed, back to a test that ran."
+      "Any test suite's results need to live in the estate as evidence with provenance.",
+      "A test result should be citable by other records (a VEX statement, a finding) by uuid."
+    ],
+    "not_for": [
+      "The run — that is a Job.",
+      "A vulnerability claim — that is VexStatement, which cites this evidence."
+    ],
+    "works_with": [
+      "Job — the run that produced the evidence.",
+      "TestEvidence.VulnerabilityCheck — the Type for CVE checks.",
+      "VexStatement — cites evidence records."
     ]
   }
 }
