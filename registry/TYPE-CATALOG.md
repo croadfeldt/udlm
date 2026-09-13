@@ -1118,6 +1118,17 @@ One test, one record per lifecycle state. It says which file the test is, what p
 - A reviewer accepts, promotes, or retires such a test and the decision must be traceable.
 - A consumer needs to verify a claim that a vulnerability is fixed, or that a version is exposed, back to a test that ran.
 
+### TestEvidence.VulnerabilityCheck (0.1.0)
+
+**Purpose:** Records one test that checks one known vulnerability in one package version, so a claim that a vulnerability is fixed or reachable can be traced to a test that ran.
+
+The vulnerability-check dialect of test evidence: the subject is a package version, the test is either an exposure check (the application's own call pattern with the known trigger) or a fix-pinning check (fails on the vulnerable version, passes on the fixed one), and the record names the vulnerability, the role, the VEX statement it supports, and the version range it applies to. Any generator can produce one; what only a particular generator knows lives in its Provider Class below.
+
+**Use when:**
+- A test exists whose point is one known vulnerability in one package, whatever produced it.
+- A VEX status of fixed or affected needs a test behind it.
+- A reviewer wants to know which vulnerabilities on a change are proven and which are only claimed.
+
 ## Topology
 
 ### Topology (0.5.2)
@@ -1174,4 +1185,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*57 types; 57 with context, 0 pending.*
+*58 types; 58 with context, 0 pending.*

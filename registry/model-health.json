@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 57,
+    "types": 58,
     "by_family": {
       "Access": 7,
-      "Knowledge": 8,
+      "Knowledge": 9,
       "Process": 2,
       "Resource": 40
     }
   },
   "discrimination": {
-    "mutations_attempted": 4910,
-    "mutations_rejected": 4910,
+    "mutations_attempted": 5034,
+    "mutations_rejected": 5034,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -231,6 +231,10 @@
         "attempted": 151,
         "rejected": 151
       },
+      "TestEvidence.VulnerabilityCheck": {
+        "attempted": 124,
+        "rejected": 124
+      },
       "Topology": {
         "attempted": 171,
         "rejected": 171
@@ -246,8 +250,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 57,
-    "total": 57
+    "strict_specs": 58,
+    "total": 58
   },
   "outputs": {
     "per_type": {
@@ -305,6 +309,7 @@
       "TaxonomyTerm": 1,
       "Template.Application": 1,
       "TestEvidence": 2,
+      "TestEvidence.VulnerabilityCheck": 0,
       "Topology": 1,
       "VexStatement": 0,
       "Vulnerability": 0
@@ -318,6 +323,7 @@
       "SoftwareImage",
       "SoftwarePackage",
       "SovereigntyZone",
+      "TestEvidence.VulnerabilityCheck",
       "VexStatement",
       "Vulnerability"
     ],
@@ -349,13 +355,13 @@
     ]
   },
   "context": {
-    "with_context": 57,
-    "total": 57,
+    "with_context": 58,
+    "total": 58,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 46,
-    "total": 57,
+    "with_relationships": 47,
+    "total": 58,
     "missing": [
       "Access.Grouping",
       "Automation.OSPatch",
@@ -431,6 +437,7 @@
       "Storage.Layout",
       "Template.Application",
       "TestEvidence",
+      "TestEvidence.VulnerabilityCheck",
       "VexStatement"
     ]
   },
@@ -509,11 +516,12 @@
       "TaxonomyTerm",
       "Template.Application",
       "TestEvidence",
+      "TestEvidence.VulnerabilityCheck",
       "Topology",
       "VexStatement",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 57
+    "consumed_by_at_least_one": 58
   },
   "expressibility_coverage": {
     "value": null,

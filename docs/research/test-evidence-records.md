@@ -27,12 +27,24 @@ projection of a record that an outside verifier can check. This proposal supplie
 
 | Harness output | UDLM home |
 |---|---|
-| One record per accepted test: file, digest, category, what it targets, how it was validated | `TestEvidence`, a new Knowledge base class |
+| One record per accepted test: file, digest, category, what it targets, how it was validated | `TestEvidence`, a new Knowledge base class any test suite can fill, with a `VulnerabilityCheck` type for package-and-CVE checks and an `AiTestHarness` provider class for what only this harness knows |
 | The package and vulnerability the test is about | References to the existing `SoftwarePackage` and `Vulnerability` records, which the harness also produces as a provider of knowledge |
 | The run: model, prompt digest, tool versions, sandbox image | A `Job` record; the evidence references it and repeats none of it |
 | The draft VEX statement per vulnerability | `VexStatement`, a new Knowledge base class; status is OpenVEX's codelist by reference |
 | Findings with a class and a confidence | Sealed findings on the ledger (`udlm-finding` facet), never a record of their own |
 | The signed in-toto statement | Adopted by reference on `TestEvidence`; its subject digest is the realized record's integrity head |
+
+The evidence class has three tiers, per the class-tier rules. The base is what any suite can produce:
+a CI run of unit tests, a role tested with Molecule, a conformance suite against a cluster, a burn-in
+against a host. It names the test, its subject by reference to any entity, a generic kind, the result
+in an adopted report format (CTRF preferred, JUnit XML accepted; the first test-report format adopted
+here, so the standards register can follow), and the producing run. The type narrows the subject to a
+package and adds the vulnerability, its role, the VEX statement, and the version range. A suite with no vulnerability in view binds at a type of its own
+when one is declared; the base itself carries no served surface once it has children. The provider
+class carries what only the harness knows: the application revision, the call sites, and the
+generation-time validation with its mutation and flake numbers. Every record the harness makes today
+binds at the provider class and stays valid; the signed statement is adopted on the base, since any
+producer can sign a result.
 
 The lifecycle maps onto the Knowledge family's curation reading of the four states, so it is not a
 field: a candidate the generator proposes is an intent record; one under review is a requested record;
@@ -64,7 +76,7 @@ dependency-fix pull request:
   versions are its results.
 - `example-test-evidence-records.yaml`: the test that proved the vulnerability fixed, as its
   candidate (intent), its reviewer's queue entry (requested), and its accepted (realized, overlay)
-  record, sealed.
+  record, sealed, bound at the provider class.
 - `example-vex-statement-cve-2024-33664.yaml`: the draft statement, `fixed`, resting on that test;
   only Product Security's realized record would make it confirmed.
 
@@ -87,9 +99,10 @@ versions.
 
 ## Decisions for the maintainer
 
-1. **Accept `TestEvidence` and `VexStatement` as Knowledge base classes** at version 0.1.0. Every
-   element is marked proposed, the data's way of saying a first producer's class is not yet settled;
-   promotion to canonical follows real records from the harness.
+1. **Accept the three-tier `TestEvidence`** (base for any suite, `VulnerabilityCheck` type,
+   `AiTestHarness` provider class) **and `VexStatement`** as Knowledge classes. Every element is marked
+   proposed, the data's way of saying a first producer's class is not yet settled; promotion to
+   canonical follows real records from more than one producer.
 2. **Confirm the lifecycle mapping**: candidate = intent, accepted and standard = realized with
    `scope`, retired = deprecated. No fifth state, no lifecycle field.
 3. **Confirm the enums stay on the classes** (category, differential, role, scope) as closed sets the
@@ -101,3 +114,6 @@ versions.
    existing family (Knowledge, INT) they fall under.
 6. **Move SLSA and in-toto in the standards register** from pattern to adopted, with `TestEvidence`
    named as the first producer, closing or narrowing #558.
+7. **Confirm CTRF as the preferred test-report format**, JUnit XML accepted, both adopted by reference
+   on the base. The CTRF version pin (1.0) should be checked against the schema version in effect when
+   this is ruled on.
