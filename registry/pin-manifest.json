@@ -1358,10 +1358,24 @@
   }
  },
  "type:TestEvidence": {
-  "current": "0.1.0",
+  "current": "0.2.0",
   "path": "registry/classes/knowledge/test-evidence/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:ead4dd2cd9aa787a135d13e5313c08fa0febccf94ddd4964f0fbf5deccc23c22"
+   "0.2.0": "sha256:ec7ef66d42e7b7beefe19360c66acdcf34cb183a2b26e71f82bac26dc70a7035"
+  }
+ },
+ "type:TestEvidence.VulnerabilityCheck": {
+  "current": "0.1.0",
+  "path": "registry/classes/knowledge/test-evidence/vulnerability-check/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:70c2d17060e3f1d363b33a9f9f8a8ef1cd8a1868b0c42096dacc8102754f554f"
+  }
+ },
+ "type:TestEvidence.VulnerabilityCheck.AiTestHarness": {
+  "current": "0.1.0",
+  "path": "registry/classes/knowledge/test-evidence/vulnerability-check/ai-test-harness.yaml",
+  "versions": {
+   "0.1.0": "sha256:6dd8b2dcf60c7ad97691b5c19c8f7dd711eb2698af484223af6c97febff68ea9"
   }
  },
  "type:Topology": {
