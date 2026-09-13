@@ -419,19 +419,19 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 
 ## KubernetesCluster
 
-### KubernetesCluster (1.1.0)
+### KubernetesCluster (2.0.0)
 
-**Purpose:** Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.
+**Purpose:** Declares a managed Kubernetes cluster — release and network ranges — as one provisionable intent; its node pools are KubernetesNodePool records contained by it.
 
-The request for a whole container platform: which release, how many nodes of what shape in which pools, and what internal network ranges it uses. A provider (e.g. hosted control planes behind a management hub) turns this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.
+The request for a control plane: which release and what internal network ranges it uses. The nodes come as separate KubernetesNodePool orders contained by the cluster, so a cluster with its pools is a composition of records, never one record. A provider (e.g. hosted control planes behind a management hub) turns this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.
 
 **Use when:**
-- You need to request a new Kubernetes cluster with a declared release and node shape rather than hand-building one.
+- You need to request a new Kubernetes cluster with a declared release rather than hand-building one; the pools follow as KubernetesNodePool orders.
 - You need cluster-scoped resources (namespaces, node pools, storage classes) to have a single parent record they cannot outlive.
 
 **Not for:**
 - A distributed storage cluster (Ceph and kin) — that is Storage.Cluster; this type is the container-orchestration platform.
-- A group of nodes inside an existing cluster — that is KubernetesNodePool (this spec also carries inline node_pools; single ownership between the two is an open decision).
+- A group of nodes — that is KubernetesNodePool, always, whether ordered with the cluster or later (ruling 072).
 
 **Works with:**
 - KubernetesNamespace — the isolation boundaries carved inside the cluster.
@@ -461,7 +461,7 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 
 ## KubernetesNodePool
 
-### KubernetesNodePool (1.0.0)
+### KubernetesNodePool (1.1.0)
 
 **Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
 
@@ -472,7 +472,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 - You need placement to select capacity by declared capability (architecture, memory tier) rather than by node names.
 
 **Not for:**
-- The cluster — KubernetesCluster (whose spec also carries inline node_pools; single ownership between the two is an open decision).
+- The cluster — KubernetesCluster; it carries no pools of its own (ruling 072).
 - One physical machine — Machine.BareMetalHost; a pool is a cluster-level grouping, not a host record.
 
 **Works with:**

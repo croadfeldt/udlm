@@ -74,7 +74,7 @@ test clause; row 069 in PR 1 supersedes it.
 | | |
 |---|---|
 | Content | `Platform.Namespace` → `KubernetesNamespace` (`K8sNamespace`); `Platform.NodePool` → `KubernetesNodePool` (`K8sNodePool`); `Platform.ResourceQuota` folds into namespace elements; `Platform.StorageClass` becomes a storage output; `Platform.Hub` becomes `fleet_manager` / `hosted_control_planes` role elements on `KubernetesCluster`; `Platform` deleted; `KubernetesCluster` gains `short_name: K8sCluster` |
-| Also | `KubernetesCluster.node_pools` (inline) versus `KubernetesNodePool` (a class): keep the class, the inline array becomes references — T7 reduce-to-existing |
+| Also | `KubernetesCluster.node_pools` (inline) versus `KubernetesNodePool` (a class): ruled 2026-09-12 (row 072) — the cluster carries no pools; every pool is a record; a cluster with pools is a composition |
 | Sweep | 193 `Platform.*` references outside `docs/adr/` |
 | Size | near the cap. **Split line:** 4a = namespace and node-pool promotion; 4b = the three folds and the `Platform` delete |
 | Depends on | PR 1 (short names), PR 2 |
@@ -118,8 +118,8 @@ test clause; row 069 in PR 1 supersedes it.
 
 **Rulings waiting on the maintainer**
 
-- `KubernetesCluster.node_pools` (inline) versus `KubernetesNodePool` (class): single ownership.
-  Flagged on the node-pool record since July; PR 4a and 4b left it alone.
+- `KubernetesCluster.node_pools` (inline) versus `KubernetesNodePool` (class): ruled 2026-09-12, row 072 —
+  records only; the cluster's inline list is removed.
 - Removing `Platform`, `Platform.Hub` and `Platform.ResourceQuota` after the sunset window
   (REG-DP-002, twelve months for Tier 1) or on a pre-1.0 override.
 

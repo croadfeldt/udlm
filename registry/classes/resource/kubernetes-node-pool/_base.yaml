@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNodePool/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNodePool/1.1.0
 conforms_to: udlm/0.1
 uuid: ff7f0b01-d451-4aed-89da-83117923820f
 record_type: class
 class: base
 resource_type: KubernetesNodePool
 short_name: K8sNodePool
-version: 1.0.0
+version: 1.1.0
 family: Resource
 status: active
 metadata:
@@ -13,8 +13,9 @@ metadata:
   description: 'A Kubernetes node pool as one orderable deliverable — a Base Class in its own right
     (ADR-068, ADR-069; promoted out of the former Platform folder). A homogeneous slice of a cluster''s
     node capacity — shared hardware traits, labels, taints — that is ordered, scaled and upgraded on its
-    own (a cloud node pool, a MachineSet, a Cluster API MachineDeployment), which is why it is a class
-    and not only the cluster''s inline `node_pools` element. Its contract is the Kubernetes node model:
+    own (a cloud node pool, a MachineSet, a Cluster API MachineDeployment). The cluster carries no pools of
+    its own: every pool, including the first, is one of these records contained by the cluster, and a
+    cluster with its pools is a composition (ruling 072). Its contract is the Kubernetes node model:
     every conformant distribution exposes nodes with labels and taints that placement matches workloads
     against. Named for the standard, never for a product; distribution-specific pool shapes are the
     Type tier beneath it.'
@@ -48,6 +49,17 @@ elements:
     type: integer
     minimum: 0
     description: Target number of nodes in this pool.
+- element: node_resources
+  scope: KubernetesNodePool
+  optional: true
+  state: canonical
+  description: Per-node sizing for the pool — the shared compute-sizing shape (common-elements §2.2, ComputeResources)
+    that a VM, a database instance and a node pool all use; size by class (`instance_size`) or by explicit cpu and
+    memory. The provider maps it to a concrete node shape at naturalization (DCM ADR-023). Carried over from the
+    cluster's former inline pool list (ruling 072), which sized nodes as a free-string host shape; the shared
+    shape is comparable across estates and a string is not.
+  schema:
+    $ref: ../../../common-elements.schema.json#/$defs/ComputeResources
 - element: capabilities
   scope: KubernetesNodePool
   optional: true
@@ -113,6 +125,12 @@ spec_examples:
 - name: gpu-large
   cluster_ref: primary-platform-cluster
   node_count: 4
+  node_resources:
+    instance_size: large
+    cpu:
+      count: 16
+    memory:
+      size: 64Gi
   capabilities:
     gpu:
       available: true
@@ -156,8 +174,7 @@ context:
   - You need placement to select capacity by declared capability (architecture, memory tier) rather than
     by node names.
   not_for:
-  - The cluster — KubernetesCluster (whose spec also carries inline node_pools; single ownership between
-    the two is an open decision).
+  - The cluster — KubernetesCluster; it carries no pools of its own (ruling 072).
   - One physical machine — Machine.BareMetalHost; a pool is a cluster-level grouping, not a host record.
   works_with:
   - KubernetesCluster — the cluster the pool belongs to.
