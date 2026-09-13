@@ -1361,7 +1361,7 @@
   "current": "0.1.0",
   "path": "registry/classes/knowledge/test-evidence/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:8b0f34fc1c9880d71b5240a6f695c580ac17fd3d7191fb83d1eacf4ae62991c9"
+   "0.1.0": "sha256:ead4dd2cd9aa787a135d13e5313c08fa0febccf94ddd4964f0fbf5deccc23c22"
   }
  },
  "type:Topology": {
@@ -1379,7 +1379,7 @@
   "current": "0.1.0",
   "path": "registry/classes/knowledge/vex-statement/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:dbbab5977f2c09787a55f13d208309cd5419a9bfde6224dea944928292b1e42c"
+   "0.1.0": "sha256:c29e11113f762bce379dce4475ee0ea21b15cdf12b2520fde4453b366c52d23a"
   }
  },
  "type:Vulnerability": {
