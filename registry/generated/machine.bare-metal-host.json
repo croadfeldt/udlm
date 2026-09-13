@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.0.0",
+          "version": "2.1.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
@@ -305,6 +305,18 @@
     ]
   },
   "outputs": {
+    "provider_handle": {
+      "type": "string",
+      "description": "The provider-native identifier of the realized machine (opaque; correlation and operations only — never a portable reference). Promoted from Machine.VM: every form has one."
+    },
+    "primary_ip": {
+      "type": "string",
+      "description": "The primary or management address of the booted machine — the single address most bindings want. Promoted from Machine.VM: a bare-metal host and an LPAR have one once booted."
+    },
+    "hostname": {
+      "type": "string",
+      "description": "Realized hostname (FQDN where the realm provides one). Promoted from Machine.VM."
+    },
     "power_state": {
       "type": "string",
       "description": "Observed power state — On | Off | PoweringOn | PoweringOff (Redfish ComputerSystem.PowerState). Drives shutdown/startup ordering for the dependency graph."
@@ -348,7 +360,7 @@
       "standard": "Redfish",
       "version": "2024.4",
       "standard_name": "ComputerSystem",
-      "role": "physical system inventory + power vocabulary (identity, processor/memory summary, PowerState)",
+      "role": "Vendor-neutral compute-system representation spanning physical, virtual and partitioned (Redfish ComputerSystem SystemType: Physical | Virtual | Composed | PhysicallyPartitioned | VirtuallyPartitioned) — the one representative standard for the Machine family, shared by Machine.VM, Machine.BareMetalHost and Machine.LPAR and declared once here. Nova with Ironic, Cluster API's Machine and TOSCA's Compute are the industry abstractions that treat the three forms as one thing (CLS-002 (a)); Redfish is the wire representation adopted. Provider-native realizations are declared on the provider support matrix, not on the substrate type.",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
       "license_compatibility": "compatible-reference",

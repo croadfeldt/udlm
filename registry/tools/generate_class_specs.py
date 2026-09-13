@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Spec generator (ADR-038; conversion executed 2026-08-04 — classes are the sole authored surface): compile each Type Class into the flat
+"""Spec generator (ADR-038; conversion executed 2026-08-04 — classes are the sole authored surface): compile each Type Class, and each Base a producer may bind at, into the flat
 resource-type-spec shape consumers read today, so Classes are the authoring layer and the flat
 specs are generated artifacts (never hand-edited). A Type Class's compiled spec is its own elements
 plus every ancestor's, merged under `spec.properties`; `required` is the set of non-optional
@@ -183,10 +183,11 @@ def main():
     check = "--check" in sys.argv
     by_name = load_classes()
     has_children = {n: any(c.get("parent") == n for c in by_name.values()) for n in by_name}
-    # served classes: every type tier + any CHILDLESS base (instantiable directly — the Job
-    # pattern; a base with children is abstract-by-use, its types are the served surface)
+    # served classes: every type tier + every Base that may be ordered at (CLS-002 (c): a producer
+    # bound at a Type accepts an order at the Base above it, so the Base needs a flat spec to
+    # validate that order's fields). A folder — `instantiable: false`, CLS-003 — is never served.
     types = {n: c for n, c in by_name.items()
-             if c.get("class") == "type" or (c.get("class") == "base" and not has_children[n])}
+             if c.get("class") == "type" or (c.get("class") == "base" and c.get("instantiable") is not False)}
     os.makedirs(OUT, exist_ok=True)
     drift, n = [], 0
     for name, cls in sorted(types.items()):
@@ -210,7 +211,7 @@ def main():
         else:
             open(out, "w", encoding="utf-8").write(text)
             print(f"wrote  {name} → {os.path.relpath(out, ROOT)} ({len(spec['spec']['properties'])} props)")
-    print(f"{n} Type Class(es) compiled, {len(drift)} issue(s)")
+    print(f"{n} class(es) compiled (types + orderable bases), {len(drift)} issue(s)")
     return 1 if drift else 0
 
 

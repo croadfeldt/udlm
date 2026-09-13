@@ -25,13 +25,13 @@
 # names its parent, and an UNGOVERNED composition (ingested from LikeC4, converted from CALM,
 # authored by a consumer) is a composition RECORD rather than a class — those never mint classes
 # into the shared vocabulary. The chain belongs to that record kind, not to this one.
-$id: https://udlm.dev/registry/udlm/0.1/class/Template/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Template/0.2.0
 conforms_to: udlm/0.1
 uuid: 39584b58-b513-4b3f-9780-b427865c58b7
 record_type: class
 class: base
 resource_type: Template
-version: 0.1.0
+version: 0.2.0
 family: Resource
 status: active
 
@@ -39,13 +39,7 @@ metadata:
   display_name: Template — the orderable composition
   maintainer: UDLM project
   origination_timestamp: '2026-08-10T00:00:00Z'
-  description: >-
-    A consumable composition: an orderable unit assembled from other classes and references, declared
-    once and realized many times. The Base Class carries only the composition MECHANISM — the
-    sovereignty floor the whole must hold, and the non-isolating groupings its realized parts join.
-    It declares no constituents, because a Base Class states what a composition is rather than what
-    any particular composition contains.
-
+  description: 'A consumable composition: an orderable unit assembled from other classes and references, declared once and realized many times. The Base Class carries only the composition MECHANISM — the sovereignty floor the whole must hold, and the non-isolating groupings its realized parts join. It declares no constituents, because a Base Class states what a composition is rather than what any particular composition contains. outputs-exempt: a Template is a definition realized many times; the composite it realizes carries the outputs.'
 elements:
 
   # SOVEREIGNTY — data carrying an operational constraint. UDLM codifies and communicates; it never
@@ -119,3 +113,22 @@ coverage:
   - architecture/solution-architecture-decomposition
   flows:
   - docs/flows/application-tier-provisioning.md
+context:
+  purpose: Declares a consumable composition — the mechanism by which an orderable unit is assembled from other
+    classes and references, declared once and realized many times.
+  plain_description: 'The thing on a menu that is made of other things. The Base carries only the composition mechanism:
+    the sovereignty floor every realization must sit within, and the groupings a realization joins. What it composes
+    is on the Type (Template.Application and kin).'
+  use_when:
+  - You need the composition floor without saying what kind of thing is composed.
+  not_for:
+  - An application stack — that is Template.Application.
+  - A single resource — order its class directly.
+  works_with:
+  - Template.Application — the Type that says what is composed.
+  - SovereigntyZone — what the floor names.
+spec_examples:
+- sovereignty_floor:
+    zone: eu-west
+  groupings:
+  - org/resource-group/example-orders-deployment

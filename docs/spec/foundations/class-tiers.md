@@ -154,6 +154,6 @@ never from the tree alone. Neither replaces the other.
 | `registry/class.schema.json` (`class` vs segment count, `resource_type` pattern) and `tests/check_class_liskov.py` | CLS-001 |
 | `tests/check_class_liskov.py` (`LSK-001`) plus the absence of an exclusion mechanism in the class schema | CLS-002 (b) |
 | review against this document; (c) is a provider-contract obligation carried by `PRV-*` | CLS-002 (a), (c) |
-| `registry/class.schema.json` (`instantiable`) and `tests/check_class_short_names.py` | CLS-003, CLS-008 |
+| `registry/class.schema.json` (`instantiable`) and `tests/check_class_short_names.py`; `registry/tools/generate_class_specs.py` serves a flat spec for every Base that is not a folder, so an order at a Base validates its fields | CLS-003, CLS-008 |
 | `registry/class.schema.json` (`short_name`), `tests/check_class_short_names.py`, and `registry/tools/resolve_class_address.py`, which accepts a short name and returns the canonical class | CLS-007 |
 | review; the Type-axis and naming rules are judgment the register records per family | CLS-004, CLS-005, CLS-006 |

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.1.0
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Machine
-version: 2.0.0
+version: 2.1.0
 family: Resource
 status: active
 metadata:
@@ -175,3 +175,53 @@ coverage:
   - scoped-class/portability-derived-from-scope
   flows:
   - docs/flows/scoped-class-lifecycle.md
+outputs:
+  provider_handle:
+    type: string
+    description: 'The provider-native identifier of the realized machine (opaque; correlation and operations only
+      — never a portable reference). Promoted from Machine.VM: every form has one.'
+  primary_ip:
+    type: string
+    description: 'The primary or management address of the booted machine — the single address most bindings want.
+      Promoted from Machine.VM: a bare-metal host and an LPAR have one once booted.'
+  hostname:
+    type: string
+    description: Realized hostname (FQDN where the realm provides one). Promoted from Machine.VM.
+context:
+  purpose: Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying
+    whether it is a VM, a bare-metal host or a logical partition.
+  plain_description: 'The most portable way to ask for a machine: how big, what image, what storage tier. Placement
+    decides the form (VM, bare metal, LPAR) and the provider; policy fills what the form needs. A producer bound
+    at any of the three forms must accept this order (class-tiers CLS-002 (c)).'
+  use_when:
+  - You need a host and do not care whether it is virtual or physical.
+  - A rebuild after loss where the original form is not worth preserving.
+  not_for:
+  - A container (Container) or a Kubernetes cluster (KubernetesCluster) — neither can honor `guest_os`.
+  - When the form matters — order Machine.VM, Machine.BareMetalHost or Machine.LPAR.
+  works_with:
+  - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
+  - Storage.Volume and Network.VirtualNetwork — what the realized machine attaches to.
+spec_examples:
+- cpu:
+    count: 4
+  memory:
+    size: 16Gi
+  guest_os:
+    type: linux-server-9
+    version: '9.6'
+  storage_tier: performance
+adopts:
+- standard: Redfish
+  version: '2024.4'
+  standard_name: ComputerSystem
+  role: 'Vendor-neutral compute-system representation spanning physical, virtual and partitioned (Redfish ComputerSystem
+    SystemType: Physical | Virtual | Composed | PhysicallyPartitioned | VirtuallyPartitioned) — the one representative
+    standard for the Machine family, shared by Machine.VM, Machine.BareMetalHost and Machine.LPAR and declared once
+    here. Nova with Ironic, Cluster API''s Machine and TOSCA''s Compute are the industry abstractions that treat
+    the three forms as one thing (CLS-002 (a)); Redfish is the wire representation adopted. Provider-native realizations
+    are declared on the provider support matrix, not on the substrate type.'
+  source: https://www.dmtf.org/standards/redfish
+  license: DMTF
+  license_compatibility: compatible-reference
+  disposition: tier1_value

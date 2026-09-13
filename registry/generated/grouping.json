@@ -1,0 +1,106 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Grouping/0.3.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "2c8b6270-2eae-4ac4-8faa-3375dde3da3e",
+  "resource_type": "Grouping",
+  "version": "0.3.0",
+  "family": "Access",
+  "status": "active",
+  "metadata": {
+    "display_name": "Grouping",
+    "description": "The native grouping anchor: RBAC bridge + derived-membership criterion + unit obligations.",
+    "maintainer": "UDLM project",
+    "origination_timestamp": "2026-08-05T00:00:00Z",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "Grouping",
+          "version": "0.3.0",
+          "uuid": "2c8b6270-2eae-4ac4-8faa-3375dde3da3e"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "subject_bindings": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "provider_ref",
+            "expression"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "provider_ref": {
+              "type": "string",
+              "format": "udlm-ref-url",
+              "description": "The auth-capability provider that evaluates this expression (cardinality-1 URF)."
+            },
+            "expression": {
+              "type": "string",
+              "description": "OPAQUE provider-scoped subject expression — an LDAP DN, an OIDC claim, a K8s subject. Never parsed or evaluated by UDLM."
+            },
+            "note": {
+              "type": "string"
+            }
+          }
+        },
+        "description": "The RBAC bridge: external subject-expressions whose holders this grouping is FOR. Opaque by design — parsing or evaluating one would re-import the permission engine the model excludes.\n"
+      },
+      "membership_criterion": {
+        "type": "string",
+        "format": "udlm-filter-url",
+        "description": "The RULE that derives the member set — a stored URF filter (identifier-scheme 9; declared fields only, URF-005), never the set itself. Idioms: tenancy \"estate?tenant_uuid=={self}\" (exclusivity is structural — the field is scalar); ownership \"estate?owned_by=={self}\"; labels \"estate?labels.concern==payments\"; explicit set \"estate?uuid=in=(a,b)\" — the marked exception, prefer any derivable form; exclusion \"estate?tenant_uuid==abc;member_of!=access/groupings/hold\".\n"
+      },
+      "obligations": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "isolation": {
+            "type": "string",
+            "enum": [
+              "none",
+              "logical",
+              "physical"
+            ]
+          }
+        },
+        "description": "Unit-level requirements the engine enforces over the derived set — physical: stores and placement partition by this grouping's uuid (IdP group -> binding -> this anchor -> tenant_uuid -> partitioned stores; every hop on existing machinery).\n"
+      }
+    },
+    "required": [
+      "membership_criterion"
+    ],
+    "examples": [
+      {
+        "membership_criterion": "estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)",
+        "obligations": {
+          "isolation": "none"
+        }
+      }
+    ]
+  },
+  "outputs": {},
+  "entity_type": "Grouping",
+  "context": {
+    "purpose": "Declares a grouping — the native anchor other things bind to: a membership criterion, the obligations members inherit, and the opaque subject bindings an authorization engine evaluates.",
+    "plain_description": "A named set of things with a rule for what belongs in it. A tenant is a grouping with an isolation obligation; an authorization is a grouping that grants a stake. A plain Grouping is an advisory set — a deployment, a team's resources — with a derivable membership rule preferred over an explicit list.",
+    "use_when": [
+      "You need to name a set of resources so policy, cost or drift can address them together."
+    ],
+    "not_for": [
+      "A tenant boundary — Grouping.Tenant.",
+      "A cross-tenant grant — Grouping.Authorization."
+    ],
+    "works_with": [
+      "Grouping.Tenant and Grouping.Authorization — the Types that narrow it.",
+      "Any resource — a member by criterion."
+    ]
+  }
+}

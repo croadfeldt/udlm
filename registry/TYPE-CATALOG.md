@@ -52,6 +52,24 @@ Some machines are routinely wiped and rebuilt, but parts of their identity must 
 
 ## Automation
 
+### Automation (1.2.0)
+
+**Purpose:** Declares an automation — what a run is, portable across engines — so any engine that exposes run, status and cancel can execute it.
+
+The definition of something that can be run: what it takes in, what it gives back, whether running it twice is safe, how long it may take, how it retries and how it is undone. Executing it produces a Job record, which is the receipt. An order at this Base is satisfied by any engine that offers any Automation type.
+
+**Use when:**
+- You need to register a runnable definition without committing to an engine or a type of automation.
+- You want the portable contract every engine must honor before a specific type adds its own fields.
+
+**Not for:**
+- A run — that is a Job.
+- A specific automation with its own fields — order the Type (Automation.OSPatch and kin).
+
+**Works with:**
+- Job — the receipt of running it.
+- Automation.OSPatch — a Type that narrows it.
+
 ### Automation.OSPatch (1.2.2)
 
 **Purpose:** The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.
@@ -176,6 +194,23 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 - Automation.Job — the shutdown job a feed's on-battery status triggers.
 
 ## Grouping
+
+### Grouping (0.3.0)
+
+**Purpose:** Declares a grouping — the native anchor other things bind to: a membership criterion, the obligations members inherit, and the opaque subject bindings an authorization engine evaluates.
+
+A named set of things with a rule for what belongs in it. A tenant is a grouping with an isolation obligation; an authorization is a grouping that grants a stake. A plain Grouping is an advisory set — a deployment, a team's resources — with a derivable membership rule preferred over an explicit list.
+
+**Use when:**
+- You need to name a set of resources so policy, cost or drift can address them together.
+
+**Not for:**
+- A tenant boundary — Grouping.Tenant.
+- A cross-tenant grant — Grouping.Authorization.
+
+**Works with:**
+- Grouping.Tenant and Grouping.Authorization — the Types that narrow it.
+- Any resource — a member by criterion.
 
 ### Grouping.Authorization (0.1.0)
 
@@ -480,6 +515,24 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 - KubernetesNamespace — namespaces whose workloads schedule onto pools.
 
 ## Machine
+
+### Machine (2.1.0)
+
+**Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
+
+The most portable way to ask for a machine: how big, what image, what storage tier. Placement decides the form (VM, bare metal, LPAR) and the provider; policy fills what the form needs. A producer bound at any of the three forms must accept this order (class-tiers CLS-002 (c)).
+
+**Use when:**
+- You need a host and do not care whether it is virtual or physical.
+- A rebuild after loss where the original form is not worth preserving.
+
+**Not for:**
+- A container (Container) or a Kubernetes cluster (KubernetesCluster) — neither can honor `guest_os`.
+- When the form matters — order Machine.VM, Machine.BareMetalHost or Machine.LPAR.
+
+**Works with:**
+- Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
+- Storage.Volume and Network.VirtualNetwork — what the realized machine attaches to.
 
 ### Machine.BareMetalHost (0.11.0)
 
@@ -1085,6 +1138,23 @@ A term with an authoritative definition, living in a named vocabulary tree (its 
 
 ## Template
 
+### Template (0.2.0)
+
+**Purpose:** Declares a consumable composition — the mechanism by which an orderable unit is assembled from other classes and references, declared once and realized many times.
+
+The thing on a menu that is made of other things. The Base carries only the composition mechanism: the sovereignty floor every realization must sit within, and the groupings a realization joins. What it composes is on the Type (Template.Application and kin).
+
+**Use when:**
+- You need the composition floor without saying what kind of thing is composed.
+
+**Not for:**
+- An application stack — that is Template.Application.
+- A single resource — order its class directly.
+
+**Works with:**
+- Template.Application — the Type that says what is composed.
+- SovereigntyZone — what the floor names.
+
 ### Template.Application (0.2.0)
 
 **Purpose:** Let a consumer order an application as ONE thing — the whole shape, wired, placed and reconciled together — instead of ordering the parts and re-deriving how they connect every time.
@@ -1107,16 +1177,24 @@ A ready-made application shape. Somebody who knows how the pieces fit wrote it d
 
 ## TestEvidence
 
-### TestEvidence (0.1.0)
+### TestEvidence (0.3.0)
 
-**Purpose:** Records what one automated test proved about one software package version, so the proof can be referenced, verified, and curated like any other fact.
+**Purpose:** Records the evidence a test provides about a subject — any test, from any suite, in the result format the suite already emits.
 
-One test, one record per lifecycle state. It says which file the test is, what package and vulnerability it is about (by reference), which run produced it (a Job, by reference), and how it was validated: did it pass on its own version, did the outcome differ between the two versions, how many injected faults did it catch, how many repeated runs agreed. A candidate the generator proposes is the intent record; a test a reviewer accepts is the realized record, which says whether it lives in the package's overlay or the product-wide suite; a retired test is deprecated with its reason. The signed in-toto statement about the test uses this record's integrity head as its subject.
+One test, what it was about, and how it went: the subject it exercised, the kind of test, the outcome and duration as a CTRF or JUnit report states them, and the run that produced it. A suite with nothing more to say binds here; a suite that checks a vulnerability binds at TestEvidence.VulnerabilityCheck; a producer with metrics of its own binds at its Provider Class.
 
 **Use when:**
-- A test generator (an AI harness or a person) has produced a test whose result should count as evidence about a dependency.
-- A reviewer accepts, promotes, or retires such a test and the decision must be traceable.
-- A consumer needs to verify a claim that a vulnerability is fixed, or that a version is exposed, back to a test that ran.
+- Any test suite's results need to live in the estate as evidence with provenance.
+- A test result should be citable by other records (a VEX statement, a finding) by uuid.
+
+**Not for:**
+- The run — that is a Job.
+- A vulnerability claim — that is VexStatement, which cites this evidence.
+
+**Works with:**
+- Job — the run that produced the evidence.
+- TestEvidence.VulnerabilityCheck — the Type for CVE checks.
+- VexStatement — cites evidence records.
 
 ### TestEvidence.VulnerabilityCheck (0.1.0)
 
@@ -1185,4 +1263,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*58 types; 58 with context, 0 pending.*
+*62 types; 62 with context, 0 pending.*

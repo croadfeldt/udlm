@@ -16,7 +16,7 @@ resource_type: Grouping
 class: base
 family: Access
 entity_type: Grouping
-version: 0.2.0
+version: 0.3.0
 conforms_to: udlm/0.1
 status: active
 elements:
@@ -83,4 +83,22 @@ metadata:
   description: 'The native grouping anchor: RBAC bridge + derived-membership criterion + unit obligations.'
   maintainer: UDLM project
   origination_timestamp: '2026-08-05T00:00:00Z'
-$id: https://udlm.dev/registry/udlm/0.1/class/Grouping/0.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Grouping/0.3.0
+context:
+  purpose: 'Declares a grouping — the native anchor other things bind to: a membership criterion, the obligations
+    members inherit, and the opaque subject bindings an authorization engine evaluates.'
+  plain_description: A named set of things with a rule for what belongs in it. A tenant is a grouping with an isolation
+    obligation; an authorization is a grouping that grants a stake. A plain Grouping is an advisory set — a deployment,
+    a team's resources — with a derivable membership rule preferred over an explicit list.
+  use_when:
+  - You need to name a set of resources so policy, cost or drift can address them together.
+  not_for:
+  - A tenant boundary — Grouping.Tenant.
+  - A cross-tenant grant — Grouping.Authorization.
+  works_with:
+  - Grouping.Tenant and Grouping.Authorization — the Types that narrow it.
+  - Any resource — a member by criterion.
+spec_examples:
+- membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
+  obligations:
+    isolation: none

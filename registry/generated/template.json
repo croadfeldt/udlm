@@ -1,0 +1,90 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Template/0.2.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "39584b58-b513-4b3f-9780-b427865c58b7",
+  "resource_type": "Template",
+  "version": "0.2.0",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "Template — the orderable composition",
+    "maintainer": "UDLM project",
+    "origination_timestamp": "2026-08-10T00:00:00Z",
+    "description": "A consumable composition: an orderable unit assembled from other classes and references, declared once and realized many times. The Base Class carries only the composition MECHANISM — the sovereignty floor the whole must hold, and the non-isolating groupings its realized parts join. It declares no constituents, because a Base Class states what a composition is rather than what any particular composition contains. outputs-exempt: a Template is a definition realized many times; the composite it realizes carries the outputs.",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "Template",
+          "version": "0.2.0",
+          "uuid": "39584b58-b513-4b3f-9780-b427865c58b7"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "sovereignty_floor": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "zone": {
+            "type": "string",
+            "format": "udlm-ref-url",
+            "description": "The SovereigntyZone this composition must be placed within — a reference to a `Knowledge/SovereigntyZone` record, which declares what the coined zone name means in ISO 3166 terms so the residency-subsumption match is computable rather than assumed. Never a bare coined string: a name without a declared meaning gives an auditor no answer."
+          },
+          "classification": {
+            "type": "string",
+            "description": "The data-classification floor the placement must satisfy. The vocabulary is a free string today and should be a governed one — the same hole `zone` had before its class existed, tracked at #472 — so a peer reading `restricted` learns only the word."
+          },
+          "cohesion": {
+            "type": "string",
+            "enum": [
+              "same_zone",
+              "per_constituent"
+            ],
+            "description": "same_zone = every constituent must land in ONE zone satisfying the floor, a JOINT constraint over the placement set. per_constituent = each satisfies the floor independently. No default: which one applies is the composition author's decision and UDLM ships no defaults (NDF-001)."
+          }
+        },
+        "description": "The sovereignty requirement this composition must hold, carried as immutable data and communicated to whoever decides admission (ADR-057 — UDLM codifies, does not vet). Realized onto each constituent's `sovereignty` block at placement. A joint constraint is evaluable only once every placement is known, which is why placement sits inside the convergence loop rather than after it: a cohesion failure must RE-PLACE, and that is another iteration, not a post-placement correction."
+      },
+      "groupings": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "udlm-ref-url"
+        },
+        "description": "Additional NON-isolating groupings the realized constituents join — cost center, project, business unit. References Grouping records under advisory enforcement, where a member may belong to many. Deliberately NOT the System's own grouping, which derives from the composite's uuid and is never stored (DRV-001), and deliberately NOT a tenant: a tenant boundary is an isolation border carried on the realized entity's `tenant_uuid`, never chosen by a Template."
+      }
+    },
+    "examples": [
+      {
+        "sovereignty_floor": {
+          "zone": "eu-west"
+        },
+        "groupings": [
+          "org/resource-group/example-orders-deployment"
+        ]
+      }
+    ]
+  },
+  "outputs": {},
+  "context": {
+    "purpose": "Declares a consumable composition — the mechanism by which an orderable unit is assembled from other classes and references, declared once and realized many times.",
+    "plain_description": "The thing on a menu that is made of other things. The Base carries only the composition mechanism: the sovereignty floor every realization must sit within, and the groupings a realization joins. What it composes is on the Type (Template.Application and kin).",
+    "use_when": [
+      "You need the composition floor without saying what kind of thing is composed."
+    ],
+    "not_for": [
+      "An application stack — that is Template.Application.",
+      "A single resource — order its class directly."
+    ],
+    "works_with": [
+      "Template.Application — the Type that says what is composed.",
+      "SovereigntyZone — what the floor names."
+    ]
+  }
+}
