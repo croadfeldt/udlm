@@ -1105,6 +1105,19 @@ A ready-made application shape. Somebody who knows how the pieces fit wrote it d
 - the provider tier beneath this class, which carries the actual constituents and the `supports` ranges a consumer picks from
 - a realized System, whose `tenant_uuid`, sovereignty and edges are written at placement
 
+## TestEvidence
+
+### TestEvidence (0.1.0)
+
+**Purpose:** Records what one automated test proved about one software package version, so the proof can be referenced, verified, and curated like any other fact.
+
+One test, one record per lifecycle state. It says which file the test is, what package and vulnerability it is about (by reference), which run produced it (a Job, by reference), and how it was validated: did it pass on its own version, did the outcome differ between the two versions, how many injected faults did it catch, how many repeated runs agreed. A candidate the generator proposes is the intent record; a test a reviewer accepts is the realized record, which says whether it lives in the package's overlay or the product-wide suite; a retired test is deprecated with its reason. The signed in-toto statement about the test uses this record's integrity head as its subject.
+
+**Use when:**
+- A test generator (an AI harness or a person) has produced a test whose result should count as evidence about a dependency.
+- A reviewer accepts, promotes, or retires such a test and the decision must be traceable.
+- A consumer needs to verify a claim that a vulnerability is fixed, or that a version is exposed, back to a test that ran.
+
 ## Topology
 
 ### Topology (0.5.2)
@@ -1127,6 +1140,19 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 - Machine.VM — placement intent resolved against domain kinds.
 - Storage.Cluster — fault-domain-aware placement and maintenance gating.
 
+## VexStatement
+
+### VexStatement (0.1.0)
+
+**Purpose:** Records one exploitability claim about one vulnerability in one package version, with the evidence it rests on, as a fact Product Security can confirm.
+
+One statement per (vulnerability, package version). It carries the OpenVEX status (affected, not affected, fixed, under investigation), the standard's justification label when the status is not affected, the basis in plain words, and references to the tests that back it. A harness or a scanner drafts it (the intent record); Product Security confirms it (the realized record). It lives apart from the Vulnerability record because one vulnerability affects many packages.
+
+**Use when:**
+- An analysis has produced a draft exploitability claim that needs a reviewer before anyone relies on it.
+- A consumer or regulator asks what was verified about a known vulnerability in a shipped package.
+- An SBOM consumer needs the VEX status for a component and the evidence behind it.
+
 ## Vulnerability
 
 ### Vulnerability (0.2.1)
@@ -1148,4 +1174,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*55 types; 55 with context, 0 pending.*
+*57 types; 57 with context, 0 pending.*

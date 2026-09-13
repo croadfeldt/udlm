@@ -1,0 +1,120 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/VexStatement/0.1.0
+conforms_to: udlm/0.1
+uuid: 7d1f4e9a-2c5b-4a8e-b3d6-0f9e8c7b6a51
+record_type: class
+class: base
+resource_type: VexStatement
+version: 0.1.0
+family: Knowledge
+status: active
+metadata:
+  display_name: VEX Statement
+  description: 'One exploitability claim about one vulnerability in one software package version, as a Knowledge-family
+    fact: the status, its justification, and the TestEvidence it rests on, all by reference. Knowledge, not a
+    Resource: it is drafted by an analysis (a harness, a scanner, a person) and curated by Product Security;
+    the intent record is the draft, the realized record is the confirmed statement. One vulnerability affects
+    many packages, so VEX lives here, never on the Vulnerability record. ADOPT by reference (T5): OpenVEX 0.2.0
+    is the interchange shape and the source of the status codelist; the document is pointed at, not restated.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-09-13T00:00:00Z'
+entity_type: VexStatement
+elements:
+- element: vulnerability_ref
+  scope: VexStatement
+  optional: false
+  state: canonical
+  description: The Vulnerability (one record per CVE) this statement is about.
+  schema:
+    $ref: ../../../common-elements.schema.json#/$defs/Reference
+- element: software_package_ref
+  scope: VexStatement
+  optional: false
+  state: canonical
+  description: The SoftwarePackage (one record per purl) this statement is about.
+  schema:
+    $ref: ../../../common-elements.schema.json#/$defs/Reference
+- element: status
+  scope: VexStatement
+  optional: false
+  state: canonical
+  description: The OpenVEX status codelist, adopted by reference (adopts entry below), not a UDLM vocabulary.
+  schema:
+    type: string
+    enum: [not_affected, affected, fixed, under_investigation]
+    description: OpenVEX status, carried as published by the standard.
+- element: justification
+  scope: VexStatement
+  optional: true
+  state: canonical
+  description: The OpenVEX justification label for a not_affected status, the standard's own codelist carried by reference.
+  schema:
+    type: string
+    enum: [component_not_present, vulnerable_code_not_present, vulnerable_code_not_in_execute_path, vulnerable_code_cannot_be_controlled_by_adversary, inline_mitigations_already_exist]
+    description: OpenVEX justification label.
+- element: status_notes
+  scope: VexStatement
+  optional: true
+  state: canonical
+  description: The basis for the status in plain words, for the reviewer.
+  schema:
+    type: string
+    description: The basis for the status in plain words.
+- element: evidence_refs
+  scope: VexStatement
+  optional: true
+  state: canonical
+  description: The TestEvidence records this status rests on. A status of fixed or affected backed by no evidence is a claim, and says so by being empty here.
+  schema:
+    type: array
+    items:
+      $ref: ../../../common-elements.schema.json#/$defs/Reference
+    description: The TestEvidence records this status rests on.
+- element: document_url
+  scope: VexStatement
+  optional: true
+  state: canonical
+  description: Where the OpenVEX document carrying this statement is published, once it is.
+  schema:
+    type: string
+    description: Where the OpenVEX document is published.
+spec_examples:
+- vulnerability_ref: estate/cexample/knowledge/vulnerability/cve-2024-33664
+  software_package_ref: estate/cexample/knowledge/software-package/python-jose-3-4-0
+  status: fixed
+  status_notes: Two fix-pinning tests fail on 3.3.0 and pass on 3.4.0.
+  evidence_refs:
+  - estate/cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
+relationships:
+- edge_type: references
+  target: Vulnerability
+  cardinality: 1..1
+  description: about — the vulnerability the status concerns.
+- edge_type: references
+  target: SoftwarePackage
+  cardinality: 1..1
+  description: about — the package version the status concerns.
+- edge_type: references
+  target: TestEvidence
+  cardinality: 0..n
+  description: rests_on — the tests that back the status.
+adopts:
+- standard: OpenVEX
+  version: 0.2.0
+  standard_name: OpenVEX statement and status codelist
+  role: the interchange document shape and the status vocabulary, carried by reference; the document is pointed at, not restated
+  source: https://github.com/openvex/spec
+  license: Apache-2.0
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+context:
+  purpose: Records one exploitability claim about one vulnerability in one package version, with the evidence it
+    rests on, as a fact Product Security can confirm.
+  plain_description: 'One statement per (vulnerability, package version). It carries the OpenVEX status
+    (affected, not affected, fixed, under investigation), the standard''s justification label when the status is
+    not affected, the basis in plain words, and references to the tests that back it. A harness or a scanner
+    drafts it (the intent record); Product Security confirms it (the realized record). It lives apart from the
+    Vulnerability record because one vulnerability affects many packages.'
+  use_when:
+  - An analysis has produced a draft exploitability claim that needs a reviewer before anyone relies on it.
+  - A consumer or regulator asks what was verified about a known vulnerability in a shipped package.
+  - An SBOM consumer needs the VEX status for a component and the evidence behind it.

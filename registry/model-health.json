@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 55,
+    "types": 57,
     "by_family": {
       "Access": 7,
-      "Knowledge": 6,
+      "Knowledge": 8,
       "Process": 2,
       "Resource": 40
     }
   },
   "discrimination": {
-    "mutations_attempted": 4699,
-    "mutations_rejected": 4699,
+    "mutations_attempted": 4910,
+    "mutations_rejected": 4910,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -227,9 +227,17 @@
         "attempted": 69,
         "rejected": 69
       },
+      "TestEvidence": {
+        "attempted": 151,
+        "rejected": 151
+      },
       "Topology": {
         "attempted": 171,
         "rejected": 171
+      },
+      "VexStatement": {
+        "attempted": 60,
+        "rejected": 60
       },
       "Vulnerability": {
         "attempted": 66,
@@ -238,8 +246,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 55,
-    "total": 55
+    "strict_specs": 57,
+    "total": 57
   },
   "outputs": {
     "per_type": {
@@ -296,7 +304,9 @@
       "Storage.Volume": 2,
       "TaxonomyTerm": 1,
       "Template.Application": 1,
+      "TestEvidence": 2,
       "Topology": 1,
+      "VexStatement": 0,
       "Vulnerability": 0
     },
     "zero_output_types": [
@@ -308,6 +318,7 @@
       "SoftwareImage",
       "SoftwarePackage",
       "SovereigntyZone",
+      "VexStatement",
       "Vulnerability"
     ],
     "one_output_types": [
@@ -338,13 +349,13 @@
     ]
   },
   "context": {
-    "with_context": 55,
-    "total": 55,
+    "with_context": 57,
+    "total": 57,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 44,
-    "total": 55,
+    "with_relationships": 46,
+    "total": 57,
     "missing": [
       "Access.Grouping",
       "Automation.OSPatch",
@@ -418,7 +429,9 @@
       "SovereigntyZone",
       "Storage.Cluster",
       "Storage.Layout",
-      "Template.Application"
+      "Template.Application",
+      "TestEvidence",
+      "VexStatement"
     ]
   },
   "consumer_coverage": {
@@ -495,10 +508,12 @@
       "Storage.Pool",
       "TaxonomyTerm",
       "Template.Application",
+      "TestEvidence",
       "Topology",
+      "VexStatement",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 55
+    "consumed_by_at_least_one": 57
   },
   "expressibility_coverage": {
     "value": null,

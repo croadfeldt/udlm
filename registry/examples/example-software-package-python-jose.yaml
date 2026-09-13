@@ -1,0 +1,34 @@
+# asserts: ENT-006, INT-001
+# proves: a package version is one Knowledge record per purl, observed by the same harness; every test about it points here instead of carrying the purl.
+---
+record_type: discovered_record
+state: Discovered
+entity_uuid: 6f2d8a1e-4b3c-4d5e-9f6a-7b8c9d0e1f2a
+record_uuid: 01a09a02-1236-7002-a002-0e5f3a2b1c4f
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: SoftwarePackage
+type_version: 0.2.1
+type_ref: https://udlm.dev/registry/udlm/0.1/class/SoftwarePackage/0.2.1
+handle: cexample/knowledge/software-package/python-jose-3-4-0
+at: '2026-09-13T13:00:00Z'
+time_source: example clock, NTP-synced
+origin: discovered-derived
+fields:
+  purl: pkg:pypi/python-jose@3.4.0
+  name: python-jose
+  version: 3.4.0
+  type: pypi
+  license: MIT
+provenance:
+  fields.purl:
+  - source:
+      kind: discovery
+      id: cexample/providers/ai-test-harness
+    operation_type: set
+    sequence: 1
+    timestamp: '2026-09-13T13:00:00Z'
+integrity:
+  head: sha256:4da01e93f6e565e3fcaaf4ac4c608c39549a1041198be76ba828557f27250407
+  previous: null
+  algorithm: sha256-jcs
