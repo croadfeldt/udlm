@@ -48,29 +48,34 @@ architecture is provably production-grade, not to be implemented first.
 Grouped by what enables them. "Covered" cites the merged spec; "control-plane-runtime" = enabled by a UDLM shape
 but executed by the control plane (ADR-008).
 
+> **Corpus traceability (2026-09-14).** Rows 10, 12–16 and 19–21 name use cases imported unchanged from the
+> sibling use-case corpus into `use-cases/`, so their handles now resolve. Rows 1, 4, 5, 7 and 8 name scenarios
+> the 2026-08-07 reconciliation ruled *author* (`docs/uc-scope-corpus-reconciliation.md` §B/§C) that
+> have not been written; they remain baselined in `tests/uc_traceability_baseline.txt` until they are.
+
 | # | Use case (handle) | UDLM basis | Status |
 |---|---|---|---|
-| 1 | libvirt-vm-provider/vm-resource-representation | `compute.vm` 0.3.0; `state-record` / `entity-view` | Covered |
-| 2 | architecture/solution-architecture-decomposition | `catalog-item` (constituents/bindings/fulfillment); realized receipt | Covered (DSL ingestion = the control plane/Information-Provider) |
+| 1 | libvirt-vm-provider/vm-resource-representation | `Machine.VM` 2.0.0; `state-record` / `entity-view` | Covered |
+| 2 | architecture/solution-architecture-decomposition | `Template.Application` + the composition record (`constituents[]`, bindings, fulfillment); realized receipt | Covered (DSL ingestion = the control plane/Information-Provider) |
 | 3 | compute/provision-vm-standard | profile-resolution; policy §7.7; universal-audit | Covered |
 | 4 | compute/vm-intent-osac-placement | provider-contract §8 `realize_resources`; osac-better-together; provider provenance | Covered (placement algo = DCM ADR-019) |
 | 5 | libvirt-vm-provider/vm-status-provenance | per-state records: field-level `provenance`/`status`; drift computed from the latest realized and discovered records | Covered |
-| 6 | storage/provision-volume-bound-to-pool | `storage.volume`; tenancy; **quota** (now defined) | **Closed this release (P7)** |
+| 6 | storage/provision-volume-bound-to-pool | `Storage.Volume`; tenancy; **quota** (now defined) | **Closed this release (P7)** |
 | 7 | dcm-core/udlm-dependency-graph-data-model | ordering `edge_type`s; ADR-010 derived fault-domain/blast-radius; graph-integrity | Covered |
 | 8 | libvirt-vm-provider/cross-provider-dependency-ordering | graph-integrity DAG; DCM ADR-009; ADR-011 reserve ordering | Covered (convergence = DCM ADR-006) |
 | 9 | intent-fulfillment/operational-dependency-cascade | ADR-010 `UnmetDependency` (blocking, blast_radius) | Covered |
 | 10 | cross-domain/dynamic-rehydration | four-states §5 (replay intent, UUID preserved) | Covered (plan derivation = the control plane) |
 | 11 | compute/vm-provision-provider-failure-refused | policy §13 recovery; four-states §2.5 conditions; ADR-011 release | Covered |
-| 12 | docs/spec/contracts/rehydration-rto-measurement | ADR-003 rto/rpo; realized snapshots | the control plane/Observability-runtime |
+| 12 | observability/rehydration-rto-measurement | ADR-003 rto/rpo; realized snapshots | the control plane/Observability-runtime |
 | 13 | compute/idempotent-reconvergence | `generation`/`observed_generation`; four-states §3 | Covered (no-op decision = DCM ADR-006) |
-| 14 | docs/spec/contracts/drift-detection-remediation | four-states §6 drift record; policy §13 | Covered |
-| 15 | docs/spec/governance/audit-merkle-tree-verification | universal-audit §8 (RFC 9162); AUD-012 key residency | Covered |
-| 16 | docs/spec/governance/policy-override-approval | policy-contract §18; **`override` policy_type** (now on schema) | **Closed this release (P6)** |
+| 14 | observability/drift-detection-remediation | four-states §6 drift record; policy §13 | Covered |
+| 15 | governance/audit-merkle-tree-verification | universal-audit §8 (RFC 9162); AUD-012 key residency | Covered |
+| 16 | governance/policy-override-approval | policy-contract §18; **`override` policy_type** (now on schema) | **Closed this release (P6)** |
 | 17 | osac/cloud-provider-registration | provider-contract §8.1a `resource_advertisement` (capacity) | Covered |
 | 18 | osac/provider-portability-new-cloud | naturalization; portability + `bound_providers`; four-states §5.3 | Covered (re-resolution = the control plane) |
-| 19 | docs/spec/governance/policy-resolution-capability | policy-contract §7.7 three-state; profile-resolution | Covered |
+| 19 | governance/policy-resolution-capability | policy-contract §7.7 three-state; profile-resolution | Covered |
 | 20 | cross-domain/profile-resolution-capability | profile-resolution; the `profile` record + instances | Covered |
-| 21 | docs/spec/governance/audit-chain-proofs-capability | universal-audit §8 (single-signer v1; witness = follow-up) | Covered |
+| 21 | governance/audit-chain-proofs-capability | universal-audit §8 (single-signer v1; witness = follow-up) | Covered |
 
 **Net:** all 21 are enabled at the UDLM layer. Residual items for this set are either already closed
 by the merged spec (ADR-010 / §8.1a / state-record) or are control-plane-runtime by the ADR-008 boundary.
@@ -81,7 +86,7 @@ by the merged spec (ADR-010 / §8.1a / state-record) or are control-plane-runtim
 
 | P# | Item | Status |
 |---|---|---|
-| P1 | VM enrichment (placement/networks/power) | ✅ `compute.vm` 0.3.0 |
+| P1 | VM enrichment (placement/networks/power) | ✅ `Machine.VM` 2.0.0 |
 | P2 | Profile schema | ✅ `profile.schema.json` |
 | P3 | Provider capacity/inventory advertisement | ✅ provider-contract §8.1a `resource_advertisement` |
 | P4 | Fault domains / SharedFaultDomain | ⏳ derivation ruled (ADR-010); no anchor designation or `SharedFaultDomain` projection yet |

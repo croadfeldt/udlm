@@ -5,7 +5,7 @@ and completeness checked field by field against the original intent. A **lighter
 [request-realization](request-realization.md)** and layers on top of [UC-10](uc-10-dynamic-rehydration.md);
 it changes nothing about how resources are built, only how the rebuild is observed.
 
-> **Use Case:** `docs/spec/contracts/rehydration-rto-measurement`. **Persona:** platform-engineer · **Profile:** standard.
+> **Use Case:** `observability/rehydration-rto-measurement`. **Persona:** platform-engineer · **Profile:** standard.
 
 **In one breath.** After a dynamic rehydration, the system measures how long recovery took — from the destroy
 trigger to the last resource reaching `OPERATIONAL` — and then checks the rebuilt realized state against the
@@ -60,4 +60,4 @@ layers, tenant binding, policies, provider capability — was declared by the ot
 request existed, exactly as the lifecycle answer describes.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). Measures [UC-10](uc-10-dynamic-rehydration.md). UC source: `docs/spec/contracts/rehydration-rto-measurement`.
+- Base flow: [request-realization](request-realization.md). Measures [UC-10](uc-10-dynamic-rehydration.md). UC source: `observability/rehydration-rto-measurement`.

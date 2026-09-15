@@ -6,7 +6,7 @@ classified drift record, and remediate per the recovery policy. A **lighter** fl
 [request-realization](request-realization.md)**; this is what runs *after* commit, on a timer, not a new
 request.
 
-> **Use Case:** `docs/spec/contracts/drift-detection-remediation`. **Persona:** platform-engineer · **Profile:** standard.
+> **Use Case:** `observability/drift-detection-remediation`. **Persona:** platform-engineer · **Profile:** standard.
 
 **In one breath.** On the profile's reconciliation cadence, the system probes what the provider really has and
 diffs it against the realized record. A divergence becomes a drift record — field by field, with a severity of
@@ -64,4 +64,4 @@ layers, tenant binding, policies, provider capability — was declared by the ot
 request existed, exactly as the lifecycle answer describes.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). UC source: `docs/spec/contracts/drift-detection-remediation`.
+- Base flow: [request-realization](request-realization.md). UC source: `observability/drift-detection-remediation`.
