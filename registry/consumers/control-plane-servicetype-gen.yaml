@@ -5,19 +5,21 @@
 # the five types below — every other registry type has no control-plane service-type
 # projection. The small set here is exact, read from the generator's mapping table
 # (cmd/udlm-servicetype-gen/main.go, `var mappings`); widening it is control-plane work.
+# Versions noted 2026-09-15: the generator reads registry/generated/<type>.json (croadfeldt/control-plane #4)
+# and emits each type's `outputs` as read-only service-type fields.
 consumer:
   name: control-plane-servicetype-gen
   repo: croadfeldt/control-plane
   description: Translates registry type specs into control-plane service-type OpenAPI specs (servicetypes/<slug>/spec.yaml, then oapi-codegen Go types).
 consumes:
   - resource_type: Machine.VM
-    noted_version: 0.6.2
+    noted_version: 2.0.0
   - resource_type: Container
-    noted_version: 0.5.2
+    noted_version: 1.0.2
   - resource_type: Data.Database
-    noted_version: 0.4.1
+    noted_version: 0.7.7
   - resource_type: KubernetesCluster
-    noted_version: 0.4.2
+    noted_version: 2.0.0
   - resource_type: Storage.Volume
-    noted_version: 0.5.1
+    noted_version: 0.11.6
 coverage: declared
