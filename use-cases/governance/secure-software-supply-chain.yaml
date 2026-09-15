@@ -1,0 +1,73 @@
+uuid: uc-7177640b-8983-4115-bb23-b5c436bbb56c
+handle: governance/secure-software-supply-chain
+version: 1.0.0
+scenario:
+  description: 'A library or image update is ingested, from any trigger: a CVE fix, an upstream release,
+    a base image bump. The dependency graph returns the affected deployments and their blast radius. The
+    estate''s change policy resolves a change window from the ITSM calendar, sourced by reference. Governance,
+    standards, and validation policies evaluate the change; required sign-offs are recorded with approver
+    and evidence digest. The change is rebuilt and tested in a lower environment so its result is evidence
+    before production changes. Promotion to production goes through a blue/green typed-output-diff gate,
+    swapped only on a clean diff, with rollback through the same gate. Every classification, window, verdict,
+    sign-off, and QA result is on the audit chain.'
+  actor:
+    persona: platform-engineer
+    profile: prod
+  perspectives:
+    - security-officer
+    - compliance-auditor
+    - manager
+  intent: Carry a software update from ingest to an evidenced blue/green production deploy, with every
+    decision on the audit chain
+  success_criteria:
+    - The update is admitted regardless of trigger, and its targets and blast radius are derived from
+      the dependency graph, not a hand-kept list
+    - The change window is resolved through the estate's ITSM integration as sourced knowledge, not invented
+      by the control plane
+    - Governance, standards, and validation policies evaluate the change; a refusal names the violated
+      rule
+    - Required sign-offs are recorded with the approver and the digest of the evidence they approved
+    - Automated QA in a lower environment produces evidence attached to the change before any production
+      change
+    - Production promotion is gated on a clean blue/green typed-output diff; rollback uses the same gate
+    - Every classification, window, policy verdict, sign-off, and QA result is a tamper-evident audit
+      record
+  dimensions:
+    lifecycle_phase: modification
+    resource_complexity: full_stack
+    policy_complexity: multi_policy_chain
+    provider_landscape: multiple_eligible
+    governance_context: compliance_gated
+    failure_mode: happy_path
+  profile: prod
+  expected_domain_interactions:
+    - domain: data
+      interaction: the classified change record, the derived target set and blast radius, the resolved
+        window, sign-off records, QA evidence, and the typed-output diff
+    - domain: policy
+      interaction: governance, standards, and validation evaluation; window and sign-off decisions; the
+        blue/green promotion verdict
+    - domain: provider
+      interaction: the image build produces the new image; the automation platform rebuilds; the ITSM
+        system sources the window; all report back
+    - domain: audit
+      interaction: classification, window, verdicts, sign-offs, and QA results are chained and verifiable
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: scope-sync-2026-09-15
+  timestamp: '2026-09-15T00:00:00.000000+00:00'
+tags:
+  - governance
+  - supply-chain
+  - change-control
+  - blue-green
+  - audit-chain
+  - prod-profile
+metadata:
+  admitted_at: '2026-09-15T00:00:00.000000+00:00'
+  admitted_dcm_version: preview
+  promoted_from_run: null
+  initial_baseline_path: null
+  author: chris@croadfeldt

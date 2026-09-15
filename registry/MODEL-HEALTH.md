@@ -16,7 +16,7 @@ The registry holds **62 types** (Access 8, Knowledge 9, Process 3, Resource 42).
 | Outputs adequacy | 15 zero-output, 24 one-output | declared Realized binding surface |
 | Context coverage | 62/62 (100%) | plain-English `context` blocks |
 | Relationships coverage | 47/62 (75%) | types declaring `relationships[]` |
-| UC coverage | 35/62 (56%) | types appearing in >=1 use case (158 UC files scanned) |
+| UC coverage | 35/62 (56%) | types appearing in >=1 use case (165 UC files scanned) |
 | Consumer coverage | 62/62 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
 
 ## Outputs adequacy
