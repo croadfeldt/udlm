@@ -1,0 +1,63 @@
+uuid: uc-9049f2c2-e2ca-483c-807a-359bdb82fb2b
+handle: compute/vm-status-provenance
+version: 1.0.0
+scenario:
+  description: After commit, the provider's reported status for a VM (state, host, ip, mac, disk paths)
+    is ingested onto the realized record, and every realized field carries who produced it, in which provider
+    run, and when. When the provider re-reports and a value has changed (a live migration moved the host,
+    DHCP changed the ip), a new realized record supersedes the previous one; the field updates and its
+    provenance advances to the new run, and the earlier record remains readable. A compliance auditor
+    can answer, for any realized field, which provider run set it and at what time.
+  actor:
+    persona: compliance-auditor
+    profile: standard
+  perspectives:
+    - platform-operator
+    - sre
+  intent: Read realized VM status from the provider with per-field provenance, and keep provenance current
+    across drift
+  success_criteria:
+    - Realized status (state, host, ip, mac, disk paths) is read from the provider and stored on the realized
+      record
+    - Each realized field carries provenance naming the provider, the run that produced it, and the time
+    - A changed value on re-read produces a superseding realized record; the field and its provenance
+      both advance
+    - The earlier realized record stays readable, so the previous value and its origin are not overwritten
+    - Provenance is per field, not per record; unchanged fields keep their original run and time
+  dimensions:
+    lifecycle_phase: drift_detection
+    resource_complexity: single_no_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: internal_audit
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+    - domain: data
+      interaction: realized record fields each paired with a provenance entry (provider, run id, timestamp)
+    - domain: data
+      interaction: superseding realized records chained by supersedes, not edited in place
+    - domain: policy
+      interaction: system defaults only; the concern is faithful ingest, not choosing values
+    - domain: provider
+      interaction: the compute provider reports native status on commit and on each re-read
+    - domain: audit
+      interaction: every realized field is traceable to a provider run and time; history is retained
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: scope-sync-2026-09-15
+  timestamp: '2026-09-15T00:00:00.000000+00:00'
+tags:
+  - compute-virtualmachine
+  - provenance
+  - drift
+  - realized-record
+  - standard-profile
+metadata:
+  admitted_at: '2026-09-15T00:00:00.000000+00:00'
+  admitted_dcm_version: preview
+  promoted_from_run: null
+  initial_baseline_path: null
+  author: chris@croadfeldt

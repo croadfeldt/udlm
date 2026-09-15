@@ -1,0 +1,73 @@
+uuid: uc-cc0911b7-7846-42f6-bdec-00803a7a14a0
+handle: governance/governed-automation
+version: 1.0.0
+scenario:
+  description: 'A platform engineer in a tenant submits an automation to run. Before anything dispatches,
+    the automation''s effect profile is resolved: the resources it targets and the actions it takes, from
+    its declared intent, or derived by content inspection when undeclared. Policy is evaluated over that
+    effect: who may author it, who may run this specific automation, whether its targets are in the tenant''s
+    scope, and which actions are allowed. Sovereignty scopes it to the approved host list. Only an automation
+    whose effect clears governance is dispatched, and a target outside scope is refused structurally whatever
+    the automation''s code says. Authoring and execution are separate authorities, and a grant is to a
+    specific automation, not to a class.'
+  actor:
+    persona: platform-engineer
+    profile: prod
+  perspectives:
+    - security-officer
+    - tenant-admin
+    - compliance-auditor
+  intent: Govern an automation by its resolved effect, scoped to the tenant boundary and approved hosts,
+    before dispatch
+  success_criteria:
+    - The automation's effect profile (targets and actions) is resolved before dispatch, from declared
+      intent or by inspection when undeclared
+    - Policy is evaluated over the effect profile, not only over the artifact or the credential
+    - A target outside the tenant's scope, or a host off the approved list, is refused structurally regardless
+      of the automation's content
+    - Authoring and execution are separate authorities; an execution grant names a specific automation,
+      not a class of automation
+    - The dispatch verdict and the effect profile are recorded on the audit chain
+    - The automation platform runs only the governed, in-scope automation and reports the realized effect
+      back
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: cross_dependency_payload
+    policy_complexity: governance_matrix_enforcement
+    provider_landscape: single_eligible
+    governance_context: sovereignty_enforced
+    failure_mode: policy_violation
+  profile: prod
+  expected_domain_interactions:
+    - domain: data
+      interaction: the automation Process, its effect profile, the tenant and sovereignty scope, and the
+        verdict record are carried as data
+    - domain: policy
+      interaction: authoring authority, execution authority, target-in-scope, and action-allowed are evaluated
+        over the effect profile
+    - domain: policy
+      interaction: deriving an undeclared effect by inspection is a policy or provider capability the
+        control plane applies
+    - domain: provider
+      interaction: the automation platform is the realizer and reports the realized effect for reconciliation
+    - domain: audit
+      interaction: the effect profile and the dispatch verdict are chained records
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: scope-sync-2026-09-15
+  timestamp: '2026-09-15T00:00:00.000000+00:00'
+tags:
+  - governance
+  - automation
+  - effect-profile
+  - tenancy
+  - separation-of-duties
+  - prod-profile
+metadata:
+  admitted_at: '2026-09-15T00:00:00.000000+00:00'
+  admitted_dcm_version: preview
+  promoted_from_run: null
+  initial_baseline_path: null
+  author: chris@croadfeldt

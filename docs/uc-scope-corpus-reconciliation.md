@@ -48,10 +48,10 @@ why it is **not** the same use case.
 | 21 | `…/audit-chain-proofs-capability` | `audit/refusal-emits-audit-record` | Same gap as UC-15 — emission is covered, *proof* is not. |
 | 13 | `compute/idempotent-reconvergence` | `process-migration/blue-green-engine-verification` | Behavioural equivalence between engines, not resubmit-and-stop-before-dispatch. |
 | 19 | `…/policy-resolution-capability` | `vocabulary-intake/near-match-never-silently-bound` | Vocabulary binding, not "evaluate only the policies in the resolved profile". |
-| 05 | `libvirt-vm-provider/vm-status-provenance` | `compute/provision-vm-standard` | Provisioning publishes outputs; UC-05 is specifically *field-level provenance* — who produced each realized field, in which run, when. |
-| 01 | `libvirt-vm-provider/vm-resource-representation` | `compute/provision-vm-standard` | UC-01 is about the **type**: what `Machine.VM` is made of (spec, lifecycle intent, realized status). The corpus entry is a provisioning scenario that *uses* the type. Check the `scoped-class/` set before authoring. |
-| 07 | `dcm-core/udlm-dependency-graph-data-model` | `intent-fulfillment/*` (9 entries) | **Ruled.** That set proves how dependencies *behave*; UC-07 claims what the graph *is* — `edge_type`s as declared data, fault-domain and blast-radius derived from them. |
-| 08 | `libvirt-vm-provider/cross-provider-dependency-ordering` | `intent-fulfillment/request-dependency-atomic` | **Ruled.** That entry is atomicity across peer VMs. UC-08 is `depends_on` crossing *provider boundaries*, converging topologically and tearing down in reverse. |
+| 05 | `compute/vm-status-provenance` | `compute/provision-vm-standard` | Provisioning publishes outputs; UC-05 is specifically *field-level provenance* — who produced each realized field, in which run, when. |
+| 01 | `compute/vm-resource-representation` | `compute/provision-vm-standard` | UC-01 is about the **type**: what `Machine.VM` is made of (spec, lifecycle intent, realized status). The corpus entry is a provisioning scenario that *uses* the type. Check the `scoped-class/` set before authoring. |
+| 07 | `cross-domain/udlm-dependency-graph-data-model` | `intent-fulfillment/*` (9 entries) | **Ruled.** That set proves how dependencies *behave*; UC-07 claims what the graph *is* — `edge_type`s as declared data, fault-domain and blast-radius derived from them. |
+| 08 | `compute/cross-provider-dependency-ordering` | `intent-fulfillment/request-dependency-atomic` | **Ruled.** That entry is atomicity across peer VMs. UC-08 is `depends_on` crossing *provider boundaries*, converging topologically and tearing down in reverse. |
 | 10 | `cross-domain/dynamic-rehydration` | 3 domain-specific rehydration entries | **Ruled.** Each proves rehydration in its domain; none asserts UC-10's claim that the plan is *derived from stored intent and the live graph, never replayed*. |
 | 16 | `…/policy-override-approval` | `change-control/expedite-break-glass` | **Ruled.** Shares the elevated-approver ceremony but governs *change windows*. UC-16 is policy override — time-scoped, hard policies unoverridable, suppressed events audit-linked. |
 
@@ -93,18 +93,17 @@ provider, so those five need a namespace decision, not just a rename.
 
 ## What remains
 
-**Author 14 corpus entries** (section B). *Update 2026-09-14:* nine of them existed in the DAV corpus
-(`croadfeldt/dcm` `dav/use-cases/`) under domain handles and were imported unchanged — rows 10, 12, 13, 14, 15, 16,
-19, 20, 21 now resolve. Five remain to author: 01, 04, 05, 07, 08 (plus the two flows with no release row,
-governed-automation and secure-software-supply-chain). Before writing each, check the near-miss column's entry one
-more time — section B's confidence is high for 04/12/20 and for the four section-C rulings, medium for
-the rest, since those were assessed against closest candidates rather than all 149 entries.
+Nothing in the baseline. Section B's fourteen entries are closed: nine were imported unchanged from the
+sibling use-case corpus on 2026-09-14 (rows 10, 12, 13, 14, 15, 16, 19, 20, 21), and the remaining five
+(rows 01, 04, 05, 07, 08) plus the two flows without a release row (`governance/governed-automation`,
+`governance/secure-software-supply-chain`) were authored from their flow documents on 2026-09-15.
+`tests/uc_traceability_baseline.txt` carries no entries.
 
-**Settle blast-radius derivability** (the UC-09 gap above) together with UC-07 — they are the same
-derived-property claim.
+**Blast-radius derivability** (the UC-09 gap above) is settled in `cross-domain/udlm-dependency-graph-data-model`:
+its fifth criterion states that the blast radius of a missing or failed dependency is derivable from the
+declared graph alone.
 
-**Decide two namespace questions** the mapping exposed, both of which affect how the remaining entries
-are named:
-- The six document-path rows need real use-case handles, since a document is not a scenario.
-- `libvirt-vm-provider/*` and `dcm-core/*` do not exist in the corpus, which organizes by domain. Three
-  such rows remain unmapped (01, 05, 08).
+**The two namespace questions are settled by the corpus's own convention.** The six document-path rows now
+carry the use-case handles they resolve to. The `libvirt-vm-provider/*` and `dcm-core/*` rows were placed by
+domain: VM-centred scenarios under `compute/`, the dependency graph under `cross-domain/`. No provider-named
+namespace was created.

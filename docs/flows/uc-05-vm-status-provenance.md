@@ -2,7 +2,7 @@
 
 **What this settles:** what happens *after* commit — the provider's reported status (state, host, ip, mac, disk paths) lands on the realized resource, and **every realized field carries who produced it, in which run, and when**. Drift re-runs this and updates both the value and its provenance. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `libvirt-vm-provider/standard/vm-status-provenance`. **Persona:** auditor · **Profile:** standard.
+> **Use Case:** `compute/vm-status-provenance`. **Persona:** compliance-auditor · **Profile:** standard.
 
 **In one breath.** request-realization ends at commit with "what was asked and what was built are both stored." This case makes the *built* side auditable: the libvirt provider's status isn't just written onto the resource — each field records its origin (which provider run, at what time), and when reality drifts, the field and its provenance are updated together. So an auditor can always answer "where did this ip come from, and is it still current?"
 
@@ -45,11 +45,11 @@ The lifecycle answer — the personas, what a request contains, what data is add
 [request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
 It holds for every use case.
 
-**This case's delta:** the driving persona is **`auditor`**. Everything that persona relies on —
+**This case's delta:** the driving persona is **`compliance-auditor`**. Everything that persona relies on —
 layers, tenant binding, policies, provider capability — was declared by the others *before* this
 request existed, exactly as the lifecycle answer describes.
 
 ## Pointers
 
-- Base flow: [request-realization](request-realization.md). UC source: `libvirt-vm-provider/standard/vm-status-provenance`.
+- Base flow: [request-realization](request-realization.md). UC source: `compute/vm-status-provenance`.
 - The four states (Intent → Requested → Realized): [`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md).

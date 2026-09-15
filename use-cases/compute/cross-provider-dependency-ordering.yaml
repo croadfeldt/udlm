@@ -1,0 +1,64 @@
+uuid: uc-e11cb3ac-1ec8-4e71-8859-d9d3ac246be3
+handle: compute/cross-provider-dependency-ordering
+version: 1.0.0
+scenario:
+  description: 'A platform operator requests a VM that declares a depends_on edge to a host bridge owned
+    by a different provider. The control plane converges the two in topological order across the provider
+    boundary: the bridge is realized by its owning provider first, and only then is the VM dispatched
+    to the compute provider. Teardown runs in reverse, dependents first. If the prerequisite is not yet
+    realized, the dependent VM is held in place with a typed pending state; it is never skipped and never
+    built against a missing prerequisite.'
+  actor:
+    persona: platform-operator
+    profile: standard
+  perspectives:
+    - sre
+    - provider-owner
+  intent: Converge a VM after its cross-provider prerequisite, tear down in reverse, and block rather
+    than skip when the prerequisite is unrealized
+  success_criteria:
+    - A VM declares depends_on edges to resources owned by other providers, each carrying the prerequisite's
+      identity
+    - 'The control plane converges in topological order across providers: the prerequisite is realized
+      by its owning provider before the dependent is dispatched'
+    - 'Teardown runs in reverse order: dependents first, prerequisites last'
+    - A prerequisite that is not yet realized blocks the dependent with a pending state; the dependent
+      is not skipped and not built
+    - Each provider implements only its own resource; the ordering between them belongs to the control
+      plane, not to either provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: hard_dependencies
+    policy_complexity: cross_domain_constraint
+    provider_landscape: multiple_eligible
+    governance_context: standard_governance
+    failure_mode: partial_fulfillment
+  profile: standard
+  expected_domain_interactions:
+    - domain: data
+      interaction: depends_on edges from the dependency graph pointing at records in other providers
+    - domain: policy
+      interaction: convergence order is derived from the graph, not configured per provider
+    - domain: provider
+      interaction: the network provider realizes the bridge; the compute provider realizes the VM; neither
+        sequences the other
+    - domain: audit
+      interaction: the order of realization and the blocking decision are recorded against both records
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: scope-sync-2026-09-15
+  timestamp: '2026-09-15T00:00:00.000000+00:00'
+tags:
+  - dependency-graph
+  - cross-provider
+  - ordering
+  - blocking
+  - standard-profile
+metadata:
+  admitted_at: '2026-09-15T00:00:00.000000+00:00'
+  admitted_dcm_version: preview
+  promoted_from_run: null
+  initial_baseline_path: null
+  author: chris@croadfeldt

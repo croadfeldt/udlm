@@ -9,7 +9,7 @@ rehydration pipeline entered through a supply-chain trigger** — so it **builds
 (the rebuild), and [application-tier-provisioning](application-tier-provisioning.md) (the admission gates),
 adding only the ITSM-window, lower-env-QA, and blue/green stages.
 
-> **Use Case:** `docs/spec/governance/secure-software-supply-chain`. **Persona:** platform-engineer · **Profile:** prod.
+> **Use Case:** `governance/secure-software-supply-chain`. **Persona:** platform-engineer · **Profile:** prod.
 
 **In one breath.** A library or image update is ingested — the trigger doesn't matter (a CVE fix, an
 upstream release, a base-image bump). The dependency graph returns the **targets** and the **blast-radius**;
@@ -86,4 +86,4 @@ flowchart TD
   (rebuild), [application-tier-provisioning](application-tier-provisioning.md) (admission gates). Related:
   [uc-07](uc-07-udlm-dependency-graph-data-model.md) (blast-radius),
   [uc-16](uc-16-policy-override-approval.md) (sign-off), ADR-045 (change class), ADR-046 (blue/green),
-  ADR-053 (windows). UC source: `docs/spec/governance/secure-software-supply-chain`.
+  ADR-053 (windows). UC source: `governance/secure-software-supply-chain`.

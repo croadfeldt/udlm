@@ -48,21 +48,21 @@ architecture is provably production-grade, not to be implemented first.
 Grouped by what enables them. "Covered" cites the merged spec; "control-plane-runtime" = enabled by a UDLM shape
 but executed by the control plane (ADR-008).
 
-> **Corpus traceability (2026-09-14).** Rows 10, 12–16 and 19–21 name use cases imported unchanged from the
-> sibling use-case corpus into `use-cases/`, so their handles now resolve. Rows 1, 4, 5, 7 and 8 name scenarios
-> the 2026-08-07 reconciliation ruled *author* (`docs/uc-scope-corpus-reconciliation.md` §B/§C) that
-> have not been written; they remain baselined in `tests/uc_traceability_baseline.txt` until they are.
+> **Corpus traceability (2026-09-15).** Every handle in the table below resolves to a file under `use-cases/`.
+> Rows 10, 12–16 and 19–21 were imported unchanged from the sibling use-case corpus on 2026-09-14; rows 1, 4,
+> 5, 7 and 8 were authored from their flow documents on 2026-09-15 under domain handles (`compute/`,
+> `cross-domain/`), since the corpus organizes by domain rather than by provider.
 
 | # | Use case (handle) | UDLM basis | Status |
 |---|---|---|---|
-| 1 | libvirt-vm-provider/vm-resource-representation | `Machine.VM` 2.0.0; `state-record` / `entity-view` | Covered |
+| 1 | compute/vm-resource-representation | `Machine.VM` 2.0.0; `state-record` / `entity-view` | Covered |
 | 2 | architecture/solution-architecture-decomposition | `Template.Application` + the composition record (`constituents[]`, bindings, fulfillment); realized receipt | Covered (DSL ingestion = the control plane/Information-Provider) |
 | 3 | compute/provision-vm-standard | profile-resolution; policy §7.7; universal-audit | Covered |
 | 4 | compute/vm-intent-osac-placement | provider-contract §8 `realize_resources`; osac-better-together; provider provenance | Covered (placement algo = DCM ADR-019) |
-| 5 | libvirt-vm-provider/vm-status-provenance | per-state records: field-level `provenance`/`status`; drift computed from the latest realized and discovered records | Covered |
+| 5 | compute/vm-status-provenance | per-state records: field-level `provenance`/`status`; drift computed from the latest realized and discovered records | Covered |
 | 6 | storage/provision-volume-bound-to-pool | `Storage.Volume`; tenancy; **quota** (now defined) | **Closed this release (P7)** |
-| 7 | dcm-core/udlm-dependency-graph-data-model | ordering `edge_type`s; ADR-010 derived fault-domain/blast-radius; graph-integrity | Covered |
-| 8 | libvirt-vm-provider/cross-provider-dependency-ordering | graph-integrity DAG; DCM ADR-009; ADR-011 reserve ordering | Covered (convergence = DCM ADR-006) |
+| 7 | cross-domain/udlm-dependency-graph-data-model | ordering `edge_type`s; ADR-010 derived fault-domain/blast-radius; graph-integrity | Covered |
+| 8 | compute/cross-provider-dependency-ordering | graph-integrity DAG; DCM ADR-009; ADR-011 reserve ordering | Covered (convergence = DCM ADR-006) |
 | 9 | intent-fulfillment/operational-dependency-cascade | ADR-010 `UnmetDependency` (blocking, blast_radius) | Covered |
 | 10 | cross-domain/dynamic-rehydration | four-states §5 (replay intent, UUID preserved) | Covered (plan derivation = the control plane) |
 | 11 | compute/vm-provision-provider-failure-refused | policy §13 recovery; four-states §2.5 conditions; ADR-011 release | Covered |

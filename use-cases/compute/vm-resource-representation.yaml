@@ -1,0 +1,63 @@
+uuid: uc-cb816ded-a179-406f-a482-a9a5a3d47557
+handle: compute/vm-resource-representation
+version: 1.0.0
+scenario:
+  description: A platform operator defines what a Machine.VM is made of, so that a VM is a typed, retrievable
+    resource rather than a bag of provider fields. The class carries a portable spec (placement requirements,
+    resources, storage, networks) and a lifecycle intent; the provider's realized facts (assigned host,
+    disk paths, power state) land in a separate realized record that shares the entity's identity. A submitted
+    VM intent is persisted and can be read back as a typed record; the realized record is reconciled from
+    what the provider reports and can be compared field by field against the intent. This exercises the
+    class definition itself, one level before any request of it.
+  actor:
+    persona: platform-operator
+    profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+  intent: Define Machine.VM as a typed resource with a portable spec, a lifecycle intent, and a realized
+    record the provider fills
+  success_criteria:
+    - Machine.VM declares a spec (placement requirements, resources, storage, networks) and a lifecycle
+      intent as typed fields, not free-form provider attributes
+    - A submitted VM intent is persisted as an intent record and is retrievable as a typed resource
+    - The provider's realized facts (host, disk paths, power state) are reconciled into a realized record
+      that shares the entity's identity with the intent record
+    - Intent and realized records can be compared field by field because both are typed by the same class
+    - The realized record is consumable on its own, without the intent record present
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: single_no_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+    - domain: data
+      interaction: Machine.VM spec, lifecycle intent, and realized fields are typed by one class
+    - domain: data
+      interaction: intent record and realized record share entity_uuid and carry distinct record_uuids
+    - domain: policy
+      interaction: system defaults only; no enrichment or placement in this case
+    - domain: provider
+      interaction: the compute provider realizes the VM and reports native facts for the realized record
+    - domain: audit
+      interaction: the intent record and realized record are both retained and retrievable
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: scope-sync-2026-09-15
+  timestamp: '2026-09-15T00:00:00.000000+00:00'
+tags:
+  - compute-virtualmachine
+  - type-definition
+  - per-state-records
+  - standard-profile
+metadata:
+  admitted_at: '2026-09-15T00:00:00.000000+00:00'
+  admitted_dcm_version: preview
+  promoted_from_run: null
+  initial_baseline_path: null
+  author: chris@croadfeldt

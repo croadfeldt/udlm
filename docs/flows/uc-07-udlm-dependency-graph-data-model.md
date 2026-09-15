@@ -2,7 +2,7 @@
 
 **What this settles:** the dependency graph is *modeled data* in UDLM, not something DCM infers at runtime — the two ordering `edge_type`s (`contained_by` containment, `depends_on` requirement) plus the **derived** fault-domain projection (co-reference to org-ratified fault-domain anchors, ADR-010) that DCM can query for ordering and impact. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `dcm-core/standard/udlm-dependency-graph-data-model`. **Persona:** platform-operator · **Profile:** standard.
+> **Use Case:** `cross-domain/udlm-dependency-graph-data-model`. **Persona:** platform-operator · **Profile:** standard.
 
 **In one breath.** request-realization builds one resource. Real estates are graphs of them. This case says the edges between resources are first-class, queryable UDLM data — **parent/child containment** (`contained_by`) and **`depends_on` requirement** — with **shared-fault-domain exposure derived** from co-reference to fault-domain anchors (ADR-010), never authored as an edge. Because the graph is data, DCM *derives* safe ordering and blast-radius from it — the ordering isn't bolted on after the fact.
 
@@ -54,5 +54,5 @@ request existed, exactly as the lifecycle answer describes.
 
 ## Pointers
 
-- Base flow: [request-realization](request-realization.md). UC source: `dcm-core/standard/udlm-dependency-graph-data-model`.
+- Base flow: [request-realization](request-realization.md). UC source: `cross-domain/udlm-dependency-graph-data-model`.
 - Built on by cross-provider ordering (UC-08) and failure impact (UC-09).

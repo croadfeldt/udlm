@@ -1,0 +1,67 @@
+uuid: uc-4e657932-bc5b-4b16-b0fa-c169ae433819
+handle: cross-domain/udlm-dependency-graph-data-model
+version: 1.0.0
+scenario:
+  description: 'A platform operator relies on the dependency graph being modeled data in UDLM, not something
+    the control plane infers at runtime. Two ordering edge types are declared between records: contained_by
+    (parent/child containment) and depends_on (requirement). Shared-fault-domain exposure is not a third
+    edge; it is derived from co-reference to fault-domain anchors. The graph is queryable for convergence
+    order (topological over depends_on plus containment) and for blast radius (what falls with a node,
+    what survives). The control plane derives safe operation ordering and impact from the graph; nothing
+    keeps a separate ordering table or a hand-maintained impact list.'
+  actor:
+    persona: platform-operator
+    profile: standard
+  perspectives:
+    - sre
+    - solution-architect
+  intent: Declare dependency edges as typed data and derive convergence order and blast radius from them
+  success_criteria:
+    - The ordering edge types contained_by and depends_on are declared, typed UDLM data with defined meaning
+    - Shared-fault-domain exposure is derived from co-reference to fault-domain anchors, not declared
+      as an edge
+    - 'The graph answers a convergence-order query: a topological order over depends_on and containment'
+    - 'The graph answers a blast-radius query: the set of records that fall with a given node, and the
+      set that survives'
+    - Blast radius of a missing or failed dependency is derivable from the declared graph alone, with
+      no separate impact list
+    - The control plane derives ordering and impact by reading the graph; no parallel dependency map exists
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: multi_dependent
+    policy_complexity: cross_domain_constraint
+    provider_landscape: multiple_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+    - domain: data
+      interaction: contained_by and depends_on edges carry endpoints and edge_type; fault-domain anchors
+        are referenced data
+    - domain: policy
+      interaction: ordering and impact policies query the graph rather than owning their own dependency
+        map
+    - domain: provider
+      interaction: each provider contributes the containment and fault-domain facts it knows, such as
+        which host a VM landed on
+    - domain: audit
+      interaction: convergence order and blast radius are reproducible from the stored graph at any point
+        in time
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: scope-sync-2026-09-15
+  timestamp: '2026-09-15T00:00:00.000000+00:00'
+tags:
+  - dependency-graph
+  - edge-types
+  - blast-radius
+  - fault-domain
+  - ordering
+metadata:
+  admitted_at: '2026-09-15T00:00:00.000000+00:00'
+  admitted_dcm_version: preview
+  promoted_from_run: null
+  initial_baseline_path: null
+  author: chris@croadfeldt
