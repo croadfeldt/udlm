@@ -405,7 +405,7 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 149,
+    "files_scanned": 158,
     "covered": [
       "Access.IdentityEscrow",
       "Automation",

@@ -93,7 +93,10 @@ provider, so those five need a namespace decision, not just a rename.
 
 ## What remains
 
-**Author 14 corpus entries** (section B). Before writing each, check the near-miss column's entry one
+**Author 14 corpus entries** (section B). *Update 2026-09-14:* nine of them existed in the DAV corpus
+(`croadfeldt/dcm` `dav/use-cases/`) under domain handles and were imported unchanged — rows 10, 12, 13, 14, 15, 16,
+19, 20, 21 now resolve. Five remain to author: 01, 04, 05, 07, 08 (plus the two flows with no release row,
+governed-automation and secure-software-supply-chain). Before writing each, check the near-miss column's entry one
 more time — section B's confidence is high for 04/12/20 and for the four section-C rulings, medium for
 the rest, since those were assessed against closest candidates rather than all 149 entries.
 

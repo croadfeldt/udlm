@@ -5,7 +5,7 @@ override** — evaluated against that policy's own override rules, routed to an 
 recorded — without ever letting a hard-enforcement policy be waived. A **lighter** flow — it **builds on
 [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `docs/spec/governance/policy-override-approval`. **Persona:** platform-engineer · **Profile:** prod.
+> **Use Case:** `governance/policy-override-approval`. **Persona:** platform-engineer · **Profile:** prod.
 
 **In one breath.** A soft policy is failing and holding up a business-critical deployment. The engineer asks
 for a temporary override; the system checks the *policy's own* override-eligibility declaration, routes the
@@ -66,4 +66,4 @@ layers, tenant binding, policies, provider capability — was declared by the ot
 request existed, exactly as the lifecycle answer describes.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). UC source: `docs/spec/governance/policy-override-approval`.
+- Base flow: [request-realization](request-realization.md). UC source: `governance/policy-override-approval`.
