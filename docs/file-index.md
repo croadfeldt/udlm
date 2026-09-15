@@ -113,6 +113,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`docs/examples/`** — non-normative worked examples (VM end-to-end trace, the DAV knowledge case study, provider accreditation).
 - **`docs/flows/`** — the flow tier (stage-level walkthroughs; see its README).
 - **`docs/uc-scope-corpus-reconciliation.md`** — which of the 21 release use cases exist in the corpus under a different handle, which are absent, and which need a ruling; the burn-down map behind `tests/check_uc_traceability.py`.
+- **`docs/uc-enablement-map.md`** — the 21 release use cases against three layers (model, control plane, provider): what exists in each layer today and where, so "Covered" in the scope manifest reads as model-layer only.
 - **`docs/research/`** — prior art, proposals, and vision explorations (architecture-as-code, LikeC4, OSAC, holistic vision).
 
 ---
