@@ -130,5 +130,6 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`docs/examples/provider-accreditation-worked-example.md`** — accreditation flow worked example (claim → attestation → verdict).
 - **`docs/research/architecture-as-code-ingestion.md`** — research: mapping CALM/LikeC4 architecture-as-code into UDLM edges.
 - **`docs/research/likec4-and-udlm.md`** — research: LikeC4 view layer over UDLM data.
+- **`docs/research/platform-fidelity-program.md`** — research: a discovery sweep observes facts today's classes cannot hold (no platform has a Provider Class; observed facts have no outputs); the platform-by-platform program that closes it, with the decisions it needs.
 - **`docs/guides/udlm-0.1-engineering-handoff.md`** — the 0.1 engineering handoff (what to read in which order).
 - **`registry/rule-id-naming.md`** — the rule-ID naming rules behind the registry (ADR-028).
