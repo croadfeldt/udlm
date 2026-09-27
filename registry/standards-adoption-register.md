@@ -62,7 +62,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** a stored criterion needs a self-reference (`tenant_uuid=={self}`); RFC 6570 level 1 is the standard template syntax at exactly the needed power — no invented placeholder grammar. *Alternatives:* a coined sigil (T5). **License:** IETF Trust — compatible-reference.
 
 ### RFC 9162 (Certificate Transparency v2 / Merkle logs) — CANONICAL
-**Covers:** `RFC 9162` · **Body:** IETF · **Since:** 2026-04-07T18:38:08Z · **Where:** `docs/spec/contracts/universal-audit.md` AUD-006 (audit records form a Merkle tree; leaf signatures), `audit.log_head` in the instance schema.
+**Covers:** `RFC 9162` · **Body:** IETF · **Since:** 2026-04-07T18:38:08Z · **Where:** `docs/spec/contracts/universal-audit.md` AUD-006 (audit records form a Merkle tree; leaf signatures), `audit.log_head` in the state-record schema.
 **Why:** tamper-evident audit for fsi/sovereign profiles needs an append-only structure with an established verification model; CT is the deployed-at-scale precedent. *Alternatives:* blockchain (consensus machinery we don't need), plain hash chain (no efficient inclusion proofs). **License:** IETF Trust — compatible-reference.
 
 ### ADR / Decision Record format — CANONICAL
@@ -108,7 +108,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 
 ### Kubernetes vocabularies — CANONICAL
 **Covers:** `Kubernetes` `Kubernetes NetworkAttachmentDefinition` `Kubernetes well-known topology labels` `Kubernetes-Gateway-API` · **Body:** CNCF/Kubernetes SIGs · **Since:** 2026-06-27 (Gateway API, topology labels) → 2026-07-05 (NAD 02:10:32Z, batch Job 03:29:34Z) · **Where:** Network.Gateway (Gateway API), Topology (well-known labels), Network.VirtualNetwork (NAD attachment vocabulary), Automation.Job (batch/v1 run-to-completion semantics — `activeDeadlineSeconds` ≈ `max_execution_time`).
-**Why:** k8s is both a major producer and consumer in the estate (OCP) and the de-facto vocabulary source for cloud-native concepts; adopting its names keeps the control plane Provider boundary translation-free. Also adopted structurally elsewhere: `managedFields`/server-side apply is the model behind field `ownership` (R4). **License:** Apache-2.0 — compatible-reference.
+**Why:** k8s is both a major producer and consumer in the estate (OCP) and the de-facto vocabulary source for cloud-native concepts; adopting its names keeps the control plane Provider boundary translation-free. Also adopted structurally elsewhere: `managedFields`/server-side apply was the model behind the merged schema's `ownership` block, retired by ruling 071 — one author per record now does that job. **License:** Apache-2.0 — compatible-reference.
 
 ### Kubernetes ObjectReference / ownerReference (object-reference shape) — PATTERN
 **Covers:** `Kubernetes ObjectReference` · **Body:** Kubernetes (CNCF) · **Since:** 2026-07-14 (UDLM ADR-012) · **Where:** the data-reference shape (`registry/data-reference.schema.json`) — the *semantic* is adopted (a field names a governed record by identity rather than inlining it, resolution keyed on the uuid alone); the *serialization* is UDLM's own URF string, not the k8s object literal — a field points at a governed Reference Data Layer instead of inlining a copy; `check_data_references` (`registry/tools/validate.py`) enforces referential integrity.

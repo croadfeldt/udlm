@@ -20,9 +20,8 @@ policy that produces them (`core-tenets.md` G3). Validate instances with `tools/
 | `states.{intent,requested,realized,discovered}` | the **four-state lifecycle** — immutable snapshots; `realized` is the system of record |
 | `generation` / `observed_generation` | implementation-pending signal (observed < desired ⇒ in flight) |
 | **`provenance`** (per dot-path history of layer/policy/actor/provider + timestamp + previous value) | **audit (#191 / E4)** — the record the Merkle chain consumes |
-| **`ownership`** (per dot-path manager) | **field ownership / server-side apply (R4)** — offline conflict detection across providers |
 | `dependencies` (resolved edges + bindings) / `constituents` | **dependency graph** + composite implementation |
-| `drift` (Discovered vs Requested) + `status.conditions` | **observability** + drift detection |
+| `status.conditions` | **observability**; drift is computed from the latest discovered and realized records (four-states.md §6) and never stored |
 | `expected_observation` (declared cadence/window + `on_exceeded`) | **staleness as declared expectation (ADR-048)** — verdicts (`current`/`stale_expected`/`stale_deviant`) derived against it, never stored; OBS-005 profile TTL is the fallback |
 | `sovereignty` (zone/classification, realized from `immutable` type fields) | **sovereignty** — can't change without replace + Governance-Matrix re-eval |
 | `audit` (Merkle `log_head` + `leaf_count`) | **audit linkage** (`AUD-001/002`) |
@@ -40,9 +39,9 @@ have a home in the data. (UDLM v1.0 is still being defined — this entity-view 
 *expanding* that initial surface, not a post-1.0 refinement.)
 
 ## The boundary (where each piece is produced)
-The instance record is **Data** — UDLM's. Everything that *populates* it is **Policy/the control plane**: assembly
-writes `provenance`/`ownership` and the `requested` snapshot; the Provider writes `realized` + `outputs`
-+ `status`; discovery writes `discovered` + `drift`; the control plane produces the `audit` Merkle chain. UDLM never
+The records are **Data** — UDLM's. Everything that *populates* them is **Policy/the control plane**: assembly
+writes the requested record with its `provenance`; the Provider writes the realized record with `outputs`
++ `status`; discovery writes discovered records (drift is computed between them and the realized record); the control plane produces the `audit` Merkle chain. UDLM never
 computes these — it holds them (T1/T2). Field values inside the snapshots are typed by the entity's
 Resource Type Spec and are not re-validated here.
 
