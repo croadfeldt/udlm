@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 62,
+    "types": 63,
     "by_family": {
       "Access": 8,
       "Knowledge": 9,
       "Process": 3,
-      "Resource": 42
+      "Resource": 43
     }
   },
   "discrimination": {
-    "mutations_attempted": 5270,
-    "mutations_rejected": 5270,
+    "mutations_attempted": 5415,
+    "mutations_rejected": 5415,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -255,6 +255,10 @@
         "attempted": 171,
         "rejected": 171
       },
+      "UPS": {
+        "attempted": 145,
+        "rejected": 145
+      },
       "VexStatement": {
         "attempted": 60,
         "rejected": 60
@@ -266,8 +270,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 62,
-    "total": 62
+    "strict_specs": 63,
+    "total": 63
   },
   "outputs": {
     "per_type": {
@@ -331,6 +335,7 @@
       "TestEvidence": 0,
       "TestEvidence.VulnerabilityCheck": 0,
       "Topology": 1,
+      "UPS": 7,
       "VexStatement": 0,
       "Vulnerability": 0
     },
@@ -379,18 +384,17 @@
     ]
   },
   "context": {
-    "with_context": 62,
-    "total": 62,
+    "with_context": 63,
+    "total": 63,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 47,
-    "total": 62,
+    "with_relationships": 49,
+    "total": 63,
     "missing": [
       "Access.Grouping",
       "Automation",
       "Automation.OSPatch",
-      "Facility.PowerFeed",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
@@ -470,6 +474,7 @@
       "Template.Application",
       "TestEvidence",
       "TestEvidence.VulnerabilityCheck",
+      "UPS",
       "VexStatement"
     ]
   },
@@ -554,10 +559,11 @@
       "TestEvidence",
       "TestEvidence.VulnerabilityCheck",
       "Topology",
+      "UPS",
       "VexStatement",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 62
+    "consumed_by_at_least_one": 63
   },
   "expressibility_coverage": {
     "value": null,

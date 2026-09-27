@@ -174,7 +174,7 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 - Machine.BareMetalHost — the equipment that declares its location.
 - Topology — the failure-domain view of the same physical reality.
 
-### Facility.PowerFeed (0.5.2)
+### Facility.PowerFeed (0.6.0)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
@@ -1229,6 +1229,27 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 - Machine.VM — placement intent resolved against domain kinds.
 - Storage.Cluster — fault-domain-aware placement and maintenance gating.
 
+## UPS
+
+### UPS (0.1.0)
+
+**Purpose:** Models the battery-backed unit itself — what it is rated for, what wears, when it must signal low battery, and what it reports — so the feed it protects can be supplied_by a real entity instead of a feed_type string.
+
+A UPS as a thing you own, separate from the circuit it protects. You declare its make and model, its rating, its battery set and the point at which it must announce low battery; it reports whether it is online or on battery, how much charge and runtime remain, and how loaded it is. The daemon or card that produces those numbers (NUT, a vendor SNMP card, a Redfish power shelf) is the provider on the instance, not part of the type. The circuit the UPS feeds stays a PowerFeed, now supplied_by the UPS, so nothing about shutdown ordering changes.
+
+**Use when:**
+- You need the UPS behind a power feed to be an entity — its identity, rating, battery age and low-battery policy — rather than a feed_type string.
+- You need live UPS telemetry (status, charge, runtime, load) attributed to the unit that produced it, with the producer recorded as a provider.
+
+**Not for:**
+- The circuit that equipment draws from — Facility.PowerFeed; hosts depend_on feeds, not on UPSes.
+- A PDU, transfer switch, or power shelf — different orders, not kinds of UPS (ADR-067's migration test).
+
+**Works with:**
+- Facility.PowerFeed — a feed is supplied_by the UPS that conditions it.
+- Software.Service — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the instance's provider.
+- Automation.Job — the graceful-shutdown job that the unit's status drives, via the feed.
+
 ## VexStatement
 
 ### VexStatement (0.1.0)
@@ -1263,4 +1284,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*62 types; 62 with context, 0 pending.*
+*63 types; 63 with context, 0 pending.*

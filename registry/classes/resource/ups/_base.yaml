@@ -1,0 +1,255 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/UPS/0.1.0
+conforms_to: udlm/0.1
+uuid: db585146-41b2-4cd9-86e6-c90d086df2cf
+record_type: class
+class: base
+resource_type: UPS
+version: 0.1.0
+family: Resource
+status: active
+metadata:
+  display_name: Uninterruptible Power Supply
+  description: 'An uninterruptible power supply — battery-backed conditioned power that carries a load
+    through an input failure and reports the state a graceful shutdown decides on. A base class of its own
+    (ADR-067): a UPS is one order that any of its kinds — double-conversion, line-interactive, standby
+    (IEC 62040-3) — can realize and a load can migrate between; it is not a kind of Facility, and it shares
+    no order with a PDU or a transfer switch, so it sits under no wider power base. Vendor-neutral by
+    construction: what every UPS declares (identity, rating, battery, low-battery policy) and reports
+    (status, charge, runtime, load, input voltage); the telemetry producer (NUT, a vendor SNMP card, a
+    Redfish power shelf) is a provider, named on the instance and in adopts[], never in the type. The
+    circuit it protects is a Facility.PowerFeed that is supplied_by it — hosts keep depending on the
+    feed, so the shutdown walk is unchanged.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-09-27T00:00:00Z'
+elements:
+- element: identity
+  scope: UPS
+  optional: true
+  state: canonical
+  description: Unit identity (SPEC-DESIGN-REQUIREMENTS §27) — the same shape every Hardware/Machine type carries.
+  schema:
+    type: object
+    description: Unit identity (SPEC-DESIGN-REQUIREMENTS §27) — the same shape every Hardware/Machine type carries.
+    properties:
+      manufacturer:
+        type: string
+        description: Maker (Redfish Manufacturer; NUT ups.mfr / device.mfr).
+      model:
+        type: string
+        description: Model (Redfish Model; NUT ups.model / device.model).
+      serial_number:
+        type: string
+        description: Unit serial (Redfish SerialNumber; NUT ups.serial / device.serial).
+      asset_tag:
+        type: string
+        description: Org asset tag (Redfish AssetTag).
+- element: topology
+  scope: UPS
+  optional: true
+  state: canonical
+  description: 'UPS topology per IEC 62040-3 performance classification: double-conversion (VFI), line-interactive
+    (VI), standby (VFD). The kinds a load can migrate between — the members of this base.'
+  schema:
+    type: string
+    enum:
+    - double-conversion
+    - line-interactive
+    - standby
+    description: 'UPS topology per IEC 62040-3 performance classification: double-conversion (VFI), line-interactive
+      (VI), standby (VFD).'
+- element: rated_capacity
+  scope: UPS
+  optional: true
+  state: canonical
+  description: Nameplate rating (NUT ups.power.nominal / ups.realpower.nominal; Redfish PowerSupply/PowerShelf ratings).
+  schema:
+    type: object
+    description: Nameplate rating (NUT ups.power.nominal / ups.realpower.nominal; Redfish PowerSupply/PowerShelf ratings).
+    properties:
+      va:
+        type: integer
+        minimum: 1
+        description: Rated apparent power, VA.
+      watts:
+        type: integer
+        minimum: 1
+        description: Rated real power, W.
+      voltage:
+        type: integer
+        minimum: 1
+        description: Nominal output voltage, V.
+      phases:
+        type: integer
+        enum:
+        - 1
+        - 3
+        description: Single- or three-phase.
+- element: battery
+  scope: UPS
+  optional: true
+  state: canonical
+  description: The battery set — what wears and what gets replaced. Runtime and charge are outputs, not declared here.
+  schema:
+    type: object
+    description: The battery set — what wears and what gets replaced. Runtime and charge are outputs, not declared here.
+    properties:
+      chemistry:
+        type: string
+        enum:
+        - lead-acid
+        - lithium-ion
+        - nickel-cadmium
+        description: Battery chemistry (NUT battery.type carries the vendor string; this is the neutral class).
+      count:
+        type: integer
+        minimum: 1
+        description: Number of battery modules/packs installed (NUT battery.packs).
+      installed_at:
+        type: string
+        format: date
+        description: Date the current battery set was installed (NUT battery.date / battery.mfr.date) — replacement planning.
+- element: outlets
+  scope: UPS
+  optional: true
+  state: canonical
+  description: Number of output receptacles (NUT outlet.count; Redfish Outlet collection size). Switched outlet detail is provider data.
+  schema:
+    type: integer
+    minimum: 1
+    description: Number of output receptacles (NUT outlet.count; Redfish Outlet collection size).
+- element: low_battery_policy
+  scope: UPS
+  optional: true
+  state: canonical
+  description: 'When the unit MUST raise low-battery (the shutdown trigger) — by remaining charge and/or remaining runtime.
+    Intent that a provider pushes to the unit where it is writable (NUT battery.charge.low / battery.runtime.low); where the
+    unit fixes it, the realized record reports the unit''s value and the intent stands as drift.'
+  schema:
+    type: object
+    description: When the unit MUST raise low-battery — by remaining charge and/or remaining runtime.
+    properties:
+      charge_percent:
+        type: integer
+        minimum: 1
+        maximum: 100
+        description: Raise low-battery at or below this charge, percent.
+      runtime_seconds:
+        type: integer
+        minimum: 1
+        description: Raise low-battery at or below this estimated runtime, seconds.
+- element: management_interfaces
+  scope: UPS
+  optional: true
+  state: canonical
+  description: How the unit can be observed and controlled — the physical/protocol surfaces present, not which one a provider uses.
+  schema:
+    type: array
+    description: How the unit can be observed and controlled — the surfaces present, not which one a provider uses.
+    items:
+      type: string
+      enum:
+      - usb
+      - serial
+      - snmp
+      - http
+      - modbus
+      - redfish
+    uniqueItems: true
+spec_examples:
+- identity:
+    manufacturer: Example Power Co.
+    model: Rackmount 1500
+    serial_number: EXMPL-000001
+  topology: line-interactive
+  rated_capacity:
+    va: 1500
+    watts: 900
+    voltage: 120
+    phases: 1
+  battery:
+    chemistry: lead-acid
+    count: 1
+    installed_at: '2026-01-15'
+  outlets: 8
+  low_battery_policy:
+    charge_percent: 38
+  management_interfaces:
+  - usb
+  - snmp
+outputs:
+  status:
+    type: string
+    description: Observed unit status — online | on-battery | low-battery | overload | off (maps from NUT ups.status
+      OL/OB/LB/OVER/OFF). The value a graceful shutdown triggers on.
+  battery_charge:
+    type: integer
+    description: Battery charge, percent (NUT battery.charge).
+  runtime_seconds:
+    type: integer
+    description: Estimated runtime remaining on battery, seconds (NUT battery.runtime). Absent when the unit does not report it.
+  load_percent:
+    type: integer
+    description: Output load as a percent of rating (NUT ups.load).
+  input_voltage:
+    type: number
+    description: Measured input (utility) voltage, V (NUT input.voltage).
+  output_voltage:
+    type: number
+    description: Measured output voltage, V (NUT output.voltage).
+  firmware:
+    type: string
+    description: Unit firmware version (NUT ups.firmware; Redfish FirmwareVersion).
+relationships:
+- edge_type: contained_by
+  name: located_in
+  target: Facility.Location
+  cardinality: 0..1
+  description: located_in — the rack/room the unit sits in. Optional; a UPS is a power source wherever it stands.
+adopts:
+- standard: IEC 62040-3
+  version: '2021'
+  standard_name: UPS performance classification (VFI / VI / VFD)
+  role: the topology vocabulary — double-conversion, line-interactive, standby — reference by name only (IEC text is
+    copyrighted)
+  source: https://webstore.iec.ch/publication/67147
+  license: IEC
+  license_compatibility: reference-only
+  disposition: tier1_value
+- standard: NUT
+  version: '2.8'
+  standard_name: ups.* / battery.* / input.* / output.* variables
+  role: 'telemetry variable namespace the outputs map from (status, charge, runtime, load, voltages) and the low-battery
+    thresholds (battery.charge.low / battery.runtime.low) — reference-only: NUT is GPL'
+  source: https://networkupstools.org/docs/developer-guide.chunked/apas01.html
+  license: GPL-2.0-or-later
+  license_compatibility: reference-only
+  disposition: tier1_value
+- standard: Redfish
+  version: '2024.4'
+  standard_name: PowerEquipment / PowerSupply
+  role: identity and rating vocabulary (Manufacturer, Model, SerialNumber, FirmwareVersion, capacity ratings)
+  source: https://www.dmtf.org/standards/redfish
+  license: DMTF
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+context:
+  purpose: Models the battery-backed unit itself — what it is rated for, what wears, when it must signal low battery,
+    and what it reports — so the feed it protects can be supplied_by a real entity instead of a feed_type string.
+  plain_description: A UPS as a thing you own, separate from the circuit it protects. You declare its make and model,
+    its rating, its battery set and the point at which it must announce low battery; it reports whether it is online or
+    on battery, how much charge and runtime remain, and how loaded it is. The daemon or card that produces those numbers
+    (NUT, a vendor SNMP card, a Redfish power shelf) is the provider on the instance, not part of the type. The circuit
+    the UPS feeds stays a PowerFeed, now supplied_by the UPS, so nothing about shutdown ordering changes.
+  use_when:
+  - You need the UPS behind a power feed to be an entity — its identity, rating, battery age and low-battery policy —
+    rather than a feed_type string.
+  - You need live UPS telemetry (status, charge, runtime, load) attributed to the unit that produced it, with the
+    producer recorded as a provider.
+  not_for:
+  - The circuit that equipment draws from — Facility.PowerFeed; hosts depend_on feeds, not on UPSes.
+  - A PDU, transfer switch, or power shelf — different orders, not kinds of UPS (ADR-067's migration test).
+  works_with:
+  - Facility.PowerFeed — a feed is supplied_by the UPS that conditions it.
+  - Software.Service — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the
+    instance's provider.
+  - Automation.Job — the graceful-shutdown job that the unit's status drives, via the feed.
