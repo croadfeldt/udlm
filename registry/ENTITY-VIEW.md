@@ -13,6 +13,12 @@
 policy that produces them (`core-tenets.md` G3). Validate instances with `tools/validate.py`
 (`registry/examples/*`); `instances/orders-db.json` is a worked example.
 
+## The one rule
+
+| ID | Rule |
+|---|---|
+| `EVW-001` | **Every shipped entity folds into a valid view.** For each entity whose per-state records ship in `registry/examples/` or `registry/instances/`, the view `registry/tools/entity_view.py` builds from them validates against `registry/entity-view.schema.json`. The view is derived from the records and the schema (DOC-002); a record shape the view schema cannot hold is a defect in one or the other, caught here rather than by the first dashboard. Gate: `tests/check_entity_views.py`. |
+
 ## What it carries — and control-plane capability it serves
 
 | Field | Serves |

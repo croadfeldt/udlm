@@ -32,8 +32,8 @@
     },
     "resource_type": {
       "type": "string",
-      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-      "description": "Tier-1 vendor-neutral Category.Type name; single-segment permitted for cross-cutting types (e.g. Topology) — exactly the same name grammar as the type schema (data-model-core §2)."
+      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}$",
+      "description": "Tier-1 vendor-neutral Category.Type name; single-segment permitted for cross-cutting types (e.g. Topology) — one to three segments (Base, Type, Provider class; CLS-001), exactly the record schema's grammar."
     },
     "type_version": {
       "type": "string",
@@ -47,7 +47,7 @@
     },
     "type_ref": {
       "type": "string",
-      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/(class/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){1,2}|[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?)/[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/(class/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}|[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?)/[0-9]+\\.[0-9]+\\.[0-9]+$",
       "description": "The `$id` of the pinned spec this instance was realized against. TWO forms are legal, and which one appears says how far the request got: a served Resource Type Spec (`.../udlm/0.1/Machine.VM/1.0.0`) before placement resolves a provider, or a PROVIDER CLASS (`.../udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0`) once it has. After placement the spec that actually governs IS the Provider Class — its narrowed ranges are what the selection must satisfy — so no separate field records the placement. `resource_type` stays the PORTABLE two-segment name either way: the entity is a Machine.VM, and that does not change because of where it landed. A consumer parsing this MUST handle both forms."
     },
     "lifecycle_state": {
@@ -79,7 +79,7 @@
           "$ref": "#/$defs/realized_snapshot"
         },
         "discovered": {
-          "$ref": "#/$defs/realized_snapshot"
+          "$ref": "#/$defs/discovered_snapshot"
         }
       }
     },
@@ -204,15 +204,6 @@
           "type": "string",
           "pattern": "^sha256:[0-9a-f]{64}$",
           "description": "On the requested snapshot: the referenced intent record's head, when sealed (TRN-002)."
-        },
-        "requested_ref": {
-          "type": "string",
-          "description": "On the realized snapshot: the requested record it realizes (state-record.schema.json `requested_ref`)."
-        },
-        "requested_ref_head": {
-          "type": "string",
-          "pattern": "^sha256:[0-9a-f]{64}$",
-          "description": "On the realized snapshot: the referenced requested record's head, when sealed (TRN-002)."
         }
       }
     },
@@ -260,11 +251,67 @@
         "policies": {
           "$ref": "state-record.schema.json#/$defs/policies",
           "description": "The requested snapshot only: the policies evaluated and what each decided."
+        },
+        "requested_ref": {
+          "type": "string",
+          "description": "On the realized snapshot: the requested record it realizes (state-record.schema.json `requested_ref`)."
+        },
+        "requested_ref_head": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "On the realized snapshot: the referenced requested record's head, when sealed (TRN-002)."
         }
       }
     },
     "data_role": {
       "$ref": "state-record.schema.json#/$defs/data_role"
+    },
+    "discovered_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fields",
+        "at",
+        "time_source"
+      ],
+      "properties": {
+        "fields": {
+          "type": "object"
+        },
+        "outputs": {
+          "type": "object",
+          "description": "Typed realized outputs (E2) published by the provider."
+        },
+        "at": {
+          "$ref": "state-record.schema.json#/$defs/at"
+        },
+        "provider": {
+          "type": "string",
+          "description": "The provider that produced this realized state."
+        },
+        "time_source": {
+          "type": "string",
+          "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host01 chrony, stratum 2, NTP-traceable') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "declared",
+            "discovered-derived",
+            "backfilled"
+          ],
+          "x-extensible-enum": true,
+          "description": "How this snapshot came to be: declared (the forward flow — consumer/provider wrote it), discovered-derived (synthesized from observation, dcm ADR-017 Decision B — provider-agnostic inferred Intent for DR/portability), backfilled (tertiary Requested/Intent synthesis during greening). Consumers weight trust accordingly; inferred state is never silently presented as human-declared."
+        },
+        "roles": {
+          "$ref": "state-record.schema.json#/$defs/roles"
+        },
+        "policies": {
+          "$ref": "state-record.schema.json#/$defs/policies",
+          "description": "The requested snapshot only: the policies evaluated and what each decided."
+        }
+      },
+      "description": "What a sweep saw: fields, outputs when the sweep reports any, and the provider that observed it. A discovered record may carry no outputs (state-record.schema.json requires outputs on realized records only)."
     }
   },
   "allOf": [

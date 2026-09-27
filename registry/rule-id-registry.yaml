@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.11"
+version: "1.0.12"
 
 prefixes:
   - prefix: ACC
@@ -279,4 +279,9 @@ prefixes:
     name: Transition provenance
     home: docs/spec/contracts/audit-provenance-observability.md
     domain: The map from intent to realized — every difference between a record and the record it references is attributed; references bind to the referenced record's head
+    status: active
+  - prefix: EVW
+    name: Entity view
+    home: registry/ENTITY-VIEW.md
+    domain: The computed entity view — built from per-state records, never stored, valid against entity-view.schema.json
     status: active
