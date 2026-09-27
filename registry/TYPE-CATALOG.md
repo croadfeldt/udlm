@@ -1243,7 +1243,7 @@ A UPS as a thing you own, separate from the circuit it protects. You declare its
 
 **Not for:**
 - The circuit that equipment draws from — Facility.PowerFeed; hosts depend_on feeds, not on UPSes.
-- A PDU, transfer switch, or power shelf — different orders, not kinds of UPS (ADR-067's migration test).
+- A PDU, transfer switch, or power shelf — no API abstracts them together with a UPS as one deliverable (ADR-075, CLS-002).
 
 **Works with:**
 - Facility.PowerFeed — a feed is supplied_by the UPS that conditions it.

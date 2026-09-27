@@ -40,7 +40,7 @@
           "pdu",
           "generator"
         ],
-        "description": "Kind of power source."
+        "description": "Kind of power source. `ups` implies a `supplied_by` edge to the UPS entity (ADR-075)."
       },
       "capacity": {
         "type": "object",
