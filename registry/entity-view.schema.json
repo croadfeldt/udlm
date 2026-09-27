@@ -195,6 +195,24 @@
         "policies": {
           "$ref": "state-record.schema.json#/$defs/policies",
           "description": "The requested snapshot only: the policies evaluated and what each decided."
+        },
+        "intent_ref": {
+          "type": "string",
+          "description": "On the requested snapshot: the intent record it was assembled from (state-record.schema.json `intent_ref`)."
+        },
+        "intent_ref_head": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "On the requested snapshot: the referenced intent record's head, when sealed (TRN-002)."
+        },
+        "requested_ref": {
+          "type": "string",
+          "description": "On the realized snapshot: the requested record it realizes (state-record.schema.json `requested_ref`)."
+        },
+        "requested_ref_head": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "On the realized snapshot: the referenced requested record's head, when sealed (TRN-002)."
         }
       }
     },

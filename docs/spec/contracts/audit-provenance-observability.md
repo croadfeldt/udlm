@@ -88,6 +88,37 @@ Drift detected: discovered value AES-128
 
 The complete chain tells the full story of that field across its entire existence.
 
+### 2.5 Transition provenance — the map from intent to realized (TRN)
+
+A resource is four records (`four-states.md` §2.7), and the question an auditor asks is not "is
+each record intact" but "what changed between them, and who did it." That is answered by three
+things already on the records, held to one rule:
+
+- the **references** — a requested record names the intent record it was assembled from
+  (`intent_ref`), a realized record names the requested record it realizes (`requested_ref`) —
+  point at one immutable record each;
+- the **per-field provenance** on the referencing record says who set every field that differs from
+  the record it references, with the value it replaced;
+- the **reference head** (`intent_ref_head`, `requested_ref_head`) binds the reference to the bytes
+  the transition consumed, when the referenced record is sealed (ADR-059).
+
+The rule is a diff. Take a record and the record it references; every leaf that differs must be
+attributed. An unattributed difference is an unknown change, and the gate fails. Nothing else can
+give that guarantee: the integrity chain proves a record was not altered after it was written, per
+state stream, and says nothing about what changed between states; a reference proves which record a
+transition consumed. Only provenance says who changed what. The integrity chain does not cross states
+(`previous` links versions within one state's stream; the map between states is the references).
+
+| ID | Rule |
+|---|---|
+| `TRN-001` | **Every difference between a record and the record it references is attributed.** For a requested record, every leaf of `fields` that differs from the referenced intent record's `fields` (added, changed, or removed) has a `provenance` entry at that path or an ancestor or descendant of it; where the entry carries `previous_value`, it equals the referenced record's value. For a realized record, the same against the referenced requested record's `fields`, and additionally every leaf of `outputs` has an entry at `outputs.<path>`. Leaf paths are dot paths; an array of objects is indexed (`networks[0].network_ref`); an array of scalars is one leaf. Gate: `tests/check_transition_provenance.py`. |
+| `TRN-002` | **A reference to a sealed record carries its head.** When the referenced record carries `integrity`, the referencing record carries `intent_ref_head` (requested) or `requested_ref_head` (realized) equal to the referenced record's `integrity.head`, so the transition is bound to bytes and verifiable with no other record in hand. When the referenced record is unsealed the head field is absent. |
+| `TRN-003` | **A reference resolves to the right record.** `intent_ref` names an `intent_record` and `requested_ref` a `requested_record`, each with the same `entity_uuid` as the referencing record, and each present in the store the referencing record is in. A reference that resolves to nothing, to another kind, or to another entity is a broken map. |
+
+Enforced on every record set the registry ships (`registry/examples/`, `registry/instances/`); the
+same gate is run by the estate and by the control plane over the records they write. Known debt in
+the shipped examples is listed in `tests/transition_provenance_baseline.txt`, which only shrinks.
+
 ---
 
 ## 3. Audit

@@ -1,10 +1,11 @@
-# asserts: ENT-006
+# asserts: ENT-006, TRN-001, TRN-002
 # proves: what policy and layers did to the order is its own record, naming the intent it came from and keeping the entity uuid.
-# Supersedes the first record of this state (named in `supersedes`): the zone handle and the guest_os reference were corrected — a published record is never edited (ADR-051).
+# Supersedes the second record of this state (named in `supersedes`): the reference to the state it was built from now carries that record's head, and every output is attributed (TRN-001/002) — a published record is never edited, it is superseded.
 record_type: requested_record
 state: Requested
-record_uuid: 01a09398-433d-756d-a0a3-f5fdbd8d6812
-intent_ref: 01a09398-433d-756d-a0a3-f5fc061ba409
+record_uuid: 01a0e3cb-34d1-7432-bb67-3a6659508554
+intent_ref: 01a0e3cb-34d0-7261-9517-df3cbac3ce20
+intent_ref_head: sha256:684dcef63408595dc5df1728083640c205dc406c15f4ff4f9da8c431b341c4ac
 entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
@@ -31,9 +32,9 @@ fields:
     secure_boot: true
     vtpm: false
   networks:
-  - name: eth0
-    vlan: lab/net/vlan-20
-    network_ref: lab/net/dmz
+    - name: eth0
+      vlan: lab/net/vlan-20
+      network_ref: lab/net/dmz
   layout_ref: lab/storage/layout/app-01
   placement:
     location_ref: lab/facility/rack-3
@@ -41,106 +42,110 @@ fields:
     desired_state: running
 assembly:
   applied:
-  - source:
-      kind: layer
-      id: lab/layers/tenant-location
-    version: 1.0.0
-    fields:
-    - placement.location_ref
-  - source:
-      kind: policy
-      id: lab/policy/cpu-topology-default
-    version: 1.2.0
-    fields:
-    - cpu.sockets
-    - cpu.cores_per_socket
-  - source:
-      kind: policy
-      id: lab/policy/firmware-baseline
-    version: 1.0.0
-    fields:
-    - firmware.vtpm
-  - source:
-      kind: policy
-      id: lab/policy/network-placement
-    version: 2.1.0
-    fields:
-    - networks[0].network_ref
+    - source:
+        kind: layer
+        id: lab/layers/tenant-location
+      version: 1.0.0
+      fields:
+        - placement.location_ref
+    - source:
+        kind: policy
+        id: lab/policy/cpu-topology-default
+      version: 1.2.0
+      fields:
+        - cpu.sockets
+        - cpu.cores_per_socket
+    - source:
+        kind: policy
+        id: lab/policy/firmware-baseline
+      version: 1.0.0
+      fields:
+        - firmware.vtpm
+    - source:
+        kind: policy
+        id: lab/policy/network-placement
+      version: 2.1.0
+      fields:
+        - networks[0].network_ref
   unapplied: []
   excluded_layers: []
 dependencies:
-- edge_type: references
-  target_uuid: 3c5e7a9b-1d2f-4e6a-8b0c-2d4f6a8b0c1e
-  target_handle: lab/facility/rack-3
-  resolved_at: '2026-09-03T14:02:14Z'
-- edge_type: references
-  target_uuid: 5d7f9b1c-3e4a-4f6b-9c1d-4e6a8b0c2d3f
-  target_handle: lab/net/dmz
-  resolved_at: '2026-09-03T14:02:14Z'
-- edge_type: references
-  target_uuid: 7e9a1c3d-5f6b-4a8c-8d2e-6a8b0c2d4e5f
-  target_handle: lab/storage/layout/app-01
-  resolved_at: '2026-09-03T14:02:14Z'
+  - edge_type: references
+    target_uuid: 3c5e7a9b-1d2f-4e6a-8b0c-2d4f6a8b0c1e
+    target_handle: lab/facility/rack-3
+    resolved_at: '2026-09-03T14:02:14Z'
+  - edge_type: references
+    target_uuid: 5d7f9b1c-3e4a-4f6b-9c1d-4e6a8b0c2d3f
+    target_handle: lab/net/dmz
+    resolved_at: '2026-09-03T14:02:14Z'
+  - edge_type: references
+    target_uuid: 7e9a1c3d-5f6b-4a8c-8d2e-6a8b0c2d4e5f
+    target_handle: lab/storage/layout/app-01
+    resolved_at: '2026-09-03T14:02:14Z'
 provenance:
   cpu.sockets:
-  - source:
-      kind: policy
-      id: lab/policy/cpu-topology-default
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:14Z'
+    - source:
+        kind: policy
+        id: lab/policy/cpu-topology-default
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:14Z'
   cpu.cores_per_socket:
-  - source:
-      kind: policy
-      id: lab/policy/cpu-topology-default
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:14Z'
+    - source:
+        kind: policy
+        id: lab/policy/cpu-topology-default
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:14Z'
   firmware.vtpm:
-  - source:
-      kind: policy
-      id: lab/policy/firmware-baseline
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:14Z'
+    - source:
+        kind: policy
+        id: lab/policy/firmware-baseline
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:14Z'
   networks[0].network_ref:
-  - source:
-      kind: policy
-      id: lab/policy/network-placement
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:14Z'
+    - source:
+        kind: policy
+        id: lab/policy/network-placement
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:14Z'
   placement.location_ref:
-  - source:
-      kind: layer
-      id: lab/layers/tenant-location
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:14Z'
+    - source:
+        kind: layer
+        id: lab/layers/tenant-location
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:14Z'
 policies:
-- policy: lab/policy/cpu-topology-default
-  version: 1.2.0
-  policy_type: transformation
-  decision: allow
-  fields:
-  - cpu.sockets
-  - cpu.cores_per_socket
-- policy: lab/policy/firmware-baseline
-  version: 1.0.0
-  policy_type: transformation
-  decision: allow
-  fields:
-  - firmware.vtpm
-- policy: lab/policy/network-placement
-  version: 2.1.0
-  policy_type: transformation
-  decision: allow
-  fields:
-  - networks[0].network_ref
-- policy: lab/policy/tenant-quota
-  version: 3.0.0
-  policy_type: validation
-  decision: pass
-  reason: 4 vCPU / 16Gi within the tenant's remaining quota
+  - policy: lab/policy/cpu-topology-default
+    version: 1.2.0
+    policy_type: transformation
+    decision: allow
+    fields:
+      - cpu.sockets
+      - cpu.cores_per_socket
+  - policy: lab/policy/firmware-baseline
+    version: 1.0.0
+    policy_type: transformation
+    decision: allow
+    fields:
+      - firmware.vtpm
+  - policy: lab/policy/network-placement
+    version: 2.1.0
+    policy_type: transformation
+    decision: allow
+    fields:
+      - networks[0].network_ref
+  - policy: lab/policy/tenant-quota
+    version: 3.0.0
+    policy_type: validation
+    decision: pass
+    reason: 4 vCPU / 16Gi within the tenant's remaining quota
 supersedes:
-- 01a08ec1-3fb5-75a4-9db3-6b3e4b18f737
+  - 01a09398-433d-756d-a0a3-f5fdbd8d6812
+integrity:
+  head: sha256:da15e497409dea2ef8bce8c56601cf61a0fead29c792f1eb9aa4f3e1d4f5d98f
+  previous: null
+  algorithm: sha256-jcs

@@ -80,6 +80,8 @@ Air-gapped Registry (offline copy)
 
 The substrate requires an artifact-based proposal workflow. A common implementation transport is GitOps (PR-based), but the contract requirements are independent of transport.
 
+A submission starts in the spec: the normative text under `docs/spec/` is the source of truth, and the schema, gate, generated artifact, example and document that carry a rule are derived from it in the same change (DOC-002, `CONTRIBUTING.md`).
+
 The submitter becomes the **Resource Type Authority** for the submitted specification unless an alternative authority is declared in the `owned_by` field. The authority is the required approver for all future version changes against that specification — no version of the specification can be activated without the authority's approval (or the authority designating a successor via a formal authority transfer).
 
 > **Resource Type Authority:** The submitter becomes the **Resource Type Authority**

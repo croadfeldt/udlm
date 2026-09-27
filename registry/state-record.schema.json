@@ -128,12 +128,22 @@
     "intent_ref": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "Requested only: the record_uuid of the intent record this was assembled from."
+      "description": "Requested only: the record_uuid of the intent record this was assembled from. The map from intent to realized runs along this reference (TRN-003); every field that differs from that record is attributed in `provenance` (TRN-001)."
+    },
+    "intent_ref_head": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Requested only: the `integrity.head` of the referenced intent record, present exactly when that record is sealed — binds the transition to the bytes it consumed, verifiable with no other record in hand (TRN-002)."
     },
     "requested_ref": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "Realized only: the record_uuid of the requested record this realizes — every realized record is traceable to exactly one (four-states.md §2.3)."
+      "description": "Realized only: the record_uuid of the requested record this realizes — every realized record is traceable to exactly one (four-states.md §2.3, TRN-003); every field that differs from it, and every output, is attributed in `provenance` (TRN-001)."
+    },
+    "requested_ref_head": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Realized only: the `integrity.head` of the referenced requested record, present exactly when that record is sealed (TRN-002)."
     },
     "assembly": {
       "$ref": "#/$defs/assembly"
@@ -217,7 +227,9 @@
           "matched_by": false,
           "dependencies": false,
           "constituents": false,
-          "policies": false
+          "policies": false,
+          "intent_ref_head": false,
+          "requested_ref_head": false
         },
         "required": [
           "fields"
@@ -248,7 +260,8 @@
           "adopted_standards": false,
           "portability": false,
           "expected_observation": false,
-          "matched_by": false
+          "matched_by": false,
+          "requested_ref_head": false
         },
         "required": [
           "fields",
@@ -276,7 +289,8 @@
           "assembly": false,
           "provider_preference": false,
           "matched_by": false,
-          "policies": false
+          "policies": false,
+          "intent_ref_head": false
         },
         "required": [
           "fields",
@@ -314,7 +328,9 @@
           "constituents": false,
           "dependencies": false,
           "sovereignty": false,
-          "policies": false
+          "policies": false,
+          "intent_ref_head": false,
+          "requested_ref_head": false
         },
         "required": [
           "fields"

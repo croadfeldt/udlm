@@ -74,6 +74,22 @@ references, never with inlined re-teaching or restatement. MADR/Nygard supply th
 decision records are **immutable once Accepted** — superseded, not edited. The ADR specialization
 of this standard is `docs/adr/README.md` § "How these ADRs are written."
 
+## The spec is the source of truth (DOC-002 — every change starts there)
+
+The normative text under `docs/spec/` is the model. Everything else is built from it and must
+agree with it: the schemas in `registry/*.schema.json`, the gates in `tests/`, the generated
+artifacts in `registry/generated/`, the worked examples, the read models and tools, the consumer
+manifests, and the explanatory documents (`registry/*.md`, `docs/research/`, `docs/flows/`, the
+ADR register). A change is therefore made in this order, in one PR: the rule in its spec home with
+its ID; the schema that encodes it; the gate that enforces it; the examples that demonstrate it;
+the tools, generated artifacts and documents that describe it. A PR that changes a schema, a gate
+or a tool with no spec sentence behind it is incomplete, and so is one that changes the spec and
+leaves a derived surface saying the old thing. The review sweep checks both directions.
+
+| ID | Rule |
+|---|---|
+| `DOC-002` | **The spec is the source of truth; every other surface is derived from it and kept in step.** A normative change lands in `docs/spec/` first, with a rule ID in its registered home, and the same PR brings every derived surface into line: schema, gate, generated artifact, example, tool, read model, consumer manifest, and explanatory document. A derived surface may not state a rule the spec does not, nor contradict one it does. Maintainer ruling 2026-09-27 (register row 077). |
+
 ## Terminology discipline (TERM-001)
 
 When a ruling retires a term, the term stops being available for new writing. It does not stop
@@ -121,6 +137,8 @@ are caught once, not re-litigated per PR.
 
 **Before you open a PR or publish content, run the signoff:** `scripts/signoff.sh` runs every automated
 gate below and prints the judgment checklist. The full procedure is in [`docs/guides/signoff.md`](docs/guides/signoff.md).
+
+**Spec first (DOC-002).** Every PR that touches a schema, gate, tool, generated artifact or example names the spec sentence it derives from; every PR that touches the spec lists the derived surfaces it brought into line. A reviewer asks for the missing half.
 
 **Automated (CI).**
 - **Valid by construction** — `registry/tools/validate.py` + `tests/validate_registry.py` (`ADOPT-001`,
