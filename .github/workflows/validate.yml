@@ -76,6 +76,8 @@ jobs:
       - run: python3 tests/check_state_records_only.py
       # The map from intent to realized is provenance, checked as a diff (TRN-001/002/003)
       - run: python3 tests/check_transition_provenance.py
+      # Every shipped entity folds into a valid view (EVW-001)
+      - run: python3 tests/check_entity_views.py
       - run: python3 tests/check_status_claims.py
       - run: python3 tests/check_seal_facets.py
       - run: python3 tests/check_adr_realization.py
