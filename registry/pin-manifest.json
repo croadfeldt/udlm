@@ -609,7 +609,7 @@
    "0.5.0": "sha256:2b5263e30611afde4c7d4c7b4db82335bdf66921b3efbaac199e7e3a296ee17a",
    "0.5.1": "sha256:937fb3dad11fe547a4fba775c65f0f40f5959a2a597f7484954089e7a46a59bb",
    "0.5.2": "sha256:876ec1384bc03c60ae295d1b787b805a6ef16d88487184955d61ca65292f87da",
-   "0.6.0": "sha256:4dc28744ae893b28991a914eedd4fd8732a85f2db76d860f6b1bd783a17aecef"
+   "0.6.0": "sha256:5d9b4e4aecbdc17aa48f47d794f07b5a3ecf8aefc50c142b0b382a49cec1f42d"
   }
  },
  "type:Grouping": {
@@ -1401,7 +1401,7 @@
   "current": "0.1.0",
   "path": "registry/classes/resource/ups/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:5a24bb2ff4ca75dc5a44cb2a510a37114cde5a01c552db95998156637a6fa0d7"
+   "0.1.0": "sha256:4dc3e1d8b06609c24bc226f001e37d244865e71139346b3fceb869b291a1f21d"
   }
  },
  "type:VexStatement": {

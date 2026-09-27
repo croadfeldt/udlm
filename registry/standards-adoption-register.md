@@ -194,7 +194,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 
 ### IEC 62040-3 (UPS performance classification) — CANONICAL (vocabulary)
 **Covers:** `IEC 62040-3` · **Body:** IEC · **Since:** 2026-09-27T00:00:00Z · **Where:** UPS (`topology`: double-conversion / line-interactive / standby = VFI / VI / VFD).
-**Why:** the one standards-body classification of UPS kinds — the members of the `UPS` base (ADR-067). *Alternatives:* vendor marketing terms (online/offline/smart) — not a standard. **License:** IEC text is copyrighted — reference-only, names adopted by citation.
+**Why:** the one standards-body classification of UPS kinds — the members of the `UPS` base (ADR-075). *Alternatives:* vendor marketing terms (online/offline/smart) — not a standard. **License:** IEC text is copyrighted — reference-only, names adopted by citation.
 
 ### Ansible — CANONICAL
 **Covers:** `Ansible` · **Since (as adoption):** 2026-07-05T03:29:34Z (Automation.Job `process_type: playbook`); referenced in docs since 2026-04-07 · **Why:** playbook is the estate's dominant Process Resource form; the vocabulary names what actually runs. **License:** GPL-3.0 — reference-only.

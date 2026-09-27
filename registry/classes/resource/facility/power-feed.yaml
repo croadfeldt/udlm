@@ -22,7 +22,7 @@ elements:
   scope: Facility.PowerFeed
   optional: false
   state: canonical
-  description: Kind of power source.
+  description: Kind of power source. `ups` implies a `supplied_by` edge to the UPS entity (ADR-075); a feed with one and not the other reads as incomplete, not contradictory.
   schema:
     type: string
     enum:
@@ -30,7 +30,7 @@ elements:
     - ups
     - pdu
     - generator
-    description: Kind of power source.
+    description: Kind of power source. `ups` implies a `supplied_by` edge to the UPS entity (ADR-075).
 - element: capacity
   scope: Facility.PowerFeed
   optional: true

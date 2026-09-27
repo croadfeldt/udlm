@@ -55,9 +55,9 @@ New categories established by this work, each anchored to **DMTF Redfish** (data
   machine/instance).
 - **`Facility`** — physical-datacenter resources (power, later rack/cooling). Anchored to Redfish DCIM
   `PowerDistribution`/`Circuit`/`PowerDomain` (+ NUT for UPS telemetry).
-- **`UPS`** — a single-segment base of its own (not `Facility.UPS`, not a `Power` base): a base is an order
-  its members can substitute for — the kinds of UPS (IEC 62040-3) are; a UPS and a PDU/transfer switch are
-  not (ADR-067). Anchored to IEC 62040-3 + NUT (telemetry, reference-only) + Redfish PowerEquipment.
+- **`UPS`** — a single-segment base of its own (not `Facility.UPS`, not a `Power` base): it passes the base
+  test (row 069 / CLS-002) — NUT and Redfish PowerEquipment abstract over every UPS topology; `Facility` and
+  a `Power` base do not (ADR-075). Anchored to IEC 62040-3 + NUT (telemetry, reference-only) + Redfish PowerEquipment.
 
 Resource vs Information: a **provisioned server is a Resource**; the **data it holds is Information**.
 A directory *server* is `Security.DirectoryService` (a Resource); `Identity.*` (Person/Group/
