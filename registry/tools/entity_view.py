@@ -40,7 +40,8 @@ _CARRIED = {
     "metadata": ("realized", "requested", "intent", "discovered"),
     "integrity": ("realized",),
 }
-_SNAPSHOT = ("fields", "outputs", "at", "time_source", "origin", "provider", "roles", "assembly", "policies")
+_SNAPSHOT = ("fields", "outputs", "at", "time_source", "origin", "provider", "roles", "assembly", "policies",
+             "intent_ref", "intent_ref_head", "requested_ref", "requested_ref_head")
 _LIFECYCLE = (("realized", "Realized"), ("requested", "Requested"), ("intent", "Intent"), ("discovered", "Discovered"))
 
 

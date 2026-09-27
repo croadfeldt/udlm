@@ -17,7 +17,7 @@ policy that produces them (`core-tenets.md` G3). Validate instances with `tools/
 
 | Field | Serves |
 |---|---|
-| `states.{intent,requested,realized,discovered}` | the **four-state lifecycle** — immutable snapshots; `realized` is the system of record |
+| `states.{intent,requested,realized,discovered}` | the **four-state lifecycle** — immutable snapshots; `realized` is the system of record. Each snapshot carries its record's reference to the state it was built from (`intent_ref`, `requested_ref`, and their `_head`s), so the map from intent to realized is readable off the view (TRN-001..003) |
 | `generation` / `observed_generation` | implementation-pending signal (observed < desired ⇒ in flight) |
 | **`provenance`** (per dot-path history of layer/policy/actor/provider + timestamp + previous value) | **audit (#191 / E4)** — the record the Merkle chain consumes |
 | **`ownership`** (per dot-path manager) | **field ownership / server-side apply (R4)** — offline conflict detection across providers |

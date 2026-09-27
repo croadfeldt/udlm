@@ -228,6 +228,7 @@ and nobody edits one.
 | `tenant_uuid`, `resource_type`, `type_version`, `type_ref` | who owns the entity and what class it is, pinned |
 | `at`, `time_source` | when, and by which clock |
 | `integrity` | the record's own tamper-evidence link (ADR-059), per record |
+| `intent_ref` / `requested_ref`, with `intent_ref_head` / `requested_ref_head` | the record this one was built from — requested names its intent, realized names its requested — by identity, and by bytes when that record is sealed. The map from intent to realized runs along these references, never along the chain (`audit-provenance-observability.md` §2.5, TRN-001..003) |
 
 **What each kind carries — the body.**
 
@@ -238,13 +239,17 @@ and nobody edits one.
 | realized | the fields as built; the outputs other things bind to; which provider instance built it (`provider`, a reference, not a string); health; placement; the natural keys discovery recognizes it by; the requested record it realizes (`requested_ref`) | the provider |
 | discovered | what a sweep saw — fields, outputs — and which keys matched it to the entity | discovery |
 
-**Three consequences.** A realized record stands alone: a load balancer, a rebuild, an inventory
+**Four consequences.** A realized record stands alone: a load balancer, a rebuild, an inventory
 reads it and nothing else. Drift is a comparison — the latest discovered record against the latest
 realized one (§6) — not a field on a record. And the merged "entity as it flows through the four
 states" shape (`entity-view.schema.json`) is a **read model** assembled from the four records
 for a dashboard or a person; it is never written. Where the merged schema kept an `ownership`
 block to referee several writers on one document, the per-state records need none: one author
 each.
+
+And the map between the states is checkable: every field that differs between a record and the
+record it references is attributed in that record's `provenance`, or the gate fails — an unknown change
+cannot enter the chain of records (TRN-001; `audit-provenance-observability.md` §2.5).
 
 Worked example: `registry/examples/example-vm-app01-{intent,requested,realized}-record.yaml`, one
 VM as three records sharing one `entity_uuid`. Enforced: `RHY-006` — a folded record fails CI.

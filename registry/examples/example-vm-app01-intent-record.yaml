@@ -1,10 +1,10 @@
 # asserts: ENT-006
 # proves: the consumer's order is a record of its own — one author, no policy trail, no provider facts — and the entity uuid it mints is the constant the requested and realized records share.
 # The same VM as example-vm-app01-requested-record and -realized-record.
-# Supersedes the first record of this state (named in `supersedes`): the zone handle and the guest_os reference were corrected — a published record is never edited (ADR-051).
+# Supersedes the second record of this state (named in `supersedes`): the reference to the state it was built from now carries that record's head, and every output is attributed (TRN-001/002) — a published record is never edited, it is superseded.
 record_type: intent_record
 state: Intent
-record_uuid: 01a09398-433d-756d-a0a3-f5fc061ba409
+record_uuid: 01a0e3cb-34d0-7261-9517-df3cbac3ce20
 entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
@@ -30,67 +30,71 @@ fields:
     type: uefi
     secure_boot: true
   networks:
-  - name: eth0
-    vlan: lab/net/vlan-20
+    - name: eth0
+      vlan: lab/net/vlan-20
   layout_ref: lab/storage/layout/app-01
   run_state:
     desired_state: running
 provenance:
   cpu.count:
-  - source:
-      kind: actor
-      id: lab/users/app-team-lead
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:11Z'
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
   memory.size:
-  - source:
-      kind: actor
-      id: lab/users/app-team-lead
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:11Z'
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
   guest_os:
-  - source:
-      kind: actor
-      id: lab/users/app-team-lead
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:11Z'
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
   firmware.type:
-  - source:
-      kind: actor
-      id: lab/users/app-team-lead
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:11Z'
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
   firmware.secure_boot:
-  - source:
-      kind: actor
-      id: lab/users/app-team-lead
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:11Z'
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
   networks[0].vlan:
-  - source:
-      kind: actor
-      id: lab/users/app-team-lead
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:11Z'
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
   layout_ref:
-  - source:
-      kind: actor
-      id: lab/users/app-team-lead
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:11Z'
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
   run_state.desired_state:
-  - source:
-      kind: actor
-      id: lab/users/app-team-lead
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-03T14:02:11Z'
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
 supersedes:
-- 01a08ec1-3fb5-75a4-9db3-6b3dff63ae87
+  - 01a09398-433d-756d-a0a3-f5fc061ba409
+integrity:
+  head: sha256:684dcef63408595dc5df1728083640c205dc406c15f4ff4f9da8c431b341c4ac
+  previous: null
+  algorithm: sha256-jcs

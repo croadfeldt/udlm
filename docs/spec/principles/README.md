@@ -15,6 +15,7 @@ This directory holds UDLM's normative principles. They are split into five files
 
 - **Tenets are boundaries; priorities are trade-offs; cross-cutting requirements are always-on obligations.** A tenet says *never*; a priority says *prefer, in this order*; a cross-cutting requirement says *on everything, without exception*. If a statement fits more than one, it lives with the strongest: a hard boundary is a tenet, not a priority.
 - **`adopted-standards.md` and `data-contracts.md` are subject-specific** — one governs how external standards come in, the other governs persistence. Neither restates the tenets or priorities; they apply them.
+- **The spec is the source of truth (DOC-002, `CONTRIBUTING.md`).** These files and the rest of `docs/spec/` are the model; schemas, gates, generated artifacts, examples, tools and explanatory documents are derived from them and are brought into line in the same change.
 - **Each rule has one home and one ID.** Prose in these files explains; the ID (a `T*`, `P*`, `INF-*`, or a `Priority`) is what conformance and reviews cite. Where a downstream document needs a rule, it **references the ID** — it does not restate the rule, so the two cannot drift.
 
 ## What is defined elsewhere (referenced, not redefined here)

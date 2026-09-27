@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.10"
+version: "1.0.11"
 
 prefixes:
   - prefix: ACC
@@ -274,4 +274,9 @@ prefixes:
     name: Documentation rules
     home: CONTRIBUTING.md
     domain: How documents in this repo are written — audience, prose standard, references-carry-gist
+    status: active
+  - prefix: TRN
+    name: Transition provenance
+    home: docs/spec/contracts/audit-provenance-observability.md
+    domain: The map from intent to realized — every difference between a record and the record it references is attributed; references bind to the referenced record's head
     status: active
