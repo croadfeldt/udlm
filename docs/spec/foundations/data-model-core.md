@@ -36,7 +36,7 @@ it governs.
   is the portable contract; an **instance** is stored as one record per lifecycle state (validates against
   `registry/state-record.schema.json`, ruling 071) and read as an entity view (`registry/entity-view.schema.json`). Type names are Tier-1 vendor-neutral
   `Category.Type` (single-segment permitted for cross-cutting types, e.g. `Topology`) — and
-  the instance schema accepts exactly the same name grammar as the type schema.
+  the record schema accepts exactly the same name grammar as the type schema.
 - **Machine-validatable surface** — the model is only as solid as its schemas. Current: type
   spec, state-record, entity-view, provider-adopted-standards, profile. **[D8] Committed program**, in
   priority order: (1) Tenant + grouping — **DONE** (`registry/profile.schema.json` / `Grouping` + required

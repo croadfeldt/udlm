@@ -70,7 +70,7 @@ record discipline the whole registry uses for immutable artifacts.
 | No retired terminology in the prose (e.g. no `provider_extensions`, no merged-away policy names) | `tests/check_terminology.py` — TERM-001 |
 | Any rule-ID you *define* lives only in its registered home file; elsewhere you *cite* it | `tests/check_single_source.py` — one prefix = one home (ADR-028); an out-of-home definition fails |
 | Every relative Markdown link resolves (Background refs, the index row, the DCM/spec pointers) | `tests/check_links.py` |
-| The Data · Policy · Provider lens is present | convention (the required lens; the instance schema makes it a required field) |
+| The Data · Policy · Provider lens is present | convention (the required lens; the decision-record schema makes it a required field) |
 | The Background on-ramp cites each dependency once, with its gist | DOC-001 (author's job — no gate writes the clear sentence) |
 
 **On rule-IDs (the single-source trap).** An ID-first Markdown table row (`` | `PFX-NNN` | … | ``) is

@@ -32,9 +32,9 @@ The enum is extensible (`x-extensible-enum`). **`execution` is the only role dis
 
 ## 3. The dispatch rule
 
-> **The provider dispatch payload = the `role: execution` slice of the Requested snapshot** (`states.requested`), and nothing else, unless a provider opts in AND policy permits.
+> **The provider dispatch payload = the `role: execution` slice of the requested record** (`registry/state-record.schema.json`, `requested_record`; the `requested` snapshot of the entity view), and nothing else, unless a provider opts in AND policy permits.
 
-- Non-execution roles (`assembly`, …) are **control-plane only**: they MUST NOT be naturalized into the dispatch payload and MUST NOT be copied into `states.realized`.
+- Non-execution roles (`assembly`, …) are **control-plane only**: they MUST NOT be naturalized into the dispatch payload and MUST NOT be copied into the realized record.
 - This is the mirror of `native_passthrough` (DATA-001), which is *sanctioned* to cross; role fences everything non-execution.
 
 ## 4. Usage — field- and section-level, succinct
