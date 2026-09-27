@@ -98,7 +98,7 @@ by the merged spec (ADR-010 / §8.1a / state-record) or are control-plane-runtim
 
 The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "Cutting the spec 0.1→1.0"):
 
-1. **Ratify the decisions.** 46 records in `docs/adr/` and 3 in `docs/dr/`, numbered to ADR-067. All
+1. **Ratify the decisions.** 47 records in `docs/adr/` and 3 in `docs/dr/`, numbered to ADR-067. All
    are `Proposed` except ADR-054, which is `Accepted`. 1.0 commits to backward-compat and cannot ship
    on unratified decisions, so this is the criterion with the most records behind it.
    Review-then-accept is the maintainer's call; the tracking issue is #217.

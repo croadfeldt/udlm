@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.5.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31",
   "resource_type": "Facility.PowerFeed",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Facility.PowerFeed",
-          "version": "0.5.2",
+          "version": "0.6.0",
           "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31"
         }
       ]
@@ -105,6 +105,15 @@
       "description": "Estimated runtime remaining on battery, seconds (NUT battery.runtime)."
     }
   },
+  "relationships": [
+    {
+      "edge_type": "depends_on",
+      "name": "supplied_by",
+      "target": "UPS",
+      "cardinality": "0..1",
+      "description": "supplied_by — the UPS that conditions this feed (feed_type ups). The feed's status/battery outputs are that unit's telemetry; a feed with no UPS (utility, pdu, generator) has no such edge."
+    }
+  ],
   "adopts": [
     {
       "standard": "Redfish",

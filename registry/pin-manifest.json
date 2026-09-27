@@ -601,14 +601,15 @@
   }
  },
  "type:Facility.PowerFeed": {
-  "current": "0.5.2",
+  "current": "0.6.0",
   "path": "registry/classes/resource/facility/power-feed.yaml",
   "versions": {
    "0.3.2": "sha256:b017cb693635d9e55b0e56c37433535a1fd155e5cf061fe73f2b719cdd61dda8",
    "0.4.0": "sha256:e343719594e7a2831ff060eaf0e2b8ab8f7c0ac5aaf229a5942390532c7b647a",
    "0.5.0": "sha256:2b5263e30611afde4c7d4c7b4db82335bdf66921b3efbaac199e7e3a296ee17a",
    "0.5.1": "sha256:937fb3dad11fe547a4fba775c65f0f40f5959a2a597f7484954089e7a46a59bb",
-   "0.5.2": "sha256:876ec1384bc03c60ae295d1b787b805a6ef16d88487184955d61ca65292f87da"
+   "0.5.2": "sha256:876ec1384bc03c60ae295d1b787b805a6ef16d88487184955d61ca65292f87da",
+   "0.6.0": "sha256:4dc28744ae893b28991a914eedd4fd8732a85f2db76d860f6b1bd783a17aecef"
   }
  },
  "type:Grouping": {
@@ -1394,6 +1395,13 @@
    "0.5.0": "sha256:5427fdd14dcdc3999463aa6ce583d7162eb3057dfd367e91f86fcfea1a021fbb",
    "0.5.1": "sha256:ed15b3559677951ade710134c64116412d3860900c7389368d5ca9aff1f6d900",
    "0.5.2": "sha256:b58877a773718440ef77694767a7ae8eb746570943234b08ddb08714635c7323"
+  }
+ },
+ "type:UPS": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/ups/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:5a24bb2ff4ca75dc5a44cb2a510a37114cde5a01c552db95998156637a6fa0d7"
   }
  },
  "type:VexStatement": {
