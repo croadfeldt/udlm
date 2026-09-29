@@ -244,6 +244,12 @@ renames:
   registry/generated/security.credential-ref.json: registry/generated/credential-ref.json
   registry/generated/security.directory-service.json: registry/generated/directory-service.json
 
+  # 2026-09-29 — the Software folder dissolves into the `services` usage group (ADR-082, row 087).
+  # Software.Service becomes the Workload Base: named for the thing a provider yields, not the act it
+  # renders (service-taxonomy ruling 2026-06-27). Same uuid (ADR-051). The directory is the hosting group.
+  registry/classes/resource/software/service.yaml: registry/classes/resource/services/workload/_base.yaml
+  registry/generated/software.service.json: registry/generated/workload.json
+
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
   # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),
@@ -337,3 +343,8 @@ retired:
     retired 2026-09-29 — a dissolved folder; LogShipper is filed under `observability`
   registry/classes/resource/security/_base.yaml#b20ae678-fccc-400c-9cbb-ce25822e8d18: >-
     retired 2026-09-29 — a dissolved folder; CredentialRef is filed under `security`, DirectoryService under `identity` and `services`
+
+  # 2026-09-29 — the Software folder (ADR-082, row 087): its one member is the Workload Base.
+  registry/classes/resource/software/_base.yaml#e2f48d85-0f75-4015-9e92-be500701b108: >-
+    retired 2026-09-29 — a dissolved folder, the last one; its member Software.Service is the Workload Base,
+    filed under the `services` usage group

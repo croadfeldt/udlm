@@ -6,7 +6,7 @@
 uuid: 30fe47cb-e61b-490d-8657-a56c76581a4f
 handle: core-services
 conforms_to: udlm/0.1
-resource_type: Software.Service
+resource_type: Workload
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/Software.Service/0.1.0
 lifecycle_state: Discovered

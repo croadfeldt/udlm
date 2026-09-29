@@ -9,7 +9,7 @@ target, ordering in `edge_type`, names only where they add information).
 
 | handle | type | what it is |
 |---|---|---|
-| `hub-prod` | `Software.Service` (`service_kind: fleet-manager`) | the fleet manager (hosted-control-planes style; whether a spoke is hosted or imported is the spoke's edge type, not a flag) |
+| `hub-prod` | `Workload` (`service_kind: fleet-manager`) | the fleet manager (hosted-control-planes style; whether a spoke is hosted or imported is the spoke's edge type, not a flag) |
 | `cluster-mgmt` | `KubernetesCluster` | the cluster hub-prod runs on |
 | `cluster-hcp-a` | `KubernetesCluster` | a hosted-control-plane spoke (control plane lives inside hub-prod) |
 | `cluster-edge-1` | `KubernetesCluster` | an imported spoke (existed before the hub; adopted into the fleet) |

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/UPS/0.1.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/UPS/0.1.2",
   "conforms_to": "udlm/0.1",
   "uuid": "db585146-41b2-4cd9-86e6-c90d086df2cf",
   "resource_type": "UPS",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "UPS",
-          "version": "0.1.1",
+          "version": "0.1.2",
           "uuid": "db585146-41b2-4cd9-86e6-c90d086df2cf"
         }
       ]
@@ -268,7 +268,7 @@
     ],
     "works_with": [
       "PowerFeed — a feed is supplied_by the UPS that conditions it.",
-      "Software.Service — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the instance's provider.",
+      "Workload — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the instance's provider.",
       "Automation.Job — the graceful-shutdown job that the unit's status drives, via the feed."
     ]
   }

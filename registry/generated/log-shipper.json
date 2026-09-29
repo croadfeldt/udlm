@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922",
   "resource_type": "LogShipper",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "LogShipper",
-          "version": "0.7.0",
+          "version": "0.7.1",
           "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922"
         }
       ]
@@ -117,12 +117,12 @@
       "You need shipping health and last-delivery time surfaced for drift and staleness detection."
     ],
     "not_for": [
-      "The log store itself — that is its own resource (e.g. a Software.Service running the sink); this type is the per-host shipping outcome.",
+      "The log store itself — that is its own resource (e.g. a Workload running the sink); this type is the per-host shipping outcome.",
       "Metrics or trace collection — not covered; this type is logs."
     ],
     "works_with": [
       "Machine.BareMetalHost / Machine.VM — the target host whose logs are shipped.",
-      "Software.Service — the central log store the sink URL points at."
+      "Workload — the central log store the sink URL points at."
     ]
   }
 }

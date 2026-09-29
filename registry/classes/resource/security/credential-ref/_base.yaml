@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/CredentialRef/0.7.0
+$id: https://udlm.dev/registry/udlm/0.1/class/CredentialRef/0.7.1
 conforms_to: udlm/0.1
 uuid: 942b6cc9-a0d5-4f91-8c5c-ade4ecdf5b50
 record_type: class
 class: base
 resource_type: CredentialRef
-version: 0.7.0
+version: 0.7.1
 family: Resource
 status: active
 filed_under:
@@ -163,4 +163,4 @@ context:
     - Storing an actual password, key, or token anywhere — no type is for that; the value lives only with the issuer.
   works_with:
     - Identity.Person / Identity.ServiceAccount — whose credential this is.
-    - Container / Software.Service / FileShare — consumers that reference it from env, mounts, or config.
+    - Container / Workload / FileShare — consumers that reference it from env, mounts, or config.

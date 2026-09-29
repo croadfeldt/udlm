@@ -171,10 +171,6 @@
         "attempted": 84,
         "rejected": 84
       },
-      "Software.Service": {
-        "attempted": 90,
-        "rejected": 90
-      },
       "SoftwareImage": {
         "attempted": 45,
         "rejected": 45
@@ -262,6 +258,10 @@
       "Vulnerability": {
         "attempted": 66,
         "rejected": 66
+      },
+      "Workload": {
+        "attempted": 90,
+        "rejected": 90
       }
     }
   },
@@ -310,7 +310,6 @@
       "NetworkSwitch": 2,
       "PowerFeed": 3,
       "Processor": 0,
-      "Software.Service": 1,
       "SoftwareImage": 0,
       "SoftwarePackage": 0,
       "SovereigntyZone": 0,
@@ -332,7 +331,8 @@
       "VirtualNetwork": 1,
       "Volume": 2,
       "Volume.ZFS": 3,
-      "Vulnerability": 0
+      "Vulnerability": 0,
+      "Workload": 1
     },
     "zero_output_types": [
       "Access.Grouping",
@@ -365,7 +365,6 @@
       "Location",
       "NetworkGateway",
       "NetworkInterface",
-      "Software.Service",
       "StorageClass",
       "StorageDevice",
       "StorageLayout",
@@ -373,7 +372,8 @@
       "Template.Application",
       "Topology",
       "VLAN",
-      "VirtualNetwork"
+      "VirtualNetwork",
+      "Workload"
     ]
   },
   "context": {
@@ -430,7 +430,6 @@
       "Machine.BareMetalHost",
       "Machine.VM",
       "NetworkGateway",
-      "Software.Service",
       "SoftwareImage",
       "SoftwarePackage",
       "StorageClass",
@@ -441,7 +440,8 @@
       "VirtualNetwork",
       "Volume",
       "Volume.ZFS",
-      "Vulnerability"
+      "Vulnerability",
+      "Workload"
     ],
     "uncovered": [
       "Access.Grouping",
@@ -531,7 +531,6 @@
       "NetworkSwitch",
       "PowerFeed",
       "Processor",
-      "Software.Service",
       "SoftwareImage",
       "SoftwarePackage",
       "SovereigntyZone",
@@ -552,7 +551,8 @@
       "VexStatement",
       "VirtualNetwork",
       "Volume.ZFS",
-      "Vulnerability"
+      "Vulnerability",
+      "Workload"
     ],
     "consumed_by_at_least_one": 62
   },
