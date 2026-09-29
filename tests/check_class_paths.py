@@ -24,7 +24,8 @@ CLASSES = os.path.join(ROOT, "registry", "classes")
 # Worked-example classes MIRROR the class hierarchy under registry/examples/classes/. Checked
 # against their own root with the same rule, so "the examples mirror the classes" is mechanical
 # rather than a convention someone remembers. They are excluded from the has-children logic on
-# purpose: an example must never force a real registry class into the index-file layout.
+# purpose: an example must never force a real registry class into the index-file layout. It mirrors
+# the hosting group as well (ADR-082, row 090).
 EXAMPLE_CLASSES = os.path.join(ROOT, "registry", "examples", "classes")
 GROUPED = {"resource", "access"}   # families hosted by usage group (ADR-082 rows 082, 089)
 
@@ -84,6 +85,9 @@ def main():
         n += 1
         rel = os.path.relpath(path, EXAMPLE_CLASSES)[: -len(".yaml")].split(os.sep)
         want, _ = expected_parts(doc, has_children=False)
+        # the mirror mirrors the hosting group too (ADR-082): <family>/<group>/<segments>
+        if rel[0] in GROUPED and len(rel) > 2 and rel[1] in _filed_under(doc, doc.get("resource_type", "")):
+            rel = [rel[0]] + rel[2:]
         if rel != want:
             fails.append(f"examples/classes/{'/'.join(rel)}.yaml: mirror path says "
                          f"{'/'.join(rel)!r}, expected {'/'.join(want)!r} — worked-example classes "

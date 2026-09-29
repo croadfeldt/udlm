@@ -1022,7 +1022,7 @@
  },
  "type:Machine.VM.CExampleCloud": {
   "current": "1.0.1",
-  "path": "registry/examples/classes/resource/machine/vm/cexample-cloud.yaml",
+  "path": "registry/examples/classes/resource/compute/machine/vm/cexample-cloud.yaml",
   "versions": {
    "1.0.1": "sha256:a66b40c364f7e6994661f7ea4bc27c4b6fc094f0e4d807c61f3a04823a433b08"
   }

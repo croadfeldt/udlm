@@ -156,7 +156,7 @@ scratch, a Type extending it under Liskov, a governed-vocabulary element (`stora
 `registry/generated/machine.vm.json` (7 properties). The flow is
 `docs/flows/scoped-class-lifecycle.md` — author → extend → compile → resolve.
 
-For the **provider tier**, copy **`registry/examples/classes/resource/machine/vm/cexample-cloud.yaml`**.
+For the **provider tier**, copy **`registry/examples/classes/resource/compute/machine/vm/cexample-cloud.yaml`**.
 Worked-example classes live under `registry/examples/classes/`, **mirroring the class hierarchy** —
 `check_class_paths` enforces the mirror, and `check_class_liskov` validates the example against its
 real parent, so a worked example that stops being a legal refinement fails CI like any other class.
