@@ -41,7 +41,7 @@ _CARRIED = {
     "integrity": ("realized",),
 }
 _SNAPSHOT = ("fields", "outputs", "at", "time_source", "origin", "provider", "roles", "assembly", "policies",
-             "intent_ref", "intent_ref_head", "requested_ref", "requested_ref_head")
+             "intent_ref", "intent_ref_head", "requested_ref", "requested_ref_head", "root_request_uuid", "caused_by_request")
 _LIFECYCLE = (("realized", "Realized"), ("requested", "Requested"), ("intent", "Intent"), ("discovered", "Discovered"))
 
 

@@ -1,24 +1,3 @@
-# asserts: OFR-001, OFR-002
-# proves: a request is the provider's offer with every range collapsed to one selected value
-# A VM whose request has COLLAPSED onto a provider's offer — the other half of the worked
-# Provider Class, and the subject the collapse gate needs to be non-vacuous.
-#
-# The Provider Class (registry/examples/classes/resource/machine/vm/cexample-cloud.yaml) declares
-# RANGES. This record is that document with every range collapsed to ONE selected value:
-#
-#   memory  offered as [512Mi,1Gi,2Gi,4Gi] or 8Gi-384Gi (general) or 8Gi-768Gi (memory-optimized)
-#           -> selected 512Gi, which is ONLY legal because instance_family is memory-optimized.
-#              Under `general` the same value would be an invalid COMBINATION, and the gate says so.
-#   cpu     offered 1-64                    -> selected 16
-#   the three REQUIRED elements the provider adds are all present, because a required element may
-#   not collapse to nothing.
-#
-# `resource_type` stays the PORTABLE two-segment name — the entity is a Machine.VM, and that does
-# not change because of where it landed. `type_ref` pins WHICH spec it was realized against, and
-# after placement that is the Provider Class. No new field was needed to record the placement.
-# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
-# read model, computed by registry/tools/entity_view.py; these records are what is stored.
----
 record_type: intent_record
 state: Intent
 entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
@@ -38,12 +17,11 @@ fields:
     count: 16
   memory:
     size: 512Gi
-
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
-record_uuid: 01a09385-caa1-7243-bdc5-9c105557c19d
+record_uuid: 01a0eb4f-c4a8-747d-8345-24a5269b31bd
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Machine.VM
@@ -63,12 +41,14 @@ fields:
   namespace: tenant-dev
   native_storage_class: cexample/ssd-nvme
 intent_ref: 01a09385-caa0-7144-936d-bc6ca95177a2
-
+root_request_uuid: 01a0eb4f-c4a8-747d-8345-24a5269b31bd
+supersedes:
+- 01a09385-caa1-7243-bdc5-9c105557c19d
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
-record_uuid: 01a09385-caa1-7243-bdc5-9c1152fdbd8f
+record_uuid: 01a0eb4f-c4a8-747d-8345-24a628733a68
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Machine.VM
@@ -90,8 +70,10 @@ fields:
 outputs:
   instance_id: cexample-i-0a1b2c3d
   power_state: running
-requested_ref: 01a09385-caa1-7243-bdc5-9c105557c19d
+requested_ref: 01a0eb4f-c4a8-747d-8345-24a5269b31bd
 provider: cexample-cloud
 sovereignty:
   zone: eu-west
   classification: restricted
+supersedes:
+- 01a09385-caa1-7243-bdc5-9c1152fdbd8f

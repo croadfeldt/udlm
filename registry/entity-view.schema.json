@@ -204,6 +204,14 @@
           "type": "string",
           "pattern": "^sha256:[0-9a-f]{64}$",
           "description": "On the requested snapshot: the referenced intent record's head, when sealed (TRN-002)."
+        },
+        "root_request_uuid": {
+          "type": "string",
+          "description": "On the requested snapshot: the root request this record was expanded for (state-record.schema.json `root_request_uuid`, DEP-015)."
+        },
+        "caused_by_request": {
+          "type": "string",
+          "description": "On the requested snapshot of a provider-originated request: the consumer's requested record that caused it (DEP-018)."
         }
       }
     },

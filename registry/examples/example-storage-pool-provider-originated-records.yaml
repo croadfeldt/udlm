@@ -1,0 +1,85 @@
+# asserts: DEP-015, DEP-018, PRV-012, ENT-006
+# proves: a request one provider makes to another is a record of its own — in the provider's tenant, under the provider's
+# authority, naming itself as root — and names the consumer's request that caused it as provenance, never as authority.
+# Two records, one entity: the VM provider's intent for raw storage, and the requested record placement produced from it.
+---
+record_type: intent_record
+state: Intent
+record_uuid: 01a0eb52-84e6-71c0-b798-1dacd378c203
+entity_uuid: 6c27ea00-65ee-4045-b31b-ae08ad34c80d
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+conforms_to: udlm/0.1
+resource_type: Storage.Pool
+type_version: 0.4.2
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Storage.Pool/0.4.2
+handle: platform/storage/pool/app-tier-02
+generation: 1
+origin: declared
+at: '2026-09-28T10:15:00Z'
+time_source: dcm-api
+metadata:
+  display_name: app-tier-02 (raw storage the VM provider asked for)
+fields:
+  pool_kind: zfs
+  capacity:
+    size: 20Ti
+provenance:
+  pool_kind:
+    - source:
+        kind: actor
+        id: platform/service-accounts/vm-provider
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-28T10:15:00Z'
+  capacity.size:
+    - source:
+        kind: actor
+        id: platform/service-accounts/vm-provider
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-28T10:15:00Z'
+integrity:
+  head: sha256:51d2680d200fb1abebaab427968b53ae95f17eb59fc82620c19918e337ad2dc5
+  previous: null
+  algorithm: sha256-jcs
+---
+record_type: requested_record
+state: Requested
+record_uuid: 01a0eb52-84e6-71c0-b798-1dad32dcb191
+intent_ref: 01a0eb52-84e6-71c0-b798-1dacd378c203
+intent_ref_head: sha256:51d2680d200fb1abebaab427968b53ae95f17eb59fc82620c19918e337ad2dc5
+root_request_uuid: 01a0eb52-84e6-71c0-b798-1dad32dcb191
+caused_by_request: 01a0eb4f-c492-70e3-a61a-c7a8b1822dbf
+entity_uuid: 6c27ea00-65ee-4045-b31b-ae08ad34c80d
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+conforms_to: udlm/0.1
+resource_type: Storage.Pool
+type_version: 0.4.2
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Storage.Pool/0.4.2
+handle: platform/storage/pool/app-tier-02
+generation: 1
+origin: declared
+at: '2026-09-28T10:15:04Z'
+time_source: dcm-api
+fields:
+  pool_kind: zfs
+  capacity:
+    size: 20Ti
+assembly:
+  applied:
+    - source:
+        kind: policy
+        id: platform/policy/placement
+      version: 1.0.0
+metadata:
+  notes:
+    - at: '2026-09-28T10:15:04Z'
+      author: platform/service-accounts/vm-provider
+      text: 'Originated by the VM provider: the pool serving app-01''s order had no capacity, so it requested raw
+        storage from the storage provider (PRV-012). caused_by_request names app-01''s requested record; this request
+        runs in the platform tenant under the provider''s own authority, and app-01 waits blocked-transient on it
+        (DEP-017).'
+integrity:
+  head: sha256:2710208d844b4cf4e3bd957c132d613770b6a12b47faaf7af41a73265e31fc83
+  previous: null
+  algorithm: sha256-jcs
