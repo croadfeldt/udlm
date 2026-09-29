@@ -1,0 +1,33 @@
+must_reject:
+  rule: RHY-007
+  gate: schema
+  expect_path: $.dependencies[0]
+  because: A discovered record whose observed edge carries a declared strength. A probe saw that the VM is on this
+    host; it cannot see whether the VM is allowed to run without it. That is a declaration of placement, carried on the
+    requested record, and of the provider, carried on the realized one. Accepting it here would let a sweep write
+    declared semantics into the one record that holds only what was seen, and drift (the comparison of the two lists)
+    would then compare a declaration with itself.
+record:
+  record_type: discovered_record
+  state: Discovered
+  record_uuid: 01a0e3cb-34d1-7432-bb67-3a6d0c4f1e28
+  entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  conforms_to: udlm/0.1
+  resource_type: Machine.VM
+  type_version: 2.0.0
+  at: '2026-09-03T14:18:00Z'
+  time_source: discovery-sweep
+  fields: {}
+  outputs: {}
+  correlation_ids:
+    - scheme: libvirt-domain-uuid
+      value: 4e2a7c19-6b3d-4f8e-a1c5-9d0b2e7f3a64
+  dependencies:
+    - edge_type: contained_by
+      target_uuid: 8a4d1e6f-2b3c-4d5e-9f0a-1b2c3d4e5f60
+      target_key:
+        scheme: smbios-uuid
+        value: 3f6b1a2c-9d4e-4b7f-8a1c-2e5d7f9b0c43
+      strength: hard
+  __schema__: state-record.schema.json
