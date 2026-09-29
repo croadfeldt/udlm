@@ -266,7 +266,11 @@
             "items": {
               "properties": {
                 "target_key": false
-              }
+              },
+              "required": [
+                "edge_type",
+                "target_uuid"
+              ]
             }
           }
         },
@@ -302,7 +306,11 @@
             "items": {
               "properties": {
                 "target_key": false
-              }
+              },
+              "required": [
+                "edge_type",
+                "target_uuid"
+              ]
             }
           }
         },
@@ -344,7 +352,6 @@
             "items": {
               "required": [
                 "edge_type",
-                "target_uuid",
                 "target_key"
               ],
               "properties": {
@@ -731,6 +738,14 @@
             "value": "3f6b1a2c-9d4e-4b7f-8a1c-2e5d7f9b0c43"
           },
           "resolved_at": "2026-09-03T14:18:00Z"
+        },
+        {
+          "edge_type": "depends_on",
+          "target_key": {
+            "scheme": "provider-id",
+            "value": "libvirt-host-a/pool-a/app-01-root.qcow2"
+          },
+          "resolved_at": "2026-09-03T14:18:00Z"
         }
       ]
     }
@@ -806,8 +821,7 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "edge_type",
-          "target_uuid"
+          "edge_type"
         ],
         "properties": {
           "edge_type": {
@@ -815,7 +829,8 @@
           },
           "target_uuid": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "The target entity. Required on requested and realized records (declared edges name their target by identity). On a discovered record it is present once the control plane has resolved `target_key` to an entity and absent until then (RHY-007)."
           },
           "target_field": {
             "type": "string"
@@ -850,7 +865,7 @@
           },
           "target_key": {
             "$ref": "#/$defs/correlation_ids/items",
-            "description": "Discovered only: the natural key the probe read for the target — a `correlation_ids` scheme and value — by which `target_uuid` was resolved (RHY-007). Refused on intent, requested and realized records, whose targets are declared by identity."
+            "description": "Discovered only: the natural key the probe read for the target — a `correlation_ids` scheme and value — from which `target_uuid` is resolved (RHY-007). A target identified by a compound key (a switch port: chassis and port) uses a scheme that names the compound; the scheme list is extensible. Refused on intent, requested and realized records, whose targets are declared by identity."
           }
         }
       }
