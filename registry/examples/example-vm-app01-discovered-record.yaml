@@ -1,0 +1,45 @@
+# asserts: RHY-007
+# proves: an edge a sweep observed rides the discovered record — the host probe saw domain app-01 and names the host by the natural key it read (the host's smbios-uuid), resolved to the entity that key matches — and carries none of the declared semantics (no strength, relation or binding) a probe cannot see. The realized record of this entity carries the same `contained_by` with `strength: hard`; drift is the comparison of the two lists, never a field on either.
+record_type: discovered_record
+state: Discovered
+record_uuid: 01a0e3cb-34d1-7432-bb67-3a6d0c4f1e27
+entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Machine.VM
+type_version: 2.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0
+handle: lab/vm/app-01
+generation: 1
+origin: discovered-derived
+at: '2026-09-03T14:18:00Z'
+time_source: discovery-sweep
+provider: lab/providers/libvirt-host-a
+fields:
+  cpu:
+    count: 4
+    sockets: 1
+    cores_per_socket: 4
+  memory:
+    size: 16Gi
+  run_state:
+    desired_state: running
+outputs:
+  mac_addresses:
+    - 52:54:00:ab:12:34
+  observed_run_state: running
+correlation_ids:
+  - scheme: libvirt-domain-uuid
+    value: 4e2a7c19-6b3d-4f8e-a1c5-9d0b2e7f3a64
+  - scheme: mac
+    value: 52:54:00:ab:12:34
+matched_by:
+  - libvirt-domain-uuid
+dependencies:
+  - edge_type: contained_by
+    target_uuid: 8a4d1e6f-2b3c-4d5e-9f0a-1b2c3d4e5f60
+    target_handle: lab/host/host-a
+    target_key:
+      scheme: smbios-uuid
+      value: 3f6b1a2c-9d4e-4b7f-8a1c-2e5d7f9b0c43
+    resolved_at: '2026-09-03T14:18:00Z'

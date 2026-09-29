@@ -261,7 +261,14 @@
           "portability": false,
           "expected_observation": false,
           "matched_by": false,
-          "requested_ref_head": false
+          "requested_ref_head": false,
+          "dependencies": {
+            "items": {
+              "properties": {
+                "target_key": false
+              }
+            }
+          }
         },
         "required": [
           "fields",
@@ -290,7 +297,14 @@
           "provider_preference": false,
           "matched_by": false,
           "policies": false,
-          "intent_ref_head": false
+          "intent_ref_head": false,
+          "dependencies": {
+            "items": {
+              "properties": {
+                "target_key": false
+              }
+            }
+          }
         },
         "required": [
           "fields",
@@ -326,7 +340,21 @@
           "process": false,
           "priced_by": false,
           "constituents": false,
-          "dependencies": false,
+          "dependencies": {
+            "items": {
+              "required": [
+                "edge_type",
+                "target_uuid",
+                "target_key"
+              ],
+              "properties": {
+                "strength": false,
+                "relation": false,
+                "bound_field": false,
+                "target_field": false
+              }
+            }
+          },
           "sovereignty": false,
           "policies": false,
           "intent_ref_head": false,
@@ -644,6 +672,67 @@
         "previous": "sha256:e8889df6cff24766f2dc1697342d6f7949a23c1a1364b45e6fdfb2f3eaa6b264",
         "algorithm": "sha256-jcs"
       }
+    },
+    {
+      "record_type": "discovered_record",
+      "state": "Discovered",
+      "record_uuid": "01a0e3cb-34d1-7432-bb67-3a6d0c4f1e27",
+      "entity_uuid": "2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03",
+      "tenant_uuid": "75ccf4ff-3e8d-4963-bc51-459ae1014cb7",
+      "conforms_to": "udlm/0.1",
+      "resource_type": "Machine.VM",
+      "type_version": "2.0.0",
+      "type_ref": "https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0",
+      "handle": "lab/vm/app-01",
+      "generation": 1,
+      "origin": "discovered-derived",
+      "at": "2026-09-03T14:18:00Z",
+      "time_source": "discovery-sweep",
+      "provider": "lab/providers/libvirt-host-a",
+      "fields": {
+        "cpu": {
+          "count": 4,
+          "sockets": 1,
+          "cores_per_socket": 4
+        },
+        "memory": {
+          "size": "16Gi"
+        },
+        "run_state": {
+          "desired_state": "running"
+        }
+      },
+      "outputs": {
+        "mac_addresses": [
+          "52:54:00:ab:12:34"
+        ],
+        "observed_run_state": "running"
+      },
+      "correlation_ids": [
+        {
+          "scheme": "libvirt-domain-uuid",
+          "value": "4e2a7c19-6b3d-4f8e-a1c5-9d0b2e7f3a64"
+        },
+        {
+          "scheme": "mac",
+          "value": "52:54:00:ab:12:34"
+        }
+      ],
+      "matched_by": [
+        "libvirt-domain-uuid"
+      ],
+      "dependencies": [
+        {
+          "edge_type": "contained_by",
+          "target_uuid": "8a4d1e6f-2b3c-4d5e-9f0a-1b2c3d4e5f60",
+          "target_handle": "lab/host/host-a",
+          "target_key": {
+            "scheme": "smbios-uuid",
+            "value": "3f6b1a2c-9d4e-4b7f-8a1c-2e5d7f9b0c43"
+          },
+          "resolved_at": "2026-09-03T14:18:00Z"
+        }
+      ]
     }
   ],
   "$defs": {
@@ -712,7 +801,7 @@
     },
     "dependencies": {
       "type": "array",
-      "description": "Resolved instance-level edges (the realized form of the type's relationships). A binding records the value pulled from the target's realized output — data movement, not transformation (T4).",
+      "description": "Resolved instance-level edges (the realized form of the type's relationships). A binding records the value pulled from the target's realized output — data movement, not transformation (T4). On a discovered record these are the edges a sweep observed (four-states.md §2.4, RHY-007): each names its target by `target_key`, the natural key the probe read, and carries none of the declared semantics (`strength`, `relation`, `bound_field`, `target_field`).",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -758,6 +847,10 @@
             "type": "string",
             "pattern": "^[a-z][a-z0-9_]*$",
             "description": "The declared relation name from the pinned type's relationship vocabulary (relationships[].name) — REL-001: must be declared; REL-003: refines, never overrides, kind's ordering semantics, so graph consumers that read only kind+strength stay correct. NOT bound_field (which is strictly the data-binding field of a binds_to edge)."
+          },
+          "target_key": {
+            "$ref": "#/$defs/correlation_ids/items",
+            "description": "Discovered only: the natural key the probe read for the target — a `correlation_ids` scheme and value — by which `target_uuid` was resolved (RHY-007). Refused on intent, requested and realized records, whose targets are declared by identity."
           }
         }
       }

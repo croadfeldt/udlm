@@ -173,6 +173,21 @@ The **Discovered State** is what is observed actually existing through active di
 
 **Discovered has a dual role (dcm ADR-017 Decision A, #222).** Discovered is (1) the **ephemeral per-cycle snapshot stream** consumed by drift detection, *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what exists*, including discovered-but-**unclaimed** resources (no provider attached). These are one domain, not two stores: the durable inventory record is the latest reconciled observation per entity; the snapshot stream is its history. The durable-inventory role is exempt from snapshot-stream retention ceilings; the reconciled inventory record persists until claim or retirement ([data-model-core](data-model-core.md) §3). **Unclaimed = inventoried, not managed** (queryable, excluded from lifecycle operations); a provider claim/adoption moves the entity Discovered → Realized preserving its UUID, and a long-lived unclaimed resource is surfaced as visible inventory debt — its age is the signal; claiming or retiring it is the estate's decision (advisory best practice, never an imperative). Multiple discovery sources correlate to ONE entity via `correlation_ids` (entity-view.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../../../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and the canonical `lifecycle_state` element (`registry/common-elements.md` §6).
 
+**A sweep sees edges as well as fields (RHY-007).** A probe on a host sees which domains run on it; a
+probe in a guest sees the WWN of the disk passed through to it; an LLDP walk sees which switch port a
+NIC is cabled to. These are observations of the same standing as a discovered field, and they ride the
+discovered record as `dependencies` — with one difference in shape that is the whole rule. An observed
+edge names its target by the **natural key the probe read** (`target_key`: a `correlation_ids` scheme
+and value — a libvirt domain UUID, a WWN, a MAC, a chassis id), resolved to `target_uuid` by that key
+and nothing else; a key that matches no entity yields a new discovered entity first (the durable
+inventory role above), so an observed edge always resolves. And it carries **no declared semantics**:
+no `strength`, `relation`, `bound_field` or `target_field` — a probe sees that a disk is in a host, not
+what the host is allowed to do without it. Those belong to the requested record (placement) and the
+realized record (the provider), and the two lists are what drift compares (§6): a requested
+`contained_by` one host and an observed `contained_by` another is a placement that moved. An edge a
+probe cannot key-match is an inference, not an observation, and enters the estate as intent — by
+claiming — never on a discovered record.
+
 ### 2.5 Recovery Conditions — a `status.conditions` overlay, NOT lifecycle states
 
 **Recovery and health are `status.conditions`, not lifecycle states** ([data-model-core](data-model-core.md) §3): `lifecycle_state` never leaves its five canonical values (`Intent → Requested → Realized ↔ Discovered` + `Decommissioned`). When the normal provisioning lifecycle encounters timeouts, cancellation failures, or partial realization on an Resource, the situation is expressed as a **condition type** on the entity's `status.conditions` (entity-view.schema.json `status`) — an overlay on whatever lifecycle state the entity is in. Conditions are governed by Recovery Policies.
@@ -237,7 +252,7 @@ and nobody edits one.
 | intent | the fields as written; who wrote each one | the consumer |
 | requested | the fields after assembly and policy; the layers applied and the contributions left unapplied (`assembly`); the policies evaluated and what each decided (`policies`); the fulfillment status when a request is refused or blocked; the intent it came from (`intent_ref`); the edges placement resolved | the control plane |
 | realized | the fields as built; the outputs other things bind to; which provider instance built it (`provider`, a reference, not a string); health; placement; the natural keys discovery recognizes it by; the requested record it realizes (`requested_ref`) | the provider |
-| discovered | what a sweep saw — fields, outputs — and which keys matched it to the entity | discovery |
+| discovered | what a sweep saw — fields, outputs, and the edges it observed, each named by the natural key the probe read (RHY-007) — and which keys matched it to the entity | discovery |
 
 **Four consequences.** A realized record stands alone: a load balancer, a rebuild, an inventory
 reads it and nothing else. Drift is a comparison — the latest discovered record against the latest
@@ -323,6 +338,7 @@ Everything genuinely data-model about rehydration reduces to two rules:
 | `RHY-001` | Tenancy, sovereignty, and cross-tenant authorizations always use **current** policies during rehydration — they cannot be pinned to a historical version (only resource-configuration policy may be pinned). |
 | `RHY-005` | On a **restore in place** (Faithful mode) the entity **UUID is preserved** and only the provider-side identifier changes (recorded in `provider_entity_id_history`); a **rebuild** (Provider-Portable mode — the original is gone) is a **new entity with a new UUID**, kept traceable to its source by lineage (§5.2). Rehydration is transactional either way — a failed target leaves the pre-rehydration state intact. |
 | `RHY-006` | **One record per state — never a folded record.** An entity's four states are stored as four separate records (`registry/state-record.schema.json`), each written once by one party and superseded, never edited. A document carrying a `states` block is the **entity view** — a read model assembled on demand (`registry/entity-view.schema.json`) — and MUST NOT be authored, stored, or validated as a record; the only authored view is the worked example `registry/examples/orders-db.json`. `drift` and `ownership` are never stored on any record. This is the model as originally specified; the folded instance schema that replaced it for a year was the deviation. Gate: `tests/check_state_records_only.py` (SRO-001/002/003). |
+| `RHY-007` | **An observed edge is a discovered fact and rides the discovered record.** A `discovered_record` MAY carry `dependencies` for the edges a sweep observed. Each names its target by the natural key the probe read — `target_key`, a `correlation_ids` scheme and value — resolved to `target_uuid` by that key alone; a key matching no entity produces a new discovered entity before the edge is written, so every observed edge resolves. An observed edge carries none of the declared semantics — `strength`, `relation`, `bound_field`, `target_field` are refused on a discovered record, and `target_key` is refused on an intent, requested or realized record. Drift compares the requested/realized edge list with the observed one (§6). An edge no probe can key-match is authored intent, entered by claiming, never on a discovered record. Schema: `registry/state-record.schema.json` (the discovered kind's `allOf`); read model: `entity_view.py` folds `dependencies` realized → requested → discovered. |
 
 *The rest is implementation/policy, not data model, and lives in control-plane operational model: the placement × policy-version **"modes"** (Faithful / Provider-Portable / Historical) are operational request flags; **`min_auth_level`** rehydration constraints are an authorization policy; and the pipeline, leases, TTL, concurrency, and PENDING_REVIEW pause are runtime (`RHY-002/003/004/006/007/008/010/011/012`).*
 

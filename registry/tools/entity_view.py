@@ -27,7 +27,7 @@ STATE_KINDS = {"intent_record": "intent", "requested_record": "requested",
 # the body keys that live on the record beside `fields`, and which state's record the view takes them from
 _CARRIED = {
     "status": ("realized", "requested", "discovered"),
-    "dependencies": ("realized", "requested"),
+    "dependencies": ("realized", "requested", "discovered"),
     "sovereignty": ("realized",),
     "correlation_ids": ("realized", "discovered"),
     "adopted_standards": ("realized",),
