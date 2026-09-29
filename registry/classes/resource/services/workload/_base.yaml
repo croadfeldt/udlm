@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Workload/0.9.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Workload/0.9.1
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: base
 resource_type: Workload
-version: 0.9.0
+version: 0.9.1
 family: Resource
 status: active
 filed_under:
@@ -205,7 +205,7 @@ context:
     - You need host services (systemd units) and containerized services modeled uniformly.
   not_for:
     - A single container's runtime spec — Container; the service references containers as constituents.
-    - A bounded-runtime task — Automation.Job.
+    - A bounded-runtime task — Job.
     - The database a service uses — Database, referenced as a dependency.
   works_with:
     - Container — containerized constituents, by reference.

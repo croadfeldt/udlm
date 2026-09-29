@@ -14,7 +14,7 @@ network_ref:  net-dmz        # selects an existing VirtualNetwork
 disk_size:    100Gi
 
 # The 0.6.0 type surface — sizing is a oneOf: EITHER a provider-neutral class...
-instance_size: medium        # ...OR explicit topology (vcpu: {count: 4}, memory: {size: 8GiB})
+instance_size: medium        # ...OR explicit topology (cpu: {count: 4}, memory: {size: 8Gi})
 guest_os:
   os_image: linux-server-9   # a reference into the provider-advertised os_image vocabulary
                              # (DCM ADR-012 reference data; policy validates membership at request;

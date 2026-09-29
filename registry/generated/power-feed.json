@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/PowerFeed/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/PowerFeed/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31",
   "resource_type": "PowerFeed",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "PowerFeed",
-          "version": "0.7.0",
+          "version": "0.7.1",
           "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31"
         }
       ]
@@ -149,7 +149,7 @@
     "works_with": [
       "Machine.BareMetalHost — hosts declare depends_on the feed(s) they draw from.",
       "NetworkSwitch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.",
-      "Automation.Job — the shutdown job a feed's on-battery status triggers."
+      "Job — the shutdown job a feed's on-battery status triggers."
     ]
   }
 }

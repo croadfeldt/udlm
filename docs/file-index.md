@@ -81,7 +81,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 ## `registry/` — the machine-checked spec surface + policy
 
 - **`VERSIONING.md`** — *Owns:* the two-axis (SPEC / ENTITY) versioning + compatibility policy. The single versioning home.
-- **`naming-conventions.md`** — *Owns:* casing (`snake_case`), `Category.Type` naming, file naming, the name-to-a-standard rule.
+- **`naming-conventions.md`** — *Owns:* casing (`snake_case`), `Base[.Type[.Provider]]` naming, file naming, the name-to-a-standard rule.
 - **`common-elements.md`** — *Owns:* canonical shared shapes reused across types (`REL-*` shared elements, common patterns).
 - **`SPEC-DESIGN-REQUIREMENTS.md`** — *Owns:* the resource-type-spec rubric (MUST/SHOULD), including §33 the single-source rule.
 - **`standards-adoption-register.md`** — *Owns:* the per-standard adoption decision + license verdict (`ADOPT-001`). The single home for license verdicts.

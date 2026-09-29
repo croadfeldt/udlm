@@ -152,7 +152,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 
 ## Container
 
-### Container (1.0.5)
+### Container (1.0.6)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -165,7 +165,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 **Not for:**
 - A multi-part application (several containers and/or systemd units behaving as one thing) — that is Workload, which references containers as constituents.
 - The image itself as a fact (digest, bill-of-materials anchor) — that is SoftwareImage; the container runs an image, it is not the image.
-- A one-shot automation task with a bounded runtime — that is Automation.Job.
+- A one-shot automation task with a bounded runtime — that is Job.
 
 **Works with:**
 - KubernetesCluster / Machine.BareMetalHost — exactly one of them is where the container runs.
@@ -813,7 +813,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 
 ## PowerFeed
 
-### PowerFeed (0.7.0)
+### PowerFeed (0.7.1)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
@@ -830,7 +830,7 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 **Works with:**
 - Machine.BareMetalHost — hosts declare depends_on the feed(s) they draw from.
 - NetworkSwitch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.
-- Automation.Job — the shutdown job a feed's on-battery status triggers.
+- Job — the shutdown job a feed's on-battery status triggers.
 
 ## Processor
 
@@ -1166,7 +1166,7 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 
 ## UPS
 
-### UPS (0.1.2)
+### UPS (0.1.3)
 
 **Purpose:** Models the battery-backed unit itself — what it is rated for, what wears, when it must signal low battery, and what it reports — so the feed it protects can be supplied_by a real entity instead of a feed_type string.
 
@@ -1183,7 +1183,7 @@ A UPS as a thing you own, separate from the circuit it protects. You declare its
 **Works with:**
 - PowerFeed — a feed is supplied_by the UPS that conditions it.
 - Workload — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the instance's provider.
-- Automation.Job — the graceful-shutdown job that the unit's status drives, via the feed.
+- Job — the graceful-shutdown job that the unit's status drives, via the feed.
 
 ## VLAN
 
@@ -1309,7 +1309,7 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 
 ## Workload
 
-### Workload (0.9.0)
+### Workload (0.9.1)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
@@ -1322,7 +1322,7 @@ The application layer: the mail service, the registry, model serving — a named
 
 **Not for:**
 - A single container's runtime spec — Container; the service references containers as constituents.
-- A bounded-runtime task — Automation.Job.
+- A bounded-runtime task — Job.
 - The database a service uses — Database, referenced as a dependency.
 
 **Works with:**

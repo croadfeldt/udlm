@@ -115,7 +115,7 @@ consistently `snake_case` (`ip_address`/`api_url`/`console_url`/`connection_stri
 
 **Normalization plan (additive, MINOR bumps; no breaking renames until a MAJOR):**
 1. Define `ComputeResources` + `Quantity` + `ip_family` here (this doc) and as `$defs` the type specs `$ref`.
-2. New types (`Machine.BareMetalInstance`, `StorageCluster.Ceph`, …) use the canonical shapes from day one.
+2. New types (`Machine.BareMetalHost`, `StorageCluster.Ceph`, …) use the canonical shapes from day one.
 3. Existing types add the canonical shape alongside the legacy field (deprecate the synonym), converging at the next MAJOR.
 
 ## 4. New types — apply the sweep up front

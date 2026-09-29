@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/UPS/0.1.2
+$id: https://udlm.dev/registry/udlm/0.1/class/UPS/0.1.3
 conforms_to: udlm/0.1
 uuid: db585146-41b2-4cd9-86e6-c90d086df2cf
 record_type: class
 class: base
 resource_type: UPS
-version: 0.1.2
+version: 0.1.3
 family: Resource
 status: active
 filed_under: [power]
@@ -255,4 +255,4 @@ context:
   - PowerFeed — a feed is supplied_by the UPS that conditions it.
   - Workload — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the
     instance's provider.
-  - Automation.Job — the graceful-shutdown job that the unit's status drives, via the feed.
+  - Job — the graceful-shutdown job that the unit's status drives, via the feed.

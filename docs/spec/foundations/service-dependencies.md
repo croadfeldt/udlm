@@ -77,11 +77,11 @@ Dependencies declared at the Provider Catalog Item level are **provider-specific
 
 **Example:**
 ```yaml
-catalog_item: Nutanix.VM.Small
+catalog_item: Machine.VM.Nutanix
 provider_specific_dependencies:
   - dependency_uuid: <uuid>
-    required_resource_type_uuid: <uuid of Nutanix.StorageContainer>
-    required_resource_type_name: Nutanix.StorageContainer
+    required_resource_type_uuid: <uuid of StoragePool>
+    required_resource_type_name: StoragePool
     strength: hard
     portability_breaking: true
     description: Nutanix VMs require a Nutanix Storage Container
@@ -393,7 +393,7 @@ Service Catalog Items must declare their dependencies as part of their definitio
 catalog_item:
   uuid: <uuid>
   name: Web Server Service
-  resource_type_uuid: <uuid of Machine.WebServer>
+  resource_type_uuid: <uuid of Machine.VM>
   type_level_dependencies:
     - dependency_uuid: <uuid>
       required_resource_type_uuid: <uuid of Machine.VM>

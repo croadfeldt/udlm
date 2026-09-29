@@ -41,7 +41,7 @@ constituents:
     failure_effect: required
     depends_on: [dmz_address]
     spec_defaults:
-      vcpu: { count: 8 }
+      cpu: { count: 8 }
       memory: { size: 32GB }
       guest_os: uuid/8a2b1c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d?reference_data_type==os_image
                                             # the os_image vocabulary entry that tracks the
@@ -76,7 +76,7 @@ constituents:
         - { name: game-server, type: A, ttl: 300 }   # data arrives via the binding
 
   - component_id: grow_rootfs
-    resource_type: Automation.Job
+    resource_type: Job
     type_version: 0.4.2
     provided_by: self
     failure_effect: optional

@@ -317,7 +317,7 @@ Organizations register custom information types following the same model:
 ```yaml
 custom_information_type:
   uuid: <uuid>
-  name: <Category.TypeName>
+  name: <Base.Type>
   # Must use a non-reserved category prefix or register a new one
   category: <existing category or new custom category>
   version: <Major.Minor.Revision>

@@ -2,7 +2,7 @@ uuid: uc-b4ef0b09-8af7-45ff-b4a9-7f5aedf2a593
 handle: automation/run-automation-job
 version: 1.0.0
 scenario:
-  description: 'A platform engineer runs an Automation.Job that executes idempotently against the estate
+  description: 'A platform engineer runs an Job that executes idempotently against the estate
     and carries a declared blast-radius — the explicit set of entities the job is allowed to affect —
     rather than reaching into whatever it happens to touch at runtime. The job declares what it does, the
     entities it may act on, and its idempotency contract, so a re-run converges to the same state without
@@ -18,7 +18,7 @@ scenario:
     - sre
     - platform-operator
     - compliance-auditor
-  intent: Run an Automation.Job idempotently with a declared blast-radius, so its reach is bounded and
+  intent: Run an Job idempotently with a declared blast-radius, so its reach is bounded and
     readable before it runs and a re-run converges to the same state
   success_criteria:
   - The Job declares its action, its idempotency contract, and its blast-radius — the explicit set of

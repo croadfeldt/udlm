@@ -437,7 +437,7 @@ layer:
     size_code: "gp-medium"
     display_name: "Medium (8 CPU / 32 GB)"
     cpu_count: 8
-    memory_gb: 32
+    memory: { size: 32Gi }
     storage_gb: 80
     network_bandwidth_gbps: 10
     approved_for_workloads: [web, application, database, batch]
@@ -954,7 +954,7 @@ Dashboard. The capture's shape is the control plane's implementation; this conte
 Contact information supports both IdP-backed and standalone deployments:
 
 **Mode 1 — Identity Provider backed:**
-The `uuid` field contains control-plane external entity reference UUID linking to an Identity.Person or Identity.Team in a registered Information Provider. The `display_name` is cached non-authoritatively for UI display. The control plane can resolve the full identity record via the Information Provider on demand.
+The `uuid` field contains control-plane external entity reference UUID linking to an Identity.Person or IdentityGroup in a registered Information Provider. The `display_name` is cached non-authoritatively for UI display. The control plane can resolve the full identity record via the Information Provider on demand.
 
 **Mode 2 — Standalone (no Identity Provider):**
 The `uuid` field is absent. `display_name`, `email`, and `notification_endpoint` are the primary identity fields. The control plane accepts and records these directly without external verification. This mode supports bootstrapping, air-gapped deployments, and organizations that have not yet registered an Identity Information Provider.

@@ -420,7 +420,7 @@ Request body:
   "notification_uuid": "<uuid>",      # idempotency key
   "notification_type": "<authorized_change|maintenance_change|auto_scale>",
   "changed_fields": {
-    "memory_gb": {
+    "memory.size": {
       "previous_value": 8,
       "new_value": 16,
       "change_reason": "Auto-scale policy: payments-api-scale-up triggered at 85% memory utilization",
@@ -456,9 +456,9 @@ policy:
         notification_type: auto_scale
         provider_uuid: <approved-provider-uuid>
         entity.resource_type: Machine.VM
-        changed_fields: [memory_gb, cpu_count]
+        changed_fields: [memory.size, cpu.count]
         change_within_bounds:
-          memory_gb: { max_increase_factor: 2 }
+          memory.size: { max_increase_factor: 2 }
           cpu_count: { max_increase_factor: 2 }
       action: approve
       audit_note: "Auto-scale approved per payments team scaling policy"
@@ -698,7 +698,7 @@ Bare metal Whole Allocation uses the same `shareability.allowed: false` mechanis
 
 ```yaml
 resource_type_spec:
-  fully_qualified_name: Machine.BareMetal
+  fully_qualified_name: Machine.BareMetalHost
   allocation_model: whole_unit         # whole_unit | fractional | pooled
   shareability:
     allowed: false                     # structural lock — cannot be changed by policy

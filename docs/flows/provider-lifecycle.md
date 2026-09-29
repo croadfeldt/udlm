@@ -195,7 +195,7 @@ consumer_fields:
     type: enum
     required: true
     enum_values: [dev, staging, prod]
-  - name: vcpu
+  - name: cpu.count
     type: integer
     required: false
     default: 2
@@ -215,7 +215,7 @@ consumer_fields:
     description: "Storage class — optional; a reference to an existing StorageClass, resolved by policy if omitted"
 ```
 
-The consumer sees `environment`, `vcpu`, `memory` as the primary choices. `namespace` and
+The consumer sees `environment`, `cpu.count`, `memory.size` as the primary choices. `namespace` and
 `storage_class` are visible but optional — the consumer MAY specify them if they know what they want
 (honored, validated, flagged as non-portable per the realized record's `portability` block). If omitted, policies resolve them
 post-placement. The provider declares *what* it needs at registration (Phase 1); the catalog item
@@ -234,7 +234,7 @@ A provider that offers a complete application stack publishes a composite catalo
 composite decomposes into constituents with dependency ordering and output bindings:
 
 ```yaml
-name: ApplicationStack.ThreeTierWebApp
+name: Template.Application.AcmeThreeTier
 composition_visibility: transparent
 
 constituents:
@@ -436,7 +436,7 @@ or in the enrichment policy configuration. It is not a new architectural primiti
 # Example: catalog item declaring fill strategies for provider-specific fields
 consumer_fields:
   # Portable fields — always shown
-  - name: vcpu
+  - name: cpu.count
     type: integer
     required: false
     default: 2
@@ -506,7 +506,7 @@ that.
 ```yaml
 resource_type: Machine.VM
 spec:
-  vcpu: 4
+  cpu: { count: 4 }
   memory: 16384
   guest_os: linux-server-9
   disks:
@@ -602,7 +602,7 @@ provider_native_id: "k8s-prod-east/tenant-alpha-prod/vm-0042"
 status: active
 
 realized:
-  vcpu: 4
+  cpu: { count: 4 }
   memory: 16384
   fqdn: "vm-0042.tenant-alpha-prod.k8s-east.internal"
   ip_address: uuid/c9d4e5f6-...         # → realized IPAddress

@@ -100,7 +100,7 @@ constituents:
     required_for_delivery: required
 
   - component_id: dns
-    resource_type: DNS.Record
+    resource_type: DNSZone
     provided_by: self          # registering provider fulfills directly
     depends_on: [vm, ip]
     required_for_delivery: required
@@ -212,7 +212,7 @@ Intent records the consumer's declared intent without expansion. The Composite E
 
 ```yaml
 # shape: Composite — derived (has_constituents, via the catalog definition's constituents)
-catalog_ref: ApplicationStack.WebApp/v2
+catalog_ref: Template.Application.WebApp/v2
 parameters:
   size: medium
   region: us-east-1
@@ -227,7 +227,7 @@ Requested expands the intent: the control plane applies the Composite Service de
 # shape: Composite — derived (has_constituents, from constituents[] below)
 entity_uuid: <composite_uuid>
 parent_composite_uuid: null
-catalog_ref: ApplicationStack.WebApp/v2
+catalog_ref: Template.Application.WebApp/v2
 constituents:
   - component_id: vm
     constituent_uuid: <vm_uuid>
@@ -399,7 +399,7 @@ A Composite Service registration consists of:
 
 ```yaml
 registration:
-  catalog_ref: ApplicationStack.WebApp/v2
+  catalog_ref: Template.Application.WebApp/v2
   composite_definition:
     composition_visibility: transparent | opaque | selective
     selective_visible:                # only when visibility = selective

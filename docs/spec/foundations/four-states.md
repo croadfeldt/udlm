@@ -379,7 +379,7 @@ resource_type_spec:
   fields:
     display_name:      { drift_criticality: minor }        # non-functional change
     cpu_count:         { drift_criticality: significant }
-    memory_gb:         { drift_criticality: significant }
+    memory.size:         { drift_criticality: significant }
     security_group_ids: { drift_criticality: critical }    # security-relevant change
     firewall_rules:    { drift_criticality: critical }
 ```

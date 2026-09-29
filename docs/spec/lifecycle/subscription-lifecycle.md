@@ -44,7 +44,7 @@ subscription:
   # ── Binding ────────────────────────────────────────────────────
   tenant_uuid: <uuid>                    # Who subscribes
   catalog_item_uuid: <uuid>              # What they subscribed to
-  resource_type: "Database.PostgreSQL"   # FQN of the subscribed resource type
+  resource_type: "Database"   # FQN of the subscribed resource type
   provider_uuid: <uuid>                  # Who fulfills the subscription
 
   # ── Terms ──────────────────────────────────────────────────────
@@ -63,7 +63,7 @@ subscription:
     max_instances: 5                     # How many entities the subscription covers
     resource_limits:                     # Per-entity limits within subscription
       vcpus: 16
-      memory_gb: 64
+      memory: { size: 64Gi }
       storage_gb: 500
     capabilities:                        # What the provider will do under this subscription
       - provision
@@ -135,7 +135,7 @@ Catalog items declare whether they support subscription consumption by including
 ```yaml
 catalog_item:
   handle: "managed-postgres"
-  resource_type: "Database.PostgreSQL"
+  resource_type: "Database"
   consumption_models: ["on_demand", "subscription"]   # What models this item supports
   
   subscription_tiers:                                   # Available when consumption_model = subscription

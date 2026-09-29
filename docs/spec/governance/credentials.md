@@ -34,7 +34,7 @@ permitted/forbidden algorithms, FIPS floors per profile, and certificate protoco
 > UDLM substrate contract — the data model, lifecycle, and provider interface — that the brokering rests on.
 >
 > **"Credential Provider" is a capability, not a separate provider kind.** Any provider that declares the
-> credential-issuing capability — `Credential.*` in `supported_resource_types` plus a `credential_capability`
+> credential-issuing capability — `CredentialRef` in `supported_resource_types` (with the `credential_type` values it issues) plus a `credential_capability`
 > block — *is* a Credential Provider for those types. There is no distinct `credential_provider` provider type to
 > register; see [Provider Contract](../contracts/provider-contract.md).
 
@@ -50,16 +50,13 @@ The implementation maintains its own operational secrets — provider authentica
 
 ### 1.2 Consumer-Facing Credentials
 
-When consumers request credential resources (API keys, certificates, SSH keys, secrets) or when realized resources require credentials (kubeconfigs, database passwords, service account tokens), the substrate requires that the credentials are issued by a provider that declares the **credential capability** — `Credential.*` in `supported_resource_types` plus a `credential_capability` block. Any provider that declares this capability handles such requests through the standard provider dispatch pipeline; there is no separate provider *kind*. The capability declaration is what the implementation **selects against** (declare-and-select): it states which credential types the provider can issue, the assurance it can reach, and the secret-engine/attestation backing — so the implementation can pick a provider that satisfies the active profile's trust floor.
+When consumers request credential resources (API keys, certificates, SSH keys, secrets) or when realized resources require credentials (kubeconfigs, database passwords, service account tokens), the substrate requires that the credentials are issued by a provider that declares the **credential capability** — `CredentialRef` in `supported_resource_types` (with the `credential_type` values it issues) plus a `credential_capability` block. Any provider that declares this capability handles such requests through the standard provider dispatch pipeline; there is no separate provider *kind*. The capability declaration is what the implementation **selects against** (declare-and-select): it states which credential types the provider can issue, the assurance it can reach, and the secret-engine/attestation backing — so the implementation can pick a provider that satisfies the active profile's trust floor.
 
 ```yaml
 provider:
   # No special provider_type — credential issuance is a declared capability, not a kind.
   supported_resource_types:
-    - "Credential.Secret"
-    - "Credential.Certificate"
-    - "Credential.SSHKey"
-    - "Credential.APIKey"
+    - "CredentialRef"          # one class; what it issues is `credential_capability.credential_types`
   credential_capability:
     credential_types: [secret, x509_certificate, ssh_key, api_key]
     max_assurance: aal3            # highest AAL this provider can satisfy (NIST 800-63B; §12.2)
@@ -83,13 +80,13 @@ The implementation **selects** among providers declaring the needed `Credential.
 | Credential Type | Resource Type | Use Case | Typical Lifetime | Rotation Trigger |
 |----------------|--------------|----------|-----------------|-----------------|
 | `dcm_interaction` | — | Component-to-provider auth for internal interactions | PT15M–PT1H (profile-governed) | Automatic; pre-expiry |
-| `api_key` | `Credential.APIKey` | Programmatic consumer access | PT24H–P30D (configurable) | Scheduled or event-triggered |
-| `jwt` | `Credential.JWT` | JSON Web Token with claims, issued by auth_provider | Short-lived | Per claim policy |
-| `x509_certificate` | `Credential.Certificate` | mTLS identity for providers and components | P30D–P365D | P14D before expiry |
-| `ssh_key` | `Credential.SSHKey` | SSH access to realized infrastructure | P30D–P90D (configurable) | Scheduled or on-demand |
-| `secret` | `Credential.Secret` | Arbitrary secret value (password, connection string) | Per type defaults | Scheduled or on-demand |
-| `signing_key` | `Credential.SigningKey` | Cryptographic key for signing operations | Per algorithm defaults | Pre-expiry |
-| `encryption_key` | `Credential.EncryptionKey` | Data-at-rest encryption — per-tenant DEK wrapped by a KEK (envelope encryption); the addressable key a Tenant's `key_bindings` reference and the **crypto-shredding** primitive (destroy the KEK → tenant data unrecoverable; `profile.schema.json` `key_bindings`, GRP-013) | Per algorithm defaults | Pre-expiry, on rotation, or on tenant offboarding |
+| `api_key` | `CredentialRef` (`api_key`) | Programmatic consumer access | PT24H–P30D (configurable) | Scheduled or event-triggered |
+| `jwt` | `CredentialRef` (`jwt`) | JSON Web Token with claims, issued by auth_provider | Short-lived | Per claim policy |
+| `x509_certificate` | `CredentialRef` (`x509_certificate`) | mTLS identity for providers and components | P30D–P365D | P14D before expiry |
+| `ssh_key` | `CredentialRef` (`ssh_key`) | SSH access to realized infrastructure | P30D–P90D (configurable) | Scheduled or on-demand |
+| `secret` | `CredentialRef` (`secret`) | Arbitrary secret value (password, connection string) | Per type defaults | Scheduled or on-demand |
+| `signing_key` | `CredentialRef` (`signing_key`) | Cryptographic key for signing operations | Per algorithm defaults | Pre-expiry |
+| `encryption_key` | `CredentialRef` (`encryption_key`) | Data-at-rest encryption — per-tenant DEK wrapped by a KEK (envelope encryption); the addressable key a Tenant's `key_bindings` reference and the **crypto-shredding** primitive (destroy the KEK → tenant data unrecoverable; `profile.schema.json` `key_bindings`, GRP-013) | Per algorithm defaults | Pre-expiry, on rotation, or on tenant offboarding |
 | `service_account_token` | — | Workload identity for automated processes | PT1H–PT24H | Automatic; pre-expiry |
 | `database_password` | — | Access credential for realized database resources | PT24H–P7D (configurable) | Scheduled or on-demand |
 | `kubeconfig` | — | Access to realized Kubernetes clusters | PT8H–P30D (configurable) | Scheduled or on-demand |
@@ -97,7 +94,7 @@ The implementation **selects** among providers declaring the needed `Credential.
 
 The credential-type identifiers above are closed substrate vocabulary used in credential records and provider declarations.
 
-> **On the `Resource Type` column — deferred for 0.1 (best-practice modeling).** The `Credential.*` names are the credential-kind **discriminator** (and the handle for a *requestable* credential resource, if one is ever needed). For 1.0 they are **not** filed as separate resource types: credential **values never enter UDLM** (held by the provider, §1.1), so a per-kind type would be a metadata shell, and the model is already complete via **`CredentialRef`** — the reference (the Kubernetes `secretKeyRef` pattern, discriminated by `credential_type`) — plus the `credential_record` (§5). This follows how distributed systems actually model this: **Kubernetes** uses one `Secret` + a `type` discriminator; **AWS/GCP** secret managers use one opaque Secret. **If** a *consumer-requests-a-credential* use case ever lands, split by **lifecycle, not by name** — `Credential.Secret` (opaque, `credential_type`-discriminated), `Credential.Certificate` (issuer / subject / validity / renewal), `Credential.Key` (algorithm / usage / rotation) — the **Azure Key Vault / cert-manager** three-way split, never one type per `credential_type` (that is over-modeling the field rejects).
+> **On the `Resource Type` column — deferred for 0.1 (best-practice modeling).** The `Credential.*` names are the credential-kind **discriminator** (and the handle for a *requestable* credential resource, if one is ever needed). For 1.0 they are **not** filed as separate resource types: credential **values never enter UDLM** (held by the provider, §1.1), so a per-kind type would be a metadata shell, and the model is already complete via **`CredentialRef`** — the reference (the Kubernetes `secretKeyRef` pattern, discriminated by `credential_type`) — plus the `credential_record` (§5). This follows how distributed systems actually model this: **Kubernetes** uses one `Secret` + a `type` discriminator; **AWS/GCP** secret managers use one opaque Secret. **If** a *consumer-requests-a-credential* use case ever lands, split by **lifecycle, not by name** — `CredentialRef` (`secret`) (opaque, `credential_type`-discriminated), `CredentialRef` (`x509_certificate`) (issuer / subject / validity / renewal), `CredentialRef` (`hsm_backed_key`) (algorithm / usage / rotation) — the **Azure Key Vault / cert-manager** three-way split, never one type per `credential_type` (that is over-modeling the field rejects).
 
 ---
 
@@ -224,7 +221,7 @@ PENDING → ACTIVE → ROTATING → ACTIVE (new value)
 
 A credential a resource needs is **a dependency like any other** — not a bespoke field. When a resource type requires a credential, that is expressed with the **same `requires` relationship** the dependency model uses for every other dependency (see [Entity Relationships](../foundations/entity-relationships.md)): the dependent declares a `requires` edge to a `Credential.*` resource type, and Dependency Resolution issues a sub-request that Placement routes to a provider declaring the matching credential capability. There is no parallel `credential_requirements` mechanism — credentials reuse the dependency graph so that ordering, blast-radius, and lifecycle coupling come for free.
 
-> **Worked example (grounds the use case).** A consumer requests `Machine.VM`. The catalog item for that VM declares `requires: Credential.SSHKey` (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `Credential.SSHKey` capability at the profile's required assurance** and dispatches to it; **that provider** — not the implementation — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: Credential.Secret` for a database password, or a service that `requires: Credential.Certificate` for mTLS identity. In every case the implementation **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). An implementation never issues a credential itself.
+> **Worked example (grounds the use case).** A consumer requests `Machine.VM`. The catalog item for that VM declares `requires: `CredentialRef` (`ssh_key`) (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `CredentialRef` (`ssh_key`) capability at the profile's required assurance** and dispatches to it; **that provider** — not the implementation — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: `CredentialRef` (`secret`) for a database password, or a service that `requires: `CredentialRef` (`x509_certificate`) for mTLS identity. In every case the implementation **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). An implementation never issues a credential itself.
 
 ```
 Consumer requests resource (e.g., Machine.VM)
@@ -232,14 +229,14 @@ Consumer requests resource (e.g., Machine.VM)
   ▼ Layer assembly + policy evaluation
   │   Dependency Resolution reads the type's `requires` edges, e.g.:
   │     requires:
-  │       - resource_type: Credential.SSHKey   # ordinary dependency, not a special field
+  │       - resource_type: `CredentialRef` (`ssh_key`)   # ordinary dependency, not a special field
   │         issued_to: requesting_actor
   │         scope: [ssh_access]
   │
   ▼ Placement selects the Service Provider for the VM
   │
   ▼ After VM implementation: credential sub-request placed against
-  │   providers declaring the Credential.SSHKey capability
+  │   providers declaring the `CredentialRef` (`ssh_key`) capability
   │   Placement filters on credential_capability (type + assurance +
   │   attestation level ≥ profile trust floor), then scores + selects
   │

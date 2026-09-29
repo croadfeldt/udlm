@@ -166,12 +166,14 @@ def qualified_handle(doc):
     """Kind-qualified stable name, or None if the document is not manifest-tracked.
     Tracked = an identity-bearing registry document with a handle-ish name AND a version."""
     version = doc.get("version")
-    if "resource_type" in doc and "uuid" in doc and version:
-        return f"type:{doc['resource_type']}", version
-    if "record_type" in doc and version:
+    # A record that TARGETS a type (a layer, a composition) is not the type: key it by its own kind and
+    # handle, never as `type:<resource_type>` — the old order filed a layer example as the class itself.
+    if doc.get("record_type") not in (None, "class") and version:
         name = doc.get("handle") or doc.get("name")
         if name:
             return f"{doc['record_type']}:{name}", version
+    if "resource_type" in doc and "uuid" in doc and version:
+        return f"type:{doc['resource_type']}", version
     provider = doc.get("provider")
     if isinstance(provider, dict) and provider.get("name") and provider.get("version"):
         return f"provider:{provider['name']}", provider["version"]

@@ -106,7 +106,7 @@ that catalogs all its declared types and extensions.
 | `published_at` | RFC 3339 instant, UTC-normalized (`Z`), seconds precision minimum (common-elements.md §8) |
 | `manifest` | Categorized list of all schemas in the bundle, with per-schema versions |
 
-Each `manifest.entity_types[].id` is the type's **`resource_type` FQN** (`Category.Type`, `registry/naming-conventions.md`) — the same identity the registry uses — and its `version` is the entity `version` (`MAJOR.MINOR.REVISION`). `event_types[].id` are event-catalog names; other categories follow their contract's identity scheme.
+Each `manifest.entity_types[].id` is the type's **`resource_type` FQN** (`Base[.Type[.Provider]]`, `registry/naming-conventions.md` §1) — the same identity the registry uses — and its `version` is the entity `version` (`MAJOR.MINOR.REVISION`). `event_types[].id` are event-catalog names; other categories follow their contract's identity scheme.
 
 A peer MUST be able to publish its bundle and to fetch a remote peer's bundle.
 
