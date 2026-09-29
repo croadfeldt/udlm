@@ -302,7 +302,7 @@ flowchart TD
     S6 --> DEP{"For each dependency<br/>(parallel where ordering allows)"}
     DEP --> IP["IPAddress → own layer chain (Steps 1-4)<br/>Context: inherits parent resolved placement fields"]
     DEP --> PORT["NetworkInterface → own layer chain (Steps 1-4)<br/>Context: inherits parent + IP resolution result"]
-    DEP --> DNS["DNS.Record → own layer chain (Steps 1-4)<br/>Context: inherits parent + IP + Port results"]
+    DEP --> DNS["DNSZone → own layer chain (Steps 1-4)<br/>Context: inherits parent + IP + Port results"]
     IP --> S79["Steps 7-9: Post-placement, storage, dispatch<br/>Parent + all dependency payloads dispatched together"]
     PORT --> S79
     DNS --> S79

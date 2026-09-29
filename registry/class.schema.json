@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/class.schema.json",
   "title": "UDLM Class artifact — the scoped-Class authoring layer",
-  "description": "Meta-schema for a Class artifact (registry/classes/*.yaml), the authoring layer of the scoped resource-type Class hierarchy (ADR-038). A Class carries the FULL definition surface — elements, outputs, relationships (consumer-declared), immutable, adopts, and (type tier) context — closing #323 so the compiled flat spec is complete, not a subset. A Class composes SharedDataElements (`$defs.shared_data_element`) at one scope tier — Base (`Category`), Type (`Category.Type`), or Provider (`Category.Type.Provider`) — each `extends` its parent under the Liskov invariant (add or refine, never contradict). Classes become the authoring layer; a generator compiles each Type Class down to the flat resource-type-spec shape consumers read today (`--check`-gated, no downstream break — the conversion executed 2026-08-04). An element's scope position IS its portability (ADR-038 §3), so the realized `portability` block derives from where an instance's populated elements sit rather than being asserted. Part of the UDLM spec, versioned on the SPEC axis. Status: ADR-038 is Proposed pending the engineering pass (#217); this shape inherits that status and executes the decided model.",
+  "description": "Meta-schema for a Class artifact (registry/classes/*.yaml), the authoring layer of the scoped resource-type Class hierarchy (ADR-038). A Class carries the FULL definition surface — elements, outputs, relationships (consumer-declared), immutable, adopts, and (type tier) context — closing #323 so the compiled flat spec is complete, not a subset. A Class composes SharedDataElements (`$defs.shared_data_element`) at one scope tier — Base (`Machine`), Type (`Machine.VM`), or Provider (`Machine.VM.OCPVirt`) — each `extends` its parent under the Liskov invariant (add or refine, never contradict). Classes become the authoring layer; a generator compiles each Type Class down to the flat resource-type-spec shape consumers read today (`--check`-gated, no downstream break — the conversion executed 2026-08-04). An element's scope position IS its portability (ADR-038 §3), so the realized `portability` block derives from where an instance's populated elements sit rather than being asserted. Part of the UDLM spec, versioned on the SPEC axis. Status: ADR-038 is Proposed pending the engineering pass (#217); this shape inherits that status and executes the decided model.",
   "examples": [
     {
       "$id": "https://udlm.dev/registry/udlm/0.1/class/Machine.VM.OCPVirt/1.0.0",
@@ -192,14 +192,14 @@
       "uuid": "3f8be9a1-6c02-4d17-9e44-8a10b5c7d200",
       "record_type": "class",
       "class": "type",
-      "resource_type": "Machine.WebStack",
+      "resource_type": "Template.Application.WebStack",
       "parent": "Machine",
       "version": "1.0.0",
       "family": "Resource",
       "status": "active",
       "metadata": {
         "authority": "example",
-        "display_name": "Machine.WebStack composite (example)",
+        "display_name": "Template.Application.WebStack composite (example)",
         "maintainer": "UDLM maintainers",
         "origination_timestamp": "2026-08-03T00:00:00Z",
         "description": "EXAMPLE composite definition — the combining artifact in the class system: a type-tier class composing OTHER classes by reference. The catalog item is a projection rendered implementation-side (one declaration, two projections: registration presents it, the catalog offers it); constituents never enter a compiled flat spec — a composite expands at request time."
@@ -265,7 +265,7 @@
         "type",
         "provider"
       ],
-      "description": "The scope tier. `base` = Category scope (single-segment name); `type` = Category.Type; `provider` = Category.Type.Provider (provider-authored). MUST match the segment-count of `resource_type`."
+      "description": "The tier this Class declares (CLS-001): `base` — no `parent`; `type` — `parent` is a Base; `provider` — `parent` is a Type (provider-authored). The name renders the ancestry, one segment per tier (`Machine`, `Machine.VM`, `Machine.VM.OCPVirt`), and MUST agree with it; the name never defines the tier. Gate: tests/check_class_paths.py."
     },
     "resource_type": {
       "type": "string",
@@ -329,7 +329,7 @@
     "instantiable": {
       "type": "boolean",
       "default": true,
-      "description": "Whether an order may be placed at this Class. Meaningful on a Base Class only (class: base): a category whose members share no abstraction is a folder and MUST set false (CLS-003, docs/spec/foundations/class-tiers.md). Absent means true. A Type or Provider Class never carries it (CLS-008; gate tests/check_class_short_names.py)."
+      "description": "Whether an order may be placed at this Class. Meaningful on a Base Class only (class: base); absent means true. `false` was the folder marker for a grouping that failed the Base test; ADR-082 dissolved every folder into usage groups (`filed_under`, CLS-003/CLS-010), so a new `false` needs a register row saying why. A Type or Provider Class never carries it (CLS-008; gate tests/check_class_short_names.py)."
     },
     "filed_under": {
       "type": "array",

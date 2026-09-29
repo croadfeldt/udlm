@@ -110,7 +110,7 @@ policy_artifact:
   handle: "validation/vm-size-limits"
   lifecycle_scope:
     operations: [initial_provisioning, update, scale]
-    changed_field_filter: ["cpu_count", "memory_gb", "storage_gb"]
+    changed_field_filter: ["cpu.count", "memory.size", "layout_ref"]
     # Fires on new resources AND on updates that change sizing fields
     # Does NOT fire on: tag changes, owner changes, etc.
 

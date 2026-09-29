@@ -33,7 +33,7 @@
     "resource_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}$",
-      "description": "Tier-1 vendor-neutral Category.Type name; single-segment permitted for cross-cutting types (e.g. Topology) — one to three segments (Base, Type, Provider class; CLS-001), exactly the record schema's grammar."
+      "description": "The class name — `Base`, `Base.Type` or `Base.Type.Provider` (one segment per tier, CLS-001; single-segment for a Base such as `Topology`), exactly the record schema's grammar. A usage group never appears in it (CLS-012)."
     },
     "filed_under": {
       "type": "array",

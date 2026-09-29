@@ -137,7 +137,7 @@ python3 registry/tools/spec_coverage.py --check
 Pass: `N class(es) checked, 0 Liskov violation(s)`; a `ok (fresh)  Automation.OSPatch → registry/generated/automation.ospatch.json (N props)`
 line ending `N Type Class(es) compiled, 0 issue(s)`; and `… 0 dangling` — each exit 0.
 
-**Shape B — an `Automation.Job` resource type:**
+**Shape B — an `Job` resource type:**
 
 ```
 python3 tests/check_spec_examples.py

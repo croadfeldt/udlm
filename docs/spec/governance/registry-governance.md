@@ -26,11 +26,11 @@ Registry governance follows the same substrate principles as all other UDLM gove
 | 2 | **Verified Community** | Named community maintainers | Technology/platform-specific types | Named maintainer(s) + UDLM oversight |
 | 3 | **Organization** | Deploying organization | Organization-specific/proprietary types | Organization's own process |
 
-**Tier 1 examples:** `Machine.VM`, `VLAN`, `IPAddress`, `Volume`, `FileShare`, `Container.Pod`
+**Tier 1 examples:** `Machine.VM`, `VLAN`, `IPAddress`, `Volume`, `FileShare`, `Container`
 
-**Tier 2 examples:** `OpenStack.HeatStack`, `VMware.NSXSegment`, `KubeVirt.VirtualMachine`, `Ansible.Playbook`
+**Tier 2 examples:** Types and Provider Classes beneath a Core Base — `Machine.VM.KubeVirt`, `VirtualNetwork.NSX`, `KubernetesCluster.OpenShift`, `Automation.AnsiblePlaybook`. The first segment is always a Core Base (`CLS-012`); there is no vendor namespace.
 
-**Tier 3 examples:** `Acme.LegacyMainframeJob`, `Corp.ServiceNowTicket`, `Internal.ComplianceReport`
+**Tier 3 examples:** an organization's own Types beneath a Core Base — `Job.AcmeLegacyMainframe`, `Workload.CorpServiceNow`, `Template.Application.InternalComplianceReport`.
 
 ### 2a. Three-Tier Model Applied to All Artifact Types
 

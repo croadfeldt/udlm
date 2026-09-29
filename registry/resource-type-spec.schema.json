@@ -37,7 +37,7 @@
     "resource_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-      "description": "Type name, unique within its `family`. Domain-owned types: namespaced Category.Type (Machine.VM, IPAddress). Cross-cutting / foundational types not owned by a single domain: single-segment (Capability, TaxonomyTerm, Topology) — disambiguated by `family` (registry/naming-conventions.md §1, docs/spec/foundations/knowledge-family.md)."
+      "description": "The class name, unique within its `family`: `Base`, `Base.Type` or `Base.Type.Provider` — one segment per tier (CLS-001; `Machine.VM`, `IPAddress`, `Topology`, `TaxonomyTerm`). A usage group is never part of the name (CLS-012); where the class is filed is `filed_under`. registry/naming-conventions.md §1."
     },
     "version": {
       "type": "string",

@@ -134,7 +134,7 @@ metadata:
 spec:
   # Consumer declares what they need — not how to provision it
   cpu_count: 4
-  memory_gb: 8
+  memory: { size: 8Gi }
   storage_gb: 100
   os_family: rhel
   environment: production
@@ -171,7 +171,7 @@ cpu_count:
   provenance.origin.source_type: consumer
   provenance.origin.source_uuid: f5e6d7c8-entity
 
-memory_gb:
+memory.size:
   value: 8                         # from consumer intent
   provenance.origin.source_type: consumer
 
@@ -249,7 +249,7 @@ metadata:
 
 spec:
   cpu_count: { value: 4, provenance: {...} }
-  memory_gb: { value: 8, provenance: {...} }
+  memory.size: { value: 8Gi, provenance: {...} }
   storage_gb: { value: 100, provenance: {...} }
   os_family: { value: rhel, provenance: {...} }
   environment: { value: production, provenance: {...} }
@@ -280,7 +280,7 @@ provider_uuid: eu-west-prod-1-provider-uuid
 
 # UDLM unified fields
 cpu_count: { value: 4, provenance: { ...plus provider attribution } }
-memory_gb: { value: 8, provenance: {...} }
+memory.size: { value: 8Gi, provenance: {...} }
 storage_gb: { value: 100, provenance: {...} }
 
 # Provider-added fields (not in Requested State — added by provider after implementation)
@@ -305,7 +305,7 @@ discovery_method: openstack_api_query
 provider_uuid: eu-west-prod-1-provider-uuid
 
 cpu_count: 4          # matches Realized State — no drift
-memory_gb: 8          # matches
+memory: { size: 8Gi }          # matches
 storage_gb: 102       # matches (actual_storage_gb from provider)
 provider_entity_id: "vm-0a1b2c3d"
 status: ACTIVE
@@ -434,14 +434,14 @@ Six hours after the VM from Example 1 was realized, discovery finds a discrepanc
 ```yaml
 # Discovery finds:
 cpu_count: 4       # matches
-memory_gb: 16      # DRIFT — realized says 8, discovered says 16
+memory: { size: 16Gi }      # DRIFT — realized says 8, discovered says 16
 
 # Drift record created:
 drift_record:
   entity_uuid: f5e6d7c8-entity-uuid
   detected_at: 2026-03-15T15:00:00Z
   drifted_fields:
-    - field_path: memory_gb
+    - field_path: memory.size
       realized_value: 8
       discovered_value: 16
   drift_severity: significant      # memory doubling is significant

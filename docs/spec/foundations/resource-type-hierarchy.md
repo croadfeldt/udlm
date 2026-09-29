@@ -147,9 +147,9 @@ Every entry in the Resource Type Registry carries the following metadata:
 registry_entry:
   uuid: <uuid>
   name: <human-readable name>
-  fully_qualified_name: <Category.ResourceType>
+  fully_qualified_name: <Base.Type>               # one segment per tier (CLS-001); groups are `filed_under`
   version: <Major.Minor.Revision>
-  parent_uuid: <uuid of parent type, null for root categories>
+  parent_uuid: <uuid of parent class, null for a Base>
   status:
     state: <active|deprecated|retired>
     deprecation_date: <ISO 8601 date, if applicable>
@@ -182,14 +182,9 @@ registry_entry:
 
 The hierarchy has four levels, from most abstract to most concrete. Each level builds on the one above it.
 
-### Level 1 — Resource Type Category
+### Level 1 — Usage group
 
-The broadest classification. Defines the domain of a resource without any specificity about what the resource is.
-
-- the control plane ships with default categories (see Section 2.2)
-- Implementors may define additional categories
-- Categories have no data fields — they are organizational containers
-- Categories are versioned and can be deprecated
+Where a class is filed for people to find it (Section 2.2; ADR-082). A group is a term of the usage-group taxonomy, never a class: it has no data fields, no version, and no place in a class name. A class is filed under one or more groups (`filed_under`); adding or removing a filing changes nothing about the class.
 
 **Example:** `Machine`, `Network`, `Storage`
 
@@ -297,7 +292,7 @@ what values are valid for that field.
 
 ### Level 2 — Resource Type
 
-Defines an abstract resource within a category. A Resource Type represents a class of resource that multiple providers can implement. Resource Types are the primary unit of portability in the control plane.
+Defines an abstract resource — a Base by the Base test (CLS-002), filed under one or more usage groups. A Resource Type represents a class of resource that multiple providers can implement. Resource Types are the primary unit of portability in the control plane.
 
 - the control plane maintains default Resource Types in the registry
 - Community and implementors can define and register new Resource Types
@@ -342,7 +337,7 @@ A specific provider's concrete implementation of a Resource Type Specification. 
 - They declare their **sovereignty capabilities** (see Section 6)
 - They declare their **supported lifecycle operations** (see Section 7)
 
-**Example:** `Nutanix.VM.Small` implements `Machine.VM` with `cpu_count: 4`, `ram_gb: 16`, `storage_gb: 60`
+**Example:** `Machine.VM.Nutanix` implements `Machine.VM` with `cpu_count: 4`, `ram_gb: 16`, `storage_gb: 60`
 
 ---
 
@@ -534,7 +529,7 @@ equal or narrower than its parent's — scope *is* portability. Authoring proced
 ## 6. Provider Registration and Catalog Item Declaration
 
 Both surfaces are owned elsewhere; the hierarchy consumes them. **Registration** — the
-machine-readable declaration the control plane consumes at admission (capabilities as (verb × Category),
+machine-readable declaration the control plane consumes at admission (capabilities as (verb × domain),
 adopted-standard support, sovereignty posture) — is the provider contract
 ([provider-contract §2](../contracts/provider-contract.md); wire shape
 `registry/provider-adopted-standards.schema.json`). **Catalog items** — a provider's concrete

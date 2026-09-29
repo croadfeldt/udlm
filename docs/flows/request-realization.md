@@ -159,7 +159,7 @@ Only the **portable** fields the type declares as consumer-supplied:
 
 ```yaml
 resource_type: Machine.VM
-vcpu: 4
+cpu: { count: 4 }
 memory: 16GiB
 guest_os: <reference to a governed OS image>
 network: <reference to a governed network>
@@ -247,7 +247,7 @@ flowchart LR
 
   subgraph WHAT["WHAT each component needs"]
     direction TB
-    CVM["<b>VM</b><br/>vcpu · memory · guest_os<br/>+ tenant, environment<br/>+ provider instance type<br/>⇒ instance hold"]
+    CVM["<b>VM</b><br/>cpu · memory · guest_os<br/>+ tenant, environment<br/>+ provider instance type<br/>⇒ instance hold"]
     CST["<b>Storage</b><br/>size · class<br/>+ quota check<br/>+ provider volume type, encryption<br/>⇒ volume handle"]
     CNW["<b>Network</b><br/>which network<br/>+ segment allowed for tenant<br/>+ provider subnet native form<br/>⇒ segment attachment"]
     CIP["<b>Address</b><br/>consumer asks for NOTHING<br/>no layer · no policy<br/>⇒ <b>the address itself</b>"]
@@ -271,7 +271,7 @@ Read it as columns: **who** on the left, **what** in the middle, and the *when* 
 
 | Component | Consumer declares | Added at assemble/policy | Added at enrich (provider known) | Reserved fact |
 |---|---|---|---|---|
-| **VM** | vcpu, memory, guest_os | tenant, environment, compliance fields | the provider's instance type, image in native form | instance hold |
+| **VM** | cpu, memory, guest_os | tenant, environment, compliance fields | the provider's instance type, image in native form | instance hold |
 | **Storage** | size, storage class | quota check against the tenant's bound classes | the provider's volume type, encryption per policy | volume handle |
 | **Network** | which network | segment allowed for this tenant | the provider's subnet in native form | segment attachment |
 | **IP** | *nothing* | — | address family / pool from the segment | **the address itself** |

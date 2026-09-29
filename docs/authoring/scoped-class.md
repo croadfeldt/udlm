@@ -13,9 +13,9 @@ its curation `state` (`proposed` → `canonical`), and the `scope` it is held at
 
 - **Base** (`class: base`) — single-segment name (`Machine`). Elements here port across every type in
   the category.
-- **Type** (`class: type`) — two segments (`Machine.VM`), `parent: Machine`. Elements port across the
+- **Type** (`class: type`) — `parent` is a Base (`Machine.VM`, `parent: Machine`). Elements port across the
   type's providers.
-- **Provider** (`class: provider`) — three segments (`Machine.VM.OCPVirt`), provider-authored. Elements
+- **Provider** (`class: provider`) — `parent` is a Type (`Machine.VM.OCPVirt`), provider-authored. Elements
   are provider-bound.
 
 The scope position **is** the portability — there is no separate `portability` field to declare (ADR-038
@@ -37,9 +37,9 @@ Do **not** author a Class when:
 
 ## 2. The steps, in order
 
-1. **Pick the tier and name.** Base, Type, or Provider — the segment-count of `resource_type` must match
-   `class` (`Machine` = base, `Machine.VM` = type). A Type or Provider Class names its `parent` (the
-   dotted name one segment shorter); a Base Class has none. **Produces:** `registry/classes/<name>.yaml`
+1. **Pick the tier and name.** Base, Type, or Provider — `class` declares the tier and `parent` derives it
+   (CLS-001); the name renders the ancestry one segment per tier (`Machine` = base, `Machine.VM` = type).
+   A Base Class has no parent and declares `filed_under` (CLS-010). **Produces:** `registry/classes/<family>/<group>/<class>/…`
    with a valid header (`$id`, `uuid`, `record_type: class`, `class`, `resource_type`, `family`,
    `version`, `status`, `metadata`).
 2. **Author the SharedDataElements.** Each element carries `element` (lowercase field name), `scope`

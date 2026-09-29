@@ -464,7 +464,7 @@ entity:
     # notify:  notify owner, entity enters PENDING_DECISION
 ```
 
-**`shareability.allowed: false`** on a Resource Type (e.g., `Machine.BootDisk`) means the Policy Engine rejects any attempt to create a second active constituent or operational relationship to an instance. Boot disks, primary network interfaces, and similar exclusively-owned resources are non-shareable by type definition (REL-017).
+**`shareability.allowed: false`** on a Resource Type (e.g., `Volume`) means the Policy Engine rejects any attempt to create a second active constituent or operational relationship to an instance. Boot disks, primary network interfaces, and similar exclusively-owned resources are non-shareable by type definition (REL-017).
 
 ### 9.3 Reference Count Lifecycle
 

@@ -637,9 +637,9 @@ Rules:
 
 ```yaml
 instance_size_catalog:                  # per capability/category; the provider's authoritative size classes
-  - class: small    resources: { vcpu: { count: 2 }, memory: { size: 8GB } }
-  - class: medium   resources: { vcpu: { count: 4 }, memory: { size: 16GB } }
-  - class: large    resources: { vcpu: { count: 8 }, memory: { size: 32GB } }
+  - class: small    resources: { cpu: { count: 2 }, memory: { size: 8GB } }
+  - class: medium   resources: { cpu: { count: 4 }, memory: { size: 16GB } }
+  - class: large    resources: { cpu: { count: 8 }, memory: { size: 32GB } }
 ```
 
 The control plane resolves `instance_size` → raw via this catalog, then applies the **same** `capacity-sufficient` test as a raw request (a raw requirement selects the smallest class whose resolved resources satisfy it). Split, per ADR-014: the **class vocabulary + ordering** is UDLM (portable/comparable), the **class→raw mapping** is the provider's (this catalog), the **resolution/comparison** is the control plane (placement). It is **declared, not live-queried** — placement scores many providers at once, so a per-request round-trip per provider is prohibitive; a provider with *parametric* classes MAY additionally expose a `resolve(size)` callback, but the declared catalog is the default.
@@ -721,14 +721,14 @@ composite_service_capabilities:
   partial_delivery_supported: true
   compensation_supported: true
   resource_types_composed:
-    - fqn: ApplicationStack.WebApp
+    - fqn: Template.Application.WebApp
       version: "2.0.0"
       constituents:
         - resource_type: Machine.VM
           required_for_delivery: required
         - resource_type: IPAddress
           required_for_delivery: required
-        - resource_type: DNS.Record
+        - resource_type: DNSZone
           required_for_delivery: partial
       composition_visibility: selective
 ```

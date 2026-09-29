@@ -11,7 +11,7 @@
     },
     {
       "class": "PowerFeed",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "instantiable": true,
       "path": "registry/classes/resource/power/power-feed/_base.yaml",
       "types": []

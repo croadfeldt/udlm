@@ -107,7 +107,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Kubernetes / CNCF ecosystem
 
 ### Kubernetes vocabularies — CANONICAL
-**Covers:** `Kubernetes` `Kubernetes NetworkAttachmentDefinition` `Kubernetes well-known topology labels` `Kubernetes-Gateway-API` · **Body:** CNCF/Kubernetes SIGs · **Since:** 2026-06-27 (Gateway API, topology labels) → 2026-07-05 (NAD 02:10:32Z, batch Job 03:29:34Z) · **Where:** NetworkGateway (Gateway API), Topology (well-known labels), VirtualNetwork (NAD attachment vocabulary), Automation.Job (batch/v1 run-to-completion semantics — `activeDeadlineSeconds` ≈ `max_execution_time`).
+**Covers:** `Kubernetes` `Kubernetes NetworkAttachmentDefinition` `Kubernetes well-known topology labels` `Kubernetes-Gateway-API` · **Body:** CNCF/Kubernetes SIGs · **Since:** 2026-06-27 (Gateway API, topology labels) → 2026-07-05 (NAD 02:10:32Z, batch Job 03:29:34Z) · **Where:** NetworkGateway (Gateway API), Topology (well-known labels), VirtualNetwork (NAD attachment vocabulary), Job (batch/v1 run-to-completion semantics — `activeDeadlineSeconds` ≈ `max_execution_time`).
 **Why:** k8s is both a major producer and consumer in the estate (OCP) and the de-facto vocabulary source for cloud-native concepts; adopting its names keeps the control plane Provider boundary translation-free. Also adopted structurally elsewhere: `managedFields`/server-side apply was the model behind the merged schema's `ownership` block, retired by ruling 071 — one author per record now does that job. **License:** Apache-2.0 — compatible-reference.
 
 ### Kubernetes ObjectReference / ownerReference (object-reference shape) — PATTERN
@@ -197,7 +197,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** the one standards-body classification of UPS kinds — the members of the `UPS` base (ADR-075). *Alternatives:* vendor marketing terms (online/offline/smart) — not a standard. **License:** IEC text is copyrighted — reference-only, names adopted by citation.
 
 ### Ansible — CANONICAL
-**Covers:** `Ansible` · **Since (as adoption):** 2026-07-05T03:29:34Z (Automation.Job `process_type: playbook`); referenced in docs since 2026-04-07 · **Why:** playbook is the estate's dominant Process Resource form; the vocabulary names what actually runs. **License:** GPL-3.0 — reference-only.
+**Covers:** `Ansible` · **Since (as adoption):** 2026-07-05T03:29:34Z (Job `process_type: playbook`); referenced in docs since 2026-04-07 · **Why:** playbook is the estate's dominant Process Resource form; the vocabulary names what actually runs. **License:** GPL-3.0 — reference-only.
 
 ### libvirt — CANONICAL
 **Covers:** `libvirt virtual network` · **Since:** 2026-07-05T02:10:32Z · **Where:** VirtualNetwork (forward-mode vocabulary).
@@ -305,7 +305,7 @@ CIM** associations (Redfish's ancestor) · **W3C PROV** (provenance entry shape 
 agent/activity attribution) · Red Hat **OSAC** fulfillment API (verified 2026-07-05: named
 `*_ref` fields, no relation vocabulary — UDLM's model is a superset; Provider-boundary mapping is
 name↔ref-field) · systemd ordering-vs-dependency split and VMware SRM recovery plans (informed
-the Automation.Job process-dependency design).
+the Job process-dependency design).
 
 ---
 

@@ -56,7 +56,7 @@ timeout_declarations:
       sovereign: PT30M
     resource_type_overrides:
       # Some resource types legitimately take longer to provision
-      Machine.BareMetalServer: PT4H
+      Machine.BareMetalHost: PT4H
       Volume: PT2H
     on_timeout: trigger DISPATCH_TIMEOUT recovery policy
 
