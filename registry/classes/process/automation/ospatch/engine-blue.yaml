@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Automation.OSPatch.EngineBlue/1.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Automation.OSPatch.EngineBlue/1.1.1
 conforms_to: udlm/0.1
 uuid: e9ee31b8-d999-4e6c-acb3-02fd2097c39a
 record_type: class
 class: provider
 resource_type: Automation.OSPatch.EngineBlue
 parent: Automation.OSPatch
-version: 1.1.0
+version: 1.1.1
 family: Process
 status: active
 metadata:
@@ -30,7 +30,7 @@ elements:
     scope: Automation.OSPatch.EngineBlue
     optional: true
     state: canonical
-    description: Reference to the blue engine's control-plane Software.Service.
+    description: Reference to the blue engine's control-plane Workload.
     schema: { type: string }
   - element: start_jitter
     scope: Automation.OSPatch.EngineBlue

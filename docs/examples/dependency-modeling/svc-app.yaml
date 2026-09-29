@@ -1,7 +1,7 @@
 uuid: 1ee1aaa9-efe9-4adf-ab5e-e7475c0bd136
 handle: svc-app
 conforms_to: udlm/0.1
-resource_type: Software.Service
+resource_type: Workload
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/Software.Service/0.1.0
 lifecycle_state: Discovered

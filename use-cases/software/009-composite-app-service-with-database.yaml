@@ -3,7 +3,7 @@ handle: software/composite-app-service-with-database
 version: 1.0.0
 scenario:
   description: 'A platform engineer requests an application as one composite intent: a Database provides
-    persistence, and a Software.Service deployed from a referenced image depends on that database for its
+    persistence, and a Workload deployed from a referenced image depends on that database for its
     connection endpoint. The two resources form a cross-resource dependency chain — Database -> Service — and
     must realize in that order: the service cannot bind until the database is Realized and its connection
     endpoint is published, because the service consumes that endpoint as its declared input. The dependency

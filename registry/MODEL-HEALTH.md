@@ -26,7 +26,7 @@ downstream consumer can bind on.
 
 **Zero-output types (15):** `Access.Grouping`, `Automation`, `GPU`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Processor`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
 
-**One-output types (22):** `AddressService`, `BMC`, `Capability`, `DHCPScope`, `DNSZone`, `FileShare`, `IPAddress`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Location`, `NetworkGateway`, `NetworkInterface`, `Software.Service`, `StorageClass`, `StorageDevice`, `StorageLayout`, `TaxonomyTerm`, `Template.Application`, `Topology`, `VLAN`, `VirtualNetwork`
+**One-output types (22):** `AddressService`, `BMC`, `Capability`, `DHCPScope`, `DNSZone`, `FileShare`, `IPAddress`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Location`, `NetworkGateway`, `NetworkInterface`, `StorageClass`, `StorageDevice`, `StorageLayout`, `TaxonomyTerm`, `Template.Application`, `Topology`, `VLAN`, `VirtualNetwork`, `Workload`
 
 ## UC coverage gaps
 

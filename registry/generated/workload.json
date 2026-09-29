@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Software.Service/0.8.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Workload/0.9.0",
   "conforms_to": "udlm/0.1",
   "uuid": "905fef1c-3384-4a49-9c44-71420d07eedd",
-  "resource_type": "Software.Service",
-  "version": "0.8.3",
+  "resource_type": "Workload",
+  "version": "0.9.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
-    "display_name": "Service",
-    "description": "A logical running service composed of one or more constituents (containers and/or native systemd units) that a provider realizes and manages under the four-state lifecycle. Models the application layer of the estate — Kubernetes workloads (web apps, registries, observability, model serving) and host services (CI, mail, DNS/identity daemons) — as first-class nodes so their runtime dependencies carry order. Secret material is never inline; env/mounts reference a CredentialRef. Fine-grained per-container detail, when wanted, hangs off `constituents` as Container references.",
+    "display_name": "Workload",
+    "description": "A logical running service composed of one or more constituents (containers and/or native systemd units) that a provider realizes and manages under the four-state lifecycle. Models the application layer of the estate — Kubernetes workloads (web apps, registries, observability, model serving) and host services (CI, mail, DNS/identity daemons) — as first-class nodes so their runtime dependencies carry order. Secret material is never inline; env/mounts reference a CredentialRef. Fine-grained per-container detail, when wanted, hangs off `constituents` as Container references. Named for the thing, not the act: a Service is what a provider renders, a Workload is the running thing it yields (the service-taxonomy ruling of 2026-06-27). A Base by the Base test (CLS-002): the Open Application Model workload, TOSCA's node and Kubernetes workload resources abstract over a running set of constituents with replicas and endpoints, so an order placed here is fillable by a Kubernetes provider, a podman host or a systemd host alike; `service_kind` stays a classification element.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-12T00:00:00Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Software",
-          "version": "1.1.0",
-          "uuid": "e2f48d85-0f75-4015-9e92-be500701b108"
-        },
-        {
-          "class": "Software.Service",
-          "version": "0.8.3",
+          "class": "Workload",
+          "version": "0.9.0",
           "uuid": "905fef1c-3384-4a49-9c44-71420d07eedd"
         }
       ]
@@ -166,7 +161,7 @@
     {
       "edge_type": "depends_on",
       "name": "requires",
-      "target": "Software.Service",
+      "target": "Workload",
       "cardinality": "0..n",
       "description": "Service-to-service dependency (strength hard|soft) — e.g. an app requiring an auth service."
     },
@@ -228,6 +223,9 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier1_value"
     }
+  ],
+  "filed_under": [
+    "services"
   ],
   "context": {
     "purpose": "Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.",

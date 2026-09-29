@@ -104,12 +104,12 @@ supersedes:
 record_type: intent_record
 state: Intent
 entity_uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
-record_uuid: 01a09385-cad9-72da-a308-da5f4335b1e4
+record_uuid: 01a0ee84-c436-7483-a79e-c50fdae7e8a7
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
-resource_type: Software.Service
-type_version: 0.7.2
-type_ref: https://udlm.dev/registry/udlm/0.1/Software.Service/0.7.2
+resource_type: Workload
+type_version: 0.9.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Workload/0.9.0
 handle: cexample/app/orders
 at: '2026-08-10T09:00:00Z'
 time_source: authored example — no clock claim
@@ -117,24 +117,26 @@ metadata:
   display_name: Orders service
 origin: backfilled
 fields: {}
+supersedes:
+  - 01a09385-cad9-72da-a308-da5f4335b1e4
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
-record_uuid: 01a0eb4f-c2ee-77f7-818d-1703a1327f76
+record_uuid: 01a0ee84-c436-7483-a79e-c510ed90839b
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
-resource_type: Software.Service
-type_version: 0.7.2
-type_ref: https://udlm.dev/registry/udlm/0.1/Software.Service/0.7.2
+resource_type: Workload
+type_version: 0.9.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Workload/0.9.0
 handle: cexample/app/orders
 at: '2026-08-10T09:00:00Z'
 time_source: authored example — no clock claim
 metadata:
   display_name: Orders service
 fields: {}
-intent_ref: 01a09385-cad9-72da-a308-da5f4335b1e4
-root_request_uuid: 01a0eb4f-c2ee-77f7-818d-1703a1327f76
+intent_ref: 01a0ee84-c436-7483-a79e-c50fdae7e8a7
+root_request_uuid: 01a0ee84-c436-7483-a79e-c510ed90839b
 dependencies:
   - edge_type: depends_on
     strength: hard
@@ -150,4 +152,4 @@ status:
       blocked_on: udlm://estate/cexample/app/orders-api
       last_transition_time: '2026-08-10T09:00:07Z'
 supersedes:
-  - 01a09385-cad9-72da-a308-da60f47ce055
+  - 01a0eb4f-c2ee-77f7-818d-1703a1327f76

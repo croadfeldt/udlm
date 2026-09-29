@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNamespace/1.1.2
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNamespace/1.1.3
 conforms_to: udlm/0.1
 uuid: ae8d0510-221a-4500-b201-3b3e429c34e8
 record_type: class
 class: base
 resource_type: KubernetesNamespace
 short_name: K8sNamespace
-version: 1.1.2
+version: 1.1.3
 family: Resource
 status: active
 filed_under: [compute]
@@ -160,4 +160,4 @@ context:
   - The cluster itself — KubernetesCluster.
   works_with:
   - KubernetesCluster — the cluster the namespace exists within.
-  - Container / Software.Service — workloads placed into it.
+  - Container / Workload — workloads placed into it.

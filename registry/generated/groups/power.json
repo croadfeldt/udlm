@@ -11,7 +11,7 @@
     },
     {
       "class": "UPS",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "instantiable": true,
       "path": "registry/classes/resource/ups/_base.yaml",
       "types": []

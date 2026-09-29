@@ -174,7 +174,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 
 ## Container
 
-### Container (1.0.3)
+### Container (1.0.4)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -185,7 +185,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - You need workload records that secret-handling rules and image blast-radius analysis can reason over.
 
 **Not for:**
-- A multi-part application (several containers and/or systemd units behaving as one thing) — that is Software.Service, which references containers as constituents.
+- A multi-part application (several containers and/or systemd units behaving as one thing) — that is Workload, which references containers as constituents.
 - The image itself as a fact (digest, bill-of-materials anchor) — that is SoftwareImage; the container runs an image, it is not the image.
 - A one-shot automation task with a bounded runtime — that is Automation.Job.
 
@@ -197,7 +197,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 
 ## CredentialRef
 
-### CredentialRef (0.7.0)
+### CredentialRef (0.7.1)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -214,7 +214,7 @@ A reference to a secret, never the secret. It names the kind of credential (the 
 
 **Works with:**
 - Identity.Person / Identity.ServiceAccount — whose credential this is.
-- Container / Software.Service / FileShare — consumers that reference it from env, mounts, or config.
+- Container / Workload / FileShare — consumers that reference it from env, mounts, or config.
 
 ## DHCPScope
 
@@ -259,7 +259,7 @@ One DNS zone — its required `zone_name`, e.g. example.com — with its authori
 
 ## Database
 
-### Database (0.8.0)
+### Database (0.8.1)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -276,11 +276,11 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 **Works with:**
 - Volume — the persistent volume backing the data directory.
 - Machine.VM / KubernetesCluster — where the database runs, when self-hosted.
-- Software.Service / Container — the consumers that bind to its connection outputs.
+- Workload / Container — the consumers that bind to its connection outputs.
 
 ## DirectoryService
 
-### DirectoryService (0.8.0)
+### DirectoryService (0.8.1)
 
 **Purpose:** Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.
 
@@ -298,7 +298,7 @@ The identity directory as a running server: which `protocols` it serves — requ
 **Works with:**
 - Machine.VM / Machine.BareMetalHost — where the directory runs.
 - Identity.Group — external groups sourced from this directory.
-- Software.Service — services requiring the directory, with hard/soft strength.
+- Workload — services requiring the directory, with hard/soft strength.
 - DNSZone — zones served when DNS is directory-integrated.
 
 ## FileShare
@@ -530,7 +530,7 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 
 ## KubernetesCluster
 
-### KubernetesCluster (2.0.2)
+### KubernetesCluster (2.0.3)
 
 **Purpose:** Declares a managed Kubernetes cluster — release and network ranges — as one provisionable intent; its node pools are KubernetesNodePool records contained by it.
 
@@ -549,11 +549,11 @@ The request for a control plane: which release and what internal network ranges 
 - KubernetesNodePool — homogeneous slices of the cluster's node capacity.
 - VirtualNetwork — the network the cluster is realized onto.
 - Container — the workloads scheduled onto the cluster.
-- Software.Service (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
+- Workload (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
 ## KubernetesNamespace
 
-### KubernetesNamespace (1.1.2)
+### KubernetesNamespace (1.1.3)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
@@ -568,7 +568,7 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 
 **Works with:**
 - KubernetesCluster — the cluster the namespace exists within.
-- Container / Software.Service — workloads placed into it.
+- Container / Workload — workloads placed into it.
 
 ## KubernetesNodePool
 
@@ -613,7 +613,7 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 
 ## LogShipper
 
-### LogShipper (0.7.0)
+### LogShipper (0.7.1)
 
 **Purpose:** Declares the outcome that a host's logs reach the central sink — without saying anything about how.
 
@@ -624,12 +624,12 @@ A statement of outcome: logs from a target host — the `target` object naming i
 - You need shipping health and last-delivery time surfaced for drift and staleness detection.
 
 **Not for:**
-- The log store itself — that is its own resource (e.g. a Software.Service running the sink); this type is the per-host shipping outcome.
+- The log store itself — that is its own resource (e.g. a Workload running the sink); this type is the per-host shipping outcome.
 - Metrics or trace collection — not covered; this type is logs.
 
 **Works with:**
 - Machine.BareMetalHost / Machine.VM — the target host whose logs are shipped.
-- Software.Service — the central log store the sink URL points at.
+- Workload — the central log store the sink URL points at.
 
 ## Machine
 
@@ -826,30 +826,6 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 **Works with:**
 - Machine.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.
 - Machine.VM — the guest a virtual CPU is presented to.
-
-## Software
-
-### Software.Service (0.8.3)
-
-**Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
-
-The application layer: the mail service, the registry, model serving — a named service, classified by its required `service_kind` (application, infrastructure-daemon, database, and kin), composed of `constituents` that each declare their `form`: a `container` constituent references its container record via `container_ref`; a `systemd` constituent names its `host` and `units`. It declares what the service needs — a database, a directory, name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications derivable. Endpoints and a ready signal surface how it is reached and whether it is serving.
-
-**Use when:**
-- You need an application composed of several workloads treated as one node with one dependency surface.
-- You need service-to-service and service-to-infrastructure dependencies (with hard/soft strength) to drive shutdown/startup order.
-- You need host services (systemd units) and containerized services modeled uniformly.
-
-**Not for:**
-- A single container's runtime spec — Container; the service references containers as constituents.
-- A bounded-runtime task — Automation.Job.
-- The database a service uses — Database, referenced as a dependency.
-
-**Works with:**
-- Container — containerized constituents, by reference.
-- KubernetesCluster / Machine.BareMetalHost / Machine.VM — where the constituents run.
-- Database / DirectoryService / AddressService — what the service requires.
-- CredentialRef — the service's secrets, by reference.
 
 ## SoftwareImage
 
@@ -1165,7 +1141,7 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 
 ## UPS
 
-### UPS (0.1.1)
+### UPS (0.1.2)
 
 **Purpose:** Models the battery-backed unit itself — what it is rated for, what wears, when it must signal low battery, and what it reports — so the feed it protects can be supplied_by a real entity instead of a feed_type string.
 
@@ -1181,7 +1157,7 @@ A UPS as a thing you own, separate from the circuit it protects. You declare its
 
 **Works with:**
 - PowerFeed — a feed is supplied_by the UPS that conditions it.
-- Software.Service — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the instance's provider.
+- Workload — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the instance's provider.
 - Automation.Job — the graceful-shutdown job that the unit's status drives, via the feed.
 
 ## VLAN
@@ -1305,6 +1281,30 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 **Works with:**
 - SoftwarePackage — the packages affected by this advisory.
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
+
+## Workload
+
+### Workload (0.9.0)
+
+**Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
+
+The application layer: the mail service, the registry, model serving — a named service, classified by its required `service_kind` (application, infrastructure-daemon, database, and kin), composed of `constituents` that each declare their `form`: a `container` constituent references its container record via `container_ref`; a `systemd` constituent names its `host` and `units`. It declares what the service needs — a database, a directory, name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications derivable. Endpoints and a ready signal surface how it is reached and whether it is serving.
+
+**Use when:**
+- You need an application composed of several workloads treated as one node with one dependency surface.
+- You need service-to-service and service-to-infrastructure dependencies (with hard/soft strength) to drive shutdown/startup order.
+- You need host services (systemd units) and containerized services modeled uniformly.
+
+**Not for:**
+- A single container's runtime spec — Container; the service references containers as constituents.
+- A bounded-runtime task — Automation.Job.
+- The database a service uses — Database, referenced as a dependency.
+
+**Works with:**
+- Container — containerized constituents, by reference.
+- KubernetesCluster / Machine.BareMetalHost / Machine.VM — where the constituents run.
+- Database / DirectoryService / AddressService — what the service requires.
+- CredentialRef — the service's secrets, by reference.
 
 ---
 *62 types; 62 with context, 0 pending.*

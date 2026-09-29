@@ -2,7 +2,7 @@ uuid: uc-4a790fae-c517-4345-824e-afd1d1555f40
 handle: software/service-missing-dependency-refused
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Software.Service that declares a hard dependency on a
+  description: 'A platform engineer requests a Workload that declares a hard dependency on a
     Database, but that database is unrealizable — no eligible provider can satisfy it, so the dependency
     can never reach Realized. Success for this use case is the REFUSAL: the request must be blocked naming the
     root dependency that cannot be satisfied, not accepted and driven half-up (the service realized and left

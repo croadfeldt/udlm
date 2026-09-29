@@ -133,7 +133,7 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
   `retry-semantics`, `rate-limit-and-backpressure`: finish or mark stable-by-reference before tag.
 - **Per-type `stability` field** — coarse maturity signal while the spec is `0.x`; deferred candidate
   (`SPEC-DESIGN-REQUIREMENTS`).
-- **Type completeness polish** — `relationships` blocks **added** to `Software.Service` / `BMC` /
+- **Type completeness polish** — `relationships` blocks **added** to `Workload` / `BMC` /
   `Hardware.BiosProfile` (#98, 2026-07-15); `CredentialRef` **defined** (#99, closing the
   referenced-but-undefined secrets-as-reference target). **Remaining:** 4 types are `portability: partial`
   (checked: `bmc`/`software.service` promoted to `portable`, `bios-profile` stays `partial` — its

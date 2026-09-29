@@ -11,7 +11,7 @@
     },
     {
       "class": "DirectoryService",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "instantiable": true,
       "path": "registry/classes/resource/identity/directory-service/_base.yaml",
       "types": []
@@ -24,6 +24,13 @@
       "types": [
         "Template.Application"
       ]
+    },
+    {
+      "class": "Workload",
+      "version": "0.9.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/services/workload/_base.yaml",
+      "types": []
     }
   ]
 }

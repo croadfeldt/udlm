@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/2.0.2
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/2.0.3
 conforms_to: udlm/0.1
 uuid: 3909934c-4b06-48ae-9431-a19083e59a6c
 record_type: class
 class: base
 resource_type: KubernetesCluster
 short_name: K8sCluster
-version: 2.0.2
+version: 2.0.3
 family: Resource
 status: active
 filed_under: [compute]
@@ -22,7 +22,7 @@ metadata:
     vocabulary, which is why this left `Compute`: a VM or a bare-metal host cannot honor them. Derived
     from OSAC''s `cluster` fulfillment type (osac-project/fulfillment-service; its inline node sets map to
     KubernetesNodePool records); target
-    VirtualNetwork is registered; the fleet manager is a Software.Service of service_kind fleet-manager (ADR-043 relationship semantics).'
+    VirtualNetwork is registered; the fleet manager is a Workload of service_kind fleet-manager (ADR-043 relationship semantics).'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-17T19:57:00Z'
 elements:
@@ -77,13 +77,13 @@ relationships:
   cardinality: 0..1
   description: Realized onto a virtual network.
 - edge_type: contained_by
-  target: Software.Service
+  target: Workload
   cardinality: 0..1
-  description: 'Provisioned and managed by a hub — a Software.Service of service_kind fleet-manager (hosted control planes): the hub has
+  description: 'Provisioned and managed by a hub — a Workload of service_kind fleet-manager (hosted control planes): the hub has
     lifecycle authority — hosted control planes run inside it. For imported clusters use the depends_on
     (soft) edge instead. Unnamed per ADR-043.'
 - edge_type: depends_on
-  target: Software.Service
+  target: Workload
   cardinality: 0..1
   description: 'Imported/adopted into a hub''s fleet (OCM ManagedCluster semantics): managed, not contained
     — strength soft because an imported cluster survives hub loss (degrade-don''t-break). Mutually exclusive
@@ -133,5 +133,5 @@ context:
   - KubernetesNodePool — homogeneous slices of the cluster's node capacity.
   - VirtualNetwork — the network the cluster is realized onto.
   - Container — the workloads scheduled onto the cluster.
-  - 'Software.Service (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on
+  - 'Workload (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on
     (soft) when imported; a cluster hosting a hub is just its contained_by target'

@@ -2,7 +2,7 @@ uuid: uc-6f928f8c-69ac-4c0f-a060-e5e5d46d276d
 handle: software/deploy-service-from-image
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Software.Service by intent alone — a reference to an admitted
+  description: 'A platform engineer requests a Workload by intent alone — a reference to an admitted
     SoftwareImage, a declared endpoint (the port and protocol the service exposes), and a replica count —
     without naming a scheduler node, a container runtime handle, or any provider-native workload identifier.
     The software provider selects an eligible backend, realizes the service from the referenced image with

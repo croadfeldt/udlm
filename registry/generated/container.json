@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Container/1.0.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Container/1.0.4",
   "conforms_to": "udlm/0.1",
   "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49",
   "resource_type": "Container",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Container",
-          "version": "1.0.3",
+          "version": "1.0.4",
           "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49"
         }
       ]
@@ -363,7 +363,7 @@
       "You need workload records that secret-handling rules and image blast-radius analysis can reason over."
     ],
     "not_for": [
-      "A multi-part application (several containers and/or systemd units behaving as one thing) — that is Software.Service, which references containers as constituents.",
+      "A multi-part application (several containers and/or systemd units behaving as one thing) — that is Workload, which references containers as constituents.",
       "The image itself as a fact (digest, bill-of-materials anchor) — that is SoftwareImage; the container runs an image, it is not the image.",
       "A one-shot automation task with a bounded runtime — that is Automation.Job."
     ],
