@@ -2,7 +2,7 @@ uuid: uc-761a8a4e-3eee-411a-811d-ceda5e70ca4e
 handle: network/configure-dns-zone
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Network.DNSZone by intent alone — the zone name and the set
+  description: 'A platform engineer requests a DNSZone by intent alone — the zone name and the set
     of resource records it is authoritative for (A/AAAA/CNAME/PTR) — without naming a nameserver process, a
     zone-file path, or any provider-native serving handle. The network provider selects an eligible backend,
     realizes the zone with the declared records served, and the zone reaches Realized with its properties

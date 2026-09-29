@@ -39,7 +39,7 @@
     },
     {
       "class": "StoragePool",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "instantiable": true,
       "path": "registry/classes/resource/storage/storage-pool/_base.yaml",
       "types": []

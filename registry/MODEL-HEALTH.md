@@ -4,7 +4,7 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **62 types** (Access 8, Knowledge 9, Process 3, Resource 42). Every spec is strict (`additionalProperties: false`, 62/62 (100%)) and the instance-fuzz harness rejected 5400 of 5400 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 37/62 (59%) of types appear in at least one use case; 25 appear in none. 5 types are named by a specific consumer manifest; the other 57 are carried only by the 4 envelope-level (all-types) consumers. 15 types declare no outputs and 22 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **62 types** (Access 8, Knowledge 9, Process 3, Resource 42). Every spec is strict (`additionalProperties: false`, 62/62 (100%)) and the instance-fuzz harness rejected 5400 of 5400 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 38/62 (61%) of types appear in at least one use case; 24 appear in none. 5 types are named by a specific consumer manifest; the other 57 are carried only by the 4 envelope-level (all-types) consumers. 15 types declare no outputs and 22 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
@@ -16,7 +16,7 @@ The registry holds **62 types** (Access 8, Knowledge 9, Process 3, Resource 42).
 | Outputs adequacy | 15 zero-output, 22 one-output | declared Realized binding surface |
 | Context coverage | 62/62 (100%) | plain-English `context` blocks |
 | Relationships coverage | 48/62 (77%) | types declaring `relationships[]` |
-| UC coverage | 37/62 (59%) | types appearing in >=1 use case (165 UC files scanned) |
+| UC coverage | 38/62 (61%) | types appearing in >=1 use case (165 UC files scanned) |
 | Consumer coverage | 62/62 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
 
 ## Outputs adequacy
@@ -26,11 +26,11 @@ downstream consumer can bind on.
 
 **Zero-output types (15):** `Access.Grouping`, `Automation`, `GPU`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Processor`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
 
-**One-output types (22):** `BMC`, `Capability`, `Facility.Location`, `FileShare`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Network.AddressService`, `Network.DHCPScope`, `Network.DNSZone`, `Network.Gateway`, `Network.IPAddress`, `Network.VLAN`, `Network.VirtualNetwork`, `NetworkInterface`, `Software.Service`, `StorageClass`, `StorageDevice`, `StorageLayout`, `TaxonomyTerm`, `Template.Application`, `Topology`
+**One-output types (22):** `AddressService`, `BMC`, `Capability`, `DHCPScope`, `DNSZone`, `Facility.Location`, `FileShare`, `IPAddress`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `NetworkGateway`, `NetworkInterface`, `Software.Service`, `StorageClass`, `StorageDevice`, `StorageLayout`, `TaxonomyTerm`, `Template.Application`, `Topology`, `VLAN`, `VirtualNetwork`
 
 ## UC coverage gaps
 
-Types appearing in no use case (25) — each is either ahead of its
+Types appearing in no use case (24) — each is either ahead of its
 scenarios or untested by any story (textual scan; a dotted handle is unambiguous,
 single-word handles could in principle match prose):
 
@@ -44,15 +44,14 @@ single-word handles could in principle match prose):
 - `Identity.Person`
 - `Identity.ServiceAccount`
 - `Machine.LPAR`
-- `Network.Subnet`
-- `Network.Switch`
-- `Network.VLAN`
 - `NetworkInterface`
+- `NetworkSwitch`
 - `Processor`
 - `SovereigntyZone`
 - `StorageCluster`
 - `StorageDevice`
 - `StorageLayout`
+- `Subnet`
 - `Template`
 - `Template.Application`
 - `TestEvidence`

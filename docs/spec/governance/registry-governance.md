@@ -26,7 +26,7 @@ Registry governance follows the same substrate principles as all other UDLM gove
 | 2 | **Verified Community** | Named community maintainers | Technology/platform-specific types | Named maintainer(s) + UDLM oversight |
 | 3 | **Organization** | Deploying organization | Organization-specific/proprietary types | Organization's own process |
 
-**Tier 1 examples:** `Machine.VM`, `Network.VLAN`, `Network.IPAddress`, `Volume`, `FileShare`, `Container.Pod`
+**Tier 1 examples:** `Machine.VM`, `VLAN`, `IPAddress`, `Volume`, `FileShare`, `Container.Pod`
 
 **Tier 2 examples:** `OpenStack.HeatStack`, `VMware.NSXSegment`, `KubeVirt.VirtualMachine`, `Ansible.Playbook`
 

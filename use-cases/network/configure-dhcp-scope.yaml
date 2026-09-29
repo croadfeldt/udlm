@@ -2,9 +2,9 @@ uuid: uc-aa029702-50bc-404b-ac78-70d213087f72
 handle: network/configure-dhcp-scope
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Network.DHCPScope by intent alone — the subnet it serves, the
-    dynamic range and options it hands out — carved over a Network.IPAddressPool that owns the allocatable
-    range and operated by a Network.AddressService that provides the DHCP capability. The scope references
+  description: 'A platform engineer requests a DHCPScope by intent alone — the subnet it serves, the
+    dynamic range and options it hands out — carved over a IPAddressPool that owns the allocatable
+    range and operated by a AddressService that provides the DHCP capability. The scope references
     the pool and the address service as first-class edges; it does not name a lease database, a dhcpd
     process, or any provider-native config. The provider realizes the scope on the declared pool under the
     declared service, and it reaches Realized with its properties published on its outputs (served subnet,

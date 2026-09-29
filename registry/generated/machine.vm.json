@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.3",
   "conforms_to": "udlm/0.1",
   "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
   "resource_type": "Machine.VM",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -20,12 +20,12 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.1.1",
+          "version": "2.1.2",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Machine.VM",
-          "version": "2.0.2",
+          "version": "2.0.3",
           "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
         }
       ]
@@ -198,15 +198,15 @@
               "description": "Local NIC name, e.g. eth0."
             },
             "network_ref": {
-              "description": "The Network.VirtualNetwork this interface attaches to — common-elements Reference (handle string or {uuid, handle} object); resolvable, policy-walkable, never an opaque string.",
+              "description": "The VirtualNetwork this interface attaches to — common-elements Reference (handle string or {uuid, handle} object); resolvable, policy-walkable, never an opaque string.",
               "$ref": "../common-elements.schema.json#/$defs/Reference"
             },
             "vlan": {
-              "description": "REQUIREMENT — WHICH LOGICAL NETWORK, as a reference to a `Network.VLAN`. The VLAN is the identity of a logical network (maintainer ruling 2026-08-10): a segment id under an encapsulation, which is what an operator means by \"put it on that network\". Stated when the attachment must land on a specific logical network — because it has to reach something already there, or an existing application lives on it. Absent means policy decides. REALIZATION VARIES; THE AXIS DOES NOT. `Network.VLAN.encapsulation` already carries vlan / vxlan / geneve / flat, so the class is a SEGMENT of which 802.1Q is one form. A public cloud exposes no VLAN — there the segment is a VPC subnet, adopted by reference on Network.VLAN rather than given a parallel class: the VPC is the Network.VirtualNetwork and the subnet is the addressed segment within it. A consumer states the segment; which encapsulation realizes it is the provider's. Resolved against the `segment` relationship a Network.VirtualNetwork already declares, so placement narrows to networks on that segment rather than requiring the consumer to know which provider network carries it.",
+              "description": "REQUIREMENT — WHICH LOGICAL NETWORK, as a reference to a `VLAN`. The VLAN is the identity of a logical network (maintainer ruling 2026-08-10): a segment id under an encapsulation, which is what an operator means by \"put it on that network\". Stated when the attachment must land on a specific logical network — because it has to reach something already there, or an existing application lives on it. Absent means policy decides. REALIZATION VARIES; THE AXIS DOES NOT. `VLAN.encapsulation` already carries vlan / vxlan / geneve / flat, so the class is a SEGMENT of which 802.1Q is one form. A public cloud exposes no VLAN — there the segment is a VPC subnet, adopted by reference on VLAN rather than given a parallel class: the VPC is the VirtualNetwork and the subnet is the addressed segment within it. A consumer states the segment; which encapsulation realizes it is the provider's. Resolved against the `segment` relationship a VirtualNetwork already declares, so placement narrows to networks on that segment rather than requiring the consumer to know which provider network carries it.",
               "$ref": "../common-elements.schema.json#/$defs/Reference"
             },
             "subnet": {
-              "description": "REQUIREMENT — WHICH IP NETWORK, as a reference to a `Network.Subnet`. Layer 3, and INDEPENDENTLY SELECTABLE from `vlan` (layer 2): a subnet usually sits on a segment, but one segment may carry several subnets and a cloud may expose no segment at all, so the mapping is not concrete (maintainer ruling 2026-08-10). \"Put me on 198.51.100.0/24\" and \"put me on VLAN 3020\" are different requests; a consumer may state either, both, or neither.",
+              "description": "REQUIREMENT — WHICH IP NETWORK, as a reference to a `Subnet`. Layer 3, and INDEPENDENTLY SELECTABLE from `vlan` (layer 2): a subnet usually sits on a segment, but one segment may carry several subnets and a cloud may expose no segment at all, so the mapping is not concrete (maintainer ruling 2026-08-10). \"Put me on 198.51.100.0/24\" and \"put me on VLAN 3020\" are different requests; a consumer may state either, both, or neither.",
               "$ref": "../common-elements.schema.json#/$defs/Reference"
             },
             "zone": {
@@ -250,7 +250,7 @@
               "description": "Optional requested MAC address."
             },
             "ip_address_ref": {
-              "description": "A pre-allocated Network.IPAddress to bind to this interface (optional — omitted means the address service allocates at realization). Common-elements Reference shape.",
+              "description": "A pre-allocated IPAddress to bind to this interface (optional — omitted means the address service allocates at realization). Common-elements Reference shape.",
               "$ref": "../common-elements.schema.json#/$defs/Reference"
             }
           }
@@ -406,7 +406,7 @@
     },
     "target_segment": {
       "type": "string",
-      "description": "Realize-time placement fact (ADR-011 two-phase reserve): a reference to the Network.VLAN segment the reserved/realized placement can reach (adopt-not-absorb — the segment id/encapsulation live on the Network.VLAN). This is the declarable binding source for a fulfillment:provider dependency whose criteria are simply the target segment — e.g. a Network.IPAddress allocated on the reachable segment (DCM ADR-009 §3 worked example: bind target_segment -> the IP request's segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider's own internal facts, never cross-provider criteria)."
+      "description": "Realize-time placement fact (ADR-011 two-phase reserve): a reference to the VLAN segment the reserved/realized placement can reach (adopt-not-absorb — the segment id/encapsulation live on the VLAN). This is the declarable binding source for a fulfillment:provider dependency whose criteria are simply the target segment — e.g. a IPAddress allocated on the reachable segment (DCM ADR-009 §3 worked example: bind target_segment -> the IP request's segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider's own internal facts, never cross-provider criteria)."
     }
   },
   "immutable": [
@@ -415,10 +415,10 @@
   "relationships": [
     {
       "edge_type": "depends_on",
-      "target": "Network.IPAddress",
+      "target": "IPAddress",
       "target_field": "address",
       "cardinality": "0..n",
-      "description": "May consume zero or more pre-allocated Network.IPAddress addresses (optional dependency)."
+      "description": "May consume zero or more pre-allocated IPAddress addresses (optional dependency)."
     },
     {
       "edge_type": "references",
@@ -429,10 +429,10 @@
     },
     {
       "edge_type": "references",
-      "target": "Network.VirtualNetwork",
+      "target": "VirtualNetwork",
       "name": "network_attachment",
       "cardinality": "0..n",
-      "description": "Attaches to existing Network.VirtualNetwork(s) — see spec.networks[].network_ref."
+      "description": "Attaches to existing VirtualNetwork(s) — see spec.networks[].network_ref."
     },
     {
       "edge_type": "references",
@@ -480,7 +480,7 @@
     "use_when": [
       "You need to request a VM with declared size, OS, storage requirements, and network attachments, portable across hypervisors.",
       "You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.",
-      "You need a VM's disk shape and addresses to reference existing StorageLayout / Network.IPAddress records rather than duplicate them."
+      "You need a VM's disk shape and addresses to reference existing StorageLayout / IPAddress records rather than duplicate them."
     ],
     "not_for": [
       "The physical machine it runs on — Machine.BareMetalHost.",
@@ -490,10 +490,10 @@
     ],
     "works_with": [
       "StorageLayout — the disk layout the VM realizes (per-disk shape, boot designation).",
-      "Network.VirtualNetwork — the networks the VM's NICs attach to.",
+      "VirtualNetwork — the networks the VM's NICs attach to.",
       "Volume — the consumable volumes realizing its layout entries.",
       "Facility.Location — where the VM is placed (selected from existing places, policy-governed).",
-      "Network.IPAddress — pre-allocated addresses the VM consumes."
+      "IPAddress — pre-allocated addresses the VM consumes."
     ]
   },
   "ownership_model": "whole_allocation"

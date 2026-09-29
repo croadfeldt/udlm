@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkInterface/0.15.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkInterface/0.15.1",
   "conforms_to": "udlm/0.1",
   "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23",
   "resource_type": "NetworkInterface",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Network Interface",
-    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1→N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device → the physical NIC), and — added 0.2.0 — a composite BUILT FROM multiple interfaces (N→1): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces — is one traversable device tree in a single type (common-elements §7). Added 0.3.0: the same type also serves SWITCH PORTS (contained_by Network.Switch), and a physical interface carries a connects_to adjacency (renamed from connected_to, common-elements §9) to its LLDP-discovered peer termination point (host NIC ↔ switch port) — the cross-device edge that makes the estate graph traversable host → NIC → port → switch (common-elements §7a). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if) + RFC 8345 links + IEEE 802.1AB LLDP. A Base by the Base test (CLS-002): Redfish NetworkAdapter/NetworkPort and the RFC 8343 interface model abstract over a physical port, a VF, a bond, a bridge and a VLAN sub-interface alike, so an interface is one deliverable every host, hypervisor and switch provider can realize; device_class says which form.",
+    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1→N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device → the physical NIC), and — added 0.2.0 — a composite BUILT FROM multiple interfaces (N→1): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces — is one traversable device tree in a single type (common-elements §7). Added 0.3.0: the same type also serves SWITCH PORTS (contained_by NetworkSwitch), and a physical interface carries a connects_to adjacency (renamed from connected_to, common-elements §9) to its LLDP-discovered peer termination point (host NIC ↔ switch port) — the cross-device edge that makes the estate graph traversable host → NIC → port → switch (common-elements §7a). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if) + RFC 8345 links + IEEE 802.1AB LLDP. A Base by the Base test (CLS-002): Redfish NetworkAdapter/NetworkPort and the RFC 8343 interface model abstract over a physical port, a VF, a bond, a bridge and a VLAN sub-interface alike, so an interface is one deliverable every host, hypervisor and switch provider can realize; device_class says which form.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "NetworkInterface",
-          "version": "0.15.0",
+          "version": "0.15.1",
           "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23"
         }
       ]
@@ -135,11 +135,11 @@
         "type": "integer",
         "minimum": 1,
         "maximum": 4094,
-        "description": "Optional — an OBSERVED/discovered VLAN tag, a discovery convenience only. NOT authoritative: the authoritative membership is `vlan_memberships` (references to Network.VLAN). Discovery may record a raw tag here; resolution promotes it into a vlan_memberships entry."
+        "description": "Optional — an OBSERVED/discovered VLAN tag, a discovery convenience only. NOT authoritative: the authoritative membership is `vlan_memberships` (references to VLAN). Discovery may record a raw tag here; resolution promotes it into a vlan_memberships entry."
       },
       "vlan_memberships": {
         "type": "array",
-        "description": "The port's VLAN membership set (802.1Q). Each entry REFERENCES an existing Network.VLAN (the shared segment object — the id/encapsulation is pulled from there, adopt-not-absorb) and declares its mode. A trunk carries many (one native/untagged + N tagged); an access port one. Each membership is also a references->Network.VLAN edge.",
+        "description": "The port's VLAN membership set (802.1Q). Each entry REFERENCES an existing VLAN (the shared segment object — the id/encapsulation is pulled from there, adopt-not-absorb) and declares its mode. A trunk carries many (one native/untagged + N tagged); an access port one. Each membership is also a references->VLAN edge.",
         "items": {
           "type": "object",
           "required": [
@@ -149,7 +149,7 @@
           "additionalProperties": false,
           "properties": {
             "network_vlan_ref": {
-              "description": "Reference to Network.VLAN — the VLAN this membership tags. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
+              "description": "Reference to VLAN — the VLAN this membership tags. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
               "$ref": "../common-elements.schema.json#/$defs/Reference"
             },
             "mode": {
@@ -202,7 +202,7 @@
     },
     {
       "edge_type": "contained_by",
-      "target": "Network.Switch",
+      "target": "NetworkSwitch",
       "cardinality": "0..1",
       "name": "switch",
       "description": "For a switch port: the switch it belongs to. Same type serves host NICs and switch ports — the §27 Identity block (location = the port designation, e.g. 'Port 14') distinguishes instances."
@@ -233,10 +233,10 @@
     },
     {
       "edge_type": "references",
-      "target": "Network.VLAN",
+      "target": "VLAN",
       "name": "vlan_membership",
       "cardinality": "0..n",
-      "description": "The VLAN(s) this port is a member of (see spec.vlan_memberships); each carries a mode (native/tagged). The port references the shared Network.VLAN objects rather than duplicating the id."
+      "description": "The VLAN(s) this port is a member of (see spec.vlan_memberships); each carries a mode (native/tagged). The port references the shared VLAN objects rather than duplicating the id."
     }
   ],
   "adopts": [
@@ -307,22 +307,22 @@
   ],
   "context": {
     "purpose": "Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.",
-    "plain_description": "One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. Identity facts — the MAC address (`mac_address`), location, serial, model — nest under the `identity` block, not at the top level. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing Network.VLAN records, never by retyping raw tags.",
+    "plain_description": "One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. Identity facts — the MAC address (`mac_address`), location, serial, model — nest under the `identity` block, not at the top level. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing VLAN records, never by retyping raw tags.",
     "use_when": [
       "You need the full host interface stack — NICs, bond, bridge, sub-interfaces — as records whose parent/member links mirror reality.",
       "You need host-NIC-to-switch-port cabling (LLDP-discovered) in the graph for impact analysis.",
       "You need a port's VLAN membership (native/tagged) declared against shared VLAN records."
     ],
     "not_for": [
-      "The attachment point guests plug into — Network.VirtualNetwork; a bridge here is the device, the VirtualNetwork is the workload-facing network on top of it.",
-      "The desired configuration applied to an interface (addressing, routes, DNS) — Network.ConnectionProfile configures the device this type inventories.",
-      "The VLAN segment itself — Network.VLAN; interfaces are members of a segment, they don't define it."
+      "The attachment point guests plug into — VirtualNetwork; a bridge here is the device, the VirtualNetwork is the workload-facing network on top of it.",
+      "The desired configuration applied to an interface (addressing, routes, DNS) — ConnectionProfile configures the device this type inventories.",
+      "The VLAN segment itself — VLAN; interfaces are members of a segment, they don't define it."
     ],
     "works_with": [
-      "Machine.BareMetalHost / Network.Switch — what contains the interface (host NIC vs switch port).",
+      "Machine.BareMetalHost / NetworkSwitch — what contains the interface (host NIC vs switch port).",
       "NetworkInterface — parent_device, lower_layer, and connects_to: partition parentage, bond/bridge membership, cable adjacency.",
-      "Network.VLAN — the segments the port is a member of.",
-      "Network.ConnectionProfile — the declarative config realized onto this interface."
+      "VLAN — the segments the port is a member of.",
+      "ConnectionProfile — the declarative config realized onto this interface."
     ]
   },
   "ownership_model": "whole_allocation"

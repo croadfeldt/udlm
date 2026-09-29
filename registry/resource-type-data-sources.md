@@ -8,8 +8,8 @@ authoritative standards list) · [registry/resource-type-spec.schema.json](resou
 
 ## 1. Purpose
 
-A new wave of infrastructure Resource Types (Machine.BareMetalHost, StorageCluster, Network.Gateway,
-Network.AddressService, Security.DirectoryService, Facility.PowerFeed — plus Machine.VM and
+A new wave of infrastructure Resource Types (Machine.BareMetalHost, StorageCluster, NetworkGateway,
+AddressService, Security.DirectoryService, Facility.PowerFeed — plus Machine.VM and
 KubernetesCluster) bumps against well-established external
 schemas. Per **T5 / the Adopt disposition**, UDLM should **reference industry-standard data elements
 for validation and vocabulary** rather than re-express them, and remain **extensible by vendor-specific
@@ -56,8 +56,8 @@ and take OSAC **VM** (`ComputeInstance`) and **Cluster** (`ClusterSpec`) nearly 
 | **KubernetesCluster** | OSAC `ClusterSpec` (`node_sets{host_type,size}`,`release_image`,`network{pod,service cidr}`; `api_url`/`console_url`) + heatmiser day-0 VIPs/CIDRs — Tier 2 | the type | — |
 | **Machine.BareMetalHost** | **Metal3 `BareMetalHost`** (`bmc.address`,`bootMACAddress`,`online`,`image`,`rootDeviceHints`; `status.hardware.{cpu,ramMebibytes,nics[],storage[],firmware}`,`provisioning.state`) + **Redfish `ComputerSystem`** (`ProcessorSummary`,`MemorySummary`,`PowerState`,`Boot*`,`UUID`) + heatmiser discovery manifest — Tier 2 | provision intent (role, image, target) | iDRAC/a supported board BMC |
 | **StorageCluster** (authored name; the Ceph-backed cluster type) | **Rook `CephCluster`** (`mon.count`,`storage`,`cephVersion.image`,`network`,`dashboard`; `status.ceph.{health,fsid}`) + native `ceph -s -f json` (`osdmap`,`pgmap`) — Tier 2 | cluster intent | — |
-| **Network.Gateway** | **K8s Gateway API `Gateway`** (`gatewayClassName`,`listeners[]`,`addresses[]`) + OSAC `SecurityGroup` rule shape; NAT 5-tuple absorbed — Tier 2 | routing/NAT intent | pfSense/OPNsense |
-| **Network.AddressService** | **ISC Kea `Dhcp4`** (`subnet4[]`,`pools`,`reservations[]`,`option-data`) + **DNS RRs** (RFC 1035 `A/PTR/CNAME/NS/SOA`, RFC 3596 `AAAA`) — Tier 2; *DHCP+DNS = two projections of one allocation* | the address-service intent | — |
+| **NetworkGateway** | **K8s Gateway API `Gateway`** (`gatewayClassName`,`listeners[]`,`addresses[]`) + OSAC `SecurityGroup` rule shape; NAT 5-tuple absorbed — Tier 2 | routing/NAT intent | pfSense/OPNsense |
+| **AddressService** | **ISC Kea `Dhcp4`** (`subnet4[]`,`pools`,`reservations[]`,`option-data`) + **DNS RRs** (RFC 1035 `A/PTR/CNAME/NS/SOA`, RFC 3596 `AAAA`) — Tier 2; *DHCP+DNS = two projections of one allocation* | the address-service intent | — |
 | **Security.DirectoryService** (authored under Security, not Identity) | **RFC 4512** (`namingContexts`,`subschemaSubentry`,baseDN — already in catalog via RFC 4511) + FreeIPA (realm/KDC, CA=Dogtag, replicas) + OSAC `LdapConfig` connection facet — Tier 2 | the operated-directory intent | — |
 | **Facility.PowerFeed** | **NUT** variable namespace (`ups.status` OL/OB/LB, `battery.charge`,`battery.runtime`,`battery.runtime.low`,`input.voltage`,`ups.realpower`,`ups.load`) + **Redfish `PowerSubsystem`/`PowerSupply`** (`CapacityWatts`,`InputPowerWatts`,`LineInputStatus`) — Tier 2 | which hosts a feed protects (intent) | vendor-UPS SNMP |
 | **UPS** | **IEC 62040-3** topology classes + **NUT** variable namespace (`ups.status`, `battery.charge`, `battery.runtime`, `ups.load`, `input.voltage`, `battery.charge.low`/`battery.runtime.low`) + **Redfish `PowerEquipment`/`PowerSupply`** identity/ratings — Tier 1 | identity, rating, battery set, low-battery policy (intent) | vendor SNMP MIBs — provider data |
@@ -128,9 +128,9 @@ it, not a second verdict.
 | IETF RFC 8343 (ietf-interfaces) | IETF Trust (BSD-like reuse) | compatible-reference | `lower-layer-if`/`higher-layer-if` stacking terms — facts (NetworkInterface aggregate/bridge) |
 | IEEE 802.1AX (Link Aggregation) | **IEEE (copyright)** | **reference-only** | bond/LACP *term names* only; don't copy IEEE standard text |
 | IEEE 802.1Q (Bridges & Bridged Networks) | **IEEE (copyright)** | **reference-only** | bridge/VLAN *term names* only; don't copy IEEE standard text |
-| IEEE 802.1AB (LLDP) | **IEEE (copyright)** | **reference-only** | Chassis ID / Port ID / System Name *TLV names* only — connects_to discovery + Network.Switch identity |
-| IETF RFC 8345 (ietf-network-topology) | IETF Trust (BSD-like reuse) | compatible-reference | node / termination-point / link vocabulary — facts (Network.Switch, connects_to) |
-| k8snetworkplumbingwg NetworkAttachmentDefinition | Apache-2.0 | compatible-reference | attachable-network concept (Network.VirtualNetwork) |
+| IEEE 802.1AB (LLDP) | **IEEE (copyright)** | **reference-only** | Chassis ID / Port ID / System Name *TLV names* only — connects_to discovery + NetworkSwitch identity |
+| IETF RFC 8345 (ietf-network-topology) | IETF Trust (BSD-like reuse) | compatible-reference | node / termination-point / link vocabulary — facts (NetworkSwitch, connects_to) |
+| k8snetworkplumbingwg NetworkAttachmentDefinition | Apache-2.0 | compatible-reference | attachable-network concept (VirtualNetwork) |
 | libvirt network XML docs | **LGPL-2.1+** | **reference-only** | forward-mode *vocabulary* only; don't vendor libvirt docs/text |
 
 **TODO when defining the types:** verify the three `**verify**` licenses (OSAC, heatmiser repos) and

@@ -1,0 +1,146 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/VLAN/0.6.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426",
+  "resource_type": "VLAN",
+  "version": "0.6.0",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "VLAN / Network Segment ID",
+    "description": "A foundational network segment identifier — a VLAN (IEEE 802.1Q) or an overlay VNI (VXLAN/Geneve) — owned and advertised by a network/fabric provider and/or defined in a platform data layer, and SELECTED by reference from the resources that ride it (a VirtualNetwork, a NetworkInterface). A root resource (docs/guides/foundational-resources.md): dependents reference an existing VLAN, they do not invent one. The concrete encapsulation is provider data; a provider may offer a variant as a Type that the org ratifies. A Base by the Base test (CLS-002): IEEE 802.1Q and the overlay encapsulations abstract over every fabric segment, so a segment of a given id and encapsulation is one deliverable any fabric provider can realize.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-13T00:00:00Z",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "VLAN",
+          "version": "0.6.0",
+          "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "zone": {
+        "$ref": "../common-elements.schema.json#/$defs/network_zone_ref",
+        "description": "What kind of network this is — a governed network-zone term, for placement only (common-elements.schema.json `network_zone_ref`)."
+      },
+      "tier": {
+        "$ref": "../common-elements.schema.json#/$defs/network_tier_ref",
+        "description": "How good this network is — a governed network_tier floor the provider reports (common-elements.schema.json `network_tier_ref`)."
+      },
+      "encapsulation": {
+        "type": "string",
+        "enum": [
+          "vlan",
+          "vxlan",
+          "geneve",
+          "flat"
+        ],
+        "description": "Segmentation type. vlan = 802.1Q; vxlan/geneve = overlay VNI; flat = untagged."
+      },
+      "segment_id": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 16777215,
+        "description": "The VLAN id (1-4094 for 802.1Q) or VNI (0-16777215 for VXLAN/Geneve). Omitted for flat."
+      },
+      "name": {
+        "type": "string",
+        "description": "Human name for the segment, e.g. dmz."
+      }
+    },
+    "required": [
+      "encapsulation"
+    ],
+    "examples": [
+      {
+        "encapsulation": "vlan",
+        "segment_id": 100,
+        "name": "mgmt"
+      }
+    ]
+  },
+  "outputs": {
+    "segment_ready": {
+      "type": "boolean",
+      "description": "Whether the segment is provisioned on the fabric and available to attach."
+    }
+  },
+  "relationships": [
+    {
+      "edge_type": "references",
+      "target": "NetworkSwitch",
+      "name": "fabric",
+      "cardinality": "0..n",
+      "description": "The switch(es)/fabric that carry this segment (where the provider manages it)."
+    },
+    {
+      "edge_type": "contained_by",
+      "target": "KubernetesCluster",
+      "name": "scope",
+      "cardinality": "0..1",
+      "description": "Optional cluster/fabric scope the segment is defined within."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "RFC 7364 / RFC 8926",
+      "version": "RFC 7364 (NVO3 framework), RFC 8926 (Geneve)",
+      "standard_name": "Network virtualization overlay segment (VNI)",
+      "role": "The overlay realization of the same segment identity 802.1Q gives on-prem — a VNI under VXLAN or Geneve. Adopted so `encapsulation` is honest about what this class actually is: a SEGMENT, of which a VLAN is one encapsulation.",
+      "source": "https://www.rfc-editor.org/rfc/rfc8926.html",
+      "license": "IETF-Trust",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "Public-cloud VPC subnet",
+      "version": "AWS VPC / Azure VNet / GCP VPC (convergent de-facto model)",
+      "standard_name": "VPC subnet",
+      "role": "The public-cloud realization of segment identity. A cloud exposes no VLAN, so \"which logical network\" there is a subnet within a VPC, and `Subnet` is where that lands. Adopted by reference (T5): the three clouds converged on the subnet shape independently, and re-expressing it would invent a fourth. THE VPC ITSELF HAS NO CLASS, stated rather than implied. VirtualNetwork is an ATTACHMENT POINT — its own description reads \"the network a VM's or pod's NIC attaches to: a libvirt network, a NetworkAttachmentDefinition, an OVN logical switch\". A VPC is a tenant-scoped CONTAINER with its own address space, holding many subnets, route tables and gateways. Treating one as the other would make a container and an attachment point the same thing, and a subnet is useful without its container — so the container half is left open rather than guessed at.",
+      "source": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html",
+      "license": "vendor-documentation",
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "IEEE 802.1Q",
+      "version": "2022",
+      "standard_name": "VLAN tagging",
+      "role": "segment id + tagging vocabulary",
+      "source": "https://standards.ieee.org/ieee/802.1Q/",
+      "license": "IEEE",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ],
+  "filed_under": [
+    "network"
+  ],
+  "context": {
+    "purpose": "Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.",
+    "plain_description": "The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `vxlan` or `geneve` for an overlay VNI, `flat` for untagged — and its id, `segment_id`. It exists so a segment id appears in exactly one record — switch ports, host sub-interfaces, gateway segments, and virtual networks all reference the VLAN record rather than each retyping the tag. It is a root resource: dependents select an existing VLAN, they do not invent one inline.",
+    "use_when": [
+      "You need one authoritative record per segment that ports, virtual networks, and gateway segments all reference.",
+      "You need overlay segments (VXLAN/Geneve VNIs) modeled with the same shape as 802.1Q VLANs."
+    ],
+    "not_for": [
+      "The workload attachment point — VirtualNetwork rides a VLAN; guests attach to the VirtualNetwork, not to the VLAN.",
+      "A port's tagging configuration — that is vlan_memberships on NetworkInterface, referencing this record."
+    ],
+    "works_with": [
+      "NetworkInterface — ports and sub-interfaces declare membership by reference.",
+      "VirtualNetwork — virtual networks ride a referenced segment.",
+      "NetworkSwitch — the fabric carrying the segment.",
+      "NetworkGateway — edge segments each ride a referenced VLAN."
+    ]
+  },
+  "ownership_model": "shareable"
+}

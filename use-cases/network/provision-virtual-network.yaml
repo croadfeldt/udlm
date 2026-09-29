@@ -2,8 +2,8 @@ uuid: uc-806b9109-9404-4d54-9d41-c397bd5b8825
 handle: network/provision-virtual-network
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Network.VirtualNetwork by intent alone — the VLAN it is
-    backed by, the subnet (CIDR) workloads on it receive, and a Network.Gateway as the segment''s routed
+  description: 'A platform engineer requests a VirtualNetwork by intent alone — the VLAN it is
+    backed by, the subnet (CIDR) workloads on it receive, and a NetworkGateway as the segment''s routed
     edge — without naming a bridge device, a host interface, or any provider-native network handle. The
     network provider selects an eligible backend, realizes the virtual network on the declared VLAN with
     the declared subnet, stands up the gateway as the segment''s exit, and both reach Realized with their

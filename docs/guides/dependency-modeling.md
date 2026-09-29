@@ -63,7 +63,7 @@ difference is *how many* edges an implementor authors and *where* they sit.
 | Managed-component chain | `NetworkInterface` `connects_to` → switch port |
 | Bundling | *any* node the members `depends_on` — its deps become theirs transitively (no dedicated type) |
 | Physical scope | `Facility.Location` (adopts Redfish Location) |
-| Realm scope | `Security.DirectoryService` + `Network.AddressService`, keyed by `tenant_uuid` |
+| Realm scope | `Security.DirectoryService` + `AddressService`, keyed by `tenant_uuid` |
 
 ## Anti-pattern: a dedicated "bundle" type
 

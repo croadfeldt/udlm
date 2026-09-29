@@ -127,7 +127,7 @@ Every request flows through these stages in order:
 | Rule ID | Invariant | Test |
 |---------|-----------|------|
 | MATCH-001 | A policy with no conditions fires on every request | Create universal policy → verify it fires on 10 random requests |
-| MATCH-002 | A policy matching `resource_type: X` does not fire on resource_type Y | Create VM policy → verify it does not fire on Network.Port request |
+| MATCH-002 | A policy matching `resource_type: X` does not fire on resource_type Y | Create VM policy → verify it does not fire on NetworkInterface request |
 | MATCH-003 | `condition_logic: all` requires all conditions to match | Create 3-condition policy → verify it fires only when all 3 match |
 | MATCH-004 | `condition_logic: any` requires at least one condition | Create 3-condition policy with `any` → verify fires when 1 matches |
 | MATCH-005 | Policies can match on `operation.type` | Create policy scoped to `rehydration` → verify it does not fire on `update` |

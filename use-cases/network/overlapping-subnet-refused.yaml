@@ -2,7 +2,7 @@ uuid: uc-fd49cec2-a04b-4c5e-b6e8-f76ea1330791
 handle: network/overlapping-subnet-refused
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Network.VirtualNetwork and its Network.Gateway whose declared
+  description: 'A platform engineer requests a VirtualNetwork and its NetworkGateway whose declared
     subnet (CIDR) overlaps the subnet of a virtual network already Realized in the same routing scope.
     Success for this use case is that the conflict is REFUSED before realization, not silently allowed to
     co-exist: the request must be driven to a typed terminal refusal that names the overlapping CIDR and the

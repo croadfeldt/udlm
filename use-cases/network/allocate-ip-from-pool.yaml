@@ -2,8 +2,8 @@ uuid: uc-b084ab86-14c6-48f2-84a2-f4b5debcd57c
 handle: network/allocate-ip-from-pool
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Network.IPAddress by intent alone — an allocation carved from
-    a named Network.IPAddressPool — without naming the specific address, a lease record, or any
+  description: 'A platform engineer requests a IPAddress by intent alone — an allocation carved from
+    a named IPAddressPool — without naming the specific address, a lease record, or any
     provider-native handle. The IPAddress references the pool it is drawn from as a first-class edge; the
     provider selects a free address within the pool''s range, realizes the allocation, and it reaches
     Realized with the assigned address and its origin published on its outputs (address, allocation origin,

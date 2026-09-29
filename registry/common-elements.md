@@ -107,7 +107,7 @@ How the existing types express shared concepts today, and the drift to normalize
 | `Machine.VM` | `vcpu` + `memory.size` (Quantity) + `disks[]` | `vcpu` ≠ canonical `cpu.count` |
 | `KubernetesNodePool` | `node_resources` — ComputeResources per pool record (the cluster carries no pools — ruling 072) | uses the shared shape |
 | `Data.Database` | `resources` block | a *third* spelling of cpu/memory |
-| `Network.IPAddress` | — | `family` ≠ canonical `ip_family` |
+| `IPAddress` | — | `family` ≠ canonical `ip_family` |
 
 **Findings:** CPU/memory is expressed **three different ways** (`vcpu`/`memory`, the pool record's `node_resources`,
 `resources`); no shared `ComputeResources`. `family` vs the canonical `ip_family`. Outputs are already
@@ -257,7 +257,7 @@ NetworkInterface`, 0..1 per physical port), symmetric, declared once from either
 # host side                              # switch side
 - id: host01-eno2                        - id: sw-leaf01-port14
   type: NetworkInterface          type: NetworkInterface
-  contained_by: host01                     contained_by: sw-leaf01           # a Network.Switch
+  contained_by: host01                     contained_by: sw-leaf01           # a NetworkSwitch
   connects_to: sw-leaf01-port14           attrs: { identity: { location: "Port 14" } }
 ```
 

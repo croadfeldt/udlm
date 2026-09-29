@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.7.4",
+  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkSwitch/0.8.0",
   "conforms_to": "udlm/0.1",
   "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac",
-  "resource_type": "Network.Switch",
-  "version": "0.7.4",
+  "resource_type": "NetworkSwitch",
+  "version": "0.8.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Network Switch",
-    "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Machine.BareMetalHost. Its ports are NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connects_to` adjacency (renamed from connected_to, common-elements §9; LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics are the provider/extension, never the type.",
+    "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Machine.BareMetalHost. Its ports are NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connects_to` adjacency (renamed from connected_to, common-elements §9; LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics are the provider/extension, never the type. A Base by the Base test (CLS-002): Redfish Switch, IEEE 802.1AB and RFC 8345 abstract over every fabric switch, so a switch with given ports and a management VLAN is one deliverable any fabric provider can inventory or realize.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-04T20:12:42Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Network",
-          "version": "1.2.0",
-          "uuid": "b4309667-2eed-4330-88d3-96bc94d54436"
-        },
-        {
-          "class": "Network.Switch",
-          "version": "0.7.4",
+          "class": "NetworkSwitch",
+          "version": "0.8.0",
           "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac"
         }
       ]
@@ -33,40 +28,12 @@
     "additionalProperties": false,
     "properties": {
       "zone": {
-        "allOf": [
-          {
-            "$ref": "../data-reference.schema.json#/$defs/data_reference"
-          },
-          {
-            "required": [
-              "reference_data_type"
-            ],
-            "properties": {
-              "reference_data_type": {
-                "const": "network_zone"
-              }
-            }
-          }
-        ],
-        "description": "WHAT KIND OF NETWORK THIS IS — DMZ, management, internal, storage — as a governed TAXONOMY term (Knowledge.TaxonomyTerm), not a property bundle and not a floor. A CLASSIFICATION, NOT A REQUIREMENT, and the distinction is why this is a taxonomy where `tier` is reference data: a floor is something a second provider can MEET, a category is something a thing IS. Taxonomy is also the only one of the two that carries `normalization_rules`, which is what this needs — providers report `dmz-2`, `DMZ_RESTRICTED` and `dmz restricted`, and all three have to land on one canonical term before any policy can match on it. FOR PLACEMENT ONLY (maintainer ruling 2026-08-10). Nothing critical hangs off a zone directly: it is not an authorization, not a control, and not a boundary. ANYTHING REQUIRED BECAUSE OF A ZONE IS ENFORCED BY POLICY READING IT — the model carries the classification, policy acts on it, which is the same split that governs everything else here. That also keeps the model on the right side of zero-trust architecture, which derives no trust from network location (NIST SP 800-207); UDLM already ships a `zero_trust.posture` setting that a location-as-trust reading would contradict. ON THE BASE though it does not apply to every network type (maintainer ruling 2026-08-10): enough of the family carries a category that the base is the right home, and an element that some types leave unpopulated is what `optional` is for. Scope IS portability (ADR-038 §3) — a category two providers can both report is portable by definition. Provider-reported, like `tier`."
+        "$ref": "../common-elements.schema.json#/$defs/network_zone_ref",
+        "description": "What kind of network this is — a governed network-zone term, for placement only (common-elements.schema.json `network_zone_ref`)."
       },
       "tier": {
-        "allOf": [
-          {
-            "$ref": "../data-reference.schema.json#/$defs/data_reference"
-          },
-          {
-            "required": [
-              "reference_data_type"
-            ],
-            "properties": {
-              "reference_data_type": {
-                "const": "network_tier"
-              }
-            }
-          }
-        ],
-        "description": "HOW GOOD THIS NETWORK IS — a reference to a governed `network_tier`, exactly parallel to `storage_tier`. Each term DENOTES A FLOOR (bandwidth, latency), so asking for a tier is asking for the floor and any network meeting it qualifies: one provider's \"10G\" and another's \"high-throughput\" are interchangeable iff both clear it. That is what keeps the intent portable — the match is against the floor, never the string. NAME-SELECTABLE BUT REQUIREMENTS-AUTHORITATIVE (ADR-036, ruled 2026-07-27): a consumer may select by tier name, explicit requirements win where both are given, and the provider records its native class as a realized output rather than something the consumer had to know. ON THE BASE, NOT A TYPE, because performance is expected to be consumable by ALL network class providers and portable (maintainer ruling 2026-08-10). Scope IS portability (ADR-038 §3), so the category base is where a fact every provider must report belongs. Provider-reported at registration or discovery — the party that knows is the one that says."
+        "$ref": "../common-elements.schema.json#/$defs/network_tier_ref",
+        "description": "How good this network is — a governed network_tier floor the provider reports (common-elements.schema.json `network_tier_ref`)."
       },
       "lifecycle_state": {
         "type": "string",
@@ -130,7 +97,7 @@
         }
       },
       "management_vlan_ref": {
-        "description": "Reference to Network.VLAN — the switch's management VLAN. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
+        "description": "Reference to VLAN — the switch's management VLAN. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       }
     },
@@ -178,9 +145,9 @@
     {
       "edge_type": "references",
       "name": "management_vlan",
-      "target": "Network.VLAN",
+      "target": "VLAN",
       "cardinality": "0..1",
-      "description": "management_vlan — the Network.VLAN the switch management interface lives on, referenced not inlined (R5)."
+      "description": "management_vlan — the VLAN the switch management interface lives on, referenced not inlined (R5)."
     }
   ],
   "adopts": [
@@ -215,6 +182,10 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "network",
+    "hardware"
+  ],
   "context": {
     "purpose": "Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.",
     "plain_description": "One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup — the `ports` object (count, predominant speed) — and its management VLAN by reference (`management_vlan_ref`; the switch record carries no management address of its own — addresses live on its interface records). Identity facts — the `chassis_id`, serial, model, manufacturer, system name — nest under the `identity` block, not at the top level. Its individual ports are not a separate type — they are NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.",
@@ -225,13 +196,13 @@
     ],
     "not_for": [
       "A software bridge on a host — NetworkInterface with device_class bridge.",
-      "The routed/NAT edge — Network.Gateway.",
-      "The VLAN segments themselves — Network.VLAN; the switch carries segments, it doesn't define them."
+      "The routed/NAT edge — NetworkGateway.",
+      "The VLAN segments themselves — VLAN; the switch carries segments, it doesn't define them."
     ],
     "works_with": [
       "NetworkInterface — its ports, and the host NICs those ports connect to.",
       "Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.",
-      "Network.VLAN — segments carried on the fabric, including the referenced management VLAN."
+      "VLAN — segments carried on the fabric, including the referenced management VLAN."
     ]
   }
 }

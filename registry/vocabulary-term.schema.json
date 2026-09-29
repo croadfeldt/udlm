@@ -65,7 +65,7 @@
     "scope": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]*(\\.[A-Z][A-Za-z0-9]*)*$",
-      "description": "The Class scope this term is canonical AT — the other half of the key, and the portability contract (ADR-038 §3, ADR-058 §2).\n\nRead it as the answer to \"how far does this meaning travel?\" A term at `Network` holds for every Network provider; the same name at `Network.Fabric.AcmeSDN` holds only there. Portable reliance on a term requires it be canonical at a scope at least as general as the consumer's — which is checkable in a diff rather than asserted in prose, and promoted by the governed contribution operation rather than by editing a copy.",
+      "description": "The Class scope this term is canonical AT — the other half of the key, and the portability contract (ADR-038 §3, ADR-058 §2).\n\nRead it as the answer to \"how far does this meaning travel?\" A term at `Network` holds for every Network provider; the same name at `NetworkFabric.AcmeSDN` holds only there. Portable reliance on a term requires it be canonical at a scope at least as general as the consumer's — which is checkable in a diff rather than asserted in prose, and promoted by the governed contribution operation rather than by editing a copy.",
       "examples": [
         "Network",
         "Storage",

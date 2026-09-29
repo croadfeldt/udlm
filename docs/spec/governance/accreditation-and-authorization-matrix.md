@@ -579,10 +579,10 @@ federation_tunnel:
   # What the remote peer may request from this peer (inbound)
   inbound_authorization:
     - operation: catalog_query
-      permitted_resource_types: [Machine.VM, Network.VLAN]
+      permitted_resource_types: [Machine.VM, VLAN]
       requires_cross_tenant_authorization: true
     - operation: allocation_request
-      permitted_resource_types: [Network.IPAddress]
+      permitted_resource_types: [IPAddress]
       max_allocations_per_request: 10
       requires_cross_tenant_authorization: true
 

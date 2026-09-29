@@ -416,6 +416,44 @@
         "partition"
       ],
       "description": "The device_class values a single device can take — a socket, a drive, a GPU or a controller is never an aggregate or a bridge. Subset of device_class; the same vocabulary."
+    },
+    "network_zone_ref": {
+      "title": "Network zone (reference)",
+      "allOf": [
+        {
+          "$ref": "data-reference.schema.json#/$defs/data_reference"
+        },
+        {
+          "required": [
+            "reference_data_type"
+          ],
+          "properties": {
+            "reference_data_type": {
+              "const": "network_zone"
+            }
+          }
+        }
+      ],
+      "description": "WHAT KIND OF NETWORK THIS IS — a governed taxonomy term (registry/taxonomies/network-zone.yaml): a classification for placement, never an authorization or a boundary; anything required because of a zone is enforced by policy reading it. One home (ADR-082); every network Base declares `zone` by $ref."
+    },
+    "network_tier_ref": {
+      "title": "Network tier (reference)",
+      "allOf": [
+        {
+          "$ref": "data-reference.schema.json#/$defs/data_reference"
+        },
+        {
+          "required": [
+            "reference_data_type"
+          ],
+          "properties": {
+            "reference_data_type": {
+              "const": "network_tier"
+            }
+          }
+        }
+      ],
+      "description": "HOW GOOD THIS NETWORK IS — a governed `network_tier` term, each denoting a floor (bandwidth, latency) any provider that clears it satisfies; name-selectable but requirements-authoritative (ADR-036). The provider reports it (the party that knows is the party that says). One home (ADR-082); every network Base declares `tier` by $ref."
     }
   }
 }

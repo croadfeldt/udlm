@@ -79,18 +79,18 @@ The IPAddress entities are not pointers to the pool — they are real entities o
 ```yaml
 # The pool resource type
 resource_type_spec:
-  fqn: Network.IPAddressPool
+  fqn: IPAddressPool
   ownership_model: whole_allocation    # the pool entity is owned outright by the platform Tenant
   is_pool: true
-  allocation_produces_type: Network.IPAddress
+  allocation_produces_type: IPAddress
   capacity_tracking: true              # the control plane tracks used/available capacity
 
 # The allocation resource type
 resource_type_spec:
-  fqn: Network.IPAddress
+  fqn: IPAddress
   ownership_model: allocation          # each instance is an allocation from a pool
-  allocated_from_pool_type: Network.IPAddressPool
-  # When a consumer requests Network.IPAddress, an implementation:
+  allocated_from_pool_type: IPAddressPool
+  # When a consumer requests IPAddress, an implementation:
   # 1. Runs placement to find an eligible IPAddressPool
   # 2. The pool provider carves out a specific IP
   # 3. Creates a new IPAddress entity owned by the requesting Tenant
@@ -145,7 +145,7 @@ VLAN-100 belongs to NetworkOps. AppTeam, DevTeam, and OpsTeam each have a VM att
 **Resource Type Spec declaration:**
 ```yaml
 resource_type_spec:
-  fqn: Network.VLAN
+  fqn: VLAN
   ownership_model: shareable
   # A single VLAN entity exists; consumers attach to it via relationships
   # Consumers do not receive their own VLAN entity

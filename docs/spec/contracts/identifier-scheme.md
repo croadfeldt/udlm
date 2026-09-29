@@ -21,7 +21,7 @@ A peer implementation that consumes data emitted by another peer must be able to
 - Resolve cross-references between artifacts without prior knowledge of the
   emitting system's internals.
 
-*Worked example.* Peer A emits a VM entity that references a `Network.VirtualNetwork` by handle. Peer B,
+*Worked example.* Peer A emits a VM entity that references a `VirtualNetwork` by handle. Peer B,
 receiving it, must recognize the reference *kind* (a network), determine its *scope* (a global, portable
 handle — not A's implementation-local uuid), resolve it to B's own copy of that network, and reject it if the
 scope doesn't match — all without knowing A's internals. The rules below make that mechanical.
@@ -420,5 +420,5 @@ not a policy predicate grammar and does not become one.
 | `URF-007` | Credentials or bearer material MUST NOT appear in any URF axis. |
 | `URF-009` | `via(<relation>)#<field>` traverses ONE declared relationship (`relationships[].name`, REL-001) and projects a field off a cardinality-1 resolution. An undeclared relation name is refused at validation, never resolved; a relation resolving to more than one record refuses `ambiguous` (URF-004); `via` MUST NOT be chained. The traversal is a dereference — the governance matrix evaluates the read and the projection crosses the policy information firewall (§9.6, ADR-041) — so an unauthorized target is refused, never rendered absent. |
 | `URF-010` | A stored `filed_under` value MUST be a canonical term of the usage-group taxonomy; a retired or renamed term is refused at validation. Gate: `tests/check_urf_conformance.py`. |
-| `URF-011` | A stored `resource_type` criterion spelled under a dissolved folder Base (`Hardware.*`, `Network.VLAN`) is refused once the folder is gone; its replacement is `filed_under==<group>` or the renamed class (`registry/renames.yaml`). While the folder still exists the gate warns. |
+| `URF-011` | A stored `resource_type` criterion spelled under a dissolved folder Base (`Hardware.*`, `VLAN`) is refused once the folder is gone; its replacement is `filed_under==<group>` or the renamed class (`registry/renames.yaml`). While the folder still exists the gate warns. |
 | `URF-008` | Regex metacharacters (`^ $ [ ] { } \| \`) MUST NOT appear in a URF value; the accepted subset matches with `*` glob and has no regex operator, so a regex compares as a literal and silently never matches. Refused at validation. `{self}` (§9.2) is the one exception. |

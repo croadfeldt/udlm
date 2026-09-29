@@ -26,7 +26,7 @@ description: >-
   and a day-0 filesystem-grow job.
 constituents:
   - component_id: dmz_address
-    resource_type: Network.IPAddress
+    resource_type: IPAddress
     type_version: 0.6.1
     provided_by: self
     failure_effect: required
@@ -58,7 +58,7 @@ constituents:
       run_state: { desired_state: running }
 
   - component_id: workload_dns
-    resource_type: Network.DNSZone
+    resource_type: DNSZone
     type_version: 0.3.2
     provided_by: external            # DNS is fulfilled by the directory/DNS provider,
                                      # not the VM provider registering this item

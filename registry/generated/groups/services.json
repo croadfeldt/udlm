@@ -3,6 +3,13 @@
   "generated": true,
   "classes": [
     {
+      "class": "AddressService",
+      "version": "0.7.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/network/address-service/_base.yaml",
+      "types": []
+    },
+    {
       "class": "Template",
       "version": "0.2.0",
       "instantiable": true,

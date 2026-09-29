@@ -34,7 +34,7 @@ terms:
     curation_state: canonical
     definition: >-
       Root of the network-category vocabulary — what KIND of network a segment is, independent of
-      which segment it is (`Network.VLAN`) and of how well it performs (`network_tier`). Three
+      which segment it is (`VLAN`) and of how well it performs (`network_tier`). Three
       questions, three axes; a consumer may state any, all, or none.
 
   - term: dmz

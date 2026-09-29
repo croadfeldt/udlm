@@ -25,7 +25,7 @@ record:
       provided_by: self
       failure_effect: required
     - component_id: existing_vlan
-      resource_type: Network.VLAN
+      resource_type: VLAN
       edge_type: contained_by      # the defect — BYO is borrowed, never owned
       provided_by: external
       fulfillment: consumer

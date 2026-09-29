@@ -52,14 +52,14 @@ Dependencies declared at the Resource Type Specification level are **portable an
 resource_type: Machine.VM
 type_level_dependencies:
   - dependency_uuid: <uuid>
-    required_resource_type_uuid: <uuid of Network.IPAddress>
-    required_resource_type_name: Network.IPAddress
+    required_resource_type_uuid: <uuid of IPAddress>
+    required_resource_type_name: IPAddress
     strength: hard
     cardinality: one_to_one
     description: Every VM requires exactly one IP address
   - dependency_uuid: <uuid>
-    required_resource_type_uuid: <uuid of Network.FirewallRule>
-    required_resource_type_name: Network.FirewallRule
+    required_resource_type_uuid: <uuid of FirewallRule>
+    required_resource_type_name: FirewallRule
     strength: hard
     cardinality: one_to_many
     description: Every VM requires at least one firewall rule
@@ -402,7 +402,7 @@ catalog_item:
   provider_specific_dependencies: []
   conditional_dependencies:
     - dependency_uuid: <uuid>
-      required_resource_type_uuid: <uuid of Network.LoadBalancer>
+      required_resource_type_uuid: <uuid of LoadBalancer>
       strength: hard                    # the edge's strength once the condition holds (§4)
       condition:
         field: high_availability
@@ -473,7 +473,7 @@ dependency_resolution:
     reserved_entity_uuid: <uuid>
     reservation_hold_uuid: <uuid>
   - dependency_role: networking
-    resource_type: Network.IPAddress
+    resource_type: IPAddress
     resolved_provider_uuid: <uuid>
     reserved_entity_uuid: <uuid>
 ```
@@ -513,7 +513,7 @@ composite_service_registration:
     dcm_visible_sub_resources:    # if selective
       - resource_type: Machine.VM
         role: control_plane_node
-      - resource_type: Network.LoadBalancer
+      - resource_type: LoadBalancer
         role: api_endpoint
 ```
 

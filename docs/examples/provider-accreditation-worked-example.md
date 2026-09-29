@@ -72,7 +72,7 @@ they carry no per-category override and inherit the provider default):
         { "category": "realize_resources/Machine", "resource_types": ["Machine.VM"],
           "topology_capability": { "kinds_supported": ["region","zone","host"], "max_separation": "zone" },
           "operational_capability": { "drain": true, "online_migrate": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] } },
-        { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress","Network.VirtualNetwork"] },
+        { "category": "realize_resources/Network", "resource_types": ["IPAddress","VirtualNetwork"] },
         { "category": "realize_resources/Storage", "resource_types": ["Volume"] } ] },
 
     { "capability_uuid": "a26c91c8-…", "version": "1.0.0", "name": "Container Lifecycle",
@@ -80,14 +80,14 @@ they carry no per-category override and inherit the provider default):
         { "category": "realize_resources/Container", "resource_types": ["Container"],
           "operational_capability": { "drain": true, "rolling_update": true, "online_migrate": true, "rehearsal_support": ["rehearsal"] },
           "sovereignty": { "operating_jurisdictions": ["US","CA"], "data_residency_zones": ["us-mn"], "enforcement_plane": "both" } },
-        { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress"] },
+        { "category": "realize_resources/Network", "resource_types": ["IPAddress"] },
         { "category": "realize_resources/Storage", "resource_types": ["Volume"] } ] },
 
     { "capability_uuid": "31aa387c-…", "version": "1.0.0", "name": "Cluster Lifecycle",
       "categories": [
         { "category": "realize_resources/KubernetesCluster", "resource_types": ["KubernetesCluster"],
           "operational_capability": { "drain": true, "rolling_update": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] } },
-        { "category": "realize_resources/Network", "resource_types": ["Network.VirtualNetwork","Network.Gateway"] },
+        { "category": "realize_resources/Network", "resource_types": ["VirtualNetwork","NetworkGateway"] },
         { "category": "realize_resources/Storage", "resource_types": ["Volume","StorageCluster"] } ] }
   ]
 }

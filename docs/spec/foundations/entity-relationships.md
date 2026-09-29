@@ -229,7 +229,7 @@ parent_resource_entity:
 
   available_allocations:
     - allocation_uuid: <uuid>
-      allocation_type: Network.VLANRange
+      allocation_type: VLANRange
       allocation_spec:
         vlan_range: "100-199"
         bandwidth: "10Gbps"
@@ -558,7 +558,7 @@ relationships:
     edge_type: depends_on
     strength: hard
     permitted_related_types:
-      - Network.IPAddress
+      - IPAddress
     default_lifecycle_policy:
       on_related_destroy: destroy
     consumer_declarable: false
