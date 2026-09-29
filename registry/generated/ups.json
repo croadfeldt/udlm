@@ -252,6 +252,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "power"
+  ],
   "context": {
     "purpose": "Models the battery-backed unit itself — what it is rated for, what wears, when it must signal low battery, and what it reports — so the feed it protects can be supplied_by a real entity instead of a feed_type string.",
     "plain_description": "A UPS as a thing you own, separate from the circuit it protects. You declare its make and model, its rating, its battery set and the point at which it must announce low battery; it reports whether it is online or on battery, how much charge and runtime remain, and how loaded it is. The daemon or card that produces those numbers (NUT, a vendor SNMP card, a Redfish power shelf) is the provider on the instance, not part of the type. The circuit the UPS feeds stays a PowerFeed, now supplied_by the UPS, so nothing about shutdown ordering changes.",

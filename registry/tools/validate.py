@@ -145,6 +145,10 @@ def validate_dir(subdir: str, pick) -> int:
         # them, and fails if any is ACCEPTED.
         if "must-reject" in path.parts:
             continue
+        # generated/groups/ holds usage-group VIEWS (ADR-082): indexes of classes per filing, written and
+        # checked fresh by generate_class_specs.py. They are not flat specs.
+        if subdir == "generated" and "groups" in path.parts:
+            continue
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
         docs = load_all(path)

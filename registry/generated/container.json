@@ -352,6 +352,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "compute"
+  ],
   "context": {
     "purpose": "Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.",
     "plain_description": "A single containerized workload: the `image` it runs, the `resources` it needs (`cpu` as a number of cores — 0.5, 2 — never a millicore string, plus `memory`), its environment and mounted paths (`process.env`, `process.mounts`), and its exposed ports (`network.ports`). It runs either on a cluster or directly on a host (e.g. rootless podman). Secrets never appear inline — anything sensitive in env or mounts points at a Security.CredentialRef instead. The image is an object either way: the inline form wraps the OCI string as `image.reference` (optionally pinned by `image.digest`), or `image` is a reference into governed image data, which is what lets change-impact analysis find every container affected when a base image is patched.",

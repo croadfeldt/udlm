@@ -35,6 +35,14 @@
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}$",
       "description": "Tier-1 vendor-neutral Category.Type name; single-segment permitted for cross-cutting types (e.g. Topology) — one to three segments (Base, Type, Provider class; CLS-001), exactly the record schema's grammar."
     },
+    "filed_under": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "description": "COMPUTED by the reader, never authored and never stored: the usage-group terms the entity's class is CURRENTLY filed under, resolved through `resource_type` (ADR-082, CLS-010). No record kind carries it; a filing is never frozen into a sealed hash."
+    },
     "type_version": {
       "type": "string",
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",

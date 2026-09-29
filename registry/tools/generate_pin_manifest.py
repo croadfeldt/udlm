@@ -141,7 +141,9 @@ def jcs_bytes(value):
 #     part of the contract. Refreshing an example must be digest-invariant.
 # Stripping an absent field is a no-op, so only specs that carry these are affected, and for them the
 # digest equals their pre-annotation published value (no republish, no manifest churn).
-IDENTITY_EXCLUDED_FIELDS = ("coverage",)
+#   - `filed_under` (ADR-082, CLS-010): where a class is FILED is organization, not identity — a hard
+#     link, not content. Adding or removing a filing changes no version and no digest.
+IDENTITY_EXCLUDED_FIELDS = ("coverage", "filed_under")
 
 
 def _strip_nonnormative(doc):

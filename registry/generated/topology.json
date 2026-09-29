@@ -137,6 +137,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "facility"
+  ],
   "context": {
     "purpose": "Declares the failure and locality domains — region, zone, rack, power, network — that placement, residency, and maintenance gating resolve against.",
     "plain_description": "One record describing a graph of domains, framed by its required `scope` (`global`, `region`, `facility`, or `logical` — the breadth the topology describes); each domain has a stable id, an abstract kind (zone, rack, power, and so on), a parent, and labels (e.g. jurisdiction). Portable intent constrains against kinds — spread across power domains — while what a resource landed in is a concrete id. Domains are addressable data inside this one type, not separate records. Observed per-domain status (active, draining, unavailable) is the signal maintenance gating reads — a draining domain holds off further maintenance.",

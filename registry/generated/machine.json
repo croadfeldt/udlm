@@ -186,6 +186,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "compute"
+  ],
   "context": {
     "purpose": "Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.",
     "plain_description": "The most portable way to ask for a machine: how big, what image, what storage tier. Placement decides the form (VM, bare metal, LPAR) and the provider; policy fills what the form needs. A producer bound at any of the three forms must accept this order (class-tiers CLS-002 (c)).",

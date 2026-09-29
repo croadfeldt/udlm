@@ -259,6 +259,14 @@ name alone:
   references form a dependency graph; **cycles refuse** (the CYCLE discipline applied to
   criteria).
 
+- `filed_under` — the usage groups the record's class is filed under (ADR-082, `CLS-010`):
+  `filed_under==hardware`, `filed_under=in=(storage,network)`. Resolved through the record's
+  `resource_type` to the class's *current* filing, never to a pinned version, so it is declared and
+  identity-stable and may appear in a stored criterion (URF-005), a `Grouping` criterion or a layer
+  target. Its value is a canonical term of `registry/taxonomies/usage-group.yaml` (URF-010). It
+  replaces the folder glob: `resource_type==Hardware.*` stops matching when the folder dissolves
+  (URF-011); `filed_under==hardware` is what it meant.
+
 - `via` — **read a field on the other end of a declared edge.** `via(<relation>)#<field>`
   resolves the named relationship from the record carrying the expression, then projects a field
   off the single record it resolves to: `via(located_in)#network.fabric_id` reads the fabric id
@@ -411,4 +419,6 @@ not a policy predicate grammar and does not become one.
 | `URF-006` | Criterion→criterion references (`member_of` and future virtual fields) MUST be acyclic; a cycle is refused at validation. |
 | `URF-007` | Credentials or bearer material MUST NOT appear in any URF axis. |
 | `URF-009` | `via(<relation>)#<field>` traverses ONE declared relationship (`relationships[].name`, REL-001) and projects a field off a cardinality-1 resolution. An undeclared relation name is refused at validation, never resolved; a relation resolving to more than one record refuses `ambiguous` (URF-004); `via` MUST NOT be chained. The traversal is a dereference — the governance matrix evaluates the read and the projection crosses the policy information firewall (§9.6, ADR-041) — so an unauthorized target is refused, never rendered absent. |
+| `URF-010` | A stored `filed_under` value MUST be a canonical term of the usage-group taxonomy; a retired or renamed term is refused at validation. Gate: `tests/check_urf_conformance.py`. |
+| `URF-011` | A stored `resource_type` criterion spelled under a dissolved folder Base (`Hardware.*`, `Network.VLAN`) is refused once the folder is gone; its replacement is `filed_under==<group>` or the renamed class (`registry/renames.yaml`). While the folder still exists the gate warns. |
 | `URF-008` | Regex metacharacters (`^ $ [ ] { } \| \`) MUST NOT appear in a URF value; the accepted subset matches with `*` glob and has no regex operator, so a regex compares as a literal and silently never matches. Refused at validation. `{self}` (§9.2) is the one exception. |

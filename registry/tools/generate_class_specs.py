@@ -45,12 +45,16 @@ SPEC_VALIDATOR = Draft202012Validator(
                          referrer=_SPEC_SCHEMA, store=refstore.build_store()))
 
 
+_PATHS = {}   # resource_type -> repo-relative source path (the group views say where a class lives)
+
+
 def load_classes():
     by_name = {}
     for path in sorted(glob.glob(os.path.join(CLASSES, "**", "*.yaml"), recursive=True)):
         doc = yaml.safe_load(open(path, encoding="utf-8")) or {}
         if doc.get("record_type") == "class":
             by_name[doc["resource_type"]] = doc
+            _PATHS[doc["resource_type"]] = "registry/" + os.path.relpath(path, ROOT)
     return by_name
 
 
@@ -133,6 +137,10 @@ def compile_spec(cls, by_name):
         spec["adopts"] = adopts
     if cls.get("entity_type"):                       # Knowledge/Access discriminator — pass-through
         spec["entity_type"] = cls["entity_type"]
+    for c in chain(cls, by_name):                    # the filing rides with the spec (ADR-082): declared on the
+        if c.get("filed_under"):                     # Base, inherited by everything beneath it, identity-excluded
+            spec["filed_under"] = list(c["filed_under"])
+            break
     if cls.get("context"):                           # type tier only (schema-enforced); copied verbatim
         spec["context"] = cls["context"]
     if cls.get("spec_examples"):                     # rule-36/ADR-055: the worked example rides the compiled spec
@@ -211,8 +219,52 @@ def main():
         else:
             open(out, "w", encoding="utf-8").write(text)
             print(f"wrote  {name} → {os.path.relpath(out, ROOT)} ({len(spec['spec']['properties'])} props)")
+    drift += group_views(by_name, has_children, check)
     print(f"{n} class(es) compiled (types + orderable bases), {len(drift)} issue(s)")
     return 1 if drift else 0
+
+
+def group_views(by_name, has_children, check):
+    """One view per usage-group term (ADR-082): the classes filed under it, with where each lives.
+    Git has no hard links, so a class sits in ONE directory and every other filing is this view.
+    Written to registry/generated/groups/<term>.json; `--check` reports a stale or orphaned view."""
+    tax = yaml.safe_load(open(os.path.join(ROOT, "taxonomies", "usage-group.yaml"), encoding="utf-8"))
+    terms = [t["term"] for t in tax["terms"] if t.get("parent")]
+    views = {t: [] for t in terms}
+    for name, cls in sorted(by_name.items()):
+        if cls.get("class") != "base":
+            continue
+        for term in cls.get("filed_under") or []:
+            if term in views:
+                views[term].append({"class": name, "version": cls["version"],
+                                    "instantiable": cls.get("instantiable") is not False,
+                                    "path": _class_path(cls, has_children.get(name, False)),
+                                    "types": sorted(n for n, c in by_name.items() if c.get("parent") == name)})
+    gdir = os.path.join(OUT, "groups")
+    os.makedirs(gdir, exist_ok=True)
+    issues = []
+    for term in terms:
+        text = json.dumps({"usage_group": term, "generated": True, "classes": views[term]},
+                          indent=2, ensure_ascii=False) + "\n"
+        out = os.path.join(gdir, term + ".json")
+        if check:
+            existing = open(out, encoding="utf-8").read() if os.path.exists(out) else ""
+            if existing != text:
+                print(f"FAIL [GEN-001] usage-group view {term}: stale — regenerate (registry/generated/groups/)")
+                issues.append(term)
+        else:
+            open(out, "w", encoding="utf-8").write(text)
+    for stray in sorted(os.listdir(gdir)):
+        if stray.endswith(".json") and stray[:-5] not in terms:
+            print(f"FAIL [GEN-001] usage-group view {stray}: names no term in the usage-group taxonomy")
+            issues.append(stray)
+    print(f"{len(terms)} usage-group view(s) {'checked' if check else 'written'} (registry/generated/groups/)")
+    return issues
+
+
+def _class_path(cls, has_children):
+    """Where the class file sits (CLS-PATH-001 keeps the path honest; the view only reports it)."""
+    return _PATHS.get(cls["resource_type"])
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ resource_type: UPS
 version: 0.1.0
 family: Resource
 status: active
+filed_under: [power]
 metadata:
   display_name: Uninterruptible Power Supply
   description: 'An uninterruptible power supply — battery-backed conditioned power that carries a load

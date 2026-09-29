@@ -7,14 +7,16 @@ built from and the one question every tier answers: *who can realize an order pl
 ADR-038 (scoped Classes of shared data elements — portability read off where an element sits)
 holds the why. ADR-068 (a Base is earned, not assumed — `Compute` split into `Container`,
 `KubernetesCluster` and `Machine`) and ADR-069 (a Base is a deliverable any member can realize)
-are the rulings this document turns into rules. The rules here are normative; the register rows
-and ADR-038 are cited, never restated.
+are the rulings this document turns into rules. ADR-082 (a class is defined once and filed under
+usage groups like hard links; the folder Bases dissolve) adds the grouping system in §3. The rules
+here are normative; the register rows and ADR-038 are cited, never restated.
 
 ---
 
 ## 1. In one breath
 
-A **class** is a named data contract. There are three tiers, keyed to the name:
+A **class** is a named data contract. There are three tiers. The tier is what `class` declares and
+`parent` derives; the name renders the ancestry, one segment per tier:
 
 | Tier | Name shape | Example | What an order here commits to |
 |---|---|---|---|
@@ -61,18 +63,45 @@ The word *move* is deliberately absent. Nothing is migrated from a VM to bare me
 portability events are placement at order time, rebuild from stored intent, and provider
 substitution; in each the intent stays put and a different member realizes it.
 
-## 3. Folders
+## 3. Groups — where a class is filed
 
-A category whose members fail condition 1 is a folder: `Storage` groups volumes, pools and
-clusters; `Network` groups VLANs, subnets and DNS zones. Folders are useful as names and harmful
-as classes only because every class is orderable. The fix is a flag, not a rename: a folder Base
-carries `instantiable: false`, its description says what it groups, and an order placed at it is
-refused. It may still carry elements its members inherit — `Network` carries `zone` and `tier`
-and is still a folder, because no order moves between a VLAN and a DNS zone.
+Two systems share the registry and are kept apart on purpose (ADR-082):
 
-A member is promoted out of a folder into a Base of its own only when its family needs category,
-kind, dialect and offering at once and overflows three segments. That is what forced `Container`
-out of `Compute`, and it is the exception, not the pattern.
+- **The definition system** is the three tiers above. It answers *what is this and who can realize
+  it*. A name carries definition only: `StorageCluster`, `StorageCluster.Ceph`,
+  `StorageCluster.Ceph.<Provider>`.
+- **The grouping system** answers *where do people look for it*. A class declares
+  `filed_under: [hardware, storage]` — one or more terms of the usage-group vocabulary
+  (`registry/taxonomies/usage-group.yaml`, on the TaxonomyTerm machinery). Unix hard-link semantics:
+  the class is the inode (one identity, tier, parent, elements, version); a group is a directory; a
+  filing is a link. Adding or removing a filing changes nothing about the class — no version bump,
+  no digest change, no record touched.
+
+The former folder Bases (`Hardware`, `Network`, `Storage`, `Security`, `Software`, `Data`,
+`Facility`, `Observability`) mixed the two systems: a folder was a Base that could not pass the Base
+test, and every member carried a name that promised a family contract the folder could not honour.
+They dissolve into group terms. Each former member becomes a Base in its own right if it passes
+CLS-002, or is re-homed under a Base that does; `Hardware` is a group, not a Base, because it
+represents no portable data — `device_class` is a discriminator, not a deliverable.
+
+**On disk** (ADR-061 kept): a class's directory is named for the class. Git has no hard links, so a
+Base lives in ONE group directory — its hosting group, `registry/classes/resource/<group>/<class>/`
+— and every other filing is a generated view (`registry/generated/groups/<group>.json`). The hosting
+group is one of the terms in `filed_under`; moving a home is a `git mv`. Access, Knowledge and
+Process classes keep `<family>/<class>` until a family has two groups.
+
+**Delimiters are never shared.** `/` is a locator (a directory, a URF path segment); `.` is a tier.
+`storage/storage-cluster/ceph` is where a file is; `StorageCluster.Ceph` is what it is;
+`Storage.StorageCluster` is forbidden, because it reads as Base.Type. A Base name therefore stands
+alone: it is filed in several directories and referenced with none. Where a widely used standard
+already spells the thing, that spelling wins (Redfish, Swordfish: `StoragePool`, `NetworkAdapter`).
+
+**Grouping of instances** is `Grouping` (register row 063), not this. A filing is on the class
+only: no record of any kind carries `filed_under`; a record's groups resolve through its
+`resource_type` to the class's *current* filing, never to the version it pinned. Content is
+versioned; links are current. The entity view may carry a computed `filed_under` for readers, the
+way it carries `lifecycle_state`. A rename is identity and touches records once; a filing is
+organization and touches none.
 
 ## 4. What the Type tier is spent on
 
@@ -138,23 +167,30 @@ never from the tree alone. Neither replaces the other.
 
 | Rule | Statement |
 |---|---|
-| `CLS-001` | **Three tiers, keyed to the name.** A Base Class has one name segment, a Type Class two, a Provider Class three; `class` MUST match the segment count. Each tier extends the one above by add or refine, never contradict (`LSK-001`). Depth is three; the `resource_type` pattern is the cap. |
+| `CLS-001` | **Three tiers, keyed to the declaration.** `class` states the tier; `parent` derives it: a Base has no parent, a Type's parent is a Base, a Provider Class's parent is a Type. The name renders the ancestry — one segment per tier, `Base.Type.Provider` — and MUST agree with it; the name never defines the tier. Each tier extends the one above by add or refine, never contradict (`LSK-001`). Depth is three; the `resource_type` pattern is the cap. |
 | `CLS-002` | **A Base Class is a deliverable that any member can realize.** A grouping earns a Base only when (a) an existing, widely used API already abstracts over its members, (b) every Base element is honorable by every descendant, and (c) an offering declared at any tier accepts orders at every tier above it. A grouping that fails (a) is a folder (`CLS-003`). |
-| `CLS-003` | **A folder is non-instantiable, not renamed.** A Base whose members share no abstraction MUST carry `instantiable: false` and a description stating what it groups. An order at a non-instantiable class is refused. Its members stay where they are; a member is promoted to its own Base only when its family overflows three segments. |
+| `CLS-003` | **A grouping that fails the Base test is a usage group, not a class.** Nothing is filed as a Base to be found; it is filed under a term of the usage-group vocabulary (`CLS-010`). A member of a former folder becomes a Base in its own right when it passes `CLS-002`, else is re-homed under a Base that does. An `instantiable: false` Base is tolerated only while its dissolution is in progress (ADR-082). |
 | `CLS-004` | **The Type tier is spent on one axis per family.** The second segment narrows by form or by dialect, whichever carries the definition structure. Form and dialect MUST NOT both appear as Types under one Base. |
 | `CLS-005` | **A Provider Class exists only for provider-specific data.** A provider needing nothing beyond the Type binds at the Type. Two deployments with the same data are instances on the authority axis. An offering that requires consumer-supplied data the Type lacks MUST declare a Provider Class carrying it as elements, never as an opaque blob. |
 | `CLS-006` | **A class is named for its deliverable.** A technology name appears only when the technology is the contract (a conformance-tested standard), never when it is a product. A Base is never named for a vendor; a Type is a form or a dialect; a Provider Class is the offering. |
 | `CLS-007` | **One short name, resolved on input, never stored.** A class MAY declare one `short_name` matching the `resource_type` pattern, unique case-insensitively against every canonical name and every other short name. It is accepted at every input surface, canonicalized on write, and MUST NOT appear in `$id`, `parent`, an element `scope`, a relationship `target`, or an offering list. Gate: `tests/check_class_short_names.py`. |
 | `CLS-008` | **Instantiability belongs to the Base.** `instantiable` MAY appear only on a Base Class (`class: base`); absent means true. Gate: `tests/check_class_short_names.py`. |
+| `CLS-010` | **A class is filed, not nested.** A Base MAY declare `filed_under`: a set of canonical terms of the usage-group taxonomy (`registry/taxonomies/usage-group.yaml`). Types and Provider Classes inherit their Base's filing and MUST NOT declare one. No record of any kind carries `filed_under`; a record's groups resolve through `resource_type` to the class's current filing. A filing is organization: adding or removing one bumps no version and changes no digest (identity-excluded). Gate: `tests/check_class_groups.py`. |
+| `CLS-011` | **Link count is at least one.** Every instantiable Resource-family Base names at least one usage group. Gate: `tests/check_class_groups.py`. |
+| `CLS-012` | **Delimiters are never shared.** `.` separates tiers and nothing else; `/` locates and never names. A group MUST NOT appear in a class name (`Storage.StorageCluster` is refused: it reads as Base.Type). A Base name stands alone; where a widely used standard spells it, that spelling wins. |
+| `CLS-013` | **One hosting directory, many views.** A Base's file sits in exactly one group directory, `registry/classes/resource/<group>/<class>/`, and that group is one of its filings (`CLS-PATH-001`); every other filing is a generated view under `registry/generated/groups/`. Moving a home is a `git mv`, never a record change. |
 | `CLS-009` | **An element's `role` only narrows.** An element may declare a data role (`registry/class.schema.json`; vocabulary in `common-elements.schema.json`). Absent means execution: required by every provider that binds the class (DSP-002). A non-execution role removes the element from the required set for every descendant. No role adds to what a provider gets; only policy does (DSP-003). |
 
 ## 9. Conformance
 
 | Enforced by | Rules |
 |---|---|
-| `registry/class.schema.json` (`class` vs segment count, `resource_type` pattern) and `tests/check_class_liskov.py` | CLS-001 |
+| `registry/class.schema.json` (`class`, `parent`, `resource_type` pattern), `tests/check_class_paths.py` (name agrees with ancestry) and `tests/check_class_liskov.py` | CLS-001 |
+| `tests/check_class_groups.py` (filing on a Base only, canonical terms, never on a record, link count); `registry/tools/generate_pin_manifest.py` (`filed_under` identity-excluded); `registry/examples/must-reject/023` | CLS-010, CLS-011 |
+| `tests/check_class_paths.py` (hosting group is a filing) and `registry/tools/generate_class_specs.py` (group views) | CLS-013 |
+| review against §3; the `resource_type` pattern admits the shape, the register records the spelling per family | CLS-012 |
 | `tests/check_class_liskov.py` (`LSK-001`) plus the absence of an exclusion mechanism in the class schema | CLS-002 (b) |
 | review against this document; (c) is a provider-contract obligation carried by `PRV-*` | CLS-002 (a), (c) |
-| `registry/class.schema.json` (`instantiable`) and `tests/check_class_short_names.py`; `registry/tools/generate_class_specs.py` serves a flat spec for every Base that is not a folder, so an order at a Base validates its fields | CLS-003, CLS-008 |
+| `registry/class.schema.json` (`instantiable`) and `tests/check_class_short_names.py`; `registry/tools/generate_class_specs.py` serves a flat spec for every instantiable Base, so an order at a Base validates its fields | CLS-003, CLS-008 |
 | `registry/class.schema.json` (`short_name`), `tests/check_class_short_names.py`, and `registry/tools/resolve_class_address.py`, which accepts a short name and returns the canonical class | CLS-007 |
 | review; the Type-axis and naming rules are judgment the register records per family | CLS-004, CLS-005, CLS-006 |

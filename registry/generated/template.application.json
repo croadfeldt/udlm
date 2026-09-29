@@ -111,6 +111,9 @@
       "description": "Where the realized application is reached — the address a consumer or a downstream binding uses. Published by the composition rather than by any constituent: which part terminates traffic is an internal arrangement the consumer must not have to know, and it may change between provider projections of the same application without the endpoint changing."
     }
   },
+  "filed_under": [
+    "services"
+  ],
   "context": {
     "purpose": "Let a consumer order an application as ONE thing — the whole shape, wired, placed and reconciled together — instead of ordering the parts and re-deriving how they connect every time.",
     "plain_description": "A ready-made application shape. Somebody who knows how the pieces fit wrote it down once; you order it, choose the few things that are yours to choose, and get a running application.",

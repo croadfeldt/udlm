@@ -9,59 +9,41 @@ Guiding rule: **name to an existing standard before inventing.** Where an indust
 names a thing, adopt its vocabulary by reference (`adopts[]`, see SPEC-DESIGN §22–23) and let our name
 mirror the concept; only coin a UDLM name where no standard fits.
 
-## 1. Type names — `Category.Type`
+## 1. Class names — `Base[.Type[.Provider]]`
 
-- **Shape — domain-owned vs cross-cutting:**
-  - **Domain-owned types → `Category.Type`**, both segments **PascalCase** (`Machine.VM`,
-    `Network.IPAddress`).
-  - **Cross-cutting / foundational types (not owned by any single domain) → single-segment**
-    PascalCase (`Capability`, `Topology`). This covers Knowledge-family entities *and* cross-domain
-    Resource types like `Topology` that resources across many domains reference. The `family` field
-    disambiguates. (The single-segment form signals "domain-neutral," not "Knowledge-only"; the
-    meta-schema `resource_type` pattern already permits both forms.)
-  - Enforced by the `resource_type` / `$id` patterns in the meta-schema.
-- **Tiered namespace** (`docs/spec/governance/registry-governance.md` §2):
-  | Tier | Namespace form | Example | Vendor names? |
-  |---|---|---|---|
-  | 1 — Core | `Category.Type` (vendor-neutral, from the canonical categories below) | `Storage.Cluster` | **never** |
-  | 2 — Verified Community | `Vendor.Type` / `Technology.Type` | `VMware.NsxSegment`, `Ceph.Cluster` | yes (the tech *is* the namespace) |
-  | 3 — Organization | `Org.Type` | `Acme.LegacyMainframeJob` | org-scoped |
-- **No vendor/product names in Tier-1.** A concrete technology is a **provider/implementation of** a
-  vendor-neutral type, declared on the *instance* (`provider: ceph`) and in `adopts[]` — not baked into
-  the type name. (This is why `Storage.CephCluster` is wrong and `Storage.Cluster` is right.)
+- **Shape:** one segment per tier (class-tiers.md `CLS-001`), every segment **PascalCase**:
+  `Machine`, `Machine.VM`, `Machine.VM.OCPVirt`. `.` separates tiers and nothing else (`CLS-012`).
+- **A Base name stands alone.** It is filed under usage groups (§2), so it never carries a group as
+  a prefix: `StorageCluster`, never `Storage.StorageCluster`. Where a widely used standard spells the
+  thing, that spelling wins (Redfish, Swordfish: `StoragePool`, `NetworkAdapter`).
+- **Vendor and product names.** Never in a Base. At the Type tier only as a *dialect* the family
+  spends its Type axis on (`CLS-004`: `KubernetesCluster.OpenShift`, `StorageCluster.Ceph`). At the
+  Provider tier the name is the offering. A concrete technology that is merely how an instance is
+  realized is the provider on the instance and an `adopts[]` entry, not a name.
+- **Tiered namespace** (`docs/spec/governance/registry-governance.md` §2): Core classes are the
+  vendor-neutral Bases and Types above; Verified-Community and Organization classes are Types or
+  Provider Classes beneath a Core Base, never a parallel `Vendor.Type` namespace — the first
+  segment is always a Base.
 - **Singular nouns** for the thing itself (`MemoryModule`, not `MemoryModules`). Plurality lives in
   cardinality/relationships, not the name.
-- **Acronyms:** keep well-known initialisms **uppercase** in the Type segment, per the existing
-  `Network.IPAddress` precedent — `Network.DNSZone`, `Network.DHCPScope` (not `DnsZone`/`DhcpScope`).
+- **Acronyms:** keep well-known initialisms **uppercase** in a segment — `IPAddress`, `DNSZone`,
+  `DHCPScope`, `BMC`, `UPS` (not `DnsZone`/`DhcpScope`).
+- Enforced by the `resource_type` / `$id` patterns in the meta-schema and `tests/check_class_paths.py`.
 
-## 2. Categories
+## 2. Categories are usage groups
 
-The canonical categories (`docs/spec/foundations/resource-type-hierarchy.md` §2.2). Resource categories:
-`Machine`, `Container`, `KubernetesCluster`, `KubernetesNamespace`, `KubernetesNodePool`, `Network`, `Storage`, `Security`, `Observability`, `Data` (`Platform` was a folder, dissolved and retired 2026-09-13). Information
-categories: `Business`, `Identity`, `Compliance`, `Operations`.
+A category is a term of the usage-group taxonomy (`registry/taxonomies/usage-group.yaml`;
+`docs/spec/foundations/resource-type-hierarchy.md` §2.2). A class declares `filed_under: [...]` on
+its Base — one or more terms, Unix hard-link semantics (`CLS-010`) — and lives on disk in one of
+them (`CLS-013`). Adding a filing bumps nothing.
 
-**Adding a category** is permitted ("implementors may define additional categories following the
-specification") but is a registry-precedent decision — do it only when **both**:
-1. no existing category is a reasonable home, **and**
-2. the new category maps to a recognized industry model (so we adopt, not invent).
-
-New categories established by this work, each anchored to **DMTF Redfish** (datacenter hardware/DCIM):
-- **`Hardware`** — the **device/component layer** below the device boundary (DIMM, disk, NIC, CPU, GPU),
-  the first-class side of the §26 component model. **Not physical-only**: a `device_class` discriminator
-  (`physical | virtual | passthrough | partition`, common-elements §7) lets the same types model a real
-  DIMM, a guest's virtual disk, a passed-through GPU, or a vGPU/SR-IOV/VLAN **slice of a physical parent**
-  (via a `parent_device` reference). Anchored to Redfish `Memory`/`Processor`/`Drive`/`NetworkAdapter`
-  (+ `NetworkDeviceFunction`/`PCIeFunction` for the derived cases). Distinct from `Machine` (the whole
-  machine/instance).
-- **`Facility`** — physical-datacenter resources (power, later rack/cooling). Anchored to Redfish DCIM
-  `PowerDistribution`/`Circuit`/`PowerDomain` (+ NUT for UPS telemetry).
-- **`UPS`** — a single-segment base of its own (not `Facility.UPS`, not a `Power` base): it passes the base
-  test (row 069 / CLS-002) — NUT and Redfish PowerEquipment abstract over every UPS topology; `Facility` and
-  a `Power` base do not (ADR-075). Anchored to IEC 62040-3 + NUT (telemetry, reference-only) + Redfish PowerEquipment.
+**Adding a category** is adding a term under the root: do it only when no existing term is a
+reasonable home. A category is never a class: a grouping earns a Base only by the Base test
+(`CLS-002`); `UPS` is a Base filed under `power` (ADR-075), `Hardware` is a group with no Base.
 
 Resource vs Information: a **provisioned server is a Resource**; the **data it holds is Information**.
-A directory *server* is `Security.DirectoryService` (a Resource); `Identity.*` (Person/Group/
-ServiceAccount) is the Information data — don't conflate them.
+A directory *server* is a Resource class filed under `identity` and `services`; `Identity.*`
+(Person/Group/ServiceAccount) is the Information data — don't conflate them.
 
 ## 2a. Provider capabilities and capability categories (ADR-PROV-002)
 

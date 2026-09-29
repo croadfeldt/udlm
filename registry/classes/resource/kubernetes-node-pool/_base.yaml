@@ -8,6 +8,7 @@ short_name: K8sNodePool
 version: 1.1.0
 family: Resource
 status: active
+filed_under: [compute]
 metadata:
   display_name: Node Pool
   description: 'A Kubernetes node pool as one orderable deliverable — a Base Class in its own right

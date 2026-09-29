@@ -639,7 +639,9 @@ def fuzz_type(path):
 
 
 def main():
-    paths = sorted(p for p in TYPES_DIR.rglob("*") if p.suffix in (".json", ".yaml", ".yml"))
+    # generated/groups/ holds usage-group views (ADR-082), not type specs — nothing to fuzz there
+    paths = sorted(p for p in TYPES_DIR.rglob("*")
+                   if p.suffix in (".json", ".yaml", ".yml") and "groups" not in p.parts)
     all_errors, total_mut = [], 0
     for path in paths:
         try:

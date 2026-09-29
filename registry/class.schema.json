@@ -331,6 +331,16 @@
       "default": true,
       "description": "Whether an order may be placed at this Class. Meaningful on a Base Class only (class: base): a category whose members share no abstraction is a folder and MUST set false (CLS-003, docs/spec/foundations/class-tiers.md). Absent means true. A Type or Provider Class never carries it (CLS-008; gate tests/check_class_short_names.py)."
     },
+    "filed_under": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "description": "Where this Base is filed for people to find it: one or more terms of the usage-group taxonomy (registry/taxonomies/usage-group.yaml), Unix hard-link semantics — the class is the inode, each term a directory entry (ADR-082, CLS-010). Base Class only; Types and Provider Classes inherit the filing of their Base. Every instantiable Resource Base names at least one (CLS-011; gate tests/check_class_groups.py). The class's git directory is one of the terms named here (CLS-PATH-001); the other filings are generated views under registry/generated/groups/. Organization, not identity: adding or removing a term bumps no version and changes no digest (identity-excluded, like `coverage`). Never on a record of any kind."
+    },
     "short_name": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}$",

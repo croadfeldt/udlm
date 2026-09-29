@@ -119,21 +119,14 @@ Worked example: `registry/classes/resource/machine/vm/cexample-cloud.yaml`. Auth
 
 ### 2.2 Default Resource Type Categories
 
-The control plane ships with a default set of Resource Type Categories. Implementors may define additional categories following the specification. The registry contains both **Resource Types** (for provisioned resources) and **Information Types** (for external data references) — distinguished by category prefix.
-
-**Resource Type Categories:**
-
-| Category | Description |
-|----------|-------------|
-| `Machine` | Machines — virtual machines, bare-metal hosts, logical partitions (one deliverable, three forms) |
-| `Container` | Container workloads — an OCI image run by a container provider |
-| `KubernetesCluster` | Kubernetes clusters — the Kubernetes API as one orderable deliverable |
-| `Network` | Networking resources — IP addresses, VLANs, firewall rules, load balancers |
-| `Storage` | Storage resources — block, object, file, databases |
-| `Platform` | *Retired 2026-09-13* (deprecated 2026-09-11) — a folder, dissolved: clusters, namespaces and node pools are the Kubernetes Bases above; a storage class is `Storage.Class`; a fleet hub is a `Software.Service` |
-| `Security` | Security resources — certificates, secrets, HSMs, identity |
-| `Observability` | Monitoring and logging resources |
-| `Data` | Data services — streams, queues, pipelines |
+Resource categories are **usage groups**: the governed vocabulary in
+`registry/taxonomies/usage-group.yaml` (ADR-082; class-tiers.md §3). A class is defined once by its
+tier and parent and is *filed* under one or more groups; a group is where people look, never what a
+thing is. The former category Bases (`Network`, `Storage`, `Security`, `Observability`, `Data`,
+`Hardware`, `Facility`, `Software`) are terms of that vocabulary now, not classes; `Machine`,
+`Container` and `KubernetesCluster` were never categories — they are Bases filed under `compute`.
+Implementors add categories by adding terms under the same root (registry-governance §2). The
+classes filed under each term are served at `registry/generated/groups/<term>.json`.
 
 **Information Type Categories:**
 

@@ -232,6 +232,89 @@ def test_cardinality_one():
 # --------------------------------------------------------------------------------------
 # helpers
 # --------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
+# Test 5 — USAGE-GROUP TERMS (ADR-082; URF-010 / URF-011)
+# --------------------------------------------------------------------------------------
+def _usage_groups():
+    """(canonical terms, {FormerFolder: term}) from registry/taxonomies/usage-group.yaml."""
+    import yaml
+    tax = yaml.safe_load(open(os.path.join(ROOT, "registry", "taxonomies", "usage-group.yaml"), encoding="utf-8"))
+    terms = {t["term"] for t in tax["terms"] if t.get("parent") and t.get("curation_state") == "canonical"}
+    former = {t["former_folder"]: t["term"] for t in tax["terms"] if t.get("former_folder")}
+    return terms, former
+
+
+def _class_exists(name):
+    import yaml
+    for f in glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"), recursive=True):
+        try:
+            d = yaml.safe_load(open(f, encoding="utf-8")) or {}
+        except yaml.YAMLError:
+            continue
+        if d.get("record_type") == "class" and d.get("resource_type") == name:
+            return True
+    return False
+
+
+def test_usage_group_terms():
+    """URF-010 — a stored `filed_under` value is a canonical usage-group term (a retired or renamed term
+    is the one way a filing criterion can go stale). URF-011 — a stored `resource_type` criterion
+    written against a dissolved folder Base (`resource_type==Hardware.*`) is refused once the folder
+    is gone; its replacement is `filed_under==<group>`. While the folder still exists it is a WARN."""
+    terms, former = _usage_groups()
+    gone = {name: term for name, term in former.items() if not _class_exists(name)}
+    checked, warns = 0, []
+    for f in glob.glob(os.path.join(ROOT, "registry", "**", "*"), recursive=True):
+        if not f.endswith((".yaml", ".yml", ".json")) or "must-reject" in f or os.sep + "groups" + os.sep in f:
+            continue
+        docs = _load_docs(f)
+        if not docs:
+            continue
+        rel = os.path.relpath(f, ROOT)
+        for doc in docs:
+            for loc, val in _walk_strings(doc):
+                if not _looks_like_urf(val) or _is_schema_example(loc):
+                    continue
+                try:
+                    u = U.parse(val)
+                except U.URFError:
+                    continue
+                for op, sel, value in _terms(u.terms):
+                    values = value if isinstance(value, (list, tuple)) else [value]
+                    values = [str(v).strip("'") for v in values]
+                    if sel == "filed_under":
+                        checked += 1
+                        for v in values:
+                            if v not in terms:
+                                fails.append(f"URF-010 {rel}:{loc}: filed_under=={v!r} is not a canonical "
+                                             f"usage-group term (registry/taxonomies/usage-group.yaml)")
+                    elif sel == "resource_type":
+                        for v in values:
+                            head = v.split(".")[0]
+                            if "." in v and head in former:
+                                checked += 1
+                                if head in gone:
+                                    fails.append(f"URF-011 {rel}:{loc}: resource_type=={v!r} names the dissolved "
+                                                 f"folder {head}; file by group instead: filed_under=={former[head]}")
+                                else:
+                                    warns.append(f"WARN URF-011 {rel}:{loc}: resource_type=={v!r} is spelled under folder {head}, "
+                                                 f"which dissolves under ADR-082 — the class is renamed "
+                                                 f"(registry/renames.yaml) or the criterion becomes filed_under=={former[head]}")
+    for w in warns:
+        print("  " + w)
+    return checked
+
+
+def _load_docs(f):
+    import yaml
+    try:
+        if f.endswith(".json"):
+            return [json.load(open(f, encoding="utf-8"))]
+        return [d for d in yaml.safe_load_all(open(f, encoding="utf-8")) if isinstance(d, dict)]
+    except (ValueError, yaml.YAMLError):
+        return []
+
+
 def _walk_strings(node, loc=""):
     if isinstance(node, dict):
         for k, v in node.items():
@@ -283,8 +366,9 @@ def main():
     p = test_portability()
     c = test_no_credentials()
     k = test_cardinality_one()
+    g = test_usage_group_terms()
     print(f"urf-conformance: dereference {d} URF(s) · portability {p} filter(s) × {len(CARRIERS)} carriers "
-          f"· URF-007 {c} · URF-004 {k}")
+          f"· URF-007 {c} · URF-004 {k} · URF-010/011 {g}")
     if fails:
         for m in fails:
             print(f"  {m}")

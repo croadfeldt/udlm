@@ -38,9 +38,10 @@ _SELECTOR_RE = re.compile(r"^[a-z0-9_]+(\.[a-z0-9_]+)*$")
 # is a named traversal, never a longer dotted name — that is what keeps a cheap field read and an
 # authorized dereference visibly different.
 #   member_of      membership in a named grouping
+#   filed_under    the usage-group terms the record's class is currently filed under (ADR-082)
 #   via(<relation>) read a field on the other end of ONE declared relationship (URF-009)
 _VIA_RE = re.compile(r"^via\(([a-z][a-z0-9_]*)\)$")
-VIRTUAL_FIELDS = ("member_of",)
+VIRTUAL_FIELDS = ("member_of", "filed_under")
 _NAME_RE = re.compile(r"^[A-Z][A-Za-z0-9]*(\.[A-Z][A-Za-z0-9]*)*$")
 
 

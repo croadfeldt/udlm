@@ -106,6 +106,28 @@ def _fold(records):
     return view
 
 
+def filed_under(resource_type, generated_dir=None):
+    """The usage-group terms a class is CURRENTLY filed under (ADR-082), read from the compiled spec of
+    the entity's Base. Computed for a view, never stored: no record carries a filing (CLS-010)."""
+    import glob, json
+    gdir = generated_dir or os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "generated")
+    base = resource_type.split(".")[0]
+    for p in glob.glob(os.path.join(gdir, "*.json")):
+        try:
+            spec = json.load(open(p, encoding="utf-8"))
+        except ValueError:
+            continue
+        if spec.get("resource_type") == base:
+            return list(spec.get("filed_under") or [])
+    return []
+
+
+def with_filing(view, generated_dir=None):
+    """Return the view with its computed `filed_under` (entity-view.schema.json); absent when unfiled."""
+    terms = filed_under(view.get("resource_type", ""), generated_dir)
+    return {**view, "filed_under": terms} if terms else view
+
+
 def build_views(docs):
     """{uuid: view}. State records fold by entity_uuid; anything else is already a view and is kept as is."""
     grouped, views = {}, {}

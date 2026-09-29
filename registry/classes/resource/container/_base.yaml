@@ -7,6 +7,7 @@ resource_type: Container
 version: 1.0.2
 family: Resource
 status: active
+filed_under: [compute]
 # OWN-007 — a type-level invariant, not settable per entity.
 # ownership-sharing-allocation §2.1 names Container.
 ownership_model: whole_allocation
