@@ -15,7 +15,7 @@ python3 <estate-explorer>/ingest/shutdown_order.py .
 
 ### Multi-edge (and redundancy)
 Power is a **direct dependency of the host** on the feed(s) it draws from — `Machine.BareMetalHost
-depends_on Facility.PowerFeed` is `0..n`, so redundancy is authored as *more than one edge*, not
+depends_on PowerFeed` is `0..n`, so redundancy is authored as *more than one edge*, not
 inferred through a component. `host-a` declares **two** feed edges — `depends_on feed-a` +
 `depends_on feed-b`, two independent rails — so losing one feed leaves it up; the blast radius of
 `feed-a` includes `host-a`, but `host-a` survives because it has a second path across a distinct

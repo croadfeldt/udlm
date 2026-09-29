@@ -14,7 +14,7 @@ already knows — a remote-access enrollment, an application session, a device c
 Losing it silently turns a routine rebuild into an identity incident; keeping it ad hoc (an
 operator's USB stick, a wiki page) is the failure mode the model exists to replace.
 
-The existing pieces almost cover it. `Security.CredentialRef` carries the custody leg — a
+The existing pieces almost cover it. `CredentialRef` carries the custody leg — a
 reference to material held by an issuer, the value never in the model, the reference's
 lifecycle already decoupled from any one consumer. The rehydration doctrine
 (`docs/spec/foundations/four-states.md` — adoption and re-provisioning preserve the entity UUID) makes

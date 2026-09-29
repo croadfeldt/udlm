@@ -2,7 +2,7 @@ uuid: uc-b3fce25d-a149-4198-b648-33db54144e84
 handle: software/database-ha-no-eligible-provider-refused
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Data.Database with high availability declared as a hard
+  description: 'A platform engineer requests a Database with high availability declared as a hard
     requirement, but no registered data provider declares the capability to realize a multi-node HA topology
     for the requested engine — every eligible backend can serve only a single node. Success for this use case
     is the REFUSAL: the request must be rejected naming the unmet requirement, not accepted and then silently

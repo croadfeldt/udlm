@@ -85,7 +85,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Hardware & platform
 
 ### DMTF Redfish — CANONICAL
-**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Machine/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (Facility.PowerFeed); Bios (the Machine `firmware` element; vendor attribute sets are Provider Class data); Manager + ComputerSystem.Reset (BMC); Location/Placement (Facility.Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — DCM ADR-013; the host carries their rollup.)
+**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Machine/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (PowerFeed); Bios (the Machine `firmware` element; vendor attribute sets are Provider Class data); Manager + ComputerSystem.Reset (BMC); Location/Placement (Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — DCM ADR-013; the host carries their rollup.)
 **Why:** the vendor-neutral hardware-as-asset vocabulary, and the one the estate's producers actually speak (Redfish-capable BMCs; used for bare-metal provisioning). *Alternatives:* IPMI (no data model), DMTF CIM (superseded by Redfish for REST-era use — PRIOR-ART). **License:** DMTF — compatible-reference.
 
 ### IEEE 802.1AX / 802.1Q / 802.1AB — CANONICAL
@@ -141,7 +141,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** name-resolution vocabulary is IETF's; nothing to decide. **License:** IETF Trust — compatible-reference.
 
 ### Kerberos (RFC 4120) + LDAP (RFC 4511) — CANONICAL
-**Covers:** `RFC-4120` `RFC-4511` `RFC-4512` · **Since:** 2026-06-27T00:38:59Z · **Where:** Security.DirectoryService (the FreeIPA grounding: KDC + Directory; RFC 4512 = the LDAP directory information models, companion to the 4511 protocol).
+**Covers:** `RFC-4120` `RFC-4511` `RFC-4512` · **Since:** 2026-06-27T00:38:59Z · **Where:** DirectoryService (the FreeIPA grounding: KDC + Directory; RFC 4512 = the LDAP directory information models, companion to the 4511 protocol).
 **Why:** directory services are these protocols; FreeIPA/AD are providers. **License:** IETF Trust — compatible-reference.
 
 ### NMstate + IETF ietf-ip (RFC 8344) — host addressing & network config — CANONICAL
@@ -189,7 +189,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** weakness classification identifiers; carried by id, never restated. MITRE terms (free use with attribution) — reference-only.
 
 ### NUT (Network UPS Tools) — CANONICAL
-**Covers:** `NUT` · **Since:** 2026-06-26T22:30:12Z · **Where:** Facility.PowerFeed (`ups.status` vocabulary).
+**Covers:** `NUT` · **Since:** 2026-06-26T22:30:12Z · **Where:** PowerFeed (`ups.status` vocabulary).
 **Why:** the estate's actual UPS telemetry producer (NUT upsd/upsmon daemons); its status vocabulary is the de-facto open standard. **License:** GPL-2.0+ — reference-only.
 
 ### IEC 62040-3 (UPS performance classification) — CANONICAL (vocabulary)
@@ -226,7 +226,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Cost
 
 ### FOCUS — CANONICAL (scoped) / RETIRED (as the platform-wide cost model)
-**Covers:** `FOCUS` · **Body:** FinOps Foundation · **Since:** 2026-06-18T01:17:10Z · **Where:** cost-field vocabulary on KubernetesCluster + Data.Database and the cost-management provider matrix.
+**Covers:** `FOCUS` · **Body:** FinOps Foundation · **Since:** 2026-06-18T01:17:10Z · **Where:** cost-field vocabulary on KubernetesCluster + Database and the cost-management provider matrix.
 **Why:** billing-data column vocabulary where cost fields exist. The earlier *platform-wide* cost-model adoption was **retired** (2026-06, adopt-by-reference thesis review) — cost is a projection, not a core modeling axis; the scoped field-vocabulary use remains. **License:** FinOps Foundation — compatible-reference.
 
 ### OpenCost — CANONICAL

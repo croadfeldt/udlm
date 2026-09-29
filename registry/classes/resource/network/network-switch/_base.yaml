@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/NetworkSwitch/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkSwitch/0.8.1
 conforms_to: udlm/0.1
 uuid: beda9f11-d152-4fb3-87c6-0da2e7c185ac
 record_type: class
 class: base
 resource_type: NetworkSwitch
-version: 0.8.0
+version: 0.8.1
 family: Resource
 status: active
 filed_under:
@@ -147,7 +147,7 @@ immutable:
   - identity.serial_number
 relationships:
   - edge_type: depends_on
-    target: Facility.PowerFeed
+    target: PowerFeed
     cardinality: 0..n
     description: Power source(s) the switch draws from; a UPS-backed switch outlives the hosts in a reverse-topo
       shutdown (connectivity goes last).
@@ -204,5 +204,5 @@ context:
     - The VLAN segments themselves — VLAN; the switch carries segments, it doesn't define them.
   works_with:
     - NetworkInterface — its ports, and the host NICs those ports connect to.
-    - Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.
+    - PowerFeed — the power the switch draws; UPS-backed fabric stops last.
     - VLAN — segments carried on the fabric, including the referenced management VLAN.

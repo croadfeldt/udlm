@@ -3,7 +3,7 @@ handle: software/service-missing-dependency-refused
 version: 1.0.0
 scenario:
   description: 'A platform engineer requests a Software.Service that declares a hard dependency on a
-    Data.Database, but that database is unrealizable — no eligible provider can satisfy it, so the dependency
+    Database, but that database is unrealizable — no eligible provider can satisfy it, so the dependency
     can never reach Realized. Success for this use case is the REFUSAL: the request must be blocked naming the
     root dependency that cannot be satisfied, not accepted and driven half-up (the service realized and left
     running against a database that does not exist, a partial the consumer never asked for and cannot use).

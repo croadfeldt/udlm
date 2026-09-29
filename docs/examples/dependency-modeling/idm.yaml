@@ -1,7 +1,7 @@
 uuid: e787a045-a475-48a8-890a-4a369d15b535
 handle: idm
 conforms_to: udlm/0.1
-resource_type: Security.DirectoryService
+resource_type: DirectoryService
 type_version: 0.2.0
 type_ref: https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.2.0
 lifecycle_state: Discovered

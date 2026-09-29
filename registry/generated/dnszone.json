@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/DNSZone/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/DNSZone/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5",
   "resource_type": "DNSZone",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "DNSZone",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5"
         }
       ]
@@ -125,7 +125,7 @@
   "relationships": [
     {
       "edge_type": "references",
-      "target": "Security.DirectoryService",
+      "target": "DirectoryService",
       "cardinality": "0..1",
       "description": "When DNS is integrated with the directory (the directory service serves this zone)."
     }
@@ -167,7 +167,7 @@
       "The address facts behind A/PTR entries — those originate on IPAddress records; the zone holds the name-side projection."
     ],
     "works_with": [
-      "Security.DirectoryService — when a directory service serves the zone.",
+      "DirectoryService — when a directory service serves the zone.",
       "AddressService — the operated DNS capability answering for the zone."
     ]
   },

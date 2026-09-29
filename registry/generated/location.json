@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.Location/0.4.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Location/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b",
-  "resource_type": "Facility.Location",
-  "version": "0.4.5",
+  "resource_type": "Location",
+  "version": "0.5.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Location",
-    "description": "A physical place resources are located in — a site, room, rack, or bench — nesting into a containment hierarchy. Resources declare where they sit; the control plane uses it for physical organization and for location-scoped ambient dependencies (cooling, uplink) via the profile/scope mechanisms. Power is intentionally out of scope here: it is carried by each host's own `depends_on Facility.PowerFeed` edge(s) (DCM ADR-013), which may differ even within one rack.",
+    "description": "A physical place resources are located in — a site, room, rack, or bench — nesting into a containment hierarchy. Resources declare where they sit; the control plane uses it for physical organization and for location-scoped ambient dependencies (cooling, uplink) via the profile/scope mechanisms. Power is intentionally out of scope here: it is carried by each host's own `depends_on PowerFeed` edge(s) (DCM ADR-013), which may differ even within one rack. A Base by the Base test (CLS-002): Redfish Location and Placement abstract over a region, a site, a room, a rack and a slot the same way for every facility provider, so a location of a given kind is one deliverable any of them can report or realize.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Facility",
-          "version": "1.1.0",
-          "uuid": "a479d8e2-2ea6-4410-89ea-835c31276875"
-        },
-        {
-          "class": "Facility.Location",
-          "version": "0.4.5",
+          "class": "Location",
+          "version": "0.5.0",
           "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b"
         }
       ]
@@ -75,7 +70,7 @@
   "relationships": [
     {
       "edge_type": "contained_by",
-      "target": "Facility.Location",
+      "target": "Location",
       "cardinality": "0..1",
       "name": "within",
       "description": "The parent place this location nests inside (bench within room within site)."
@@ -93,6 +88,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "facility"
+  ],
   "context": {
     "purpose": "Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.",
     "plain_description": "A physical place, at whatever granularity is useful: a site contains rooms, a room contains racks, a rack has positions. Resources declare where they physically sit by referencing a location; location-scoped concerns like cooling or a shared uplink attach at the right level of the hierarchy. Power is not carried here — each host declares its own power-feed edges, because two hosts in one rack can draw from different feeds.",
@@ -102,10 +100,10 @@
     ],
     "not_for": [
       "Failure or locality domains for placement constraints (zone, power domain, rack-as-failure-domain) — that is Topology: put resources IN Locations, constrain placement AGAINST Topology.",
-      "Power sources — Facility.PowerFeed, referenced per host, not per location."
+      "Power sources — PowerFeed, referenced per host, not per location."
     ],
     "works_with": [
-      "Facility.Location — the parent place this one nests inside.",
+      "Location — the parent place this one nests inside.",
       "Machine.BareMetalHost — the equipment that declares its location.",
       "Topology — the failure-domain view of the same physical reality."
     ]

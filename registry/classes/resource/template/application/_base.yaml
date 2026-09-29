@@ -7,21 +7,21 @@
 # A CATEGORY EARNS A CLASS ONLY IF IT ADDS ELEMENTS — the rule the Job ruling set (one class, no
 # per-domain subtypes; domain filtering is a derived facet). Application earns it on
 # `high_availability`, which is a property of the composed WHOLE and of no constituent: today it is
-# written as a spec_default onto a field `Data.Database` does not have, which is one of the four
+# written as a spec_default onto a field `Database` does not have, which is one of the four
 # orphans #405 names.
 #
 # A CATEGORY DECLARES NO CONSTITUENTS. The schema permits them here, and a PATTERN would use
 # exactly that — abstract slots naming capabilities rather than classes. A category is not a
 # pattern: `Application` is what KIND of service this is, not which parts it has. The concrete
 # composition sits at the provider tier, where opinions are legal.
-$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application/0.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application/0.2.1
 conforms_to: udlm/0.1
 uuid: d1769eb5-e8ce-4012-ba5e-18dcc9820d87
 record_type: class
 class: type
 resource_type: Template.Application
 parent: Template
-version: 0.2.0
+version: 0.2.1
 family: Resource
 status: active
 
@@ -60,7 +60,7 @@ context:
 elements:
 
   # One of the four #405 orphans, landing where it belongs. `high_availability` is currently written
-  # as a spec_default onto `Data.Database`, which HAS NO SUCH FIELD — it was reaching for a property
+  # as a spec_default onto `Database`, which HAS NO SUCH FIELD — it was reaching for a property
   # of the composition and there was nowhere to put it. Declared here as a shape only: whether a
   # given application template offers it as a choice, fixes it, or ignores it is a provider-tier
   # decision, because that is the only tier where an opinion is legal (NDF-001).
@@ -108,7 +108,7 @@ elements:
       type: string
 
   # A REQUIREMENT, NOT A CERTIFICATE. The distinction is the whole point: this says encryption is
-  # required of the realized exposure. The certificate that satisfies it is a Security.CredentialRef
+  # required of the realized exposure. The certificate that satisfies it is a CredentialRef
   # constituent, with its own lifecycle, rotation and custody.
   - element: transport_security
     scope: Template.Application
@@ -116,7 +116,7 @@ elements:
     state: proposed
     description: >-
       Whether transport encryption is required of the realized exposure. A requirement, not a
-      certificate: the certificate is a Security.CredentialRef constituent.
+      certificate: the certificate is a CredentialRef constituent.
     schema:
       type: boolean
       # No default. A fixed `true` here would be one org's opinion shipped to every consumer

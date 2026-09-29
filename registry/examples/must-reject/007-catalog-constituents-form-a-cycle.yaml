@@ -19,7 +19,7 @@ record:
   status: active
   constituents:
     - component_id: database
-      resource_type: Data.Database
+      resource_type: Database
       provided_by: external
       failure_effect: required
       depends_on: [web]

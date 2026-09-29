@@ -3,8 +3,15 @@
   "generated": true,
   "classes": [
     {
+      "class": "PowerFeed",
+      "version": "0.7.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/power/power-feed/_base.yaml",
+      "types": []
+    },
+    {
       "class": "UPS",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "instantiable": true,
       "path": "registry/classes/resource/ups/_base.yaml",
       "types": []

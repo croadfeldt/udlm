@@ -1,6 +1,6 @@
 # Worked example — a VM, end to end, and the intermediary resources it surfaces
 
-**What this settles:** a concrete trace of one VM request from intent to realized, naming **every** resource and relationship — so we can see which intermediary types the model actually needs. The headline: the **vNIC is not a new type** (`NetworkInterface` with `device_class: virtual`), and VLAN is a foundational **`VLAN`** shared reference (like `Facility.Location`), not an inline field. This grounds ADR-009 (fulfillment), `foundational-resources.md` (selections), and the P1 VM enrichment in a real flow.
+**What this settles:** a concrete trace of one VM request from intent to realized, naming **every** resource and relationship — so we can see which intermediary types the model actually needs. The headline: the **vNIC is not a new type** (`NetworkInterface` with `device_class: virtual`), and VLAN is a foundational **`VLAN`** shared reference (like `Location`), not an inline field. This grounds ADR-009 (fulfillment), `foundational-resources.md` (selections), and the P1 VM enrichment in a real flow.
 
 ## The request
 
@@ -9,7 +9,7 @@ A consumer submits a catalog item `vm-service` — `consumer_fields`: `location_
 
 ```yaml
 catalog_ref: vm-service
-location_ref: fac-rack3      # selects an existing Facility.Location
+location_ref: fac-rack3      # selects an existing Location
 network_ref:  net-dmz        # selects an existing VirtualNetwork
 disk_size:    100Gi
 
@@ -35,7 +35,7 @@ Intent carries **no** IP, vNIC, host, or volume — none exist yet. It carries *
 
 | handle | type | how it got here |
 |---|---|---|
-| `fac-rack3` | `Facility.Location` | platform data layer / facilities provider |
+| `fac-rack3` | `Location` | platform data layer / facilities provider |
 | `net-dmz` | `VirtualNetwork` (`forward_mode: bridge`) | platform layer / network provider; `references net-vlan-20` |
 | `net-vlan-20` | `VLAN` (`encapsulation: vlan`, `segment_id: 20`) | network/fabric provider — the shared segment `net-dmz` and `br0@host-a` ride |
 | `pool-fast` | `StoragePool` | storage provider |
@@ -84,7 +84,7 @@ Provisioning this graph is **reserve → barrier → commit**, not a single pass
 
 1. **vNIC — already covered, do NOT add a `VirtualInterface` class.** A virtual NIC is `NetworkInterface` with `device_class: virtual` (the enum already has `virtual | passthrough | bridge | aggregate | partition`). It carries `vlan_id` and stacks on the host bridge via `parent_device` — exactly the physical/bond/bridge/virtual stack the estate already models. Adding a parallel `Hardware.VirtualInterface` would duplicate it (minimal-surface: reject).
 
-2. **VLAN — a foundational reference, like `Facility.Location` (settled).** A VLAN/segment is **not** an inline field; it is a first-class **`VLAN`** foundational resource, owned/advertised by a network/fabric provider (or a platform data layer) and **selected by reference** — a shared reference serving the information/operational layer. `net-dmz` (VirtualNetwork) `references net-vlan-20` (`VLAN`, `encapsulation: vlan`, `segment_id: 20`); the vNIC rides that segment via the network it attaches to. One source of truth for the segment, referenced by every resource on it — so blast-radius and dependency reasoning traverse it. (A provider may offer a `NetworkInterface` variant; the org ratifies which — base guidance, not a mandate.)
+2. **VLAN — a foundational reference, like `Location` (settled).** A VLAN/segment is **not** an inline field; it is a first-class **`VLAN`** foundational resource, owned/advertised by a network/fabric provider (or a platform data layer) and **selected by reference** — a shared reference serving the information/operational layer. `net-dmz` (VirtualNetwork) `references net-vlan-20` (`VLAN`, `encapsulation: vlan`, `segment_id: 20`); the vNIC rides that segment via the network it attaches to. One source of truth for the segment, referenced by every resource on it — so blast-radius and dependency reasoning traverse it. (A provider may offer a `NetworkInterface` variant; the org ratifies which — base guidance, not a mandate.)
 
 3. **Everything else exists** — VM, Location, VirtualNetwork, IPAddress, Volume, Pool, BareMetalHost, and the bridge/virtual NetworkInterface stack.
 
@@ -94,8 +94,8 @@ Provisioning shows the storage/network/placement roots. The **operational lifecy
 
 | Phase | What happens | Shared references it introduces (owner) |
 |---|---|---|
-| **1. Provision** (`new_request`) | select foundational roots, provider allocates the rest | `Facility.Location` (facilities), `VLAN`/`VirtualNetwork` (network), `IPAddress` (IPAM), `StoragePool`→`Volume` (storage), `Machine.BareMetalHost` (compute/hypervisor) |
-| **2. Operate** (running) | the VM serves; steady-state dependencies bind | `Security.DirectoryService` realm — identity/auth (identity provider, scope-derived from `tenant_uuid`); **`DNSZone`** record — name→IP (DNS provider); `Security.CredentialRef` — secrets (credential/secrets provider); **time-sync** capability (ADR-005, provider-attested); **observability sink** — logs/metrics (observability provider); `Facility.PowerFeed` via the host (facilities — the fault-domain anchor) |
+| **1. Provision** (`new_request`) | select foundational roots, provider allocates the rest | `Location` (facilities), `VLAN`/`VirtualNetwork` (network), `IPAddress` (IPAM), `StoragePool`→`Volume` (storage), `Machine.BareMetalHost` (compute/hypervisor) |
+| **2. Operate** (running) | the VM serves; steady-state dependencies bind | `DirectoryService` realm — identity/auth (identity provider, scope-derived from `tenant_uuid`); **`DNSZone`** record — name→IP (DNS provider); `CredentialRef` — secrets (credential/secrets provider); **time-sync** capability (ADR-005, provider-attested); **observability sink** — logs/metrics (observability provider); `PowerFeed` via the host (facilities — the fault-domain anchor) |
 | **3. Modify** (`modification`) | add a NIC / resize / re-home | new `VirtualNetwork`+`IPAddress` refs; new `Volume` from the same `StoragePool`; the provider re-reports the changed realized relationships |
 | **4. Drift** (`drift_detection`) | discovered ≠ realized (an out-of-band IP change, a moved disk) | reconciles the VM's references against the **same shared resources** — the roots are the truth the drift is measured against |
 | **5. Rehydrate** (`rehydration_*`) | **replay the original intent** + migrate data per dependency | rehydration-from-intent **re-requests the captured intent** (rebuilds the resources + relationships, `uuid` preserved) **and activates the DR / data-migration process for each target resource** to bring its data across — not backup-restore-only. `IPAddress`/host/vNIC **remapped** (soft refs); `Location`/`VLAN`/`VirtualNetwork` **re-selected** (may differ in provider-portable mode); **`DNSZone` record remapped to the new IP**; each dependency's data migrated by its owning provider's DR path (the model must not restrict this to a single mechanism) |
@@ -107,7 +107,7 @@ Every shared/foundational resource a VM touches across its whole life, and who o
 
 | Shared resource | Type | VM references it as | Likely owner (provider) | Foundational? |
 |---|---|---|---|---|
-| Location | `Facility.Location` | placement (`references`) | facilities / DC | ✔ |
+| Location | `Location` | placement (`references`) | facilities / DC | ✔ |
 | VLAN / segment id | `VLAN` | segment (`references`, via the network) | network / fabric | ✔ |
 | Virtual network | `VirtualNetwork` | attachment (`references`) | network | ✔ |
 | IP address | `IPAddress` | `binds_to` (dynamic/static/byo) | IPAM | ✔ |
@@ -115,18 +115,18 @@ Every shared/foundational resource a VM touches across its whole life, and who o
 | Storage pool | `StoragePool` / `StorageCluster` | volume source | storage | ✔ |
 | Volume | `Volume` | disk (`attaches_to`) | storage | — (consumable) |
 | Hypervisor host | `Machine.BareMetalHost` | `contained_by` (placement result) | compute / hypervisor (libvirt, KubeVirt) | ✔ |
-| Realm / identity | `Security.DirectoryService` | auth (scope-derived from `tenant_uuid`) | identity (a directory service) | ✔ |
-| Secret | `Security.CredentialRef` | `references` (never inline) | credential / secrets | ✔ |
-| Power feed | `Facility.PowerFeed` | via the host's PSU (fault domain) | facilities | ✔ |
+| Realm / identity | `DirectoryService` | auth (scope-derived from `tenant_uuid`) | identity (a directory service) | ✔ |
+| Secret | `CredentialRef` | `references` (never inline) | credential / secrets | ✔ |
+| Power feed | `PowerFeed` | via the host's PSU (fault domain) | facilities | ✔ |
 | Time sync | (ADR-005 capability) | clock discipline | provider-attested per profile | — (capability) |
 | Telemetry sink | observability provider surface | logs/metrics | observability | ✔ |
 | Backup / DR target | `Storage.*` | data replication (rehydrate) | backup / DR | ✔ |
 
-**What this tells us for September:** the roots are almost all already typed (`Facility.Location`, `VLAN` (new), `VirtualNetwork`, `IPAddress`, `DNSZone`, `StoragePool`, `Security.DirectoryService`, `Security.CredentialRef`, `Facility.PowerFeed`, `Machine.BareMetalHost`). The gaps are **capacity/inventory advertisement** on their owning providers (September P3 — every ✔ owner must advertise what it offers so placement can select) and **quota** on consumption (P7). No new resource *types* fall out of the full lifecycle — only the provider-advertisement + eligibility surface around the roots already named here.
+**What this tells us for September:** the roots are almost all already typed (`Location`, `VLAN` (new), `VirtualNetwork`, `IPAddress`, `DNSZone`, `StoragePool`, `DirectoryService`, `CredentialRef`, `PowerFeed`, `Machine.BareMetalHost`). The gaps are **capacity/inventory advertisement** on their owning providers (September P3 — every ✔ owner must advertise what it offers so placement can select) and **quota** on consumption (P7). No new resource *types* fall out of the full lifecycle — only the provider-advertisement + eligibility surface around the roots already named here.
 
 ## Gaps this example confirms (feeds the September plan)
 
-- **`VLAN`** — created as a foundational shared reference (owned by a network/fabric provider, selected by reference like `Facility.Location`); `VirtualNetwork references VLAN`. No inline encapsulation field.
+- **`VLAN`** — created as a foundational shared reference (owned by a network/fabric provider, selected by reference like `Location`); `VirtualNetwork references VLAN`. No inline encapsulation field.
 - **P1 already landed** the VM `networks[].network_ref` + `placement.location_ref` selections this trace relies on.
 - **P4 fault domain** shows up literally: `vm-app` and every other guest on `host-a` share `host-a`'s fault domain, and everything in `fac-rack3` shares the rack's — derived from these `contained_by`/`references` edges (ADR-010), no new authoring.
 

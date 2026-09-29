@@ -2,7 +2,7 @@ uuid: uc-b62ebbc4-8cc2-44be-ae2f-1b93ca90893f
 handle: software/provision-database
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Data.Database by intent alone — a declared engine, a size
+  description: 'A platform engineer requests a Database by intent alone — a declared engine, a size
     (storage capacity and instance class), and a high-availability flag — without naming a backing host, a
     data directory, or any provider-native instance handle. The data provider selects an eligible backend,
     realizes the database to the declared engine and size with HA honored as declared, and the database

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.6
+$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.7
 conforms_to: udlm/0.1
 uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
 record_type: class
 class: base
 resource_type: Job
-version: 1.2.6
+version: 1.2.7
 family: Process
 status: active
 metadata:
@@ -230,7 +230,7 @@ spec_examples:
     retention_days: 30
     compression: zstd
   targets:
-  - estate/orders-db?resource_type==Data.Database
+  - estate/orders-db?resource_type==Database
   schedule:
     expression: 0 2 * * *
     overlap_policy: forbid

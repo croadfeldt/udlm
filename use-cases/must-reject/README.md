@@ -7,7 +7,7 @@ rejects the request, and the refusal itself meets a contract — typed (machine-
 class), actionable (names the remediation), non-leaking (the refusal discloses nothing the policy
 protects, per the information-firewall behavior of ADR-041), and auditable (a refusal record
 exists). One use case per rejection surface: tenancy boundary, sovereignty egress,
-secrets-as-reference (Security.CredentialRef), binding-contract validation, provider
+secrets-as-reference (CredentialRef), binding-contract validation, provider
 declare-and-select eligibility, and field-granular policy scope on projections.
 
 **Where each surface's enforcement is specified.** The four-part refusal contract is stated once

@@ -20,4 +20,4 @@ record:
     display_name: Phantom promotion
     origination_timestamp: '2026-08-10T00:00:00Z'
   constituents:
-  - {component_id: db, resource_type: Data.Database, provided_by: external, failure_effect: required}
+  - {component_id: db, resource_type: Database, provided_by: external, failure_effect: required}

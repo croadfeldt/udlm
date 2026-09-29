@@ -34,7 +34,7 @@ Use for memory, storage, bandwidth, power (`"650W"`), etc.
   "memory": { "size": "32GB" } }      // Quantity
 ```
 Reused by anything that sizes compute: `Machine.VM`, a `KubernetesCluster` node pool, a
-`Data.Database` instance. `vcpu`/`cores`/`memory_gib` are **non-canonical synonyms** — normalize to
+`Database` instance. `vcpu`/`cores`/`memory_gib` are **non-canonical synonyms** — normalize to
 `cpu.count` + `memory.size`.
 
 **`instance_size` — sizing by class (shared vocabulary, provider-mapped).** Any resource type that sizes
@@ -78,7 +78,7 @@ and a type constraint rides as a query term (`?resource_type==Machine.VM`).
 ```yaml
 definition_ref: cexample/automation/nightly-backup-playbook      # authored by handle
 targets:
-  - cexample/orders-db?resource_type==Data.Database              # with a type constraint
+  - cexample/orders-db?resource_type==Database              # with a type constraint
   - cexample/hosts/host-01@1.2.0                                   # version-pinned
 resolved_ref:  uuid/4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44@sha256:…   # after reserve
 ```
@@ -106,7 +106,7 @@ How the existing types express shared concepts today, and the drift to normalize
 |---|---|---|
 | `Machine.VM` | `vcpu` + `memory.size` (Quantity) + `disks[]` | `vcpu` ≠ canonical `cpu.count` |
 | `KubernetesNodePool` | `node_resources` — ComputeResources per pool record (the cluster carries no pools — ruling 072) | uses the shared shape |
-| `Data.Database` | `resources` block | a *third* spelling of cpu/memory |
+| `Database` | `resources` block | a *third* spelling of cpu/memory |
 | `IPAddress` | — | `family` ≠ canonical `ip_family` |
 
 **Findings:** CPU/memory is expressed **three different ways** (`vcpu`/`memory`, the pool record's `node_resources`,

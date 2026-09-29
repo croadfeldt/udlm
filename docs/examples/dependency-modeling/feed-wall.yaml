@@ -1,7 +1,7 @@
 uuid: 463b6970-c938-49f3-8333-231be9eb64d8
 handle: feed-wall
 conforms_to: udlm/0.1
-resource_type: Facility.PowerFeed
+resource_type: PowerFeed
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.1.0
 lifecycle_state: Discovered

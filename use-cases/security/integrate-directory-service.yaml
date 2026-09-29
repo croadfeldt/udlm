@@ -2,9 +2,9 @@ uuid: uc-3d052fb5-6e8c-44da-8684-2e0cb042bce1
 handle: security/integrate-directory-service
 version: 1.0.0
 scenario:
-  description: 'A platform engineer integrates a Security.DirectoryService (an LDAP or OIDC identity
+  description: 'A platform engineer integrates a DirectoryService (an LDAP or OIDC identity
     source) into the estate as a first-class identity provider that downstream access and authentication
-    resolve against. The directory is declared by its protocol, its endpoint, and a Security.CredentialRef
+    resolve against. The directory is declared by its protocol, its endpoint, and a CredentialRef
     for the bind/service secret — referenced by handle, never inline — and it reaches Realized as a named
     identity source other resources can bind to. This stresses that an identity source is portable intent,
     not a provider-native auth config: the protocol and endpoint ARE the integration record, the bind
@@ -22,7 +22,7 @@ scenario:
   success_criteria:
   - The DirectoryService is declared by protocol (LDAP/OIDC) and endpoint from the record alone; no
     provider-native auth config leaks into the intent
-  - The bind/service secret is carried as a Security.CredentialRef by handle, never inline, and resolved
+  - The bind/service secret is carried as a CredentialRef by handle, never inline, and resolved
     just-in-time
   - The identity source reaches Realized and is referenceable as a named source downstream resources bind to
   - A downstream consumer resolves identities by binding on the DirectoryService's published reference,

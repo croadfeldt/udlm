@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.8.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.8.3
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: type
 resource_type: Software.Service
 parent: Software
-version: 0.8.2
+version: 0.8.3
 family: Resource
 status: active
 metadata:
@@ -14,7 +14,7 @@ metadata:
     systemd units) that a provider realizes and manages under the four-state lifecycle. Models the application
     layer of the estate — Kubernetes workloads (web apps, registries, observability, model serving) and
     host services (CI, mail, DNS/identity daemons) — as first-class nodes so their runtime dependencies
-    carry order. Secret material is never inline; env/mounts reference a Security.CredentialRef. Fine-grained
+    carry order. Secret material is never inline; env/mounts reference a CredentialRef. Fine-grained
     per-container detail, when wanted, hangs off `constituents` as Container references.
   maintainer: udlm-registry
   origination_timestamp: '2026-07-12T00:00:00Z'
@@ -138,7 +138,7 @@ relationships:
   description: Service-to-service dependency (strength hard|soft) — e.g. an app requiring an auth service.
 - edge_type: depends_on
   name: requires
-  target: Security.DirectoryService
+  target: DirectoryService
   cardinality: 0..n
   description: Requires a directory/identity service — strength hard|soft.
 - edge_type: depends_on
@@ -147,11 +147,11 @@ relationships:
   cardinality: 0..n
   description: Requires a DNS/DHCP address service — strength hard|soft.
 - edge_type: binds_to
-  target: Data.Database
+  target: Database
   cardinality: 0..n
   description: Binds to a database's connection outputs. TOSCA BindsTo.
 - edge_type: references
-  target: Security.CredentialRef
+  target: CredentialRef
   cardinality: 0..n
   description: Secrets consumed by the service's constituents — no secret material inline (DCM ADR-023).
 adopts:
@@ -198,9 +198,9 @@ context:
   not_for:
   - A single container's runtime spec — Container; the service references containers as constituents.
   - A bounded-runtime task — Automation.Job.
-  - The database a service uses — Data.Database, referenced as a dependency.
+  - The database a service uses — Database, referenced as a dependency.
   works_with:
   - Container — containerized constituents, by reference.
   - KubernetesCluster / Machine.BareMetalHost / Machine.VM — where the constituents run.
-  - Data.Database / Security.DirectoryService / AddressService — what the service requires.
-  - Security.CredentialRef — the service's secrets, by reference.
+  - Database / DirectoryService / AddressService — what the service requires.
+  - CredentialRef — the service's secrets, by reference.

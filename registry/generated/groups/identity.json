@@ -1,5 +1,13 @@
 {
   "usage_group": "identity",
   "generated": true,
-  "classes": []
+  "classes": [
+    {
+      "class": "DirectoryService",
+      "version": "0.8.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/identity/directory-service/_base.yaml",
+      "types": []
+    }
+  ]
 }

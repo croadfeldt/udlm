@@ -25,7 +25,7 @@
     },
     {
       "class": "DNSZone",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/dnszone/_base.yaml",
       "types": []
@@ -60,7 +60,7 @@
     },
     {
       "class": "NetworkSwitch",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/network-switch/_base.yaml",
       "types": []

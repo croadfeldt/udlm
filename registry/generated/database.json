@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.7.8",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Database/0.8.0",
   "conforms_to": "udlm/0.1",
   "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337",
-  "resource_type": "Data.Database",
-  "version": "0.7.8",
+  "resource_type": "Database",
+  "version": "0.8.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Database",
-    "description": "A managed relational database instance. Publishes connection outputs other resources bind to. Reconciled 2026-07-07 with the dcm-project catalog DatabaseSpec (#271): resources now required (matching their DatabaseSpec), and the storage/host relationships added so a database's data volume and placement are first-class edges.",
+    "description": "A managed relational database instance. Publishes connection outputs other resources bind to. Reconciled 2026-07-07 with the dcm-project catalog DatabaseSpec (#271): resources now required (matching their DatabaseSpec), and the storage/host relationships added so a database's data volume and placement are first-class edges. A Base by the Base test (CLS-002): a managed database is ordered as an engine, a version and resources, which every database operator and cloud data service fills the same way; the engine is an element, and becomes a dialect Type only when a dialect carries elements of its own.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Data",
-          "version": "1.1.0",
-          "uuid": "34093415-4089-44f3-b395-07103e5f4779"
-        },
-        {
-          "class": "Data.Database",
-          "version": "0.7.8",
+          "class": "Database",
+          "version": "0.8.0",
           "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337"
         }
       ]
@@ -65,7 +60,7 @@
             "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$"
           }
         },
-        "description": "Converted verbatim from the flat Data.Database spec."
+        "description": "Converted verbatim from the flat Database spec."
       },
       "metadata": {
         "type": "object",
@@ -74,7 +69,7 @@
             "type": "string"
           }
         },
-        "description": "Converted verbatim from the flat Data.Database spec."
+        "description": "Converted verbatim from the flat Database spec."
       }
     },
     "required": [
@@ -158,6 +153,9 @@
       "disposition": "tier2_record"
     }
   ],
+  "filed_under": [
+    "data"
+  ],
   "context": {
     "purpose": "Declares a managed relational database instance and publishes the connection facts other resources bind to.",
     "plain_description": "The request for a database: engine (e.g. postgres), a version that may be concrete (16) or an abstract channel the provider resolves (latest, lts), and the required `resources` sizing — `cpu` as a string (`500m` or `2`), with `memory` and `storage` as sizes like `16GB`. Once realized, it publishes host, port, and connection details that applications bind to, plus the concrete version provisioned — so a latest at request time is still an auditable fact afterwards. Where it runs (a VM, a cluster, a managed service) and which volume holds its data are first-class edges, not prose.",
@@ -167,7 +165,7 @@
     ],
     "not_for": [
       "The volume storing the data — Volume; the database references it.",
-      "The secret material for connecting — that belongs with Security.CredentialRef (the current sensitive connection outputs are a known open decision)."
+      "The secret material for connecting — that belongs with CredentialRef (the current sensitive connection outputs are a known open decision)."
     ],
     "works_with": [
       "Volume — the persistent volume backing the data directory.",

@@ -70,8 +70,8 @@ Three terms here are easy to collide; keep them distinct.
 ## 3. Suite products = composites, not monolithic types
 
 A product that bundles several capabilities is modeled as **realizing multiple types**, not one bespoke
-type. Example: FreeIPA → `Security.DirectoryService` (LDAP+Kerberos, RFC 4511/4512/4120) **+**
-`DNSZone` **+** (future) `Security.CertificateAuthority`. This keeps each type portable and
+type. Example: FreeIPA → `DirectoryService` (LDAP+Kerberos, RFC 4511/4512/4120) **+**
+`DNSZone` **+** (future) `CertificateAuthority`. This keeps each type portable and
 reusable and avoids a `FreeIPA.Everything` corner.
 
 ## 3a. Asset vs. allocation vs. instance — don't mint redundant types
@@ -180,8 +180,8 @@ The new types, their category/tier, and the standard each adopts by reference. A
 | `NetworkGateway` | Network | K8s Gateway API (concept) / general L3 routing | routing/NAT/firewall edge |
 | `DNSZone` | Network | RFC 1035 / 1034 | authoritative zone; external-dns `DNSEndpoint` as k8s-native ref |
 | `DHCPScope` | Network | RFC 2131 (+ 8415) / ISC Kea subnet | address scope/range + reservations |
-| `Security.DirectoryService` | Security | RFC 4511/4512 (LDAP) + RFC 4120 (Kerberos) | the directory server; FreeIPA realizes this + DNSZone |
-| `Facility.PowerFeed` | Facility ✚ | Redfish DCIM `Circuit`/`PowerDistribution` + NUT (UPS) | power source; graph root for the homelab |
+| `DirectoryService` | Security | RFC 4511/4512 (LDAP) + RFC 4120 (Kerberos) | the directory server; FreeIPA realizes this + DNSZone |
+| `PowerFeed` | Facility ✚ | Redfish DCIM `Circuit`/`PowerDistribution` + NUT (UPS) | power source; graph root for the homelab |
 
 ✚ = introduces a new category (Hardware, Facility), anchored to Redfish per §2.
 

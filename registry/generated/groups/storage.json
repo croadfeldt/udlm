@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "FileShare",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "instantiable": true,
       "path": "registry/classes/resource/storage/file-share/_base.yaml",
       "types": []
@@ -46,7 +46,7 @@
     },
     {
       "class": "Volume",
-      "version": "0.12.1",
+      "version": "0.12.2",
       "instantiable": true,
       "path": "registry/classes/resource/storage/volume/_base.yaml",
       "types": [

@@ -176,7 +176,7 @@
       "constituents": [
         {
           "component_id": "db",
-          "resource_type": "Data.Database",
+          "resource_type": "Database",
           "provided_by": "external",
           "failure_effect": "required"
         },
