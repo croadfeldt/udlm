@@ -62,7 +62,7 @@ evidence; DCM's Matrix decides.
 
 Run this checklist against the cited contracts. Every box should be checkable **from the spec alone**:
 
-- [ ] Read `machine.vm.json (generated — authored in registry/classes/resource/machine/vm.yaml)` **offline** and know every field's shape and every typed output.
+- [ ] Read `machine.vm.json (generated — authored in registry/classes/resource/compute/machine/vm.yaml)` **offline** and know every field's shape and every typed output.
 - [ ] Naturalize using **only execution-role** data (data-roles).
 - [ ] Reserve returning a **hold + computed facts** without building anything (four-states §2.3a).
 - [ ] Commit **only** on the barrier signal.

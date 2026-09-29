@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.4
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.5
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Machine.VM
 parent: Machine
-version: 2.0.4
+version: 2.0.5
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -72,7 +72,7 @@ elements:
       whose entries describe the VM's disks (per-disk shape, boot designation, storage tier). Common-elements
       Reference (handle string or {uuid, handle} object), following the location_ref/network_ref precedent.
       Also carried as a references->StorageLayout relationship (storage_layout).
-    $ref: ../../../common-elements.schema.json#/$defs/Reference
+    $ref: ../../../../common-elements.schema.json#/$defs/Reference
 - element: networks
   scope: Machine.VM
   optional: true
@@ -105,7 +105,7 @@ elements:
         network_ref:
           description: The VirtualNetwork this interface attaches to — common-elements Reference
             (handle string or {uuid, handle} object); resolvable, policy-walkable, never an opaque string.
-          $ref: ../../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../../../common-elements.schema.json#/$defs/Reference
         vlan:
           description: >-
             REQUIREMENT — WHICH LOGICAL NETWORK, as a reference to a `VLAN`. The VLAN is the
@@ -123,7 +123,7 @@ elements:
             Resolved against the `segment` relationship a VirtualNetwork already declares, so
             placement narrows to networks on that segment rather than requiring the consumer to know
             which provider network carries it.
-          $ref: ../../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../../../common-elements.schema.json#/$defs/Reference
         subnet:
           description: >-
             REQUIREMENT — WHICH IP NETWORK, as a reference to a `Subnet`. Layer 3, and
@@ -131,7 +131,7 @@ elements:
             one segment may carry several subnets and a cloud may expose no segment at all, so the
             mapping is not concrete (maintainer ruling 2026-08-10). "Put me on 198.51.100.0/24" and "put
             me on VLAN 3020" are different requests; a consumer may state either, both, or neither.
-          $ref: ../../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../../../common-elements.schema.json#/$defs/Reference
         zone:
           description: >-
             REQUIREMENT — the network CATEGORY this attachment needs (DMZ, management, internal), as a
@@ -143,7 +143,7 @@ elements:
             is enforced by a policy reading it (maintainer ruling 2026-08-10). A zero-trust posture
             derives no trust from network location (NIST SP 800-207).
           allOf:
-          - $ref: ../../../data-reference.schema.json#/$defs/data_reference
+          - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
           - required:
             - reference_data_type
             properties:
@@ -156,7 +156,7 @@ elements:
             consumer may state either, both, or neither. Each term denotes a floor, so any network
             meeting it qualifies — name-selectable but requirements-authoritative (ADR-036).
           allOf:
-          - $ref: ../../../data-reference.schema.json#/$defs/data_reference
+          - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
           - required:
             - reference_data_type
             properties:
@@ -168,7 +168,7 @@ elements:
         ip_address_ref:
           description: A pre-allocated IPAddress to bind to this interface (optional — omitted
             means the address service allocates at realization). Common-elements Reference shape.
-          $ref: ../../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../../../common-elements.schema.json#/$defs/Reference
 - element: placement
   scope: Machine.VM
   optional: true
@@ -264,7 +264,7 @@ elements:
           type: string
           description: Inline OS version (e.g. 9.4).
     - allOf:
-      - $ref: ../../../data-reference.schema.json#/$defs/data_reference
+      - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
       - required:
         - reference_data_type
         properties:

@@ -570,14 +570,15 @@
   }
  },
  "type:Container": {
-  "current": "1.0.4",
-  "path": "registry/classes/resource/container/_base.yaml",
+  "current": "1.0.5",
+  "path": "registry/classes/resource/compute/container/_base.yaml",
   "versions": {
    "1.0.0": "sha256:92633f880404503be454c87a88d699228f45eb88096b70d708c510ed2472a10d",
    "1.0.1": "sha256:91975add73bbb416870797788594a07338cbd906a847b3802c9eadd622488d9a",
    "1.0.2": "sha256:16347f6204d64270a28795b23a13140681395d8be54cda535b49ecb4147304c0",
    "1.0.3": "sha256:15853333e48b4a344e250d0d1e1058be2f691bee59288de45183da5ae9afabba",
-   "1.0.4": "sha256:384d2e468bbe49021a813eac2e18551199f1f74142baf03057fa2cdbae06c2f5"
+   "1.0.4": "sha256:384d2e468bbe49021a813eac2e18551199f1f74142baf03057fa2cdbae06c2f5",
+   "1.0.5": "sha256:9ec6d6a99a462cf2fc0228fe8d1e61af3a751f58b174230b0236879d6f39fdd4"
   }
  },
  "type:CredentialRef": {
@@ -908,7 +909,7 @@
  },
  "type:KubernetesCluster": {
   "current": "2.0.3",
-  "path": "registry/classes/resource/kubernetes-cluster/_base.yaml",
+  "path": "registry/classes/resource/compute/kubernetes-cluster/_base.yaml",
   "versions": {
    "1.0.0": "sha256:63ac01bc1f59283bbca00463f1854007cc80dca120f820a24d348b3e94cd379d",
    "1.0.1": "sha256:020421ca5495f5bc507cce1f1160816eefe56f6de359d4026fba931265249515",
@@ -920,22 +921,24 @@
   }
  },
  "type:KubernetesNamespace": {
-  "current": "1.1.3",
-  "path": "registry/classes/resource/kubernetes-namespace/_base.yaml",
+  "current": "1.1.4",
+  "path": "registry/classes/resource/compute/kubernetes-namespace/_base.yaml",
   "versions": {
    "1.0.0": "sha256:55ac98400ff778439395fcd60fe85712312b867c613b695aea2ccf98b77f2d30",
    "1.1.0": "sha256:eb7a860c2bd20d8937eb343a36ce250c1a518b68d8d72c9256fdf96a94518c19",
    "1.1.1": "sha256:e2257af7ccb8f3f2d516b1bb6a26a492bd49875d56f6c6f246155394e373851e",
    "1.1.2": "sha256:7a41ef423c87dc54284ecc8509504006792392d18f0369076aa30a9033f77eb3",
-   "1.1.3": "sha256:ca21238d10e5aaad8ae2322b51816737c9f062ca8f3d4cf1bae578f4c9d5f75c"
+   "1.1.3": "sha256:ca21238d10e5aaad8ae2322b51816737c9f062ca8f3d4cf1bae578f4c9d5f75c",
+   "1.1.4": "sha256:817d60097bbebaf41754496f810bf3d7740f66d95d8aa82e7ba18616a8ecd246"
   }
  },
  "type:KubernetesNodePool": {
-  "current": "1.1.0",
-  "path": "registry/classes/resource/kubernetes-node-pool/_base.yaml",
+  "current": "1.1.1",
+  "path": "registry/classes/resource/compute/kubernetes-node-pool/_base.yaml",
   "versions": {
    "1.0.0": "sha256:00f2fec962aa6b864fef384deae079c7c1564a88c2fdbd1b556aa4dcbd9ef245",
-   "1.1.0": "sha256:9ca412bb67c69767b6003c5532629de81fff76ba14004a6232e627cd968a19ac"
+   "1.1.0": "sha256:9ca412bb67c69767b6003c5532629de81fff76ba14004a6232e627cd968a19ac",
+   "1.1.1": "sha256:8ca40f38e2a371b3ba09b7dcd7a13672095fc1217b4b796b38270ab251c8786a"
   }
  },
  "type:Location": {
@@ -954,18 +957,19 @@
   }
  },
  "type:Machine": {
-  "current": "2.1.2",
-  "path": "registry/classes/resource/machine/_base.yaml",
+  "current": "2.1.3",
+  "path": "registry/classes/resource/compute/machine/_base.yaml",
   "versions": {
    "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
    "2.1.0": "sha256:d23b79fabe69e262ad82946fedccedbf7b46a3e88b91cf0febd08740de7705fb",
    "2.1.1": "sha256:a39ae7310d695dae1343af26eb6acbbb9214484a9602d938744d1f44478758f8",
-   "2.1.2": "sha256:36ed5cd256dd0b68c2b59aeef408539cb21e5600167980abb820a36ddd565ff9"
+   "2.1.2": "sha256:36ed5cd256dd0b68c2b59aeef408539cb21e5600167980abb820a36ddd565ff9",
+   "2.1.3": "sha256:19b8aa6a712997dcab98aa6ecfa3d003ef18cdbc561f6b2d04a6225c2fb3a9bf"
   }
  },
  "type:Machine.BareMetalHost": {
   "current": "0.12.1",
-  "path": "registry/classes/resource/machine/bare-metal-host.yaml",
+  "path": "registry/classes/resource/compute/machine/bare-metal-host.yaml",
   "versions": {
    "0.11.0": "sha256:74559543232fc83cd38c90ec25e206f788e14bc954ac3e3b7fe3a975d26173de",
    "0.12.0": "sha256:d82a1cbca4ce5de35bb4b651bf473a7fbbed6e42d908d4b519b8c3fb5785e953",
@@ -974,7 +978,7 @@
  },
  "type:Machine.LPAR": {
   "current": "0.1.3",
-  "path": "registry/classes/resource/machine/lpar.yaml",
+  "path": "registry/classes/resource/compute/machine/lpar.yaml",
   "versions": {
    "0.1.0": "sha256:d03991ca69a4774ff99404ce5fba9e945a4830e80b494e78047c41340474a52b",
    "0.1.1": "sha256:d5a13ae00ed6aa507f99d423a0d0f163e30d7aaff22958d9867d9d8fc00a3617",
@@ -983,14 +987,15 @@
   }
  },
  "type:Machine.VM": {
-  "current": "2.0.4",
-  "path": "registry/classes/resource/machine/vm.yaml",
+  "current": "2.0.5",
+  "path": "registry/classes/resource/compute/machine/vm.yaml",
   "versions": {
    "2.0.0": "sha256:2a5c4f36fbdf6c2cea6a7f2dc90c4f122b10a04c9b35d77622fc9d2c9092a47e",
    "2.0.1": "sha256:045fb47d8b1a1b791ee93045605f18b71fbb608f8bec0338d2bef4c658f4cad5",
    "2.0.2": "sha256:be3c88dffca8c4cefa1924ddb2db53a540c5ca2f6a88e93840ad82b43b51f6bf",
    "2.0.3": "sha256:cd003aeeef28732382829a7a25b0cb0869844e01b7634b0a1e7e94d79593a705",
-   "2.0.4": "sha256:2f9ca814978ec383837701ed01ccc902fabfb7f877c5acdd3c9761b6d9740d00"
+   "2.0.4": "sha256:2f9ca814978ec383837701ed01ccc902fabfb7f877c5acdd3c9761b6d9740d00",
+   "2.0.5": "sha256:ffdc73a0919ce1d3ff04c3ce8142a1021faecf6844534124a1d7b08e0ed4ace6"
   }
  },
  "type:Machine.VM.CExampleCloud": {
@@ -1606,7 +1611,7 @@
  },
  "type:Template": {
   "current": "0.2.0",
-  "path": "registry/classes/resource/template/_base.yaml",
+  "path": "registry/classes/resource/services/template/_base.yaml",
   "versions": {
    "0.1.0": "sha256:e4444c14feffc0c177d17e1f1a655613b9447e6a94b573193cfde22197f2ad5d",
    "0.2.0": "sha256:c2be29dba31518a8b2eaf61fb293219479e188be0fc362296a7ea8fea63b782f"
@@ -1614,7 +1619,7 @@
  },
  "type:Template.Application": {
   "current": "0.2.1",
-  "path": "registry/classes/resource/template/application/_base.yaml",
+  "path": "registry/classes/resource/services/template/application/_base.yaml",
   "versions": {
    "0.1.0": "sha256:75d346dd9580ae0bcb93f68cd3d55e31bf7cd54784fb8dd184f6d8c733392f98",
    "0.1.1": "sha256:9b6a6d129e60d2b73ad2f7f5c71da281afb21b882fa341d44edd7d9c98c7fe41",
@@ -1624,7 +1629,7 @@
  },
  "type:Template.Application.AcmeThreeTier": {
   "current": "0.2.2",
-  "path": "registry/classes/resource/template/application/acme-three-tier.yaml",
+  "path": "registry/classes/resource/services/template/application/acme-three-tier.yaml",
   "versions": {
    "0.1.0": "sha256:c507c6e918f8be5ef56beac75729253737e63a9b116772685a384c7e62289e42",
    "0.1.1": "sha256:37984708482271743cee240038da5368a2e29277584118ca0698a014d2358162",
@@ -1657,7 +1662,7 @@
  },
  "type:Topology": {
   "current": "0.5.5",
-  "path": "registry/classes/resource/topology/_base.yaml",
+  "path": "registry/classes/resource/facility/topology/_base.yaml",
   "versions": {
    "0.3.1": "sha256:f2c45fab2ba0df83cae78d90be9b41d48a36347a5e9b46c45b48a105fabc6cc3",
    "0.4.0": "sha256:e48a0cf7b33b786a26f8ba54554501dd7c25b08c678f32811a9e9f02242ba8b9",
@@ -1671,7 +1676,7 @@
  },
  "type:UPS": {
   "current": "0.1.2",
-  "path": "registry/classes/resource/ups/_base.yaml",
+  "path": "registry/classes/resource/power/ups/_base.yaml",
   "versions": {
    "0.1.0": "sha256:4dc3e1d8b06609c24bc226f001e37d244865e71139346b3fceb869b291a1f21d",
    "0.1.1": "sha256:2346b1ec0bd2e7e380009498301883f61bfdc8776fd0b54b9f82ec0e2fcacc3a",

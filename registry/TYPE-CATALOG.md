@@ -174,7 +174,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 
 ## Container
 
-### Container (1.0.4)
+### Container (1.0.5)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -553,7 +553,7 @@ The request for a control plane: which release and what internal network ranges 
 
 ## KubernetesNamespace
 
-### KubernetesNamespace (1.1.3)
+### KubernetesNamespace (1.1.4)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
@@ -572,7 +572,7 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 
 ## KubernetesNodePool
 
-### KubernetesNodePool (1.1.0)
+### KubernetesNodePool (1.1.1)
 
 **Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
 
@@ -633,7 +633,7 @@ A statement of outcome: logs from a target host — the `target` object naming i
 
 ## Machine
 
-### Machine (2.1.2)
+### Machine (2.1.3)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -693,7 +693,7 @@ The request for a slice of a big partitioned server: how much processor capacity
 - Volume — the disks served through virtual I/O.
 - VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.0.4)
+### Machine.VM (2.0.5)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
