@@ -1,5 +1,5 @@
 # asserts: RHY-007
-# proves: an edge a sweep observed rides the discovered record — the host probe saw domain app-01 and names the host by the natural key it read (the host's smbios-uuid), resolved to the entity that key matches — and carries none of the declared semantics (no strength, relation or binding) a probe cannot see. The realized record of this entity carries the same `contained_by` with `strength: hard`; drift is the comparison of the two lists, never a field on either.
+# proves: an edge a sweep observed rides the discovered record — the host probe saw domain app-01 and names the host by the natural key it read (the host's smbios-uuid), resolved to the entity that key matches — and carries none of the declared semantics (no strength, relation or binding) a probe cannot see. The second edge is the same observation before resolution: the probe read the volume's provider id, no record names it yet, and the edge is written without a target_uuid rather than dropped. The realized record of this entity carries the same `contained_by` with `strength: hard`; drift is the comparison of the two lists, never a field on either.
 record_type: discovered_record
 state: Discovered
 record_uuid: 01a0e3cb-34d1-7432-bb67-3a6d0c4f1e27
@@ -42,4 +42,9 @@ dependencies:
     target_key:
       scheme: smbios-uuid
       value: 3f6b1a2c-9d4e-4b7f-8a1c-2e5d7f9b0c43
+    resolved_at: '2026-09-03T14:18:00Z'
+  - edge_type: depends_on
+    target_key:
+      scheme: provider-id
+      value: libvirt-host-a/pool-a/app-01-root.qcow2
     resolved_at: '2026-09-03T14:18:00Z'
