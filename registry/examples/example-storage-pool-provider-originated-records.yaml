@@ -1,6 +1,7 @@
 # asserts: DEP-015, DEP-018, PRV-012, ENT-006
 # proves: a request one provider makes to another is a record of its own — in the provider's tenant, under the provider's
-# authority, naming itself as root — and names the consumer's request that caused it as provenance, never as authority.
+# authority, naming itself as root — and names the consumer's request that caused it as provenance, never as authority,
+# and never in what the storage provider receives.
 # Two records, one entity: the VM provider's intent for raw storage, and the requested record placement produced from it.
 ---
 record_type: intent_record
@@ -75,11 +76,12 @@ metadata:
   notes:
     - at: '2026-09-28T10:15:04Z'
       author: platform/service-accounts/vm-provider
-      text: 'Originated by the VM provider: the pool serving app-01''s order had no capacity, so it requested raw
-        storage from the storage provider (PRV-012). caused_by_request names app-01''s requested record; this request
-        runs in the platform tenant under the provider''s own authority, and app-01 waits blocked-transient on it
-        (DEP-017).'
+      text: 'Originated by the VM provider under PRV-012: a request it could not satisfy from what it owns needed
+        raw storage from the storage provider. caused_by_request names the triggering request for the control plane
+        and the audit chain only; nothing about that request, its tenant or its entity is in the payload the storage
+        provider receives, which is this record''s execution slice and placement requirements. The triggering request
+        waits blocked-transient on this one (DEP-017).'
 integrity:
-  head: sha256:2710208d844b4cf4e3bd957c132d613770b6a12b47faaf7af41a73265e31fc83
+  head: sha256:d82000532e81c6f05a910ddc8b8c07be32d5f69143320dc2b8ddf7772d7bcf4f
   previous: null
   algorithm: sha256-jcs

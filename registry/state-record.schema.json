@@ -143,7 +143,7 @@
     "caused_by_request": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "Requested only, optional: on a request one provider originated toward another (PRV-012), the record_uuid of the consumer's requested record that made the need arise (DEP-018). Provenance only — a second axis from root_request_uuid, never walked for authority; may point across tenants (the provider sees the consumer's request uuid; the reverse direction is governed by resolution-is-not-disclosure, RHY-007)."
+      "description": "Requested only, optional: on a request one provider originated toward another (PRV-012), the record_uuid of the consumer's requested record that made the need arise (DEP-018). Provenance only — a second axis from root_request_uuid, never walked for authority; may point across tenants (the provider sees the consumer's request uuid; the reverse direction is governed by resolution-is-not-disclosure, RHY-007). Audit-role data outside `fields`: never part of the dispatch payload to the fulfilling provider, which receives only the request's execution slice and placement requirements — never the consumer's tenant, entity or reason (data-roles.md §3)."
     },
     "requested_ref": {
       "type": "string",
