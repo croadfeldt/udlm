@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddress/0.10.5
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddress/0.10.6
 conforms_to: udlm/0.1
 uuid: 6b7a4336-da9c-4b42-883d-44c96940f45a
 record_type: class
 class: type
 resource_type: Network.IPAddress
 parent: Network
-version: 0.10.5
+version: 0.10.6
 family: Resource
 status: active
 # OWN-007 — the ownership model is a type-level invariant, declared here and not settable per entity.
@@ -68,7 +68,7 @@ relationships:
 - edge_type: references
   name: attaches_to
   adopted_from: OASIS TOSCA AttachesTo
-  target: Hardware.NetworkInterface
+  target: NetworkInterface
   cardinality: 0..1
   description: attaches_to — the interface this address is configured on. Previously carried as an estate-invented
     'assigned_to' note; named from TOSCA AttachesTo when relation names were adopted from standards (common-elements
@@ -123,8 +123,8 @@ context:
   not_for:
   - The range addresses come from — Network.IPAddressPool.
   - The subnet's DHCP service configuration — Network.DHCPScope.
-  - The interface itself — Hardware.NetworkInterface; the address attaches to it.
+  - The interface itself — NetworkInterface; the address attaches to it.
   works_with:
-  - Hardware.NetworkInterface — the interface the address is configured on.
+  - NetworkInterface — the interface the address is configured on.
   - Network.IPAddressPool — the pool the address was carved from.
   - Machine.VM — consumers that request or bring addresses.

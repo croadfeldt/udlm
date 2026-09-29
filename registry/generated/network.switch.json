@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.7.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.7.4",
   "conforms_to": "udlm/0.1",
   "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac",
   "resource_type": "Network.Switch",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Network Switch",
-    "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Machine.BareMetalHost. Its ports are Hardware.NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connects_to` adjacency (renamed from connected_to, common-elements §9; LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics are the provider/extension, never the type.",
+    "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Machine.BareMetalHost. Its ports are NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connects_to` adjacency (renamed from connected_to, common-elements §9; LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics are the provider/extension, never the type.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-04T20:12:42Z",
     "generated": true,
@@ -22,7 +22,7 @@
         },
         {
           "class": "Network.Switch",
-          "version": "0.7.3",
+          "version": "0.7.4",
           "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac"
         }
       ]
@@ -84,7 +84,7 @@
           "transparent",
           "selective"
         ],
-        "description": "Whether ports are modeled as first-class Hardware.NetworkInterface entities (§26). opaque = the `ports` rollup only; transparent/selective = ports addressable individually (required for connects_to link records)."
+        "description": "Whether ports are modeled as first-class NetworkInterface entities (§26). opaque = the `ports` rollup only; transparent/selective = ports addressable individually (required for connects_to link records)."
       },
       "identity": {
         "type": "object",
@@ -115,7 +115,7 @@
       },
       "ports": {
         "type": "object",
-        "description": "Reconciled port rollup (§26) — aggregate of contained Hardware.NetworkInterface when modeled.",
+        "description": "Reconciled port rollup (§26) — aggregate of contained NetworkInterface when modeled.",
         "properties": {
           "count": {
             "type": "integer",
@@ -217,19 +217,19 @@
   ],
   "context": {
     "purpose": "Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.",
-    "plain_description": "One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup — the `ports` object (count, predominant speed) — and its management VLAN by reference (`management_vlan_ref`; the switch record carries no management address of its own — addresses live on its interface records). Identity facts — the `chassis_id`, serial, model, manufacturer, system name — nest under the `identity` block, not at the top level. Its individual ports are not a separate type — they are Hardware.NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.",
+    "plain_description": "One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup — the `ports` object (count, predominant speed) — and its management VLAN by reference (`management_vlan_ref`; the switch record carries no management address of its own — addresses live on its interface records). Identity facts — the `chassis_id`, serial, model, manufacturer, system name — nest under the `identity` block, not at the top level. Its individual ports are not a separate type — they are NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.",
     "use_when": [
       "You need the switching fabric in the dependency graph so connectivity-outlives-compute is derivable in shutdown ordering.",
       "You need per-port records (VLAN membership, host adjacency) on real switch hardware.",
       "You need brownfield discovery — switches found via LLDP, then adopted."
     ],
     "not_for": [
-      "A software bridge on a host — Hardware.NetworkInterface with device_class bridge.",
+      "A software bridge on a host — NetworkInterface with device_class bridge.",
       "The routed/NAT edge — Network.Gateway.",
       "The VLAN segments themselves — Network.VLAN; the switch carries segments, it doesn't define them."
     ],
     "works_with": [
-      "Hardware.NetworkInterface — its ports, and the host NICs those ports connect to.",
+      "NetworkInterface — its ports, and the host NICs those ports connect to.",
       "Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.",
       "Network.VLAN — segments carried on the fabric, including the referenced management VLAN."
     ]

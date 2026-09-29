@@ -13,7 +13,7 @@ spec:
   vdevs:
     - type: raidz2                 # native term, authoritative
       raid_type: RAID6             # canonical mapping: RAID6-CLASS tolerance, not "is RAID6"
-      members: [sd-a, sd-b, sd-c, sd-d, sd-e, sd-f]   # References -> Hardware.StorageDevice
+      members: [sd-a, sd-b, sd-c, sd-d, sd-e, sd-f]   # References -> StorageDevice
     - type: mirror
       raid_type: RAID1
       members: [nvme-a, nvme-b]
@@ -107,7 +107,7 @@ tolerance after resilver, it never adds tolerance now, so it is deliberately not
 
 ## What every backend gets for free
 
-- **Blast radius as a graph walk:** members are References to `Hardware.StorageDevice` — a dead
+- **Blast radius as a graph walk:** members are References to `StorageDevice` — a dead
   drive's inbound edges are the affected vdevs, whose pools, whose datasets.
 - **Degradation as drift:** `redundancy_status` and `fault_tolerance_remaining` outputs — a
   degraded mirror publishes `fault_tolerance_remaining: 0`, the number an operator acts on.

@@ -135,15 +135,15 @@ supports **both at once** (SPEC-DESIGN-REQUIREMENTS §26):
   "64GB"`, `cpu.count: 16`) and MAY carry a structured inline inventory (`memory.modules[]`, `disks[]`).
   A consumer that only needs totals reads these; the **portable contract never requires** the component
   breakout.
-- **First-class entity (optional).** A `Hardware.NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (DCM ADR-013 — the control plane is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
+- **First-class entity (optional).** A `NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (DCM ADR-013 — the control plane is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
   by **`composition_visibility`** (`opaque|transparent|selective`, `docs/spec/foundations/service-dependencies.md`
   §11d): `opaque` → rollup only; `transparent` → every component an entity; `selective` → the org
   picks which.
 
 **The relationship (the keystone):** where a component *is* a kept entity, it is `contained_by` the
 parent and reconciles against the parent's rollup. Post-DCM ADR-013 the only such component is
-`Hardware.NetworkInterface` (the control plane configures it — bond/bridge); a host's `nics[]` rollup and its
-`Hardware.NetworkInterface` entities describe the same interfaces, and a mismatch is **drift** —
+`NetworkInterface` (the control plane configures it — bond/bridge); a host's `nics[]` rollup and its
+`NetworkInterface` entities describe the same interfaces, and a mismatch is **drift** —
 surfaced with provenance, never silently reconciled away. This is the same `transparent` composition
 that registers sub-resources as control-plane entities (service-dependencies §11d), applied below the device
 boundary. For memory/CPU/disk/GPU there is **no component entity** to reconcile against: capacity is a
@@ -202,7 +202,7 @@ Adopts Metal3 `BareMetalHost.status.provisioning.state` (`available` is its cano
 inspected-but-unprovisioned state). See `docs/spec/foundations/four-states.md` §2.4 (raw / discovered-first entry)
 and SPEC-DESIGN-REQUIREMENTS §28 (ingest-raw-then-adopt, UUID-preserving).
 
-## 7. `device_class` — device implementation (Hardware.* types)
+## 7. `device_class` — device implementation (hardware device classes)
 
 A `Hardware.*` component is the **device/component layer** and may be physical, virtualized, passed
 through to a guest, a slice carved from a physical parent, or a composite built from several interfaces.
@@ -231,14 +231,14 @@ partition_mechanism: sr-iov     # OPTIONAL; only when device_class=partition: sr
 | `bridge` | a **software L2 bridge over many** ports (N→1) | **Linux bridge / OVS bridge** (802.1Q) | `lower_layer` → the bridged ports |
 
 The device-partition mechanism applies to interfaces (GPU partitioning is deferred — GPU is a host capability, DCM ADR-013): an **SR-IOV VF / vETH** =
-`Hardware.NetworkInterface` `device_class: partition`, `partition_mechanism: sr-iov` (or `vlan`/`macvlan`),
-`parent_device` → the physical NIC. A **bond** = `Hardware.NetworkInterface` `device_class: aggregate`,
+`NetworkInterface` `device_class: partition`, `partition_mechanism: sr-iov` (or `vlan`/`macvlan`),
+`parent_device` → the physical NIC. A **bond** = `NetworkInterface` `device_class: aggregate`,
 `aggregation.mode: 802.3ad`, `lower_layer` → its member NICs; a **bridge** =
-`Hardware.NetworkInterface` `device_class: bridge`, `lower_layer` → the bond (or NICs) it bridges. The
+`NetworkInterface` `device_class: bridge`, `lower_layer` → the bond (or NICs) it bridges. The
 host L2 stack is thus one chain — `eno1`+`eno2` (physical) → `bond0` (aggregate) → `br0` (bridge) →
 tenant sub-interfaces (partition) — and `parent_device` (1→N) vs `lower_layer` (N→1) are the two
 **methods that relate a derived interface to its foundational components**. Both edges are
-self-referential `references` relationships (`Hardware.X → Hardware.X`); the §27 `Identity` block still
+self-referential `references` relationships (a device → a device of the same class); the §27 `Identity` block still
 distinguishes instances (a VF/vGPU keyed by `location`/index even with no hardware serial). Grounded in
 SR-IOV, the Linux mdev/vGPU + NVIDIA MIG frameworks, IEEE 802.1AX (aggregation), IEEE 802.1Q (bridging),
 and RFC 8343 interface stacking; mirrors Redfish `NetworkAdapter`→`NetworkDeviceFunction` /
@@ -250,13 +250,13 @@ standard owns it).
 §7's `parent_device` (composition **down**, 1→N) and `lower_layer` (composition **up**, N→1) relate an
 interface to its foundational components *within* one device. **`connects_to`** (§9) is the cross-device
 edge: a physical interface's link to its **peer termination point** — host NIC ↔ switch port, switch ↔
-switch uplink. A self-referential `references` relationship (`Hardware.NetworkInterface →
-Hardware.NetworkInterface`, 0..1 per physical port), symmetric, declared once from either end.
+switch uplink. A self-referential `references` relationship (`NetworkInterface →
+NetworkInterface`, 0..1 per physical port), symmetric, declared once from either end.
 
 ```yaml
 # host side                              # switch side
 - id: host01-eno2                        - id: sw-leaf01-port14
-  type: Hardware.NetworkInterface          type: Hardware.NetworkInterface
+  type: NetworkInterface          type: NetworkInterface
   contained_by: host01                     contained_by: sw-leaf01           # a Network.Switch
   connects_to: sw-leaf01-port14           attrs: { identity: { location: "Port 14" } }
 ```

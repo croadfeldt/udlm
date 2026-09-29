@@ -89,6 +89,27 @@ Declares that hosts get patched: which package sets, within which maintenance wi
 - Machine.VM — the patched substrate
 - Automation.OSPatch.EngineBlue / EngineGreen — the executing engines
 
+## BMC
+
+### BMC (0.7.0)
+
+**Purpose:** Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.
+
+The always-on management controller inside a server that answers even when the host is off — each board vendor ships its own flavor. This record carries its `management_address`, the single `protocol` it answers — `redfish`, `ipmi`, or the combined `redfish+ipmi` — and its `vendor`, and points at the one host it controls. Credentials are never stored here — they are referenced. It exists so that power that host off resolves to a concrete address and mechanism instead of prose.
+
+**Use when:**
+- You need out-of-band power/reset control of a host to be addressable data, for shutdown ordering and recovery automation.
+- You need the management-network surface of the fleet inventoried separately from in-band host addresses.
+
+**Not for:**
+- The host itself — Machine.BareMetalHost; the BMC manages it, one-to-one.
+- The BMC login secret — Security.CredentialRef, referenced not stored.
+
+**Works with:**
+- Machine.BareMetalHost — the host this BMC is the power/reset surface for.
+- Security.CredentialRef — the BMC credential, by reference.
+- Machine.BareMetalHost#firmware — the portable firmware settings the host converges to; vendor attribute sets are provider data applied over this BMC's path.
+
 ## Capability
 
 ### Capability (0.4.0)
@@ -174,7 +195,7 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 - Machine.BareMetalHost — the equipment that declares its location.
 - Topology — the failure-domain view of the same physical reality.
 
-### Facility.PowerFeed (0.6.0)
+### Facility.PowerFeed (0.6.1)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
@@ -186,7 +207,7 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 
 **Not for:**
 - The place equipment sits — Facility.Location; a rack is a place, a feed is a power source, and the two vary independently.
-- Powering one host off — that action targets the host's Hardware.BMC control surface, not the feed.
+- Powering one host off — that action targets the host's BMC control surface, not the feed.
 
 **Works with:**
 - Machine.BareMetalHost — hosts declare depends_on the feed(s) they draw from.
@@ -214,6 +235,27 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 - Volume — the underlying storage the shares expose.
 - Machine.BareMetalHost / Container — where the file service runs.
 - Security.CredentialRef — service credentials (e.g. a keytab), by reference.
+
+## GPU
+
+### GPU (0.6.0)
+
+**Purpose:** Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.
+
+One GPU as a component record. The same type covers three shapes, distinguished by device_class: the physical card installed in a host, a whole card passed through to a guest, and a partition (a vGPU or MIG slice) carved from a physical card — a partition points at its parent physical device. Attributes are discovered facts. Identity facts — model, location (slot or instance id), serial, manufacturer — nest under the `identity` block, not at the top level; `memory` is an object whose size is a whole-number quantity like 48GB. The type publishes no runtime binding surface because nothing binds to a GPU record directly — schedulers bind through the host or guest.
+
+**Use when:**
+- You need GPU inventory across hosts — which cards, where, with what memory and architecture.
+- You need the passthrough/partition chain (guest slice → physical card → host) traversable for maintenance impact.
+
+**Not for:**
+- CPU sockets — Processor.
+- Requesting GPU capacity for a workload — that is placement against advertised capability (e.g. KubernetesNodePool capabilities), not a GPU component record.
+
+**Works with:**
+- Machine.BareMetalHost — the host the physical card is installed in.
+- Machine.VM — the guest a passthrough or partition is presented to.
+- GPU — parent_device: the physical card a partition is carved from.
 
 ## Grouping
 
@@ -275,124 +317,6 @@ A tenant. A thing belongs to exactly one at a time, and that is a structural loc
 - Grouping.Authorization — the recorded exception that lets a relationship cross this border
 - Every estate record — tenant_uuid resolves here (TEN-001/003, [D3])
 - The governance matrix — isolation obligations are enforced over the derived member set
-
-## Hardware
-
-### Hardware.BMC (0.6.3)
-
-**Purpose:** Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.
-
-The always-on management controller inside a server that answers even when the host is off — each board vendor ships its own flavor. This record carries its `management_address`, the single `protocol` it answers — `redfish`, `ipmi`, or the combined `redfish+ipmi` — and its `vendor`, and points at the one host it controls. Credentials are never stored here — they are referenced. It exists so that power that host off resolves to a concrete address and mechanism instead of prose.
-
-**Use when:**
-- You need out-of-band power/reset control of a host to be addressable data, for shutdown ordering and recovery automation.
-- You need the management-network surface of the fleet inventoried separately from in-band host addresses.
-
-**Not for:**
-- The host itself — Machine.BareMetalHost; the BMC manages it, one-to-one.
-- The BMC login secret — Security.CredentialRef, referenced not stored.
-
-**Works with:**
-- Machine.BareMetalHost — the host this BMC is the power/reset surface for.
-- Security.CredentialRef — the BMC credential, by reference.
-- Hardware.BiosProfile — firmware profiles applied over the BMC's out-of-band path.
-
-### Hardware.BiosProfile (0.6.3)
-
-**Purpose:** Captures a reusable desired BIOS/firmware configuration that a fleet of hosts converge to.
-
-A named set of BIOS settings, written once and applied to many hosts. The attribute names and values are the vendor's own (Redfish BIOS attributes), carried as an opaque block and interpreted against a pinned attribute registry for the exact board and firmware — the profile does not re-describe what each setting means. Hosts reference the profile; the applied generation reported back is what drift detection compares against. A profile can derive from a base profile.
-
-**Use when:**
-- You need identical BIOS settings (e.g. SR-IOV enabled, boot order) enforced across a fleet of like hosts.
-- You need to detect a host whose live BIOS no longer matches its declared profile.
-
-**Not for:**
-- Host network interface configuration — that is Network.ConnectionProfile: the same opaque-body-plus-pinned-registry pattern, against NMstate instead of a BIOS attribute registry.
-- The host record itself — Machine.BareMetalHost references the profile it converges to.
-
-**Works with:**
-- Machine.BareMetalHost — the hosts that declare convergence to this profile.
-- Hardware.BiosProfile — an optional base profile this one derives from.
-- Hardware.BMC — the out-of-band path the profile is applied through.
-
-### Hardware.GraphicsProcessor (0.5.3)
-
-**Purpose:** Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.
-
-One GPU as a component record. The same type covers three shapes, distinguished by device_class: the physical card installed in a host, a whole card passed through to a guest, and a partition (a vGPU or MIG slice) carved from a physical card — a partition points at its parent physical device. Attributes are discovered facts. Identity facts — model, location (slot or instance id), serial, manufacturer — nest under the `identity` block, not at the top level; `memory` is an object whose size is a whole-number quantity like 48GB. The type publishes no runtime binding surface because nothing binds to a GPU record directly — schedulers bind through the host or guest.
-
-**Use when:**
-- You need GPU inventory across hosts — which cards, where, with what memory and architecture.
-- You need the passthrough/partition chain (guest slice → physical card → host) traversable for maintenance impact.
-
-**Not for:**
-- CPU sockets — Hardware.Processor.
-- Requesting GPU capacity for a workload — that is placement against advertised capability (e.g. KubernetesNodePool capabilities), not a GPU component record.
-
-**Works with:**
-- Machine.BareMetalHost — the host the physical card is installed in.
-- Machine.VM — the guest a passthrough or partition is presented to.
-- Hardware.GraphicsProcessor — parent_device: the physical card a partition is carved from.
-
-### Hardware.NetworkInterface (0.14.1)
-
-**Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
-
-One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. Identity facts — the MAC address (`mac_address`), location, serial, model — nest under the `identity` block, not at the top level. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing Network.VLAN records, never by retyping raw tags.
-
-**Use when:**
-- You need the full host interface stack — NICs, bond, bridge, sub-interfaces — as records whose parent/member links mirror reality.
-- You need host-NIC-to-switch-port cabling (LLDP-discovered) in the graph for impact analysis.
-- You need a port's VLAN membership (native/tagged) declared against shared VLAN records.
-
-**Not for:**
-- The attachment point guests plug into — Network.VirtualNetwork; a bridge here is the device, the VirtualNetwork is the workload-facing network on top of it.
-- The desired configuration applied to an interface (addressing, routes, DNS) — Network.ConnectionProfile configures the device this type inventories.
-- The VLAN segment itself — Network.VLAN; interfaces are members of a segment, they don't define it.
-
-**Works with:**
-- Machine.BareMetalHost / Network.Switch — what contains the interface (host NIC vs switch port).
-- Hardware.NetworkInterface — parent_device, lower_layer, and connects_to: partition parentage, bond/bridge membership, cable adjacency.
-- Network.VLAN — the segments the port is a member of.
-- Network.ConnectionProfile — the declarative config realized onto this interface.
-
-### Hardware.Processor (0.5.2)
-
-**Purpose:** Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when the host rollup is not enough.
-
-One processor as its own record: `cores` (required), `threads`, `architecture`, and its clock as `max_speed_mhz`. Identity facts — model, location (the socket designation), serial — nest under the `identity` block, not at the top level. Most estates only need the aggregate CPU numbers already carried on the host; this type exists for when a socket must be individually addressable (asset tracking, heterogeneous sockets). device_class distinguishes the physical socket from a virtual CPU presented to a guest. Nothing binds to a processor at runtime, so it publishes no outputs — it is inventory.
-
-**Use when:**
-- You need per-socket inventory (exact model, position, serial) beyond the host's aggregate core/thread rollup.
-- You need virtual CPUs presented to a guest tracked as components.
-
-**Not for:**
-- Ordinary capacity accounting — the cpu rollup on Machine.BareMetalHost covers that without per-socket records.
-- GPUs and accelerators — Hardware.GraphicsProcessor.
-
-**Works with:**
-- Machine.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.
-- Machine.VM — the guest a virtual CPU is presented to.
-
-### Hardware.StorageDevice (0.5.3)
-
-**Purpose:** Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.
-
-One storage device as a record: its required `capacity` — a whole-number quantity like 4TB; fractional sizes do not validate — its `media_type` and bus `protocol`, and where and what it is. Identity facts — bay or slot (`location`), model, serial, WWN, and the semantic `role` (boot, data, cache, a storage daemon's member drive) — nest under the `identity` block, not at the top level. device_class separates a physical drive from a virtual disk presented to a guest; a virtual disk points at the storage that backs it. Once realized, the OS device path is published, tying the inventory record to what the host sees.
-
-**Use when:**
-- You need drive-level inventory — which drive, in which bay, of which host — so a failing disk maps to a physical pull-and-replace.
-- You need pool or cluster membership grounded in real devices (a vdev's members, a storage daemon's backing drive).
-
-**Not for:**
-- The consumable volume a workload attaches — Volume; a device is hardware, a volume is provisioned capacity.
-- The aggregation layer over drives — StoragePool (host-local) or StorageCluster (distributed).
-
-**Works with:**
-- Machine.BareMetalHost — the host the drive is installed in.
-- StoragePool — pools whose vdevs group these drives.
-- Machine.VM — the guest a virtual disk is presented to.
 
 ## Identity
 
@@ -556,7 +480,7 @@ The most portable way to ask for a machine: how big, what image, what storage ti
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and Network.VirtualNetwork — what the realized machine attaches to.
 
-### Machine.BareMetalHost (0.11.0)
+### Machine.BareMetalHost (0.12.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -570,13 +494,13 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 
 **Not for:**
 - A virtual machine — that is Machine.VM; a host is hardware you can touch.
-- The host's out-of-band management controller — that is Hardware.BMC, its own record with its own address and power-control surface.
-- Individual NICs, GPUs, or drives inside the host — those are Hardware.NetworkInterface / Hardware.GraphicsProcessor / Hardware.StorageDevice records contained by the host.
+- The host's out-of-band management controller — that is BMC, its own record with its own address and power-control surface.
+- Individual NICs, GPUs, or drives inside the host — those are NetworkInterface / GPU / StorageDevice records contained by the host.
 
 **Works with:**
 - Facility.PowerFeed — the power source the host draws from; roots the shutdown ordering.
-- Hardware.BiosProfile — the firmware configuration the host converges to.
-- Hardware.NetworkInterface — the host's NICs, modeled as contained components.
+- The host's own `firmware` element — the portable BIOS settings it converges to; vendor attribute sets are Provider Class data (ADR-082).
+- NetworkInterface — the host's NICs, modeled as contained components.
 - Machine.VM — the guests the host runs.
 
 ### Machine.LPAR (0.1.1)
@@ -598,7 +522,7 @@ The request for a slice of a big partitioned server: how much processor capacity
 - Volume — the disks served through virtual I/O.
 - Network.VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.0.1)
+### Machine.VM (2.0.2)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -613,7 +537,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 - The physical machine it runs on — Machine.BareMetalHost.
 - A containerized workload — Container; the VM carries a full guest OS.
 - The per-disk shape (sizes, boot designation) — StorageLayout; the VM references one via layout_ref.
-- The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory.
+- The vNIC as a device record — that is NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory.
 
 **Works with:**
 - StorageLayout — the disk layout the VM realizes (per-disk shape, boot designation).
@@ -644,7 +568,7 @@ The thing that hands out addresses and answers name lookups, as a single, thin s
 - Network.DHCPScope — the per-subnet config this service serves.
 - Network.DNSZone — the zones it answers for.
 
-### Network.ConnectionProfile (0.4.2)
+### Network.ConnectionProfile (0.4.3)
 
 **Purpose:** Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN membership — as declarative state a provider applies.
 
@@ -655,14 +579,14 @@ What a host interface's network configuration should be, in NMstate's own schema
 - You need drift in host networking detected from data, not by logging into hosts.
 
 **Not for:**
-- The interface device itself — Hardware.NetworkInterface; the profile configures a device that type inventories.
-- BIOS settings — Hardware.BiosProfile: the same opaque-body-plus-pinned-registry pattern, for firmware.
+- The interface device itself — NetworkInterface; the profile configures a device that type inventories.
+- BIOS settings — the host's `firmware` element and, for vendor attribute sets, a Provider Class under Machine.BareMetalHost.
 
 **Works with:**
-- Hardware.NetworkInterface — the adapter or port the profile applies to.
+- NetworkInterface — the adapter or port the profile applies to.
 - Network.VLAN — the segments the configured VLANs and sub-interfaces ride.
 
-### Network.DHCPScope (0.8.3)
+### Network.DHCPScope (0.8.4)
 
 **Purpose:** Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.
 
@@ -719,7 +643,7 @@ The router/firewall at the edge of a network: which functions it provides (routi
 - Network.DHCPScope — scopes serving the segments the gateway routes.
 - Network.Switch — the fabric behind the edge.
 
-### Network.IPAddress (0.10.5)
+### Network.IPAddress (0.10.6)
 
 **Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
 
@@ -732,10 +656,10 @@ One IP address, bound to the interface it is configured on, with how it came to 
 **Not for:**
 - The range addresses come from — Network.IPAddressPool.
 - The subnet's DHCP service configuration — Network.DHCPScope.
-- The interface itself — Hardware.NetworkInterface; the address attaches to it.
+- The interface itself — NetworkInterface; the address attaches to it.
 
 **Works with:**
-- Hardware.NetworkInterface — the interface the address is configured on.
+- NetworkInterface — the interface the address is configured on.
 - Network.IPAddressPool — the pool the address was carved from.
 - Machine.VM — consumers that request or bring addresses.
 
@@ -779,11 +703,11 @@ The IP side of a network — the address range, the way out of it, and how hosts
 - `Network.IPAddressPool` — the allocatable ranges within this subnet
 - `Network.Gateway` — the egress from it
 
-### Network.Switch (0.7.3)
+### Network.Switch (0.7.4)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
-One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup — the `ports` object (count, predominant speed) — and its management VLAN by reference (`management_vlan_ref`; the switch record carries no management address of its own — addresses live on its interface records). Identity facts — the `chassis_id`, serial, model, manufacturer, system name — nest under the `identity` block, not at the top level. Its individual ports are not a separate type — they are Hardware.NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.
+One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup — the `ports` object (count, predominant speed) — and its management VLAN by reference (`management_vlan_ref`; the switch record carries no management address of its own — addresses live on its interface records). Identity facts — the `chassis_id`, serial, model, manufacturer, system name — nest under the `identity` block, not at the top level. Its individual ports are not a separate type — they are NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.
 
 **Use when:**
 - You need the switching fabric in the dependency graph so connectivity-outlives-compute is derivable in shutdown ordering.
@@ -791,16 +715,16 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 - You need brownfield discovery — switches found via LLDP, then adopted.
 
 **Not for:**
-- A software bridge on a host — Hardware.NetworkInterface with device_class bridge.
+- A software bridge on a host — NetworkInterface with device_class bridge.
 - The routed/NAT edge — Network.Gateway.
 - The VLAN segments themselves — Network.VLAN; the switch carries segments, it doesn't define them.
 
 **Works with:**
-- Hardware.NetworkInterface — its ports, and the host NICs those ports connect to.
+- NetworkInterface — its ports, and the host NICs those ports connect to.
 - Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.
 - Network.VLAN — segments carried on the fabric, including the referenced management VLAN.
 
-### Network.VLAN (0.5.4)
+### Network.VLAN (0.5.5)
 
 **Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
 
@@ -812,15 +736,15 @@ The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `v
 
 **Not for:**
 - The workload attachment point — Network.VirtualNetwork rides a VLAN; guests attach to the VirtualNetwork, not to the VLAN.
-- A port's tagging configuration — that is vlan_memberships on Hardware.NetworkInterface, referencing this record.
+- A port's tagging configuration — that is vlan_memberships on NetworkInterface, referencing this record.
 
 **Works with:**
-- Hardware.NetworkInterface — ports and sub-interfaces declare membership by reference.
+- NetworkInterface — ports and sub-interfaces declare membership by reference.
 - Network.VirtualNetwork — virtual networks ride a referenced segment.
 - Network.Switch — the fabric carrying the segment.
 - Network.Gateway — edge segments each ride a referenced VLAN.
 
-### Network.VirtualNetwork (0.8.5)
+### Network.VirtualNetwork (0.8.6)
 
 **Purpose:** Models the attachment point workloads plug into — the host- or cluster-scoped network a guest names when it says attach me here.
 
@@ -832,14 +756,38 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 **Not for:**
 - The VLAN id or segment itself — Network.VLAN; a virtual network rides a segment, referenced not restated.
-- The host bridge device — Hardware.NetworkInterface (device_class bridge) supports this network from below.
+- The host bridge device — NetworkInterface (device_class bridge) supports this network from below.
 - Per-guest NIC intent — that lives on Machine.VM's own networks list.
 
 **Works with:**
 - Machine.VM / KubernetesCluster — the guests that attach, and the scope that hosts the network.
 - Network.VLAN — the underlying segment, selected by reference.
-- Hardware.NetworkInterface — the supporting bridge or uplink on the host.
+- NetworkInterface — the supporting bridge or uplink on the host.
 - Network.IPAddressPool — the address pool scoped to this segment.
+
+## NetworkInterface
+
+### NetworkInterface (0.15.0)
+
+**Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
+
+One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. Identity facts — the MAC address (`mac_address`), location, serial, model — nest under the `identity` block, not at the top level. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing Network.VLAN records, never by retyping raw tags.
+
+**Use when:**
+- You need the full host interface stack — NICs, bond, bridge, sub-interfaces — as records whose parent/member links mirror reality.
+- You need host-NIC-to-switch-port cabling (LLDP-discovered) in the graph for impact analysis.
+- You need a port's VLAN membership (native/tagged) declared against shared VLAN records.
+
+**Not for:**
+- The attachment point guests plug into — Network.VirtualNetwork; a bridge here is the device, the VirtualNetwork is the workload-facing network on top of it.
+- The desired configuration applied to an interface (addressing, routes, DNS) — Network.ConnectionProfile configures the device this type inventories.
+- The VLAN segment itself — Network.VLAN; interfaces are members of a segment, they don't define it.
+
+**Works with:**
+- Machine.BareMetalHost / Network.Switch — what contains the interface (host NIC vs switch port).
+- NetworkInterface — parent_device, lower_layer, and connects_to: partition parentage, bond/bridge membership, cable adjacency.
+- Network.VLAN — the segments the port is a member of.
+- Network.ConnectionProfile — the declarative config realized onto this interface.
 
 ## Observability
 
@@ -860,6 +808,26 @@ A statement of outcome: logs from a target host — the `target` object naming i
 **Works with:**
 - Machine.BareMetalHost / Machine.VM — the target host whose logs are shipped.
 - Software.Service — the central log store the sink URL points at.
+
+## Processor
+
+### Processor (0.6.0)
+
+**Purpose:** Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when the host rollup is not enough.
+
+One processor as its own record: `cores` (required), `threads`, `architecture`, and its clock as `max_speed_mhz`. Identity facts — model, location (the socket designation), serial — nest under the `identity` block, not at the top level. Most estates only need the aggregate CPU numbers already carried on the host; this type exists for when a socket must be individually addressable (asset tracking, heterogeneous sockets). device_class distinguishes the physical socket from a virtual CPU presented to a guest. Nothing binds to a processor at runtime, so it publishes no outputs — it is inventory.
+
+**Use when:**
+- You need per-socket inventory (exact model, position, serial) beyond the host's aggregate core/thread rollup.
+- You need virtual CPUs presented to a guest tracked as components.
+
+**Not for:**
+- Ordinary capacity accounting — the cpu rollup on Machine.BareMetalHost covers that without per-socket records.
+- GPUs and accelerators — GPU.
+
+**Works with:**
+- Machine.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.
+- Machine.VM — the guest a virtual CPU is presented to.
 
 ## Security
 
@@ -1033,6 +1001,27 @@ A multi-node storage system — Ceph is the reference implementation, but the te
 - Volume — volumes provisioned from the cluster.
 - StorageClass — the class records naming what this cluster serves.
 
+## StorageDevice
+
+### StorageDevice (0.6.0)
+
+**Purpose:** Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.
+
+One storage device as a record: its required `capacity` — a whole-number quantity like 4TB; fractional sizes do not validate — its `media_type` and bus `protocol`, and where and what it is. Identity facts — bay or slot (`location`), model, serial, WWN, and the semantic `role` (boot, data, cache, a storage daemon's member drive) — nest under the `identity` block, not at the top level. device_class separates a physical drive from a virtual disk presented to a guest; a virtual disk points at the storage that backs it. Once realized, the OS device path is published, tying the inventory record to what the host sees.
+
+**Use when:**
+- You need drive-level inventory — which drive, in which bay, of which host — so a failing disk maps to a physical pull-and-replace.
+- You need pool or cluster membership grounded in real devices (a vdev's members, a storage daemon's backing drive).
+
+**Not for:**
+- The consumable volume a workload attaches — Volume; a device is hardware, a volume is provisioned capacity.
+- The aggregation layer over drives — StoragePool (host-local) or StorageCluster (distributed).
+
+**Works with:**
+- Machine.BareMetalHost — the host the drive is installed in.
+- StoragePool — pools whose vdevs group these drives.
+- Machine.VM — the guest a virtual disk is presented to.
+
 ## StorageLayout
 
 ### StorageLayout (0.6.0)
@@ -1060,7 +1049,7 @@ The list of disks a machine should have: each entry names a disk (`name`, the st
 
 ## StoragePool
 
-### StoragePool (0.5.0)
+### StoragePool (0.5.1)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
@@ -1080,7 +1069,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 **Works with:**
 - Machine.BareMetalHost — the host whose drives form the pool.
 - Volume.ZFS — the datasets carved from the pool.
-- Hardware.StorageDevice — the physical member drives of the vdevs.
+- StorageDevice — the physical member drives of the vdevs.
 
 ## TaxonomyTerm
 
@@ -1231,7 +1220,7 @@ One statement per (vulnerability, package version). It carries the OpenVEX statu
 
 ## Volume
 
-### Volume (0.12.0)
+### Volume (0.12.1)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1245,7 +1234,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - The provisioning policy — StorageClass; the volume references a class by name.
 - The storage platform — StorageCluster provisions volumes.
 - Host-local ZFS/LVM storage a host service mounts — Volume.ZFS.
-- The physical drive — Hardware.StorageDevice.
+- The physical drive — StorageDevice.
 
 **Works with:**
 - StorageClass — the class declaring what kind of storage the volume gets.
@@ -1294,4 +1283,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*63 types; 63 with context, 0 pending.*
+*62 types; 62 with context, 0 pending.*

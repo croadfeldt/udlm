@@ -392,6 +392,30 @@
       ],
       "x-extensible-enum": true,
       "description": "What a datum is for (data-roles.md), separate from how sensitive it is. execution = needed to build the resource; assembly = control-plane assembly record; governance = policy decisions; audit = audit-only; cost = cost attribution. No role is dispatched by default (DSP-001)."
+    },
+    "device_class": {
+      "title": "Device class",
+      "type": "string",
+      "enum": [
+        "physical",
+        "virtual",
+        "passthrough",
+        "partition",
+        "aggregate",
+        "bridge"
+      ],
+      "description": "HOW A HARDWARE THING IS REALIZED (common-elements.md §7): physical = the real device; virtual = presented to a guest by a hypervisor; passthrough = a whole physical device given to a guest; partition = a slice derived from a physical parent (SR-IOV VF, vGPU/MIG, a VLAN sub-interface; set parent_device and partition_mechanism); aggregate = a bond over members; bridge = a bridge over lower layers. One home for the vocabulary (ADR-082): each hardware Base declares the element with the subset it can be."
+    },
+    "device_class_unit": {
+      "title": "Device class (single device)",
+      "type": "string",
+      "enum": [
+        "physical",
+        "virtual",
+        "passthrough",
+        "partition"
+      ],
+      "description": "The device_class values a single device can take — a socket, a drive, a GPU or a controller is never an aggregate or a bridge. Subset of device_class; the same vocabulary."
     }
   }
 }

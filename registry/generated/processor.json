@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.Processor/0.5.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Processor/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "418c9acb-3cd8-4e73-817d-8be2bdf13442",
-  "resource_type": "Hardware.Processor",
-  "version": "0.5.2",
+  "resource_type": "Processor",
+  "version": "0.6.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Processor",
-    "description": "A CPU component. First-class entity form of the §26 component model — a parent carries the cpu rollup and MAY also contain Hardware.Processor entities. device_class distinguishes a physical socket from a virtual CPU presented to a guest. outputs-exempt: opaque inventory component — its attributes are Discovered-state facts on the containing host; it publishes no realize-time binding surface (rule 36(b) documented exclusion).",
+    "description": "A CPU component. First-class entity form of the §26 component model — a parent carries the cpu rollup and MAY also contain Processor entities. device_class distinguishes a physical socket from a virtual CPU presented to a guest. outputs-exempt: opaque inventory component — its attributes are Discovered-state facts on the containing host; it publishes no realize-time binding surface (rule 36(b) documented exclusion). A Base by the Base test (CLS-002): Redfish Processor (ProcessorType CPU) abstracts over a socket and a vCPU, so cores of a given architecture are one deliverable any host or hypervisor provider can present.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Hardware",
-          "version": "1.2.0",
-          "uuid": "4c140843-579d-4f87-bffe-d197c300d81b"
-        },
-        {
-          "class": "Hardware.Processor",
-          "version": "0.5.2",
+          "class": "Processor",
+          "version": "0.6.0",
           "uuid": "418c9acb-3cd8-4e73-817d-8be2bdf13442"
         }
       ]
@@ -33,13 +28,7 @@
     "additionalProperties": false,
     "properties": {
       "device_class": {
-        "type": "string",
-        "enum": [
-          "physical",
-          "virtual",
-          "passthrough",
-          "partition"
-        ],
+        "$ref": "../common-elements.schema.json#/$defs/device_class_unit",
         "description": "Device realization (common-elements.md §7). physical = a socket/package; virtual = vCPU."
       },
       "partition_mechanism": {
@@ -139,6 +128,9 @@
       "license_compatibility": "compatible-reference"
     }
   ],
+  "filed_under": [
+    "hardware"
+  ],
   "context": {
     "purpose": "Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when the host rollup is not enough.",
     "plain_description": "One processor as its own record: `cores` (required), `threads`, `architecture`, and its clock as `max_speed_mhz`. Identity facts — model, location (the socket designation), serial — nest under the `identity` block, not at the top level. Most estates only need the aggregate CPU numbers already carried on the host; this type exists for when a socket must be individually addressable (asset tracking, heterogeneous sockets). device_class distinguishes the physical socket from a virtual CPU presented to a guest. Nothing binds to a processor at runtime, so it publishes no outputs — it is inventory.",
@@ -148,7 +140,7 @@
     ],
     "not_for": [
       "Ordinary capacity accounting — the cpu rollup on Machine.BareMetalHost covers that without per-socket records.",
-      "GPUs and accelerators — Hardware.GraphicsProcessor."
+      "GPUs and accelerators — GPU."
     ],
     "works_with": [
       "Machine.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.",

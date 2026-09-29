@@ -38,7 +38,7 @@ difference is *how many* edges an implementor authors and *where* they sit.
    (`Machine.BareMetalHost → Facility.PowerFeed` is `0..n`), so a single feed loss leaves a second
    path across a distinct fault domain — authored, not inferred.
 2. **Component chain** — where a dependency routes through a *managed* component, model it on the
-   component, not the whole resource. Canonically **network fabric**: a `Hardware.NetworkInterface`
+   component, not the whole resource. Canonically **network fabric**: a `NetworkInterface`
    `contained_by` a host `connects_to` a switch port, and a consumer follows `host → NIC → port`
    transitively. This applies only to components DCM actually manages/configures (DCM ADR-013 — DCM is not
    a hardware system-of-record); inert inventory like a PSU is *not* modeled, so **power** is a direct
@@ -60,7 +60,7 @@ difference is *how many* edges an implementor authors and *where* they sit.
 |---|---|
 | Direct edge | every resource type (`dependencies[]`) |
 | Power | `Machine.BareMetalHost` `depends_on` → `Facility.PowerFeed` (`0..n`; one edge per feed) |
-| Managed-component chain | `Hardware.NetworkInterface` `connects_to` → switch port |
+| Managed-component chain | `NetworkInterface` `connects_to` → switch port |
 | Bundling | *any* node the members `depends_on` — its deps become theirs transitively (no dedicated type) |
 | Physical scope | `Facility.Location` (adopts Redfish Location) |
 | Realm scope | `Security.DirectoryService` + `Network.AddressService`, keyed by `tenant_uuid` |

@@ -174,8 +174,8 @@ The new types, their category/tier, and the standard each adopts by reference. A
 
 | Type | Category (new?) | Adopts (by reference) | Notes |
 |---|---|---|---|
-| `Hardware.NetworkInterface` | Hardware ✚ | Redfish `NetworkAdapter`/`NetworkPort` | NIC: mac, speed |
-| `Machine.BareMetalHost` | Machine | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | the physical **asset** (raw resource, §28); rollup of Hardware.* (§26). An *allocation* to a consumer is the ownership model, not a separate type (§3a); a running *instance* is a realized entity. |
+| `NetworkInterface` | Hardware ✚ | Redfish `NetworkAdapter`/`NetworkPort` | NIC: mac, speed |
+| `Machine.BareMetalHost` | Machine | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | the physical **asset** (raw resource, §28); rollup of the hardware components (§26). An *allocation* to a consumer is the ownership model, not a separate type (§3a); a running *instance* is a realized entity. |
 | `StorageCluster` | Storage | SNIA Swordfish `StorageSystem` + Rook `CephCluster` (provider) | vendor-neutral; provider on instance; protocol outputs |
 | `Network.Gateway` | Network | K8s Gateway API (concept) / general L3 routing | routing/NAT/firewall edge |
 | `Network.DNSZone` | Network | RFC 1035 / 1034 | authoritative zone; external-dns `DNSEndpoint` as k8s-native ref |

@@ -22,7 +22,7 @@ inferred through a component. `host-a` declares **two** feed edges — `depends_
 power fault domain. `host-b` shows the non-redundant case: a single `depends_on feed-wall`. (Component
 inventory like a PSU is out of scope — DCM ADR-013; DCM is not a hardware system-of-record. Where a
 dependency genuinely routes through a *managed* component, model it there — e.g. a
-`Hardware.NetworkInterface` `connects_to` a switch port — but power roots at the host.)
+`NetworkInterface` `connects_to` a switch port — but power roots at the host.)
 
 ### Bundling — declare deps on a node, depend on the node
 `core-services` declares the shared platform dependencies **once**: `depends_on idm` + `depends_on

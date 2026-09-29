@@ -1,4 +1,4 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.11.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.12.0
 conforms_to: udlm/0.1
 uuid: 7196d55a-d584-40e5-8b47-5247dad7d421
 record_type: class
@@ -6,7 +6,7 @@ class: type
 resource_type: Machine.BareMetalHost
 short_name: Machine.BMH
 parent: Machine
-version: 0.11.0
+version: 0.12.0
 family: Resource
 status: active
 metadata:
@@ -39,7 +39,7 @@ elements:
   scope: Machine.BareMetalHost
   optional: true
   state: canonical
-  description: Whether the host's kept components (Hardware.NetworkInterface) are modeled as first-class
+  description: Whether the host's kept components (NetworkInterface) are modeled as first-class
     entities vs a rollup (§26, docs/spec/foundations/service-dependencies.md §11d); memory/CPU/disk/GPU are aggregate
     host attributes, not component records (DCM ADR-013). opaque = rollup only.
   schema:
@@ -48,7 +48,7 @@ elements:
     - opaque
     - transparent
     - selective
-    description: Whether the host's kept components (Hardware.NetworkInterface) are modeled as first-class
+    description: Whether the host's kept components (NetworkInterface) are modeled as first-class
       entities vs a rollup (§26, docs/spec/foundations/service-dependencies.md §11d); memory/CPU/disk/GPU are aggregate
       host attributes, not component records (DCM ADR-013). opaque = rollup only.
 - element: identity
@@ -201,12 +201,12 @@ elements:
   optional: true
   state: canonical
   description: The NIC MAC the host network-boots from (Metal3 bootMACAddress) — ties provisioning to
-    a concrete port; pairs with that NIC's Hardware.NetworkInterface record.
+    a concrete port; pairs with that NIC's NetworkInterface record.
   schema:
     type: string
     pattern: ^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$
     description: The NIC MAC the host network-boots from (Metal3 bootMACAddress) — ties provisioning to
-      a concrete port; pairs with that NIC's Hardware.NetworkInterface record.
+      a concrete port; pairs with that NIC's NetworkInterface record.
 - element: online
   scope: Machine.BareMetalHost
   optional: true
@@ -279,7 +279,7 @@ outputs:
   management_address:
     type: string
     description: Reachable management endpoint (BMC/Redfish or host management IP) once Realized. When
-      a Hardware.BMC record exists for this host, the BMC record is authoritative; this output is the
+      a BMC record exists for this host, the BMC record is authoritative; this output is the
       convenience copy.
   provisioning_state:
     type: string
@@ -305,11 +305,6 @@ relationships:
   target: Facility.PowerFeed
   cardinality: 0..n
   description: Power source(s) the host draws from; the host stops before the feed in a reverse-topo shutdown.
-- edge_type: references
-  target: Hardware.BiosProfile
-  cardinality: 0..1
-  description: The desired BIOS/firmware profile this host converges to (drift = live BIOS != profile).
-    Host-side declaration per the dependent-side rule.
 adopts:
 - standard: Redfish
   version: '2024.4'
@@ -345,12 +340,12 @@ context:
     so a lost host rebuilds from the estate (the bare-metal leg of rehydration)
   not_for:
   - A virtual machine — that is Machine.VM; a host is hardware you can touch.
-  - The host's out-of-band management controller — that is Hardware.BMC, its own record with its own address
+  - The host's out-of-band management controller — that is BMC, its own record with its own address
     and power-control surface.
-  - Individual NICs, GPUs, or drives inside the host — those are Hardware.NetworkInterface / Hardware.GraphicsProcessor
-    / Hardware.StorageDevice records contained by the host.
+  - Individual NICs, GPUs, or drives inside the host — those are NetworkInterface / GPU
+    / StorageDevice records contained by the host.
   works_with:
   - Facility.PowerFeed — the power source the host draws from; roots the shutdown ordering.
-  - Hardware.BiosProfile — the firmware configuration the host converges to.
-  - Hardware.NetworkInterface — the host's NICs, modeled as contained components.
+  - The host's own `firmware` element — the portable BIOS settings it converges to; vendor attribute sets are Provider Class data (ADR-082).
+  - NetworkInterface — the host's NICs, modeled as contained components.
   - Machine.VM — the guests the host runs.

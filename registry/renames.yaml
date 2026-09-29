@@ -244,3 +244,25 @@ retired:
   registry/generated/storage.dataset.json: registry/generated/volume.zfs.json
   registry/generated/storage.class.json: registry/generated/storage-class.json
   registry/generated/storage.layout.json: registry/generated/storage-layout.json
+
+  # 2026-09-29 — the Hardware folder dissolves into the `hardware` usage group (ADR-082, row 084). Each
+  # member is a Base by the Base test; GraphicsProcessor becomes the GPU Base (nothing ports between a
+  # CPU and a GPU); BiosProfile is retired — its portable part is Machine's `firmware` element, the
+  # vendor attribute set is Provider Class data. Same uuids (ADR-051). The directory is the hosting group.
+  registry/classes/resource/hardware/_base.yaml#4c140843-579d-4f87-bffe-d197c300d81b: >-
+    retired 2026-09-29 — a dissolved folder; its members are StorageDevice, NetworkInterface, Processor,
+    GPU and BMC, filed under the `hardware` usage group; `device_class` is homed in
+    common-elements.schema.json
+  registry/classes/resource/hardware/bios-profile.yaml#9e8dbb91-cf60-420f-9ab0-fc9df20d6ff4: >-
+    retired 2026-09-29 — not a Base by the Base test: the portable settings are Machine.BareMetalHost#firmware;
+    a vendor attribute set is Provider Class data under Machine.BareMetalHost
+  registry/classes/resource/hardware/storage-device.yaml: registry/classes/resource/hardware/storage-device/_base.yaml
+  registry/classes/resource/hardware/network-interface.yaml: registry/classes/resource/hardware/network-interface/_base.yaml
+  registry/classes/resource/hardware/processor.yaml: registry/classes/resource/hardware/processor/_base.yaml
+  registry/classes/resource/hardware/graphics-processor.yaml: registry/classes/resource/hardware/gpu/_base.yaml
+  registry/classes/resource/hardware/bmc.yaml: registry/classes/resource/hardware/bmc/_base.yaml
+  registry/generated/hardware.storage-device.json: registry/generated/storage-device.json
+  registry/generated/hardware.network-interface.json: registry/generated/network-interface.json
+  registry/generated/hardware.processor.json: registry/generated/processor.json
+  registry/generated/hardware.graphics-processor.json: registry/generated/gpu.json
+  registry/generated/hardware.bmc.json: registry/generated/bmc.json

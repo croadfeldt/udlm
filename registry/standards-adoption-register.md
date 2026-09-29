@@ -85,7 +85,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Hardware & platform
 
 ### DMTF Redfish — CANONICAL
-**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Machine/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (Facility.PowerFeed); Bios + BiosAttributeRegistry (Hardware.BiosProfile); Manager + ComputerSystem.Reset (Hardware.BMC); Location/Placement (Facility.Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — DCM ADR-013; the host carries their rollup.)
+**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Machine/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (Facility.PowerFeed); Bios (the Machine `firmware` element; vendor attribute sets are Provider Class data); Manager + ComputerSystem.Reset (BMC); Location/Placement (Facility.Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — DCM ADR-013; the host carries their rollup.)
 **Why:** the vendor-neutral hardware-as-asset vocabulary, and the one the estate's producers actually speak (Redfish-capable BMCs; used for bare-metal provisioning). *Alternatives:* IPMI (no data model), DMTF CIM (superseded by Redfish for REST-era use — PRIOR-ART). **License:** DMTF — compatible-reference.
 
 ### IEEE 802.1AX / 802.1Q / 802.1AB — CANONICAL

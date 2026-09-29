@@ -1,5 +1,13 @@
 {
   "usage_group": "network",
   "generated": true,
-  "classes": []
+  "classes": [
+    {
+      "class": "NetworkInterface",
+      "version": "0.15.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/hardware/network-interface/_base.yaml",
+      "types": []
+    }
+  ]
 }

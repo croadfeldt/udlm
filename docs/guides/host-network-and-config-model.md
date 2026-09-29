@@ -47,7 +47,7 @@ Three convergences matter:
 UDLM already carries most of this. The mapping reuses existing types and adds exactly one, per the
 adopt-by-reference methodology (`docs/spec/principles/adopted-standards.md`).
 
-### 1. Adapter + MAC → reuse `Hardware.NetworkInterface` (no change)
+### 1. Adapter + MAC → reuse `NetworkInterface` (no change)
 It already has `device_class`, `partition_mechanism`, `aggregation`, `bridge`, `identity`, `mtu`,
 `vlan_id`, the `parent_device`/`lower_layer` stacking edges, and **`mac_address` as an output**. This is
 the "ethernet adapter resource" Maintainer means, and it already covers macvlan/VLAN/bond/bridge. I'd keep MAC
@@ -56,7 +56,7 @@ MACAddress record is the blessed escalation path *if* we ever need permanent-vs-
 
 ### 2. IP → reuse `Network.IPAddress` as a **dependent record** (Maintainer's "IPaddress record dependency")
 `Network.IPAddress` already exists (`family`, `allocation` → `address`). Model each address as its own
-record with a `depends_on` (or `references … relation: assigned_to`) edge to its `Hardware.NetworkInterface`.
+record with a `depends_on` (or `references … relation: assigned_to`) edge to its `NetworkInterface`.
 Field shape follows the RFC 8344/NMstate convergent form (`address` CIDR + `allocation` as the `origin`
 discriminator). **A static DHCP reservation is just `allocation: static`** bound to an interface — not a
 new type. This matches RFC 8344 `origin=static`, NetBox `status=reserved`, Redfish `AddressOrigin=Static`.
@@ -75,14 +75,14 @@ OpenShift `NodeNetworkConfigurationPolicy.spec.desiredState` for free.
 ### 4. DHCP reservations → a projection, not a hand-list
 Today `Network.DHCPScope.reservations` is an inline array and the truth lives in a hand-maintained
 Ansible reservation list. Instead: **a reservation is derived** from every `Network.IPAddress` with
-`allocation: static` that is bound to a `Hardware.NetworkInterface` (which carries the MAC), contained by a
+`allocation: static` that is bound to a `NetworkInterface` (which carries the MAC), contained by a
 host (which gives the hostname). A DHCP provider (e.g. Kea) realizing `Network.AddressService`
 renders its reservations from that set. `Network.DHCPScope.reservations` becomes a computed projection of the
 estate, so "the DHCP provider's records live in UDLM format" is satisfied by construction — whichever provider.
 
 ## Data · Policy · Provider
 
-- **Data** — `Hardware.NetworkInterface` (adapter + MAC), `Network.IPAddress` (the address, dynamic or
+- **Data** — `NetworkInterface` (adapter + MAC), `Network.IPAddress` (the address, dynamic or
   static), `Network.ConnectionProfile` (desired config), `Network.DHCPScope`/`Network.AddressService`
   (the DHCP surface). Bindings are dependency edges; identity is uuid/handle.
 - **Policy** — which addresses are static vs pool; which pool an address allocates from
@@ -96,7 +96,7 @@ estate, so "the DHCP provider's records live in UDLM format" is satisfied by con
 ## Applied to a host (worked example)
 
 1. `host-a` — a `Machine.BareMetalHost` record (workstation role).
-2. `host-a-eth0` — a `Hardware.NetworkInterface`, `contained_by: host-a`, `mac_address: <new MAC>`.
+2. `host-a-eth0` — a `NetworkInterface`, `contained_by: host-a`, `mac_address: <new MAC>`.
 3. `host-a-ip` — a `Network.IPAddress`, `allocation: static`, `address: 192.0.2.91/24`,
    `depends_on: host-a-eth0`. **This record is the reservation.**
 4. (optional now) `host-a-eth0-profile` — a `Network.ConnectionProfile` (NMstate body) `configures: host-a-eth0`.
@@ -106,7 +106,7 @@ estate, so "the DHCP provider's records live in UDLM format" is satisfied by con
 ## Decisions taken (2026-07-09)
 
 - **MAC placement — DECIDED:** MAC stays an attribute of the ethernet-adapter resource
-  (`Hardware.NetworkInterface`), not a separate record. (A separate NetBox-style MACAddress record
+  (`NetworkInterface`), not a separate record. (A separate NetBox-style MACAddress record
   remains the escalation path if multi-MAC / permanent-vs-assigned is ever needed.)
 - **Config type — DECIDED:** adopt **NMstate as the whole body** of the config resource (Tier-2
   adopt-by-reference: UDLM owns identity + the conformance pointer, NMstate owns the body). Not just its

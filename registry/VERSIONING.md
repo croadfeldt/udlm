@@ -196,6 +196,6 @@ Adding an enum value looks additive but breaks consumers that exhaustively handl
 backward-incompatible unless the field is documented as extensible). A type spec opts a field
 into open-world semantics by annotating it `x-extensible-enum: true` next to the `enum` —
 consumers of such fields MUST tolerate unknown values. Unmarked enums are closed: additions are
-MAJOR. *Grandfather note:* `Hardware.NetworkInterface.device_class` gained values at 0.2.0/0.3.0
+MAJOR. *Grandfather note:* `NetworkInterface.device_class` gained values at 0.2.0/0.3.0
 under the previous rule; it is now marked extensible (0.4.0) rather than retroactively re-versioned.
 
