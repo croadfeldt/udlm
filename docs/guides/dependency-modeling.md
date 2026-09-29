@@ -35,7 +35,7 @@ difference is *how many* edges an implementor authors and *where* they sit.
 1. **Direct edge (incl. multi-edge redundancy)** — a resource names its dependency explicitly. Highest
    fidelity, per-edge effort. The base case; everything else composes from it. Redundancy is just
    *more than one* direct edge: a host declares `depends_on feed-a` **and** `depends_on feed-b`
-   (`Machine.BareMetalHost → Facility.PowerFeed` is `0..n`), so a single feed loss leaves a second
+   (`Machine.BareMetalHost → PowerFeed` is `0..n`), so a single feed loss leaves a second
    path across a distinct fault domain — authored, not inferred.
 2. **Component chain** — where a dependency routes through a *managed* component, model it on the
    component, not the whole resource. Canonically **network fabric**: a `NetworkInterface`
@@ -50,7 +50,7 @@ difference is *how many* edges an implementor authors and *where* they sit.
    member; the shared deps live in one place. (See the anti-pattern below on why a dedicated "bundle
    type" is *not* the answer.)
 4. **Scope** — some memberships are already fields. `tenant_uuid` **is** realm membership; a consumer
-   can derive the realm's identity/DNS dependency without an edge. `Facility.Location` gives physical
+   can derive the realm's identity/DNS dependency without an edge. `Location` gives physical
    scope (site/room/rack) for location-scoped concerns — note it deliberately does **not** own power
    (the host's own feed edges do), because "where a thing is" and "what powers it" are different questions.
 
@@ -59,11 +59,11 @@ difference is *how many* edges an implementor authors and *where* they sit.
 | Pattern | Type(s) |
 |---|---|
 | Direct edge | every resource type (`dependencies[]`) |
-| Power | `Machine.BareMetalHost` `depends_on` → `Facility.PowerFeed` (`0..n`; one edge per feed) |
+| Power | `Machine.BareMetalHost` `depends_on` → `PowerFeed` (`0..n`; one edge per feed) |
 | Managed-component chain | `NetworkInterface` `connects_to` → switch port |
 | Bundling | *any* node the members `depends_on` — its deps become theirs transitively (no dedicated type) |
-| Physical scope | `Facility.Location` (adopts Redfish Location) |
-| Realm scope | `Security.DirectoryService` + `AddressService`, keyed by `tenant_uuid` |
+| Physical scope | `Location` (adopts Redfish Location) |
+| Realm scope | `DirectoryService` + `AddressService`, keyed by `tenant_uuid` |
 
 ## Anti-pattern: a dedicated "bundle" type
 

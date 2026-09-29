@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "Container",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "instantiable": true,
       "path": "registry/classes/resource/container/_base.yaml",
       "types": []

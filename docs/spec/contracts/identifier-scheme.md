@@ -270,7 +270,7 @@ name alone:
 - `via` — **read a field on the other end of a declared edge.** `via(<relation>)#<field>`
   resolves the named relationship from the record carrying the expression, then projects a field
   off the single record it resolves to: `via(located_in)#network.fabric_id` reads the fabric id
-  from the Facility.Location this record is placed in.
+  from the Location this record is placed in.
 
   This is the bridge the "selector dots address within one record only" rule reserves. A dot stays
   what it always was — a field inside the record you already hold, free and unfailing. Crossing to

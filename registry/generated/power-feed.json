@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.6.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/PowerFeed/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31",
-  "resource_type": "Facility.PowerFeed",
-  "version": "0.6.2",
+  "resource_type": "PowerFeed",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Power Feed",
-    "description": "A power source feeding equipment — utility circuit, UPS, PDU, or generator. The graph ROOT for an estate: hosts depend_on a PowerFeed, so a reverse-topological shutdown walks everything that transitively draws from it. Grounded in DMTF Redfish DCIM (Circuit / PowerDistribution) for the power-distribution model and NUT (Network UPS Tools) for UPS telemetry (NUT is GPL — referenced by name only).",
+    "description": "A power source feeding equipment — utility circuit, UPS, PDU, or generator. The graph ROOT for an estate: hosts depend_on a PowerFeed, so a reverse-topological shutdown walks everything that transitively draws from it. Grounded in DMTF Redfish DCIM (Circuit / PowerDistribution) for the power-distribution model and NUT (Network UPS Tools) for UPS telemetry (NUT is GPL — referenced by name only). A Base by the Base test (CLS-002), ADR-075's recorded follow-up: Redfish Circuit abstracts over utility, UPS, PDU and generator feeds, so a feed of a given type, capacity and redundancy is one deliverable any power provider can realize.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Facility",
-          "version": "1.1.0",
-          "uuid": "a479d8e2-2ea6-4410-89ea-835c31276875"
-        },
-        {
-          "class": "Facility.PowerFeed",
-          "version": "0.6.2",
+          "class": "PowerFeed",
+          "version": "0.7.0",
           "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31"
         }
       ]
@@ -136,6 +131,10 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "power",
+    "facility"
+  ],
   "context": {
     "purpose": "Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.",
     "plain_description": "One source of power feeding equipment. Hosts and switches declare which feed they draw from, so what loses power when a UPS drains is a graph walk, not tribal knowledge. For UPS feeds it carries live status (online, on-battery, low-battery), battery charge, and estimated runtime — the facts an automated graceful shutdown triggers on. Rated `capacity` (watts, voltage, phases) and `redundancy` — the enum `none`, `n+1`, or `2n`, not a boolean — are declared up front.",
@@ -144,7 +143,7 @@
       "You need rated capacity and feed redundancy recorded per circuit/UPS/PDU."
     ],
     "not_for": [
-      "The place equipment sits — Facility.Location; a rack is a place, a feed is a power source, and the two vary independently.",
+      "The place equipment sits — Location; a rack is a place, a feed is a power source, and the two vary independently.",
       "Powering one host off — that action targets the host's BMC control surface, not the feed."
     ],
     "works_with": [

@@ -169,6 +169,80 @@ renames:
   registry/realized-entity.schema.json: registry/entity-view.schema.json
   registry/REALIZED-ENTITY.md: registry/ENTITY-VIEW.md
 
+  # 2026-09-29 — the Storage folder dissolves into the `storage` usage group (ADR-082, row 083). Each
+  # member is a Base in its own right by the Base test; Storage.Dataset is a dialect Type of Volume.
+  # Same uuids — a rename never mints a new identity (ADR-051). The directory is the hosting group.
+  registry/classes/resource/storage/pool.yaml: registry/classes/resource/storage/storage-pool/_base.yaml
+  registry/classes/resource/storage/cluster.yaml: registry/classes/resource/storage/storage-cluster/_base.yaml
+  registry/classes/resource/storage/file-share.yaml: registry/classes/resource/storage/file-share/_base.yaml
+  registry/classes/resource/storage/volume.yaml: registry/classes/resource/storage/volume/_base.yaml
+  registry/classes/resource/storage/dataset.yaml: registry/classes/resource/storage/volume/zfs.yaml
+  registry/classes/resource/storage/class.yaml: registry/classes/resource/storage/storage-class/_base.yaml
+  registry/classes/resource/storage/layout.yaml: registry/classes/resource/storage/storage-layout/_base.yaml
+  registry/generated/storage.pool.json: registry/generated/storage-pool.json
+  registry/generated/storage.cluster.json: registry/generated/storage-cluster.json
+  registry/generated/storage.file-share.json: registry/generated/file-share.json
+  registry/generated/storage.volume.json: registry/generated/volume.json
+  registry/generated/storage.dataset.json: registry/generated/volume.zfs.json
+  registry/generated/storage.class.json: registry/generated/storage-class.json
+  registry/generated/storage.layout.json: registry/generated/storage-layout.json
+
+  # 2026-09-29 — the Hardware folder dissolves into the `hardware` usage group (ADR-082, row 084). Each
+  # member is a Base by the Base test; GraphicsProcessor becomes the GPU Base (nothing ports between a
+  # CPU and a GPU); BiosProfile is retired — its portable part is Machine's `firmware` element, the
+  # vendor attribute set is Provider Class data. Same uuids (ADR-051). The directory is the hosting group.
+  registry/classes/resource/hardware/storage-device.yaml: registry/classes/resource/hardware/storage-device/_base.yaml
+  registry/classes/resource/hardware/network-interface.yaml: registry/classes/resource/hardware/network-interface/_base.yaml
+  registry/classes/resource/hardware/processor.yaml: registry/classes/resource/hardware/processor/_base.yaml
+  registry/classes/resource/hardware/graphics-processor.yaml: registry/classes/resource/hardware/gpu/_base.yaml
+  registry/classes/resource/hardware/bmc.yaml: registry/classes/resource/hardware/bmc/_base.yaml
+  registry/generated/hardware.storage-device.json: registry/generated/storage-device.json
+  registry/generated/hardware.network-interface.json: registry/generated/network-interface.json
+  registry/generated/hardware.processor.json: registry/generated/processor.json
+  registry/generated/hardware.graphics-processor.json: registry/generated/gpu.json
+  registry/generated/hardware.bmc.json: registry/generated/bmc.json
+
+  # 2026-09-29 — the Network folder dissolves into the `network` usage group (ADR-082, row 085). Each
+  # member is a Base by the Base test; `zone` and `tier` are homed once in common-elements.schema.json
+  # and declared on every network Base by $ref. Same uuids (ADR-051). The directory is the hosting group.
+  registry/classes/resource/network/address-service.yaml: registry/classes/resource/network/address-service/_base.yaml
+  registry/classes/resource/network/connection-profile.yaml: registry/classes/resource/network/connection-profile/_base.yaml
+  registry/classes/resource/network/dhcpscope.yaml: registry/classes/resource/network/dhcpscope/_base.yaml
+  registry/classes/resource/network/dnszone.yaml: registry/classes/resource/network/dnszone/_base.yaml
+  registry/classes/resource/network/gateway.yaml: registry/classes/resource/network/network-gateway/_base.yaml
+  registry/classes/resource/network/ipaddress-pool.yaml: registry/classes/resource/network/ipaddress-pool/_base.yaml
+  registry/classes/resource/network/ipaddress.yaml: registry/classes/resource/network/ipaddress/_base.yaml
+  registry/classes/resource/network/subnet.yaml: registry/classes/resource/network/subnet/_base.yaml
+  registry/classes/resource/network/switch.yaml: registry/classes/resource/network/network-switch/_base.yaml
+  registry/classes/resource/network/virtual-network.yaml: registry/classes/resource/network/virtual-network/_base.yaml
+  registry/classes/resource/network/vlan.yaml: registry/classes/resource/network/vlan/_base.yaml
+  registry/generated/network.address-service.json: registry/generated/address-service.json
+  registry/generated/network.connection-profile.json: registry/generated/connection-profile.json
+  registry/generated/network.dhcpscope.json: registry/generated/dhcpscope.json
+  registry/generated/network.dnszone.json: registry/generated/dnszone.json
+  registry/generated/network.gateway.json: registry/generated/network-gateway.json
+  registry/generated/network.ipaddress-pool.json: registry/generated/ipaddress-pool.json
+  registry/generated/network.ipaddress.json: registry/generated/ipaddress.json
+  registry/generated/network.subnet.json: registry/generated/subnet.json
+  registry/generated/network.switch.json: registry/generated/network-switch.json
+  registry/generated/network.virtual-network.json: registry/generated/virtual-network.json
+  registry/generated/network.vlan.json: registry/generated/vlan.json
+
+  # 2026-09-29 — the Facility, Data, Observability and Security folders dissolve into usage groups
+  # (ADR-082, row 086). Each member is a Base by the Base test; same uuids (ADR-051). Hosting groups:
+  # facility, power, data, observability, security, identity.
+  registry/classes/resource/facility/location.yaml: registry/classes/resource/facility/location/_base.yaml
+  registry/classes/resource/facility/power-feed.yaml: registry/classes/resource/power/power-feed/_base.yaml
+  registry/classes/resource/data/database.yaml: registry/classes/resource/data/database/_base.yaml
+  registry/classes/resource/observability/log-shipper.yaml: registry/classes/resource/observability/log-shipper/_base.yaml
+  registry/classes/resource/security/credential-ref.yaml: registry/classes/resource/security/credential-ref/_base.yaml
+  registry/classes/resource/security/directory-service.yaml: registry/classes/resource/identity/directory-service/_base.yaml
+  registry/generated/facility.location.json: registry/generated/location.json
+  registry/generated/facility.power-feed.json: registry/generated/power-feed.json
+  registry/generated/data.database.json: registry/generated/database.json
+  registry/generated/observability.log-shipper.json: registry/generated/log-shipper.json
+  registry/generated/security.credential-ref.json: registry/generated/credential-ref.json
+  registry/generated/security.directory-service.json: registry/generated/directory-service.json
 
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
@@ -224,26 +298,13 @@ retired:
     retired 2026-09-13 — superseded by KubernetesNamespace#hard
     (uuid ae8d0510-221a-4500-b201-3b3e429c34e8)
 
+
   # 2026-09-29 — the Storage folder dissolves into the `storage` usage group (ADR-082, row 083). Each
   # member is a Base in its own right by the Base test; Storage.Dataset is a dialect Type of Volume.
   # Same uuids — a rename never mints a new identity (ADR-051). The directory is the hosting group.
   registry/classes/resource/storage/_base.yaml#54aeaeac-0d9a-4531-8502-c92ea418ba26: >-
     retired 2026-09-29 — a dissolved folder; its members are StoragePool, StorageCluster, FileShare,
     Volume (with Volume.ZFS), StorageClass and StorageLayout, filed under the `storage` usage group
-  registry/classes/resource/storage/pool.yaml: registry/classes/resource/storage/storage-pool/_base.yaml
-  registry/classes/resource/storage/cluster.yaml: registry/classes/resource/storage/storage-cluster/_base.yaml
-  registry/classes/resource/storage/file-share.yaml: registry/classes/resource/storage/file-share/_base.yaml
-  registry/classes/resource/storage/volume.yaml: registry/classes/resource/storage/volume/_base.yaml
-  registry/classes/resource/storage/dataset.yaml: registry/classes/resource/storage/volume/zfs.yaml
-  registry/classes/resource/storage/class.yaml: registry/classes/resource/storage/storage-class/_base.yaml
-  registry/classes/resource/storage/layout.yaml: registry/classes/resource/storage/storage-layout/_base.yaml
-  registry/generated/storage.pool.json: registry/generated/storage-pool.json
-  registry/generated/storage.cluster.json: registry/generated/storage-cluster.json
-  registry/generated/storage.file-share.json: registry/generated/file-share.json
-  registry/generated/storage.volume.json: registry/generated/volume.json
-  registry/generated/storage.dataset.json: registry/generated/volume.zfs.json
-  registry/generated/storage.class.json: registry/generated/storage-class.json
-  registry/generated/storage.layout.json: registry/generated/storage-layout.json
 
   # 2026-09-29 — the Hardware folder dissolves into the `hardware` usage group (ADR-082, row 084). Each
   # member is a Base by the Base test; GraphicsProcessor becomes the GPU Base (nothing ports between a
@@ -256,16 +317,6 @@ retired:
   registry/classes/resource/hardware/bios-profile.yaml#9e8dbb91-cf60-420f-9ab0-fc9df20d6ff4: >-
     retired 2026-09-29 — not a Base by the Base test: the portable settings are Machine.BareMetalHost#firmware;
     a vendor attribute set is Provider Class data under Machine.BareMetalHost
-  registry/classes/resource/hardware/storage-device.yaml: registry/classes/resource/hardware/storage-device/_base.yaml
-  registry/classes/resource/hardware/network-interface.yaml: registry/classes/resource/hardware/network-interface/_base.yaml
-  registry/classes/resource/hardware/processor.yaml: registry/classes/resource/hardware/processor/_base.yaml
-  registry/classes/resource/hardware/graphics-processor.yaml: registry/classes/resource/hardware/gpu/_base.yaml
-  registry/classes/resource/hardware/bmc.yaml: registry/classes/resource/hardware/bmc/_base.yaml
-  registry/generated/hardware.storage-device.json: registry/generated/storage-device.json
-  registry/generated/hardware.network-interface.json: registry/generated/network-interface.json
-  registry/generated/hardware.processor.json: registry/generated/processor.json
-  registry/generated/hardware.graphics-processor.json: registry/generated/gpu.json
-  registry/generated/hardware.bmc.json: registry/generated/bmc.json
 
   # 2026-09-29 — the Network folder dissolves into the `network` usage group (ADR-082, row 085). Each
   # member is a Base by the Base test; `zone` and `tier` are homed once in common-elements.schema.json
@@ -274,25 +325,15 @@ retired:
     retired 2026-09-29 — a dissolved folder; its members are IPAddress, IPAddressPool, Subnet, VLAN,
     VirtualNetwork, NetworkGateway, NetworkSwitch, AddressService, DHCPScope, DNSZone and
     ConnectionProfile, filed under the `network` usage group
-  registry/classes/resource/network/address-service.yaml: registry/classes/resource/network/address-service/_base.yaml
-  registry/classes/resource/network/connection-profile.yaml: registry/classes/resource/network/connection-profile/_base.yaml
-  registry/classes/resource/network/dhcpscope.yaml: registry/classes/resource/network/dhcpscope/_base.yaml
-  registry/classes/resource/network/dnszone.yaml: registry/classes/resource/network/dnszone/_base.yaml
-  registry/classes/resource/network/gateway.yaml: registry/classes/resource/network/network-gateway/_base.yaml
-  registry/classes/resource/network/ipaddress-pool.yaml: registry/classes/resource/network/ipaddress-pool/_base.yaml
-  registry/classes/resource/network/ipaddress.yaml: registry/classes/resource/network/ipaddress/_base.yaml
-  registry/classes/resource/network/subnet.yaml: registry/classes/resource/network/subnet/_base.yaml
-  registry/classes/resource/network/switch.yaml: registry/classes/resource/network/network-switch/_base.yaml
-  registry/classes/resource/network/virtual-network.yaml: registry/classes/resource/network/virtual-network/_base.yaml
-  registry/classes/resource/network/vlan.yaml: registry/classes/resource/network/vlan/_base.yaml
-  registry/generated/network.address-service.json: registry/generated/address-service.json
-  registry/generated/network.connection-profile.json: registry/generated/connection-profile.json
-  registry/generated/network.dhcpscope.json: registry/generated/dhcpscope.json
-  registry/generated/network.dnszone.json: registry/generated/dnszone.json
-  registry/generated/network.gateway.json: registry/generated/network-gateway.json
-  registry/generated/network.ipaddress-pool.json: registry/generated/ipaddress-pool.json
-  registry/generated/network.ipaddress.json: registry/generated/ipaddress.json
-  registry/generated/network.subnet.json: registry/generated/subnet.json
-  registry/generated/network.switch.json: registry/generated/network-switch.json
-  registry/generated/network.virtual-network.json: registry/generated/virtual-network.json
-  registry/generated/network.vlan.json: registry/generated/vlan.json
+
+  # 2026-09-29 — the Facility, Data, Observability and Security folders dissolve into usage groups
+  # (ADR-082, row 086). Each member is a Base by the Base test; same uuids (ADR-051). Hosting groups:
+  # facility, power, data, observability, security, identity.
+  registry/classes/resource/facility/_base.yaml#a479d8e2-2ea6-4410-89ea-835c31276875: >-
+    retired 2026-09-29 — a dissolved folder; Location is filed under `facility`, PowerFeed under `power` and `facility`
+  registry/classes/resource/data/_base.yaml#34093415-4089-44f3-b395-07103e5f4779: >-
+    retired 2026-09-29 — a dissolved folder; Database is filed under `data`
+  registry/classes/resource/observability/_base.yaml#f7f145c7-8706-40ff-b3ec-578a2ed7f18b: >-
+    retired 2026-09-29 — a dissolved folder; LogShipper is filed under `observability`
+  registry/classes/resource/security/_base.yaml#b20ae678-fccc-400c-9cbb-ce25822e8d18: >-
+    retired 2026-09-29 — a dissolved folder; CredentialRef is filed under `security`, DirectoryService under `identity` and `services`

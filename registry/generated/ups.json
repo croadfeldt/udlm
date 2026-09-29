@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/UPS/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/UPS/0.1.1",
   "conforms_to": "udlm/0.1",
   "uuid": "db585146-41b2-4cd9-86e6-c90d086df2cf",
   "resource_type": "UPS",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Uninterruptible Power Supply",
-    "description": "An uninterruptible power supply — battery-backed conditioned power that carries a load through an input failure and reports the state a graceful shutdown decides on. A base class of its own (ADR-075, the base test of CLS-002): NUT and Redfish PowerEquipment abstract over every UPS topology — double-conversion, line-interactive, standby (IEC 62040-3) — and every element here is honorable by each; it is not a kind of Facility (a folder), and no API abstracts a UPS together with a PDU or a transfer switch, so it sits under no wider power base. Vendor-neutral by construction: what every UPS declares (identity, rating, battery, low-battery policy) and reports (status, charge, runtime, load, input voltage); the telemetry producer (NUT, a vendor SNMP card, a Redfish power shelf) is a provider, named on the instance and in adopts[], never in the type. The circuit it protects is a Facility.PowerFeed that is supplied_by it — hosts keep depending on the feed, so the shutdown walk is unchanged.",
+    "description": "An uninterruptible power supply — battery-backed conditioned power that carries a load through an input failure and reports the state a graceful shutdown decides on. A base class of its own (ADR-075, the base test of CLS-002): NUT and Redfish PowerEquipment abstract over every UPS topology — double-conversion, line-interactive, standby (IEC 62040-3) — and every element here is honorable by each; it is not a kind of Facility (a folder), and no API abstracts a UPS together with a PDU or a transfer switch, so it sits under no wider power base. Vendor-neutral by construction: what every UPS declares (identity, rating, battery, low-battery policy) and reports (status, charge, runtime, load, input voltage); the telemetry producer (NUT, a vendor SNMP card, a Redfish power shelf) is a provider, named on the instance and in adopts[], never in the type. The circuit it protects is a PowerFeed that is supplied_by it — hosts keep depending on the feed, so the shutdown walk is unchanged.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-09-27T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "UPS",
-          "version": "0.1.0",
+          "version": "0.1.1",
           "uuid": "db585146-41b2-4cd9-86e6-c90d086df2cf"
         }
       ]
@@ -184,7 +184,7 @@
   "outputs": {
     "status": {
       "type": "string",
-      "description": "Observed unit status — online | on-battery | low-battery | overload | off (maps from NUT ups.status OL / OB / LB / OVER / OFF; the meta-schema keeps outputs to type + description, so the vocabulary is stated here and on Facility.PowerFeed identically). The value a graceful shutdown triggers on."
+      "description": "Observed unit status — online | on-battery | low-battery | overload | off (maps from NUT ups.status OL / OB / LB / OVER / OFF; the meta-schema keeps outputs to type + description, so the vocabulary is stated here and on PowerFeed identically). The value a graceful shutdown triggers on."
     },
     "battery_charge": {
       "type": "integer",
@@ -215,7 +215,7 @@
     {
       "edge_type": "contained_by",
       "name": "located_in",
-      "target": "Facility.Location",
+      "target": "Location",
       "cardinality": "0..1",
       "description": "located_in — the rack/room the unit sits in. Optional; a UPS is a power source wherever it stands."
     }
@@ -263,11 +263,11 @@
       "You need live UPS telemetry (status, charge, runtime, load) attributed to the unit that produced it, with the producer recorded as a provider."
     ],
     "not_for": [
-      "The circuit that equipment draws from — Facility.PowerFeed; hosts depend_on feeds, not on UPSes.",
+      "The circuit that equipment draws from — PowerFeed; hosts depend_on feeds, not on UPSes.",
       "A PDU, transfer switch, or power shelf — no API abstracts them together with a UPS as one deliverable (ADR-075, CLS-002)."
     ],
     "works_with": [
-      "Facility.PowerFeed — a feed is supplied_by the UPS that conditions it.",
+      "PowerFeed — a feed is supplied_by the UPS that conditions it.",
       "Software.Service — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the instance's provider.",
       "Automation.Job — the graceful-shutdown job that the unit's status drives, via the feed."
     ]

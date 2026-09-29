@@ -61,7 +61,7 @@ A resource's relationships arise at two different points in the lifecycle, and t
 
 ### 1b.1 Accommodating a broker's custom information (DCM ADR-009 §3)
 
-When a provider brokers a dependency it does **not** own (a VM provider needs a `IPAddress` the IP provider owns — `fulfillment: provider`), it conveys the criteria the dependency needs via a constituent `binding` into the target resource. **Most of what a broker conveys is a shared foundational reference, not custom info** — the IP case needs only the **target `VLAN` segment (or `Facility.Location`)** so the IP provider knows *where* to allocate; no NIC, MAC, or switch-port is involved (binding the returned IP to a vNIC is the VM provider's own post-allocation concern). That path needs **no accommodation** — the base type already references the shared segment.
+When a provider brokers a dependency it does **not** own (a VM provider needs a `IPAddress` the IP provider owns — `fulfillment: provider`), it conveys the criteria the dependency needs via a constituent `binding` into the target resource. **Most of what a broker conveys is a shared foundational reference, not custom info** — the IP case needs only the **target `VLAN` segment (or `Location`)** so the IP provider knows *where* to allocate; no NIC, MAC, or switch-port is involved (binding the returned IP to a vNIC is the VM provider's own post-allocation concern). That path needs **no accommodation** — the base type already references the shared segment.
 
 Accommodation is the **rarer** case: a broker must convey **genuinely provider-specific realize-time state the base type does not model** (e.g. a vendor-specific offload or QoS class). A provider that **owns** a resource type therefore **MUST** make that type accommodate such fields in one of two sanctioned ways, and a **brokering** provider **MUST** use whichever the target offers when — and only when — a shared reference does not suffice:
 
@@ -273,7 +273,7 @@ registration obligations, not storage behavior). How an implementation *executes
 | `SOV-003` | When a provider sovereignty change violates a Tenant's sovereignty requirements, affected resources are re-evaluated and the declared action applied: `notify_only`, `pause`, `migrate`, or `emergency_migrate`. |
 | `SOV-004` | Auto-migration triggered by SOV-003 uses provider-portable rehydration; the non-compliant provider is excluded from the placement candidate set, and the migration is a first-class, fully-audited operation. |
 | `SOV-005` | Certification validity periods are tracked; a certification expiring within P30D warns the provider and affected Tenants, and an expired certification triggers SOV-003 re-evaluation. |
-| `SOV-006` | A sovereignty zone cited by an entity (`sovereignty.zone`) resolves to a declared `SovereigntyZone` record stating the ISO 3166 jurisdictions it spans, and any supranational regimes. A coined label with no declaration cannot be matched against an accreditation's `scope.geographic_scope`, so §3.8's residency-subsumption rule has nothing to evaluate and the placement is unverifiable rather than merely undocumented. The zone declares jurisdiction only — physical location is `Facility.Location` and does not cross a peer boundary. |
+| `SOV-006` | A sovereignty zone cited by an entity (`sovereignty.zone`) resolves to a declared `SovereigntyZone` record stating the ISO 3166 jurisdictions it spans, and any supranational regimes. A coined label with no declaration cannot be matched against an accreditation's `scope.geographic_scope`, so §3.8's residency-subsumption rule has nothing to evaluate and the placement is unverifiable rather than merely undocumented. The zone declares jurisdiction only — physical location is `Location` and does not cross a peer boundary. |
 
 ---
 
@@ -616,7 +616,7 @@ Placement and consumer-selection only work over **real** resources. A `realize_r
 resource_advertisement:                 # returned from {capabilities_endpoint}, refreshed by lifecycle events
   category: realize_resources/Network    # the capability category this advertises for
   inventory:                             # the resources the provider OFFERS, as referenceable resources
-    - resource_ref: net-vlan-20          # identity of an offered foundational resource (VLAN, Facility.Location, StoragePool, Machine.BareMetalHost, ...)
+    - resource_ref: net-vlan-20          # identity of an offered foundational resource (VLAN, Location, StoragePool, Machine.BareMetalHost, ...)
       resource_type: VLAN
       selectable: true                   # part of the consumer-selectable set (subject to eligibility)
   capacity:                              # the QUANTITATIVE input placement decides against, per offered resource
@@ -644,7 +644,7 @@ instance_size_catalog:                  # per capability/category; the provider'
 
 The control plane resolves `instance_size` → raw via this catalog, then applies the **same** `capacity-sufficient` test as a raw request (a raw requirement selects the smallest class whose resolved resources satisfy it). Split, per ADR-014: the **class vocabulary + ordering** is UDLM (portable/comparable), the **class→raw mapping** is the provider's (this catalog), the **resolution/comparison** is the control plane (placement). It is **declared, not live-queried** — placement scores many providers at once, so a per-request round-trip per provider is prohibitive; a provider with *parametric* classes MAY additionally expose a `resolve(size)` callback, but the declared catalog is the default.
 
-**Abstract-value channels & the realized audit record (the same bridge, generalized).** `instance_size` is one instance of a broader pattern: intent may carry an **abstract value the provider resolves** — a size class, or an engine **`version` channel** like `latest`/`lts` (`Data.Database`, ADR-014). The same three obligations apply to *any* such abstract value:
+**Abstract-value channels & the realized audit record (the same bridge, generalized).** `instance_size` is one instance of a broader pattern: intent may carry an **abstract value the provider resolves** — a size class, or an engine **`version` channel** like `latest`/`lts` (`Database`, ADR-014). The same three obligations apply to *any* such abstract value:
 
 1. **Declare the resolution.** The provider **declares** how it resolves the abstract value to concrete — for versions, its channel → concrete-version map per engine — so placement can **compare, conform, and validate** an abstract request against a raw/pinned requirement (and against an adjacent provider's channel) *before* it commits. **Declared, not live-queried** — same reason as the size catalog.
 
@@ -657,7 +657,7 @@ The control plane resolves `instance_size` → raw via this catalog, then applie
 
 2. **Resolve at naturalization.** When intent is abstract (or omitted → the provider's default channel), the provider resolves to the concrete value it will actually provision (DCM ADR-023).
 
-3. **Record the concrete on the realized resource — for audit.** The provider **MUST** write the resolved concrete value into realized state (for `Data.Database`, `outputs.applied_version`; §1a.5 read-back). This is the load-bearing half: an abstract request (`latest`) is only auditable if reality records *what `latest` became* (`16.4`) at the moment it was applied. Intent carries the abstract; **realized carries the concrete**; the two together are the audit trail. This obligation holds for every abstract intent value, not just versions.
+3. **Record the concrete on the realized resource — for audit.** The provider **MUST** write the resolved concrete value into realized state (for `Database`, `outputs.applied_version`; §1a.5 read-back). This is the load-bearing half: an abstract request (`latest`) is only auditable if reality records *what `latest` became* (`16.4`) at the moment it was applied. Intent carries the abstract; **realized carries the concrete**; the two together are the audit trail. This obligation holds for every abstract intent value, not just versions.
 
 **Placement selects from `inventory ∩ capacity-sufficient ∩ policy-eligible`** — the eligible set is the
 substrate's definition; the selection algorithm over it belongs to the implementation (non-normative:

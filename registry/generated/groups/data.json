@@ -1,5 +1,13 @@
 {
   "usage_group": "data",
   "generated": true,
-  "classes": []
+  "classes": [
+    {
+      "class": "Database",
+      "version": "0.8.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/data/database/_base.yaml",
+      "types": []
+    }
+  ]
 }

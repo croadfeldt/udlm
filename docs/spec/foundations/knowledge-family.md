@@ -218,7 +218,7 @@ match from an assumption into a computation. Knowledge rather than Resource beca
 declared, curated and never realized by a provider — the Vulnerability shape: a structured record
 whose truth is held by the party that declares it.
 - **Fields:** jurisdictions (ISO 3166-1/3166-2, required and non-empty), regimes (supranational,
-  e.g. EU), description. **Physical location is deliberately absent** — that is `Facility.Location`,
+  e.g. EU), description. **Physical location is deliberately absent** — that is `Location`,
   and it does not cross a peer boundary.
 - **Relationships:** cited by a realized entity's `sovereignty.zone`; matched against an
   accreditation's `scope.geographic_scope`.

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.4.4",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.4.5",
   "conforms_to": "udlm/0.1",
   "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd",
   "resource_type": "Identity.Group",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Identity.Group",
-          "version": "0.4.4",
+          "version": "0.4.5",
           "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd"
         }
       ]
@@ -96,7 +96,7 @@
     },
     {
       "edge_type": "references",
-      "target": "Security.DirectoryService",
+      "target": "DirectoryService",
       "cardinality": "0..1",
       "description": "The directory this group is sourced from (for source=external)."
     }
@@ -110,12 +110,12 @@
       "You need a directory (LDAP/IdP) group represented in the model without duplicating its membership."
     ],
     "not_for": [
-      "The directory server that hosts an external group — Security.DirectoryService.",
-      "The secret an account authenticates with — Security.CredentialRef; groups hold identities, never credentials."
+      "The directory server that hosts an external group — DirectoryService.",
+      "The secret an account authenticates with — CredentialRef; groups hold identities, never credentials."
     ],
     "works_with": [
       "Identity.Person / Identity.ServiceAccount — the members, for built_in groups.",
-      "Security.DirectoryService — the source of an external group's membership."
+      "DirectoryService — the source of an external group's membership."
     ]
   }
 }

@@ -1,7 +1,7 @@
 uuid: aa5e9540-8e88-466f-9644-fdfea9b257b6
 handle: loc-rack
 conforms_to: udlm/0.1
-resource_type: Facility.Location
+resource_type: Location
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/Facility.Location/0.1.0
 lifecycle_state: Discovered

@@ -1,18 +1,18 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Access.IdentityEscrow/0.4.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Access.IdentityEscrow/0.4.3
 conforms_to: udlm/0.1
 uuid: ead1ea4f-d7db-4b90-887a-2bc67edf4b9b
 record_type: class
 class: type
 resource_type: Access.IdentityEscrow
 parent: Access
-version: 0.4.2
+version: 0.4.3
 family: Access
 status: active
 metadata:
   display_name: Identity Escrow
   description: 'The contract for identity state that must SURVIVE its host entity''s re-realization: which
     items are captured before a host is wiped or rebuilt, and restored — as a convergence gate — when
-    it is re-realized. Each item wraps a Security.CredentialRef (custody stays with the escrow store as
+    it is re-realized. Each item wraps a CredentialRef (custody stays with the escrow store as
     issuer; the value never enters the model); the escrow binds to the host''s entity UUID (which re-provisioning
     preserves), never to a realization generation. The escrowed_items list is the exhaustive survival
     allowlist: anything not listed does not survive the wipe default. Normative rules: ESC-* (docs/spec/foundations/identity-escrow.md).
@@ -57,7 +57,7 @@ elements:
           description: 'What class of identity state this item is. Extensible: adopters may declare further
             kinds; the listed values are the registered core.'
         credential_ref:
-          description: Reference to the Security.CredentialRef under which the escrow store custodies
+          description: Reference to the CredentialRef under which the escrow store custodies
             this item's material. The escrow store is the issuer; only the reference and resolution facts
             are ever recorded — never the value (the CredentialRef discipline).
           $ref: ../../common-elements.schema.json#/$defs/Reference
@@ -134,7 +134,7 @@ relationships:
     mechanism stated structurally. Illustrative target: any realizable host type an adopter escrows identity
     for.'
 - edge_type: references
-  target: Security.CredentialRef
+  target: CredentialRef
   cardinality: 1..n
   enforcement: structural
   description: Every escrowed item wraps exactly one credential reference; the escrow cannot exist without
@@ -160,7 +160,7 @@ context:
   - You need decommission of an identity-bearing host to force an explicit, audited disposition of its
     escrowed identity (destroy or transfer).
   not_for:
-  - The credential reference itself — that is Security.CredentialRef; an escrow item wraps one, it does
+  - The credential reference itself — that is CredentialRef; an escrow item wraps one, it does
     not replace it.
   - General backup or data protection of a host's contents — this carries identity state only, not data-migration
     payloads.
@@ -168,7 +168,7 @@ context:
     Identity.ServiceAccount); an escrow preserves identity state across realizations, it is not itself
     an actor.
   works_with:
-  - Security.CredentialRef — the custody leg each escrowed item wraps; the escrow store is the issuer.
+  - CredentialRef — the custody leg each escrowed item wraps; the escrow store is the issuer.
   - Machine.BareMetalHost — the typical host entity whose re-realization triggers restore.
   - Identity.ServiceAccount — the acting identity an escrowed credential may authenticate.
 entity_type: Escrow

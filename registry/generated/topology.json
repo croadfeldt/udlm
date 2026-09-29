@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.5.4",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.5.5",
   "conforms_to": "udlm/0.1",
   "uuid": "34b1a133-4377-4bd6-b089-2345e8e80aab",
   "resource_type": "Topology",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Topology",
-          "version": "0.5.4",
+          "version": "0.5.5",
           "uuid": "34b1a133-4377-4bd6-b089-2345e8e80aab"
         }
       ]
@@ -149,11 +149,11 @@
       "You need maintenance serialization gated on domain status — e.g. not starting the next host while a domain is draining."
     ],
     "not_for": [
-      "The physical places themselves — Facility.Location is where things sit; Topology is the failure/locality view constraints resolve against. A rack appears in both, on purpose, in different roles.",
+      "The physical places themselves — Location is where things sit; Topology is the failure/locality view constraints resolve against. A rack appears in both, on purpose, in different roles.",
       "Network segments — VLAN / VirtualNetwork; a network domain here is a failure domain, not the segment object."
     ],
     "works_with": [
-      "Facility.Location — the physical containment the domains often mirror.",
+      "Location — the physical containment the domains often mirror.",
       "Machine.VM — placement intent resolved against domain kinds.",
       "StorageCluster — fault-domain-aware placement and maintenance gating."
     ]

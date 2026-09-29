@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/FileShare/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/FileShare/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "83f66b92-ad66-4415-aa94-01327dec4f27",
   "resource_type": "FileShare",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "FileShare",
-          "version": "0.7.0",
+          "version": "0.7.1",
           "uuid": "83f66b92-ad66-4415-aa94-01327dec4f27"
         }
       ]
@@ -39,7 +39,7 @@
         "description": "SMB workgroup / domain scope."
       },
       "directory_service_ref": {
-        "description": "Reference to Security.DirectoryService — the directory service providing share authentication. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
+        "description": "Reference to DirectoryService — the directory service providing share authentication. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
       "shares": {
@@ -141,13 +141,13 @@
     },
     {
       "edge_type": "references",
-      "target": "Security.DirectoryService",
+      "target": "DirectoryService",
       "cardinality": "0..1",
       "description": "Authenticates principals against this directory (auth data external — PDP/PIP)."
     },
     {
       "edge_type": "references",
-      "target": "Security.CredentialRef",
+      "target": "CredentialRef",
       "cardinality": "0..n",
       "description": "Service credentials (e.g. the Samba keytab) — referenced, never inline."
     },
@@ -182,13 +182,13 @@
     ],
     "not_for": [
       "The local storage behind the share path — Volume.ZFS / Volume; the share exposes storage, it isn't the storage.",
-      "The identity data of who may connect — Security.DirectoryService holds it; shares reference principals."
+      "The identity data of who may connect — DirectoryService holds it; shares reference principals."
     ],
     "works_with": [
-      "Security.DirectoryService — authenticates the share principals.",
+      "DirectoryService — authenticates the share principals.",
       "Volume — the underlying storage the shares expose.",
       "Machine.BareMetalHost / Container — where the file service runs.",
-      "Security.CredentialRef — service credentials (e.g. a keytab), by reference."
+      "CredentialRef — service credentials (e.g. a keytab), by reference."
     ]
   }
 }

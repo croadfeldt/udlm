@@ -9,7 +9,7 @@ authoritative standards list) · [registry/resource-type-spec.schema.json](resou
 ## 1. Purpose
 
 A new wave of infrastructure Resource Types (Machine.BareMetalHost, StorageCluster, NetworkGateway,
-AddressService, Security.DirectoryService, Facility.PowerFeed — plus Machine.VM and
+AddressService, DirectoryService, PowerFeed — plus Machine.VM and
 KubernetesCluster) bumps against well-established external
 schemas. Per **T5 / the Adopt disposition**, UDLM should **reference industry-standard data elements
 for validation and vocabulary** rather than re-express them, and remain **extensible by vendor-specific
@@ -58,8 +58,8 @@ and take OSAC **VM** (`ComputeInstance`) and **Cluster** (`ClusterSpec`) nearly 
 | **StorageCluster** (authored name; the Ceph-backed cluster type) | **Rook `CephCluster`** (`mon.count`,`storage`,`cephVersion.image`,`network`,`dashboard`; `status.ceph.{health,fsid}`) + native `ceph -s -f json` (`osdmap`,`pgmap`) — Tier 2 | cluster intent | — |
 | **NetworkGateway** | **K8s Gateway API `Gateway`** (`gatewayClassName`,`listeners[]`,`addresses[]`) + OSAC `SecurityGroup` rule shape; NAT 5-tuple absorbed — Tier 2 | routing/NAT intent | pfSense/OPNsense |
 | **AddressService** | **ISC Kea `Dhcp4`** (`subnet4[]`,`pools`,`reservations[]`,`option-data`) + **DNS RRs** (RFC 1035 `A/PTR/CNAME/NS/SOA`, RFC 3596 `AAAA`) — Tier 2; *DHCP+DNS = two projections of one allocation* | the address-service intent | — |
-| **Security.DirectoryService** (authored under Security, not Identity) | **RFC 4512** (`namingContexts`,`subschemaSubentry`,baseDN — already in catalog via RFC 4511) + FreeIPA (realm/KDC, CA=Dogtag, replicas) + OSAC `LdapConfig` connection facet — Tier 2 | the operated-directory intent | — |
-| **Facility.PowerFeed** | **NUT** variable namespace (`ups.status` OL/OB/LB, `battery.charge`,`battery.runtime`,`battery.runtime.low`,`input.voltage`,`ups.realpower`,`ups.load`) + **Redfish `PowerSubsystem`/`PowerSupply`** (`CapacityWatts`,`InputPowerWatts`,`LineInputStatus`) — Tier 2 | which hosts a feed protects (intent) | vendor-UPS SNMP |
+| **DirectoryService** (authored under Security, not Identity) | **RFC 4512** (`namingContexts`,`subschemaSubentry`,baseDN — already in catalog via RFC 4511) + FreeIPA (realm/KDC, CA=Dogtag, replicas) + OSAC `LdapConfig` connection facet — Tier 2 | the operated-directory intent | — |
+| **PowerFeed** | **NUT** variable namespace (`ups.status` OL/OB/LB, `battery.charge`,`battery.runtime`,`battery.runtime.low`,`input.voltage`,`ups.realpower`,`ups.load`) + **Redfish `PowerSubsystem`/`PowerSupply`** (`CapacityWatts`,`InputPowerWatts`,`LineInputStatus`) — Tier 2 | which hosts a feed protects (intent) | vendor-UPS SNMP |
 | **UPS** | **IEC 62040-3** topology classes + **NUT** variable namespace (`ups.status`, `battery.charge`, `battery.runtime`, `ups.load`, `input.voltage`, `battery.charge.low`/`battery.runtime.low`) + **Redfish `PowerEquipment`/`PowerSupply`** identity/ratings — Tier 1 | identity, rating, battery set, low-battery policy (intent) | vendor SNMP MIBs — provider data |
 
 **Net coverage:** reusable definitions exist for all 8 types in the table (VM, Cluster,

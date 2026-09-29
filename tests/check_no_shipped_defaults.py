@@ -13,7 +13,7 @@ contributes values to the assembled payload and **every field records the layer 
 type has **no provenance**: it appears in every estate that ever used the type, with no record of who
 chose it and no way to tell an intended value from an inherited one.
 
-The defaults found when this landed show why it matters — `Data.Database.version: "latest"`,
+The defaults found when this landed show why it matters — `Database.version: "latest"`,
 `FileShare.protocol: "smb"`, `Volume.volume_mode: "filesystem"`. Each is one
 organisation's opinion shipped to every consumer of a portable type.
 

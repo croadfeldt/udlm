@@ -26,7 +26,7 @@ downstream consumer can bind on.
 
 **Zero-output types (15):** `Access.Grouping`, `Automation`, `GPU`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Processor`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
 
-**One-output types (22):** `AddressService`, `BMC`, `Capability`, `DHCPScope`, `DNSZone`, `Facility.Location`, `FileShare`, `IPAddress`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `NetworkGateway`, `NetworkInterface`, `Software.Service`, `StorageClass`, `StorageDevice`, `StorageLayout`, `TaxonomyTerm`, `Template.Application`, `Topology`, `VLAN`, `VirtualNetwork`
+**One-output types (22):** `AddressService`, `BMC`, `Capability`, `DHCPScope`, `DNSZone`, `FileShare`, `IPAddress`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Location`, `NetworkGateway`, `NetworkInterface`, `Software.Service`, `StorageClass`, `StorageDevice`, `StorageLayout`, `TaxonomyTerm`, `Template.Application`, `Topology`, `VLAN`, `VirtualNetwork`
 
 ## UC coverage gaps
 
@@ -35,17 +35,17 @@ scenarios or untested by any story (textual scan; a dotted handle is unambiguous
 single-word handles could in principle match prose):
 
 - `Access.Grouping`
-- `Facility.Location`
-- `Facility.PowerFeed`
 - `Grouping`
 - `Grouping.Authorization`
 - `Grouping.Tenant`
 - `Identity.Group`
 - `Identity.Person`
 - `Identity.ServiceAccount`
+- `Location`
 - `Machine.LPAR`
 - `NetworkInterface`
 - `NetworkSwitch`
+- `PowerFeed`
 - `Processor`
 - `SovereigntyZone`
 - `StorageCluster`
@@ -66,7 +66,7 @@ All-types (envelope-level) consumers: `dav`, `graph-explorer`, `records-ci`, `re
 | Type | Named by |
 |---|---|
 | `Container` | control-plane-servicetype-gen |
-| `Data.Database` | control-plane-servicetype-gen |
+| `Database` | control-plane-servicetype-gen |
 | `KubernetesCluster` | control-plane-servicetype-gen |
 | `Machine.VM` | control-plane-servicetype-gen |
 | `Volume` | control-plane-servicetype-gen |
@@ -74,7 +74,7 @@ All-types (envelope-level) consumers: `dav`, `graph-explorer`, `records-ci`, `re
 ## Coverage detail
 
 - Context blocks missing (0): none
-- `relationships[]` missing (14): `Access.Grouping`, `Automation`, `Automation.OSPatch`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Machine`, `Observability.LogShipper`, `SovereigntyZone`, `StorageLayout`, `Template`, `Template.Application`, `Topology`, `Vulnerability`
+- `relationships[]` missing (14): `Access.Grouping`, `Automation`, `Automation.OSPatch`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `LogShipper`, `Machine`, `SovereigntyZone`, `StorageLayout`, `Template`, `Template.Application`, `Topology`, `Vulnerability`
 
 ## Pending metrics (owned elsewhere, shape reserved)
 

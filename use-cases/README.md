@@ -32,7 +32,7 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
 - `must-reject/` — the negative family: success = the system REFUSES the intent, and the refusal
   is typed, actionable, non-leaking (ADR-041 information-firewall behavior holds on the error
   path), and auditable. Six rejection surfaces: cross-tenant reference, sovereignty egress,
-  inline credential literal (vs Security.CredentialRef), undeclared-output binding at request
+  inline credential literal (vs CredentialRef), undeclared-output binding at request
   time, provider capability mismatch, and write-through-masked-projection.
 - `class-versioning/` — the scoped-Class evolution contract (mixed semantics): additive and
   breaking Base Class changes with atomic recompilation and enumerated blast radius,

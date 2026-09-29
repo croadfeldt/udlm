@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.1",
   "conforms_to": "udlm/0.1",
   "uuid": "e44193cc-a41f-4bf6-bfcf-aa70029dc10e",
   "resource_type": "SovereigntyZone",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SovereigntyZone",
-          "version": "0.1.0",
+          "version": "0.1.1",
           "uuid": "e44193cc-a41f-4bf6-bfcf-aa70029dc10e"
         }
       ]
@@ -79,7 +79,7 @@
       "A zone spans more than one jurisdiction, or sits under a supranational regime"
     ],
     "not_for": [
-      "Physical location — a site, a rack, a datacenter. That is `Facility.Location`, and it does not cross a peer boundary",
+      "Physical location — a site, a rack, a datacenter. That is `Location`, and it does not cross a peer boundary",
       "Naming an authority or a peer — that is the URF `//authority/` axis, which is naming rather than location",
       "Recording where a workload happens to run right now. This declares what a zone MEANS, not what is in it; membership derives from the entities that cite it"
     ],

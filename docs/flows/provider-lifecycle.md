@@ -239,7 +239,7 @@ composition_visibility: transparent
 
 constituents:
   - component_id: database
-    resource_type: Data.Database
+    resource_type: Database
     depends_on: []
     failure_effect: required
     spec_defaults:

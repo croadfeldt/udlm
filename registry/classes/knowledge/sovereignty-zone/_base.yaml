@@ -14,7 +14,7 @@
 # nobody built a universal translator. Declaration is O(N) and owned by the party that knows.
 #
 # PHYSICAL LOCATION IS DELIBERATELY ABSENT. Three location axes stay separate, and conflating them is
-# what this class exists to prevent: physical (Facility.Location — a rack, never crosses a peer
+# what this class exists to prevent: physical (Location — a rack, never crosses a peer
 # boundary), jurisdictional (this class — the only axis peers must agree on), and authority (the URF
 # `//peer/` axis — naming, not location). "eu-west is DE and NL, under EU" honours sovereignty
 # without disclosing a datacenter.
@@ -22,13 +22,13 @@
 # Knowledge family on the Vulnerability precedent: a curated record with structured attributes,
 # declared by the party that holds the truth, never realized by a provider. Its lifecycle is curation
 # — established at setup, then governed — not provisioning.
-$id: https://udlm.dev/registry/udlm/0.1/class/SovereigntyZone/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/SovereigntyZone/0.1.1
 conforms_to: udlm/0.1
 uuid: e44193cc-a41f-4bf6-bfcf-aa70029dc10e
 record_type: class
 class: base
 resource_type: SovereigntyZone
-version: 0.1.0
+version: 0.1.1
 family: Knowledge
 status: active
 
@@ -56,7 +56,7 @@ context:
     - A peer must understand your zone names without a private mapping table
     - A zone spans more than one jurisdiction, or sits under a supranational regime
   not_for:
-    - Physical location — a site, a rack, a datacenter. That is `Facility.Location`, and it does not
+    - Physical location — a site, a rack, a datacenter. That is `Location`, and it does not
       cross a peer boundary
     - Naming an authority or a peer — that is the URF `//authority/` axis, which is naming rather
       than location

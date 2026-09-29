@@ -51,6 +51,10 @@
         "attempted": 235,
         "rejected": 235
       },
+      "CredentialRef": {
+        "attempted": 70,
+        "rejected": 70
+      },
       "DHCPScope": {
         "attempted": 95,
         "rejected": 95
@@ -59,17 +63,13 @@
         "attempted": 152,
         "rejected": 152
       },
-      "Data.Database": {
+      "Database": {
         "attempted": 70,
         "rejected": 70
       },
-      "Facility.Location": {
-        "attempted": 30,
-        "rejected": 30
-      },
-      "Facility.PowerFeed": {
-        "attempted": 52,
-        "rejected": 52
+      "DirectoryService": {
+        "attempted": 56,
+        "rejected": 56
       },
       "FileShare": {
         "attempted": 120,
@@ -127,6 +127,14 @@
         "attempted": 145,
         "rejected": 145
       },
+      "Location": {
+        "attempted": 30,
+        "rejected": 30
+      },
+      "LogShipper": {
+        "attempted": 52,
+        "rejected": 52
+      },
       "Machine": {
         "attempted": 112,
         "rejected": 112
@@ -155,21 +163,13 @@
         "attempted": 94,
         "rejected": 94
       },
-      "Observability.LogShipper": {
+      "PowerFeed": {
         "attempted": 52,
         "rejected": 52
       },
       "Processor": {
         "attempted": 84,
         "rejected": 84
-      },
-      "Security.CredentialRef": {
-        "attempted": 70,
-        "rejected": 70
-      },
-      "Security.DirectoryService": {
-        "attempted": 56,
-        "rejected": 56
       },
       "Software.Service": {
         "attempted": 90,
@@ -280,11 +280,11 @@
       "Capability": 1,
       "ConnectionProfile": 2,
       "Container": 2,
+      "CredentialRef": 3,
       "DHCPScope": 1,
       "DNSZone": 1,
-      "Data.Database": 5,
-      "Facility.Location": 1,
-      "Facility.PowerFeed": 3,
+      "Database": 5,
+      "DirectoryService": 3,
       "FileShare": 1,
       "GPU": 0,
       "Grouping": 0,
@@ -299,6 +299,8 @@
       "KubernetesCluster": 4,
       "KubernetesNamespace": 2,
       "KubernetesNodePool": 2,
+      "Location": 1,
+      "LogShipper": 3,
       "Machine": 3,
       "Machine.BareMetalHost": 8,
       "Machine.LPAR": 5,
@@ -306,10 +308,8 @@
       "NetworkGateway": 1,
       "NetworkInterface": 1,
       "NetworkSwitch": 2,
-      "Observability.LogShipper": 3,
+      "PowerFeed": 3,
       "Processor": 0,
-      "Security.CredentialRef": 3,
-      "Security.DirectoryService": 3,
       "Software.Service": 1,
       "SoftwareImage": 0,
       "SoftwarePackage": 0,
@@ -357,12 +357,12 @@
       "Capability",
       "DHCPScope",
       "DNSZone",
-      "Facility.Location",
       "FileShare",
       "IPAddress",
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
+      "Location",
       "NetworkGateway",
       "NetworkInterface",
       "Software.Service",
@@ -391,8 +391,8 @@
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
+      "LogShipper",
       "Machine",
-      "Observability.LogShipper",
       "SovereigntyZone",
       "StorageLayout",
       "Template",
@@ -412,9 +412,11 @@
       "Capability",
       "ConnectionProfile",
       "Container",
+      "CredentialRef",
       "DHCPScope",
       "DNSZone",
-      "Data.Database",
+      "Database",
+      "DirectoryService",
       "FileShare",
       "GPU",
       "IPAddress",
@@ -423,13 +425,11 @@
       "KubernetesCluster",
       "KubernetesNamespace",
       "KubernetesNodePool",
+      "LogShipper",
       "Machine",
       "Machine.BareMetalHost",
       "Machine.VM",
       "NetworkGateway",
-      "Observability.LogShipper",
-      "Security.CredentialRef",
-      "Security.DirectoryService",
       "Software.Service",
       "SoftwareImage",
       "SoftwarePackage",
@@ -445,17 +445,17 @@
     ],
     "uncovered": [
       "Access.Grouping",
-      "Facility.Location",
-      "Facility.PowerFeed",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
+      "Location",
       "Machine.LPAR",
       "NetworkInterface",
       "NetworkSwitch",
+      "PowerFeed",
       "Processor",
       "SovereigntyZone",
       "StorageCluster",
@@ -482,7 +482,7 @@
       "Container": [
         "control-plane-servicetype-gen"
       ],
-      "Data.Database": [
+      "Database": [
         "control-plane-servicetype-gen"
       ],
       "KubernetesCluster": [
@@ -504,10 +504,10 @@
       "BMC",
       "Capability",
       "ConnectionProfile",
+      "CredentialRef",
       "DHCPScope",
       "DNSZone",
-      "Facility.Location",
-      "Facility.PowerFeed",
+      "DirectoryService",
       "FileShare",
       "GPU",
       "Grouping",
@@ -521,16 +521,16 @@
       "Job",
       "KubernetesNamespace",
       "KubernetesNodePool",
+      "Location",
+      "LogShipper",
       "Machine",
       "Machine.BareMetalHost",
       "Machine.LPAR",
       "NetworkGateway",
       "NetworkInterface",
       "NetworkSwitch",
-      "Observability.LogShipper",
+      "PowerFeed",
       "Processor",
-      "Security.CredentialRef",
-      "Security.DirectoryService",
       "Software.Service",
       "SoftwareImage",
       "SoftwarePackage",

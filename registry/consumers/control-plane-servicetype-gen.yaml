@@ -16,7 +16,7 @@ consumes:
     noted_version: 2.0.0
   - resource_type: Container
     noted_version: 1.0.2
-  - resource_type: Data.Database
+  - resource_type: Database
     noted_version: 0.7.7
   - resource_type: KubernetesCluster
     noted_version: 2.0.0

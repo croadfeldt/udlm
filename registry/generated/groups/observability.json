@@ -1,5 +1,13 @@
 {
   "usage_group": "observability",
   "generated": true,
-  "classes": []
+  "classes": [
+    {
+      "class": "LogShipper",
+      "version": "0.7.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/observability/log-shipper/_base.yaml",
+      "types": []
+    }
+  ]
 }

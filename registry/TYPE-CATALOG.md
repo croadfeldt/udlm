@@ -28,7 +28,7 @@ A named handle for 'a suite of things treated as a unit' — a tenant, a team's 
 - The governance matrix — obligations enforcement and binding-edit meta-governance
 - Access.IdentityEscrow — the Access-family sibling
 
-### Access.IdentityEscrow (0.4.2)
+### Access.IdentityEscrow (0.4.3)
 
 **Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
 
@@ -41,12 +41,12 @@ Some machines are routinely wiped and rebuilt, but parts of their identity must 
 - You need decommission of an identity-bearing host to force an explicit, audited disposition of its escrowed identity (destroy or transfer).
 
 **Not for:**
-- The credential reference itself — that is Security.CredentialRef; an escrow item wraps one, it does not replace it.
+- The credential reference itself — that is CredentialRef; an escrow item wraps one, it does not replace it.
 - General backup or data protection of a host's contents — this carries identity state only, not data-migration payloads.
 - The identity that acts in requests — that is the Access family's Identity types (Identity.Person / Identity.ServiceAccount); an escrow preserves identity state across realizations, it is not itself an actor.
 
 **Works with:**
-- Security.CredentialRef — the custody leg each escrowed item wraps; the escrow store is the issuer.
+- CredentialRef — the custody leg each escrowed item wraps; the escrow store is the issuer.
 - Machine.BareMetalHost — the typical host entity whose re-realization triggers restore.
 - Identity.ServiceAccount — the acting identity an escrowed credential may authenticate.
 
@@ -113,7 +113,7 @@ Declares that hosts get patched: which package sets, within which maintenance wi
 
 ## BMC
 
-### BMC (0.7.0)
+### BMC (0.7.1)
 
 **Purpose:** Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.
 
@@ -125,11 +125,11 @@ The always-on management controller inside a server that answers even when the h
 
 **Not for:**
 - The host itself — Machine.BareMetalHost; the BMC manages it, one-to-one.
-- The BMC login secret — Security.CredentialRef, referenced not stored.
+- The BMC login secret — CredentialRef, referenced not stored.
 
 **Works with:**
 - Machine.BareMetalHost — the host this BMC is the power/reset surface for.
-- Security.CredentialRef — the BMC credential, by reference.
+- CredentialRef — the BMC credential, by reference.
 - Machine.BareMetalHost#firmware — the portable firmware settings the host converges to; vendor attribute sets are provider data applied over this BMC's path.
 
 ## Capability
@@ -174,11 +174,11 @@ What a host interface's network configuration should be, in NMstate's own schema
 
 ## Container
 
-### Container (1.0.2)
+### Container (1.0.3)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
-A single containerized workload: the `image` it runs, the `resources` it needs (`cpu` as a number of cores — 0.5, 2 — never a millicore string, plus `memory`), its environment and mounted paths (`process.env`, `process.mounts`), and its exposed ports (`network.ports`). It runs either on a cluster or directly on a host (e.g. rootless podman). Secrets never appear inline — anything sensitive in env or mounts points at a Security.CredentialRef instead. The image is an object either way: the inline form wraps the OCI string as `image.reference` (optionally pinned by `image.digest`), or `image` is a reference into governed image data, which is what lets change-impact analysis find every container affected when a base image is patched.
+A single containerized workload: the `image` it runs, the `resources` it needs (`cpu` as a number of cores — 0.5, 2 — never a millicore string, plus `memory`), its environment and mounted paths (`process.env`, `process.mounts`), and its exposed ports (`network.ports`). It runs either on a cluster or directly on a host (e.g. rootless podman). Secrets never appear inline — anything sensitive in env or mounts points at a CredentialRef instead. The image is an object either way: the inline form wraps the OCI string as `image.reference` (optionally pinned by `image.digest`), or `image` is a reference into governed image data, which is what lets change-impact analysis find every container affected when a base image is patched.
 
 **Use when:**
 - You need to run a specific image with declared resources, environment, and ports on a cluster or a host.
@@ -191,9 +191,30 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 
 **Works with:**
 - KubernetesCluster / Machine.BareMetalHost — exactly one of them is where the container runs.
-- Security.CredentialRef — every secret the container consumes, by reference only.
+- CredentialRef — every secret the container consumes, by reference only.
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
-- Data.Database — connection outputs the container binds to.
+- Database — connection outputs the container binds to.
+
+## CredentialRef
+
+### CredentialRef (0.7.0)
+
+**Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
+
+A reference to a secret, never the secret. It names the kind of credential (the required `credential_type`), the issuer that holds it (`issuer_ref`), the provider-side path it resolves at (`secret_path`), its `scope` — an object saying what it may operate on — and the minimum assurance the consumer requires (`required_assurance`). At realization the issuer resolves it and delivers the value directly to the authorized consumer — the value never passes through the model, audit, source control, or logs. What IS recorded: that it resolved, which version, and when it was first retrieved.
+
+**Use when:**
+- You need any resource (a container, a service, a BMC, a bind account) to consume a secret without the secret appearing in data.
+- You need audit facts about credential resolution and first retrieval, without exposure.
+- You need consumers to demand a minimum assurance level and have weaker issuers filtered out before binding.
+
+**Not for:**
+- The identity that authenticates with the credential — Identity.Person / Identity.ServiceAccount; an identity references its credentials, this is the credential side.
+- Storing an actual password, key, or token anywhere — no type is for that; the value lives only with the issuer.
+
+**Works with:**
+- Identity.Person / Identity.ServiceAccount — whose credential this is.
+- Container / Software.Service / FileShare — consumers that reference it from env, mounts, or config.
 
 ## DHCPScope
 
@@ -218,7 +239,7 @@ One subnet's DHCP setup: the required `subnet` CIDR, the dynamic ranges leased f
 
 ## DNSZone
 
-### DNSZone (0.6.0)
+### DNSZone (0.6.1)
 
 **Purpose:** Declares an authoritative DNS zone — its name, role, and records — independent of the software serving it.
 
@@ -233,12 +254,12 @@ One DNS zone — its required `zone_name`, e.g. example.com — with its authori
 - The address facts behind A/PTR entries — those originate on IPAddress records; the zone holds the name-side projection.
 
 **Works with:**
-- Security.DirectoryService — when a directory service serves the zone.
+- DirectoryService — when a directory service serves the zone.
 - AddressService — the operated DNS capability answering for the zone.
 
-## Data
+## Database
 
-### Data.Database (0.7.8)
+### Database (0.8.0)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -250,56 +271,39 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 
 **Not for:**
 - The volume storing the data — Volume; the database references it.
-- The secret material for connecting — that belongs with Security.CredentialRef (the current sensitive connection outputs are a known open decision).
+- The secret material for connecting — that belongs with CredentialRef (the current sensitive connection outputs are a known open decision).
 
 **Works with:**
 - Volume — the persistent volume backing the data directory.
 - Machine.VM / KubernetesCluster — where the database runs, when self-hosted.
 - Software.Service / Container — the consumers that bind to its connection outputs.
 
-## Facility
+## DirectoryService
 
-### Facility.Location (0.4.5)
+### DirectoryService (0.8.0)
 
-**Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
+**Purpose:** Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.
 
-A physical place, at whatever granularity is useful: a site contains rooms, a room contains racks, a rack has positions. Resources declare where they physically sit by referencing a location; location-scoped concerns like cooling or a shared uplink attach at the right level of the hierarchy. Power is not carried here — each host declares its own power-feed edges, because two hosts in one rack can draw from different feeds.
-
-**Use when:**
-- You need to record where equipment physically is, down to a rack position.
-- You need placement intent for a VM or workload to select among existing places.
-
-**Not for:**
-- Failure or locality domains for placement constraints (zone, power domain, rack-as-failure-domain) — that is Topology: put resources IN Locations, constrain placement AGAINST Topology.
-- Power sources — Facility.PowerFeed, referenced per host, not per location.
-
-**Works with:**
-- Facility.Location — the parent place this one nests inside.
-- Machine.BareMetalHost — the equipment that declares its location.
-- Topology — the failure-domain view of the same physical reality.
-
-### Facility.PowerFeed (0.6.2)
-
-**Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
-
-One source of power feeding equipment. Hosts and switches declare which feed they draw from, so what loses power when a UPS drains is a graph walk, not tribal knowledge. For UPS feeds it carries live status (online, on-battery, low-battery), battery charge, and estimated runtime — the facts an automated graceful shutdown triggers on. Rated `capacity` (watts, voltage, phases) and `redundancy` — the enum `none`, `n+1`, or `2n`, not a boolean — are declared up front.
+The identity directory as a running server: which `protocols` it serves — required; `ldap`, `ldaps`, `kerberos` — its `realm` and `base_dn`, and its role in a replication topology, spelled `replication_role` (`primary`, `replica`, `standalone`; a replica depends on its primary). Consumers get endpoints once realized — the LDAP URL, the Kerberos KDC, the base DN to bind under. The server is distinct from the identity data in it: people, groups, and service accounts are their own records; an integrated identity suite realizes this server plus DNS zones.
 
 **Use when:**
-- You need equipment tied to its actual power source so a UPS on-battery event can drive an ordered shutdown of exactly what that UPS feeds.
-- You need rated capacity and feed redundancy recorded per circuit/UPS/PDU.
+- You need services and hosts that authenticate against the directory to depend on it, so it stops last among them.
+- You need the directory replication topology (primary/replica) explicit for recovery planning.
 
 **Not for:**
-- The place equipment sits — Facility.Location; a rack is a place, a feed is a power source, and the two vary independently.
-- Powering one host off — that action targets the host's BMC control surface, not the feed.
+- The identities inside — Identity.Person / Identity.Group / Identity.ServiceAccount.
+- The DNS zones a directory suite serves — DNSZone; related, but its own record.
+- The bind credential — CredentialRef.
 
 **Works with:**
-- Machine.BareMetalHost — hosts declare depends_on the feed(s) they draw from.
-- NetworkSwitch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.
-- Automation.Job — the shutdown job a feed's on-battery status triggers.
+- Machine.VM / Machine.BareMetalHost — where the directory runs.
+- Identity.Group — external groups sourced from this directory.
+- Software.Service — services requiring the directory, with hard/soft strength.
+- DNSZone — zones served when DNS is directory-integrated.
 
 ## FileShare
 
-### FileShare (0.7.0)
+### FileShare (0.7.1)
 
 **Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
 
@@ -311,13 +315,13 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 
 **Not for:**
 - The local storage behind the share path — Volume.ZFS / Volume; the share exposes storage, it isn't the storage.
-- The identity data of who may connect — Security.DirectoryService holds it; shares reference principals.
+- The identity data of who may connect — DirectoryService holds it; shares reference principals.
 
 **Works with:**
-- Security.DirectoryService — authenticates the share principals.
+- DirectoryService — authenticates the share principals.
 - Volume — the underlying storage the shares expose.
 - Machine.BareMetalHost / Container — where the file service runs.
-- Security.CredentialRef — service credentials (e.g. a keytab), by reference.
+- CredentialRef — service credentials (e.g. a keytab), by reference.
 
 ## GPU
 
@@ -446,7 +450,7 @@ A range of addresses that individual address records are carved from: the requir
 
 ## Identity
 
-### Identity.Group (0.4.4)
+### Identity.Group (0.4.5)
 
 **Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
 
@@ -457,18 +461,18 @@ A named set of person and service-account identities, keyed by its required `han
 - You need a directory (LDAP/IdP) group represented in the model without duplicating its membership.
 
 **Not for:**
-- The directory server that hosts an external group — Security.DirectoryService.
-- The secret an account authenticates with — Security.CredentialRef; groups hold identities, never credentials.
+- The directory server that hosts an external group — DirectoryService.
+- The secret an account authenticates with — CredentialRef; groups hold identities, never credentials.
 
 **Works with:**
 - Identity.Person / Identity.ServiceAccount — the members, for built_in groups.
-- Security.DirectoryService — the source of an external group's membership.
+- DirectoryService — the source of an external group's membership.
 
-### Identity.Person (0.6.4)
+### Identity.Person (0.6.5)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
-One human's identity: its `handle` (the login name) and its `actor_type` — always `human`, and required alongside the handle — plus display name, email, status, and how they authenticate (the built-in provider by default, or a directory/IdP when federated). It carries no secret material — a password or key is referenced through a Security.CredentialRef, never stored. Every audited action and role assignment points back at this record's stable actor id.
+One human's identity: its `handle` (the login name) and its `actor_type` — always `human`, and required alongside the handle — plus display name, email, status, and how they authenticate (the built-in provider by default, or a directory/IdP when federated). It carries no secret material — a password or key is referenced through a CredentialRef, never stored. Every audited action and role assignment points back at this record's stable actor id.
 
 **Use when:**
 - You need human accounts as records that role assignments and audit trails reference.
@@ -476,15 +480,15 @@ One human's identity: its `handle` (the login name) and its `actor_type` — alw
 
 **Not for:**
 - Automation, agents, or API-key holders — Identity.ServiceAccount.
-- The credential itself — Security.CredentialRef; a person references credentials, never contains them.
-- The directory server — Security.DirectoryService is the server; this is one identity in it.
+- The credential itself — CredentialRef; a person references credentials, never contains them.
+- The directory server — DirectoryService is the server; this is one identity in it.
 
 **Works with:**
 - Identity.Group — memberships that drive role binding.
-- Security.CredentialRef — the person's credentials, by reference.
-- Security.DirectoryService — the external authenticator when federated.
+- CredentialRef — the person's credentials, by reference.
+- DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.6.4)
+### Identity.ServiceAccount (0.6.5)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
@@ -496,16 +500,16 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 **Not for:**
 - A human account — Identity.Person.
-- The API key or token itself — Security.CredentialRef, referenced not stored.
+- The API key or token itself — CredentialRef, referenced not stored.
 
 **Works with:**
 - Identity.Person — the accountable owner.
-- Security.CredentialRef — the account's key/token, by reference.
+- CredentialRef — the account's key/token, by reference.
 - Identity.Group — memberships that grant it roles.
 
 ## Job
 
-### Job (1.2.6)
+### Job (1.2.7)
 
 **Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
 
@@ -586,6 +590,47 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 - KubernetesCluster — the cluster the pool belongs to.
 - KubernetesNamespace — namespaces whose workloads schedule onto pools.
 
+## Location
+
+### Location (0.5.0)
+
+**Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
+
+A physical place, at whatever granularity is useful: a site contains rooms, a room contains racks, a rack has positions. Resources declare where they physically sit by referencing a location; location-scoped concerns like cooling or a shared uplink attach at the right level of the hierarchy. Power is not carried here — each host declares its own power-feed edges, because two hosts in one rack can draw from different feeds.
+
+**Use when:**
+- You need to record where equipment physically is, down to a rack position.
+- You need placement intent for a VM or workload to select among existing places.
+
+**Not for:**
+- Failure or locality domains for placement constraints (zone, power domain, rack-as-failure-domain) — that is Topology: put resources IN Locations, constrain placement AGAINST Topology.
+- Power sources — PowerFeed, referenced per host, not per location.
+
+**Works with:**
+- Location — the parent place this one nests inside.
+- Machine.BareMetalHost — the equipment that declares its location.
+- Topology — the failure-domain view of the same physical reality.
+
+## LogShipper
+
+### LogShipper (0.7.0)
+
+**Purpose:** Declares the outcome that a host's logs reach the central sink — without saying anything about how.
+
+A statement of outcome: logs from a target host — the `target` object naming its `host` — shipped to a named sink URL — the `sink` object carrying its `url`; both are objects, not flat strings — tagged with the host's identity. The consumer never sees the mechanism — whether a provider satisfies it with an automation-managed agent, a container, or something else is the provider's private business, and swapping mechanisms changes nothing in this record. Realized state reports whether shipping is healthy and when the last successful delivery happened, which drives staleness detection.
+
+**Use when:**
+- You need logs-from-host-X-land-in-the-central-store as a declared, checkable fact per host.
+- You need shipping health and last-delivery time surfaced for drift and staleness detection.
+
+**Not for:**
+- The log store itself — that is its own resource (e.g. a Software.Service running the sink); this type is the per-host shipping outcome.
+- Metrics or trace collection — not covered; this type is logs.
+
+**Works with:**
+- Machine.BareMetalHost / Machine.VM — the target host whose logs are shipped.
+- Software.Service — the central log store the sink URL points at.
+
 ## Machine
 
 ### Machine (2.1.2)
@@ -606,7 +651,7 @@ The most portable way to ask for a machine: how big, what image, what storage ti
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 
-### Machine.BareMetalHost (0.12.0)
+### Machine.BareMetalHost (0.12.1)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -624,12 +669,12 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - Individual NICs, GPUs, or drives inside the host — those are NetworkInterface / GPU / StorageDevice records contained by the host.
 
 **Works with:**
-- Facility.PowerFeed — the power source the host draws from; roots the shutdown ordering.
+- PowerFeed — the power source the host draws from; roots the shutdown ordering.
 - The host's own `firmware` element — the portable BIOS settings it converges to; vendor attribute sets are Provider Class data (ADR-082).
 - NetworkInterface — the host's NICs, modeled as contained components.
 - Machine.VM — the guests the host runs.
 
-### Machine.LPAR (0.1.2)
+### Machine.LPAR (0.1.3)
 
 **Purpose:** Declares a logical partition on a partitioned system as one provisionable Machine.
 
@@ -648,7 +693,7 @@ The request for a slice of a big partitioned server: how much processor capacity
 - Volume — the disks served through virtual I/O.
 - VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.0.3)
+### Machine.VM (2.0.4)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -669,7 +714,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 - StorageLayout — the disk layout the VM realizes (per-disk shape, boot designation).
 - VirtualNetwork — the networks the VM's NICs attach to.
 - Volume — the consumable volumes realizing its layout entries.
-- Facility.Location — where the VM is placed (selected from existing places, policy-governed).
+- Location — where the VM is placed (selected from existing places, policy-governed).
 - IPAddress — pre-allocated addresses the VM consumes.
 
 ## NetworkGateway
@@ -720,7 +765,7 @@ One network interface, of any kind: device_class says whether it is a physical N
 
 ## NetworkSwitch
 
-### NetworkSwitch (0.8.0)
+### NetworkSwitch (0.8.1)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
@@ -738,28 +783,29 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 
 **Works with:**
 - NetworkInterface — its ports, and the host NICs those ports connect to.
-- Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.
+- PowerFeed — the power the switch draws; UPS-backed fabric stops last.
 - VLAN — segments carried on the fabric, including the referenced management VLAN.
 
-## Observability
+## PowerFeed
 
-### Observability.LogShipper (0.6.3)
+### PowerFeed (0.7.0)
 
-**Purpose:** Declares the outcome that a host's logs reach the central sink — without saying anything about how.
+**Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
-A statement of outcome: logs from a target host — the `target` object naming its `host` — shipped to a named sink URL — the `sink` object carrying its `url`; both are objects, not flat strings — tagged with the host's identity. The consumer never sees the mechanism — whether a provider satisfies it with an automation-managed agent, a container, or something else is the provider's private business, and swapping mechanisms changes nothing in this record. Realized state reports whether shipping is healthy and when the last successful delivery happened, which drives staleness detection.
+One source of power feeding equipment. Hosts and switches declare which feed they draw from, so what loses power when a UPS drains is a graph walk, not tribal knowledge. For UPS feeds it carries live status (online, on-battery, low-battery), battery charge, and estimated runtime — the facts an automated graceful shutdown triggers on. Rated `capacity` (watts, voltage, phases) and `redundancy` — the enum `none`, `n+1`, or `2n`, not a boolean — are declared up front.
 
 **Use when:**
-- You need logs-from-host-X-land-in-the-central-store as a declared, checkable fact per host.
-- You need shipping health and last-delivery time surfaced for drift and staleness detection.
+- You need equipment tied to its actual power source so a UPS on-battery event can drive an ordered shutdown of exactly what that UPS feeds.
+- You need rated capacity and feed redundancy recorded per circuit/UPS/PDU.
 
 **Not for:**
-- The log store itself — that is its own resource (e.g. a Software.Service running the sink); this type is the per-host shipping outcome.
-- Metrics or trace collection — not covered; this type is logs.
+- The place equipment sits — Location; a rack is a place, a feed is a power source, and the two vary independently.
+- Powering one host off — that action targets the host's BMC control surface, not the feed.
 
 **Works with:**
-- Machine.BareMetalHost / Machine.VM — the target host whose logs are shipped.
-- Software.Service — the central log store the sink URL points at.
+- Machine.BareMetalHost — hosts declare depends_on the feed(s) they draw from.
+- NetworkSwitch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.
+- Automation.Job — the shutdown job a feed's on-battery status triggers.
 
 ## Processor
 
@@ -781,51 +827,9 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 - Machine.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.
 - Machine.VM — the guest a virtual CPU is presented to.
 
-## Security
-
-### Security.CredentialRef (0.6.5)
-
-**Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
-
-A reference to a secret, never the secret. It names the kind of credential (the required `credential_type`), the issuer that holds it (`issuer_ref`), the provider-side path it resolves at (`secret_path`), its `scope` — an object saying what it may operate on — and the minimum assurance the consumer requires (`required_assurance`). At realization the issuer resolves it and delivers the value directly to the authorized consumer — the value never passes through the model, audit, source control, or logs. What IS recorded: that it resolved, which version, and when it was first retrieved.
-
-**Use when:**
-- You need any resource (a container, a service, a BMC, a bind account) to consume a secret without the secret appearing in data.
-- You need audit facts about credential resolution and first retrieval, without exposure.
-- You need consumers to demand a minimum assurance level and have weaker issuers filtered out before binding.
-
-**Not for:**
-- The identity that authenticates with the credential — Identity.Person / Identity.ServiceAccount; an identity references its credentials, this is the credential side.
-- Storing an actual password, key, or token anywhere — no type is for that; the value lives only with the issuer.
-
-**Works with:**
-- Identity.Person / Identity.ServiceAccount — whose credential this is.
-- Container / Software.Service / FileShare — consumers that reference it from env, mounts, or config.
-
-### Security.DirectoryService (0.7.3)
-
-**Purpose:** Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.
-
-The identity directory as a running server: which `protocols` it serves — required; `ldap`, `ldaps`, `kerberos` — its `realm` and `base_dn`, and its role in a replication topology, spelled `replication_role` (`primary`, `replica`, `standalone`; a replica depends on its primary). Consumers get endpoints once realized — the LDAP URL, the Kerberos KDC, the base DN to bind under. The server is distinct from the identity data in it: people, groups, and service accounts are their own records; an integrated identity suite realizes this server plus DNS zones.
-
-**Use when:**
-- You need services and hosts that authenticate against the directory to depend on it, so it stops last among them.
-- You need the directory replication topology (primary/replica) explicit for recovery planning.
-
-**Not for:**
-- The identities inside — Identity.Person / Identity.Group / Identity.ServiceAccount.
-- The DNS zones a directory suite serves — DNSZone; related, but its own record.
-- The bind credential — Security.CredentialRef.
-
-**Works with:**
-- Machine.VM / Machine.BareMetalHost — where the directory runs.
-- Identity.Group — external groups sourced from this directory.
-- Software.Service — services requiring the directory, with hard/soft strength.
-- DNSZone — zones served when DNS is directory-integrated.
-
 ## Software
 
-### Software.Service (0.8.2)
+### Software.Service (0.8.3)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
@@ -839,13 +843,13 @@ The application layer: the mail service, the registry, model serving — a named
 **Not for:**
 - A single container's runtime spec — Container; the service references containers as constituents.
 - A bounded-runtime task — Automation.Job.
-- The database a service uses — Data.Database, referenced as a dependency.
+- The database a service uses — Database, referenced as a dependency.
 
 **Works with:**
 - Container — containerized constituents, by reference.
 - KubernetesCluster / Machine.BareMetalHost / Machine.VM — where the constituents run.
-- Data.Database / Security.DirectoryService / AddressService — what the service requires.
-- Security.CredentialRef — the service's secrets, by reference.
+- Database / DirectoryService / AddressService — what the service requires.
+- CredentialRef — the service's secrets, by reference.
 
 ## SoftwareImage
 
@@ -889,7 +893,7 @@ One package at one version — identified by its purl (Package URL), the portabl
 
 ## SovereigntyZone
 
-### SovereigntyZone (0.1.0)
+### SovereigntyZone (0.1.1)
 
 **Purpose:** Give a coined zone name a declared meaning, so that "is this entity's placement covered by that accreditation?" is a question the model can answer.
 
@@ -901,7 +905,7 @@ What a zone name actually means. `eu-west` is Germany and the Netherlands, under
 - A zone spans more than one jurisdiction, or sits under a supranational regime
 
 **Not for:**
-- Physical location — a site, a rack, a datacenter. That is `Facility.Location`, and it does not cross a peer boundary
+- Physical location — a site, a rack, a datacenter. That is `Location`, and it does not cross a peer boundary
 - Naming an authority or a peer — that is the URF `//authority/` axis, which is naming rather than location
 - Recording where a workload happens to run right now. This declares what a zone MEANS, not what is in it; membership derives from the entities that cite it
 
@@ -1085,7 +1089,7 @@ The thing on a menu that is made of other things. The Base carries only the comp
 - Template.Application — the Type that says what is composed.
 - SovereigntyZone — what the floor names.
 
-### Template.Application (0.2.0)
+### Template.Application (0.2.1)
 
 **Purpose:** Let a consumer order an application as ONE thing — the whole shape, wired, placed and reconciled together — instead of ordering the parts and re-deriving how they connect every time.
 
@@ -1139,7 +1143,7 @@ The vulnerability-check dialect of test evidence: the subject is a package versi
 
 ## Topology
 
-### Topology (0.5.4)
+### Topology (0.5.5)
 
 **Purpose:** Declares the failure and locality domains — region, zone, rack, power, network — that placement, residency, and maintenance gating resolve against.
 
@@ -1151,17 +1155,17 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 - You need maintenance serialization gated on domain status — e.g. not starting the next host while a domain is draining.
 
 **Not for:**
-- The physical places themselves — Facility.Location is where things sit; Topology is the failure/locality view constraints resolve against. A rack appears in both, on purpose, in different roles.
+- The physical places themselves — Location is where things sit; Topology is the failure/locality view constraints resolve against. A rack appears in both, on purpose, in different roles.
 - Network segments — VLAN / VirtualNetwork; a network domain here is a failure domain, not the segment object.
 
 **Works with:**
-- Facility.Location — the physical containment the domains often mirror.
+- Location — the physical containment the domains often mirror.
 - Machine.VM — placement intent resolved against domain kinds.
 - StorageCluster — fault-domain-aware placement and maintenance gating.
 
 ## UPS
 
-### UPS (0.1.0)
+### UPS (0.1.1)
 
 **Purpose:** Models the battery-backed unit itself — what it is rated for, what wears, when it must signal low battery, and what it reports — so the feed it protects can be supplied_by a real entity instead of a feed_type string.
 
@@ -1172,11 +1176,11 @@ A UPS as a thing you own, separate from the circuit it protects. You declare its
 - You need live UPS telemetry (status, charge, runtime, load) attributed to the unit that produced it, with the producer recorded as a provider.
 
 **Not for:**
-- The circuit that equipment draws from — Facility.PowerFeed; hosts depend_on feeds, not on UPSes.
+- The circuit that equipment draws from — PowerFeed; hosts depend_on feeds, not on UPSes.
 - A PDU, transfer switch, or power shelf — no API abstracts them together with a UPS as one deliverable (ADR-075, CLS-002).
 
 **Works with:**
-- Facility.PowerFeed — a feed is supplied_by the UPS that conditions it.
+- PowerFeed — a feed is supplied_by the UPS that conditions it.
 - Software.Service — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the instance's provider.
 - Automation.Job — the graceful-shutdown job that the unit's status drives, via the feed.
 
@@ -1240,7 +1244,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Volume
 
-### Volume (0.12.1)
+### Volume (0.12.2)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1260,7 +1264,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - StorageClass — the class declaring what kind of storage the volume gets.
 - StorageCluster — the platform provisioning it.
 - Machine.VM — the consumer(s) it attaches to.
-- Data.Database — databases whose data directory it backs.
+- Database — databases whose data directory it backs.
 
 ### Volume.ZFS (0.6.0)
 

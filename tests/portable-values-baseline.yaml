@@ -19,7 +19,7 @@ known:
   element: architecture
 - resource_type: KubernetesCluster
   element: release
-- resource_type: Facility.Location
+- resource_type: Location
   element: position
 - resource_type: BMC
   element: vendor
@@ -49,7 +49,7 @@ known:
   element: provisioner
 - resource_type: StorageClass
   element: tier
-- resource_type: Security.CredentialRef
+- resource_type: CredentialRef
   element: required_assurance
 - resource_type: SoftwareImage
   element: arch
