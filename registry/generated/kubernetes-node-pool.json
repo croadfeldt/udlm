@@ -172,6 +172,9 @@
       "description": "The cluster this node pool belongs to."
     }
   ],
+  "filed_under": [
+    "compute"
+  ],
   "context": {
     "purpose": "Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.",
     "plain_description": "A named group of like nodes in a cluster — its `name` is required: how many (`node_count`), what they offer — `capabilities`, where advertisements are structured objects, not booleans (`gpu` carries available/models/count_per_node, beside `architecture` and `memory_tier`) — what `labels` they carry, and what `taints` a workload must tolerate to land there. Placement reads the capability advertisements to match a workload's requirements to a pool. Cloud platforms call this a node pool or machine set.",

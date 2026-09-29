@@ -72,6 +72,9 @@
     ]
   },
   "outputs": {},
+  "filed_under": [
+    "services"
+  ],
   "context": {
     "purpose": "Declares a consumable composition — the mechanism by which an orderable unit is assembled from other classes and references, declared once and realized many times.",
     "plain_description": "The thing on a menu that is made of other things. The Base carries only the composition mechanism: the sovereignty floor every realization must sit within, and the groupings a realization joins. What it composes is on the Type (Template.Application and kin).",

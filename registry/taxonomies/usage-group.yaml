@@ -1,0 +1,132 @@
+# Usage-group taxonomy — WHERE a class is filed, as a governed vocabulary (ADR-082, CLS-010).
+#
+# A class is defined once (its tier, parent, elements and version) and FILED under one or more usage
+# groups the way a Unix file is one inode with any number of hard links. A filing says where people
+# look for the class; it says nothing about what the class is. Adding or removing a filing changes no
+# version, no digest and no record. The definition system (Base / Type / Provider Class, CLS-001) and
+# this grouping system are separate on purpose: the former folder Bases (Hardware, Network, Storage,
+# Security, Software, Data, Facility, Observability) mixed them, and every member paid for it with a
+# name that promised a portability contract the folder could not honour (CLS-002).
+#
+# `former_folder` records which dissolved folder Base a term replaces; check_urf_conformance uses it
+# to retire stored criteria written against the folder (`resource_type==Hardware.*`), whose
+# replacement is `filed_under==hardware`.
+#
+# Grouping of INSTANCES is `Grouping` (register row 063), not this file. This vocabulary files
+# CLASSES only; no record kind carries `filed_under` (CLS-010).
+#
+# Seed, not a closed set: an organization adds its own terms under this root (registry-governance
+# §2 Org tier). A term is `canonical` when at least one class is filed under it.
+
+conforms_to: udlm/0.1
+term_type: TaxonomyTerm
+root: usage-group
+
+terms:
+  - term: usage-group
+    root: usage-group
+    parent: null
+    curation_state: canonical
+    definition: >-
+      Root of the usage-group vocabulary — the directories a class is filed in for people to find it.
+      A class declares `filed_under: [<term>, ...]`; every instantiable Base has at least one filing
+      (CLS-011). Filing is organization, never identity.
+
+  - term: compute
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    former_folder: Compute
+    definition: >-
+      Things that run workloads — machines, containers, Kubernetes clusters, namespaces and node pools.
+
+  - term: storage
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    former_folder: Storage
+    definition: >-
+      Things that hold data — volumes, pools, storage clusters, file shares, storage classes, layouts.
+
+  - term: network
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    former_folder: Network
+    definition: >-
+      Things that connect — addresses, pools, subnets, VLANs, virtual networks, switches, gateways,
+      address services (DHCP, DNS), connection profiles.
+
+  - term: hardware
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    former_folder: Hardware
+    definition: >-
+      Devices and components below the machine boundary — processors, GPUs, network interfaces,
+      storage devices, BMCs, firmware profiles. Physical or virtual: `device_class` on the class says
+      which.
+
+  - term: power
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    definition: >-
+      Things that deliver or condition electrical power — UPS units, power feeds.
+
+  - term: facility
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    former_folder: Facility
+    definition: >-
+      Physical placement — locations, and the topologies (region, zone, rack, host) placement
+      resolves against.
+
+  - term: data
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    former_folder: Data
+    definition: >-
+      Managed data services — databases, and when they arrive, streams and queues.
+
+  - term: security
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    former_folder: Security
+    definition: >-
+      Things that protect — credential references, directory services, certificates when they arrive.
+
+  - term: identity
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    definition: >-
+      Who and what may act — identities, groupings, directory services. A directory server is filed
+      here and under `services`; it is one class with two filings.
+
+  - term: observability
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    former_folder: Observability
+    definition: >-
+      Things that watch — log shippers, and when they arrive, scrape targets and collectors.
+
+  - term: services
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    former_folder: Software
+    definition: >-
+      Installed or served software as an orderable thing — services, and templates that compose
+      them into one offering.
+
+  - term: automation
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    definition: >-
+      Things that run on behalf of the control plane — jobs, automation runs.

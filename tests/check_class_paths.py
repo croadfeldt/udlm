@@ -7,6 +7,10 @@ the record owns (family, resource_type, parent), so this gate makes it a VERIFIE
       OSPatch -> ospatch, VM -> vm; word-word boundaries hyphenate: BareMetalHost ->
       bare-metal-host) — i.e. the file sits at its ancestry's path, named by its own segment
   (c) `parent`, when present, == the dotted name one segment shorter (the directory ancestry)
+  (d) ADR-082: under `resource/` a Base MAY sit one level deeper, inside a usage-group directory —
+      `resource/<group>/<segments>` — and then `<group>` MUST be one of the terms its `filed_under`
+      names (the git directory is one hard link; the others are generated views). The legacy
+      `resource/<segments>` form stays valid until every family has moved (ADR-082 rename PRs).
 Exit 0 = every path is an honest projection; 1 = drift between path and record."""
 import glob
 import os
@@ -61,6 +65,15 @@ def expected_parts(doc, has_children):
     return ([family.lower()] + eff + ["_base"] if indexed else [family.lower()] + eff), indexed
 
 
+def _filed_under(doc, rt):
+    """The filing terms of this class's Base (declared on the Base only, CLS-010; inherited beneath it)."""
+    base = rt.split(".")[0]
+    for d in _all_docs():
+        if d.get("resource_type") == base:
+            return set(d.get("filed_under") or [])
+    return set(doc.get("filed_under") or [])
+
+
 def main():
     fails, n = [], 0
     for path in sorted(glob.glob(os.path.join(EXAMPLE_CLASSES, "**", "*.yaml"), recursive=True)):
@@ -86,7 +99,11 @@ def main():
         # real class into the index-file layout.
         has_children = any(c.get("parent") == rt for c in _all_docs())
         want, indexed = expected_parts(doc, has_children)
-        if parts != want:
+        # (d) usage-group directory: `resource/<group>/<segments>` is honest when <group> is a filing
+        # of this class's Base (ADR-082). Legacy `resource/<segments>` stays honest until the family moves.
+        grouped = (parts[0] == "resource" and len(parts) > 2 and parts[1] in _filed_under(doc, rt)
+                   and [parts[0]] + parts[2:] == want)
+        if parts != want and not grouped:
             fails.append(f"{rel}: path says {'/'.join(parts)!r}, expected {'/'.join(want)!r} "
                          f"(family={family}, resource_type={rt}, "
                          f"{'indexed — base tier or has children' if indexed else 'leaf'})")

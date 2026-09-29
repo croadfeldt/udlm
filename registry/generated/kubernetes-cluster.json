@@ -130,6 +130,9 @@
       "disposition": "tier2_record"
     }
   ],
+  "filed_under": [
+    "compute"
+  ],
   "context": {
     "purpose": "Declares a managed Kubernetes cluster — release and network ranges — as one provisionable intent; its node pools are KubernetesNodePool records contained by it.",
     "plain_description": "The request for a control plane: which release and what internal network ranges it uses. The nodes come as separate KubernetesNodePool orders contained by the cluster, so a cluster with its pools is a composition of records, never one record. A provider (e.g. hosted control planes behind a management hub) turns this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.",

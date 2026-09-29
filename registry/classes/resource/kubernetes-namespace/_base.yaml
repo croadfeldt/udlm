@@ -8,6 +8,7 @@ short_name: K8sNamespace
 version: 1.1.2
 family: Resource
 status: active
+filed_under: [compute]
 metadata:
   display_name: Namespace
   description: 'A Kubernetes namespace as one orderable deliverable — a Base Class in its own right

@@ -471,6 +471,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "compute"
+  ],
   "context": {
     "purpose": "Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.",
     "plain_description": "The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`), which Storage.Layout describes its disks (`layout_ref`), and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.",

@@ -1,0 +1,27 @@
+# A filing lives on the class, never on a record (ADR-082, CLS-010). A record's groups resolve through
+# its resource_type to the class's CURRENT filing; writing them into a sealed record would freeze
+# organization into identity. The state-record schema is closed, so the property is refused there.
+must_reject:
+  rule: CLS-010
+  gate: schema
+  expect_path: $
+  because: "a requested record carries `filed_under`; a filing is organization on the class, not content of a record"
+record:
+  __schema__: state-record.schema.json
+  record_type: requested_record
+  state: Requested
+  record_uuid: 01a0e3cb-34d0-7261-9517-df3cbac3ce99
+  intent_ref: 01a0e3cb-34d0-7261-9517-df3cbac3ce20
+  root_request_uuid: 01a0e3cb-34d0-7261-9517-df3cbac3ce99
+  entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  conforms_to: udlm/0.1
+  resource_type: Machine.VM
+  type_version: 0.9.0
+  handle: vm-app01
+  filed_under: [compute]
+  at: '2026-09-29T00:00:00Z'
+  time_source: authoritative
+  fields:
+    cpu:
+      count: 2

@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.13"
+version: "1.0.14"
 
 prefixes:
   - prefix: ACC
@@ -42,7 +42,7 @@ prefixes:
   - prefix: CLS
     name: Class tiers
     home: docs/spec/foundations/class-tiers.md
-    domain: The Base / Type / Provider Class tier model — what earns a Base, folders, the Type axis, Provider Classes, class naming and short names
+    domain: The Base / Type / Provider Class tier model — what earns a Base, usage-group filing (`filed_under`, hard-link semantics), the Type axis, Provider Classes, class naming, delimiters and short names
     status: active
   - prefix: CMP
     name: Composite service composition

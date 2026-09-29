@@ -377,6 +377,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "compute"
+  ],
   "context": {
     "purpose": "Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.",
     "plain_description": "One physical server: its identity (serial, model, asset tag), its aggregate capacity (CPU sockets and cores, memory, local storage), and its lifecycle state. It can sit unallocated in inventory before anything is deployed on it. Components like NICs can be modeled as their own records attached to the host; CPU, memory, and disk normally stay as rollup numbers on the host itself. Everything that runs — VMs, containers, storage daemons — ultimately sits on one of these, which makes it a central node in shutdown and startup ordering.",

@@ -8,6 +8,7 @@ short_name: K8sCluster
 version: 2.0.0
 family: Resource
 status: active
+filed_under: [compute]
 metadata:
   display_name: Kubernetes cluster
   description: 'A Kubernetes cluster as one orderable deliverable — release and network ranges. It carries

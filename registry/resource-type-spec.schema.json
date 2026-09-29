@@ -48,6 +48,16 @@
       "$ref": "common-elements.schema.json#/$defs/family",
       "description": "Entity-type family (docs/spec/foundations/entity-type-families.md) — a logical grouping for discovery, NOT a usage boundary. Resource = maintained states; Process = bounded executions; Knowledge = information; Access = identity."
     },
+    "filed_under": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "description": "The usage-group terms the class's Base is filed under, carried verbatim from the class by the compiler (ADR-082). Read-only for consumers: a catalog exposes it on service types and catalog items, never declares its own. Not part of the spec's identity."
+    },
     "entity_type": {
       "type": "string",
       "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow | Grouping. Constrained by `family` (see allOf). The specific type (e.g. Machine.VM, Automation.Workflow) is `resource_type`, not `entity_type`. (docs/spec/foundations/entity-types.md, docs/spec/foundations/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list); it is a required discriminator only for Knowledge (Capability/…) and Access (Identity)."

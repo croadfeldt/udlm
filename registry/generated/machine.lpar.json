@@ -308,6 +308,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "compute"
+  ],
   "context": {
     "purpose": "Declares a logical partition on a partitioned system as one provisionable Machine.",
     "plain_description": "The request for a slice of a big partitioned server: how much processor capacity it is entitled to and whether it may borrow more, how much memory, which image, and how its disks and network are served. The provider (an HMC-managed Power system, a PR/SM-managed mainframe) activates the partition and reports its identifier and state.",

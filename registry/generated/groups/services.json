@@ -1,0 +1,15 @@
+{
+  "usage_group": "services",
+  "generated": true,
+  "classes": [
+    {
+      "class": "Template",
+      "version": "0.2.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/template/_base.yaml",
+      "types": [
+        "Template.Application"
+      ]
+    }
+  ]
+}

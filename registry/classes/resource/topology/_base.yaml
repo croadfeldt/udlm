@@ -7,6 +7,7 @@ resource_type: Topology
 version: 0.5.2
 family: Resource
 status: active
+filed_under: [facility]
 metadata:
   display_name: Topology
   description: A declared graph of failure/locality domains (region, zone, rack, host, power, network)

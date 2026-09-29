@@ -147,6 +147,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "compute"
+  ],
   "context": {
     "purpose": "Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.",
     "plain_description": "What Kubernetes calls a Namespace (and some distributions overlay as a project): a named partition of a cluster that workloads live in. Its `name` is required and authored as intent — the same name is published back at realization alongside the platform UID. It binds a tenant (`tenant_uuid`), references its cluster (`cluster_ref`), carries `labels` and `annotations`, and cannot outlive its cluster. Providers and placement policies use it to answer which namespace a request lands in.",

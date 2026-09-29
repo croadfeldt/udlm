@@ -1,0 +1,13 @@
+{
+  "usage_group": "power",
+  "generated": true,
+  "classes": [
+    {
+      "class": "UPS",
+      "version": "0.1.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/ups/_base.yaml",
+      "types": []
+    }
+  ]
+}

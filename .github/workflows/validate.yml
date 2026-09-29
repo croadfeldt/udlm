@@ -80,6 +80,8 @@ jobs:
       - run: python3 tests/check_entity_views.py
       # Dispatch is zero trust; the requested record is the receipt (DSP-002/003/004)
       - run: python3 tests/check_dispatch_slice.py
+      # A class is filed under usage groups like hard links (CLS-010/011)
+      - run: python3 tests/check_class_groups.py
       - run: python3 tests/check_status_claims.py
       - run: python3 tests/check_seal_facets.py
       - run: python3 tests/check_adr_realization.py

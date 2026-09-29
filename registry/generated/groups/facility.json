@@ -1,0 +1,13 @@
+{
+  "usage_group": "facility",
+  "generated": true,
+  "classes": [
+    {
+      "class": "Topology",
+      "version": "0.5.2",
+      "instantiable": true,
+      "path": "registry/classes/resource/topology/_base.yaml",
+      "types": []
+    }
+  ]
+}
