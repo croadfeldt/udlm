@@ -23,7 +23,7 @@ UDLM ships the **base definition** of each foundational resource as **guidance**
 | **`Network.VirtualNetwork`** (segment/VLAN/overlay) | platform data layer and/or a network provider | attachment — `references Network.VirtualNetwork` |
 | **`Network.VLAN`** (802.1Q id / overlay VNI) | network/fabric provider and/or platform layer | segment — `references Network.VLAN` (a VirtualNetwork or interface rides it) |
 | **`Network.IPAddress`** | IPAM / network provider | `depends_on` (dynamic/static/byo — DCM ADR-009 fulfillment) |
-| **`Storage.Pool` / `Storage.Cluster`** | storage provider | volumes provisioned from — `depends_on` |
+| **`StoragePool` / `StorageCluster`** | storage provider | volumes provisioned from — `depends_on` |
 | **`Security.DirectoryService`** (realm/identity) | identity provider | scope-derived from `tenant_uuid` (the pervasive realm edge) |
 | **`Facility.PowerFeed`** | facilities provider | power — `Machine.BareMetalHost depends_on Facility.PowerFeed` (`0..n`; one edge per feed, so redundancy is authored) |
 

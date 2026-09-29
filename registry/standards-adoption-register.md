@@ -97,12 +97,12 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** interface stacking and overlay/underlay topology are *already standardized* by the IETF network-management models; adopting their names makes our records legible to anyone who knows YANG. *Alternatives:* invention (rejected). **License:** IETF Trust — compatible-reference.
 
 ### SNIA Swordfish — CANONICAL
-**Covers:** `SNIA-Swordfish` · **Body:** SNIA · **Since:** 2026-06-27T00:11:51Z · **Where:** Storage.Cluster (StorageSystem), Storage.Pool (StoragePool alignment).
+**Covers:** `SNIA-Swordfish` · **Body:** SNIA · **Since:** 2026-06-27T00:11:51Z · **Where:** StorageCluster (StorageSystem), StoragePool (StoragePool alignment).
 **Why:** the storage-domain extension of Redfish — same family as our hardware vocabulary. **License:** SNIA — compatible-reference.
 
 ### OpenZFS — CANONICAL
-**Covers:** `OpenZFS` · **Body:** OpenZFS project · **Since:** 2026-07-13 · **Where:** Storage.Pool (zpool/vdev topology, redundancy), Storage.Dataset (dataset/zvol, mountpoint, hierarchy, properties).
-**Why:** the host-local pool/dataset layer between physical drives (Redfish Drive, on the discovery/DCIM side per DCM ADR-013) and cluster-provisioned volumes (Storage.Volume/Swordfish) had no vocabulary; OpenZFS is the one the producers actually speak (`zpool`/`zfs` on the fleet's storage hosts) and the de-facto standard for the pool→vdev→dataset shape. *Alternatives:* model a pool as Storage.Cluster (wrong — "cluster" is multi-node/distributed; a zpool is single-host) and a dataset as Storage.Volume (wrong — a Volume is a cluster-provisioned PVC/CSI claim, not a host-local hierarchy-bearing filesystem); both rejected as semantic overloads. Swordfish StoragePool aligns the capacity/redundancy fields (§storage family). **License:** CDDL-1.0 — compatible-reference (vocabulary referenced, no code).
+**Covers:** `OpenZFS` · **Body:** OpenZFS project · **Since:** 2026-07-13 · **Where:** StoragePool (zpool/vdev topology, redundancy), Volume.ZFS (dataset/zvol, mountpoint, hierarchy, properties).
+**Why:** the host-local pool/dataset layer between physical drives (Redfish Drive, on the discovery/DCIM side per DCM ADR-013) and cluster-provisioned volumes (Volume/Swordfish) had no vocabulary; OpenZFS is the one the producers actually speak (`zpool`/`zfs` on the fleet's storage hosts) and the de-facto standard for the pool→vdev→dataset shape. *Alternatives:* model a pool as StorageCluster (wrong — "cluster" is multi-node/distributed; a zpool is single-host) and a dataset as Volume (wrong — a Volume is a cluster-provisioned PVC/CSI claim, not a host-local hierarchy-bearing filesystem); both rejected as semantic overloads. Swordfish StoragePool aligns the capacity/redundancy fields (§storage family). **License:** CDDL-1.0 — compatible-reference (vocabulary referenced, no code).
 
 ## Kubernetes / CNCF ecosystem
 
@@ -123,7 +123,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** k8s-native bare-metal lifecycle vocabulary (BareMetalHost CRD), OpenShift-aligned (deployment reality + OSS/Red Hat preference). *Alternatives:* pure Redfish (asset view only — no provisioning lifecycle), Ironic-standalone (Metal3 wraps it). **License:** Apache-2.0 — compatible-reference.
 
 ### Rook — CANONICAL
-**Covers:** `Rook` · **Since:** 2026-06-26T22:30:12Z · **Where:** Storage.Cluster (CephCluster CRD as a provider-side vocabulary; the TYPE stays vendor-neutral per Tier-1 — `provider: ceph` is data).
+**Covers:** `Rook` · **Since:** 2026-06-26T22:30:12Z · **Where:** StorageCluster (CephCluster CRD as a provider-side vocabulary; the TYPE stays vendor-neutral per Tier-1 — `provider: ceph` is data).
 **Why:** our actual Ceph control surface on OCP. **License:** Apache-2.0 — compatible-reference.
 
 ### external-dns — CANONICAL
@@ -220,7 +220,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Storage
 
 ### SMB / CIFS — CANONICAL
-**Covers:** `SMB / CIFS` · **Body:** Microsoft (MS-SMB2 open specification) · **Since:** 2026-07-11T00:00:00Z · **Where:** `Storage.FileShare` share + access vocabulary (share name, exported path, access, read-only).
+**Covers:** `SMB / CIFS` · **Body:** Microsoft (MS-SMB2 open specification) · **Since:** 2026-07-11T00:00:00Z · **Where:** `FileShare` share + access vocabulary (share name, exported path, access, read-only).
 **Why:** the dominant cross-platform file-share protocol; its share/access vocabulary is what a portable FileShare type must express. *Alternatives:* NFS (modeled alongside via the `protocol` enum). **License:** Microsoft Open Specification Promise — compatible-reference.
 
 ## Cost

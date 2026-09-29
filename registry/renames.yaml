@@ -224,3 +224,23 @@ retired:
     retired 2026-09-13 — superseded by KubernetesNamespace#hard
     (uuid ae8d0510-221a-4500-b201-3b3e429c34e8)
 
+  # 2026-09-29 — the Storage folder dissolves into the `storage` usage group (ADR-082, row 083). Each
+  # member is a Base in its own right by the Base test; Storage.Dataset is a dialect Type of Volume.
+  # Same uuids — a rename never mints a new identity (ADR-051). The directory is the hosting group.
+  registry/classes/resource/storage/_base.yaml#54aeaeac-0d9a-4531-8502-c92ea418ba26: >-
+    retired 2026-09-29 — a dissolved folder; its members are StoragePool, StorageCluster, FileShare,
+    Volume (with Volume.ZFS), StorageClass and StorageLayout, filed under the `storage` usage group
+  registry/classes/resource/storage/pool.yaml: registry/classes/resource/storage/storage-pool/_base.yaml
+  registry/classes/resource/storage/cluster.yaml: registry/classes/resource/storage/storage-cluster/_base.yaml
+  registry/classes/resource/storage/file-share.yaml: registry/classes/resource/storage/file-share/_base.yaml
+  registry/classes/resource/storage/volume.yaml: registry/classes/resource/storage/volume/_base.yaml
+  registry/classes/resource/storage/dataset.yaml: registry/classes/resource/storage/volume/zfs.yaml
+  registry/classes/resource/storage/class.yaml: registry/classes/resource/storage/storage-class/_base.yaml
+  registry/classes/resource/storage/layout.yaml: registry/classes/resource/storage/storage-layout/_base.yaml
+  registry/generated/storage.pool.json: registry/generated/storage-pool.json
+  registry/generated/storage.cluster.json: registry/generated/storage-cluster.json
+  registry/generated/storage.file-share.json: registry/generated/file-share.json
+  registry/generated/storage.volume.json: registry/generated/volume.json
+  registry/generated/storage.dataset.json: registry/generated/volume.zfs.json
+  registry/generated/storage.class.json: registry/generated/storage-class.json
+  registry/generated/storage.layout.json: registry/generated/storage-layout.json

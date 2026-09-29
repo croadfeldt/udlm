@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.6.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/FileShare/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "83f66b92-ad66-4415-aa94-01327dec4f27",
-  "resource_type": "Storage.FileShare",
-  "version": "0.6.5",
+  "resource_type": "FileShare",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "File Share",
-    "description": "A file-sharing service (SMB/CIFS, extensible to NFS) exposing one or more shares over a network. The shares and their access are TYPED config — UDLM owns them and the control plane's interface manages them (DCM ADR-023 tier (i), the \"full\" scale). Provider-specific serialization (the smb.conf file, an identity suite's [global] block) is naturalized by the provider (DCM ADR-023 §1); share knobs not lifted into typed fields ride the `options` passthrough (basic scale, DCM ADR-023 §6). Authentication data lives in the referenced DirectoryService (PDP/PIP, provider-contract §1a.8) — referenced, not stored.",
+    "description": "A file-sharing service (SMB/CIFS, extensible to NFS) exposing one or more shares over a network. The shares and their access are TYPED config — UDLM owns them and the control plane's interface manages them (DCM ADR-023 tier (i), the \"full\" scale). Provider-specific serialization (the smb.conf file, an identity suite's [global] block) is naturalized by the provider (DCM ADR-023 §1); share knobs not lifted into typed fields ride the `options` passthrough (basic scale, DCM ADR-023 §6). Authentication data lives in the referenced DirectoryService (PDP/PIP, provider-contract §1a.8) — referenced, not stored. A Base by the Base test (CLS-002): SMB and NFS file services share one export vocabulary (share, path, access), so any file-service provider can fill an order placed here.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Storage",
-          "version": "1.1.0",
-          "uuid": "54aeaeac-0d9a-4531-8502-c92ea418ba26"
-        },
-        {
-          "class": "Storage.FileShare",
-          "version": "0.6.5",
+          "class": "FileShare",
+          "version": "0.7.0",
           "uuid": "83f66b92-ad66-4415-aa94-01327dec4f27"
         }
       ]
@@ -62,7 +57,7 @@
             },
             "path": {
               "type": "string",
-              "description": "Exported filesystem path (typically a Storage.Volume mount)."
+              "description": "Exported filesystem path (typically a Volume mount)."
             },
             "read_only": {
               "type": "boolean"
@@ -158,7 +153,7 @@
     },
     {
       "edge_type": "depends_on",
-      "target": "Storage.Volume",
+      "target": "Volume",
       "cardinality": "0..n",
       "description": "The underlying storage the shares expose."
     }
@@ -175,6 +170,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "storage"
+  ],
   "context": {
     "purpose": "Declares a file-sharing service and its exported shares — who may reach which path over which protocol.",
     "plain_description": "A file server's sharing surface: the protocol (SMB today, extensible to NFS), the exported shares with their paths and access rules, and the directory service that authenticates the principals named in them — membership stays in the directory, referenced not copied. Share-level knobs the model doesn't type ride through a passthrough field the provider serializes (e.g. into smb.conf). Once realized, the reachable share URI is published.",
@@ -183,12 +181,12 @@
       "You need share authentication tied to the directory service that holds the principals."
     ],
     "not_for": [
-      "The local storage behind the share path — Storage.Dataset / Storage.Volume; the share exposes storage, it isn't the storage.",
+      "The local storage behind the share path — Volume.ZFS / Volume; the share exposes storage, it isn't the storage.",
       "The identity data of who may connect — Security.DirectoryService holds it; shares reference principals."
     ],
     "works_with": [
       "Security.DirectoryService — authenticates the share principals.",
-      "Storage.Volume — the underlying storage the shares expose.",
+      "Volume — the underlying storage the shares expose.",
       "Machine.BareMetalHost / Container — where the file service runs.",
       "Security.CredentialRef — service credentials (e.g. a keytab), by reference."
     ]

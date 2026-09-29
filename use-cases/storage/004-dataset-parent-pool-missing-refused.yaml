@@ -2,7 +2,7 @@ uuid: uc-5295db61-ea48-420c-aaf8-a57dfc357776
 handle: storage/dataset-parent-pool-missing-refused
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Storage.Dataset whose parent Storage.Pool is absent —
+  description: 'A platform engineer requests a Volume.ZFS whose parent StoragePool is absent —
     never declared, or declared but unrealizable (its members are missing, so it cannot reach Realized).
     A dataset cannot exist without a pool to carve its space from: the parent pool is an operational
     dependency (ADR-052), not merely a request-time reference. Success for this use case is the REFUSAL:

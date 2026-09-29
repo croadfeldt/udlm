@@ -69,7 +69,7 @@ terms:
     parent: realize_resources
     domain: Storage
     curation_state: canonical
-    definition: Provision/manage Storage.* resources (volumes, file shares, buckets). e.g. the Samba/Ceph providers.
+    definition: Provision/manage the classes filed under the `storage` usage group (volumes, pools, file shares, storage clusters). e.g. the Samba/Ceph providers. The domain names the group, not a Base (ADR-082).
   - term: realize_resources/Machine
     category: compute-provisioning
     root: provider-capability
@@ -114,7 +114,7 @@ terms:
     domain: Storage
     curation_state: canonical
     definition: >-
-      Serve authoritative data ABOUT what is stored (inventory, metadata) on Storage.* resources. Maintainer's
+      Serve authoritative data ABOUT what is stored (inventory, metadata) on the classes filed under `storage`. Maintainer's
       example: a provider that both provisions storage (realize_resources/Storage) AND retrieves information
       stored on it (serve_data/Storage) — two categories, non-exclusive, one provider.
   - term: authenticate/Identity

@@ -4,16 +4,17 @@
 # and never in what the storage provider receives.
 # Two records, one entity: the VM provider's intent for raw storage, and the requested record placement produced from it.
 # The requested record's dispatch receipt admits only the pool's own elements; `caused_by_request` is control-plane data and never crosses.
+# Superseded once more when Storage.Pool became StoragePool (ADR-082): same entity, new record identities, chains continued.
 ---
 record_type: intent_record
 state: Intent
-record_uuid: 01a0eb52-84e6-71c0-b798-1dacd378c203
+record_uuid: 01a0ee2f-365b-74aa-a671-710d41096ed1
 entity_uuid: 6c27ea00-65ee-4045-b31b-ae08ad34c80d
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
-resource_type: Storage.Pool
-type_version: 0.4.2
-type_ref: https://udlm.dev/registry/udlm/0.1/class/Storage.Pool/0.4.2
+resource_type: StoragePool
+type_version: 0.5.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/StoragePool/0.5.0
 handle: platform/storage/pool/app-tier-02
 generation: 1
 origin: declared
@@ -40,24 +41,26 @@ provenance:
       operation_type: set
       sequence: 1
       timestamp: '2026-09-28T10:15:00Z'
+supersedes:
+  - 01a0eb52-84e6-71c0-b798-1dacd378c203
 integrity:
-  head: sha256:51d2680d200fb1abebaab427968b53ae95f17eb59fc82620c19918e337ad2dc5
-  previous: null
+  head: sha256:e045fc09fac3ade43ee03323a04a7b199180bfbc97b020dbb482d54dc0fc2063
+  previous: sha256:51d2680d200fb1abebaab427968b53ae95f17eb59fc82620c19918e337ad2dc5
   algorithm: sha256-jcs
 ---
 record_type: requested_record
 state: Requested
-record_uuid: 01a0eb94-650c-74bf-8dc5-c5c1cfb473a1
-intent_ref: 01a0eb52-84e6-71c0-b798-1dacd378c203
-intent_ref_head: sha256:51d2680d200fb1abebaab427968b53ae95f17eb59fc82620c19918e337ad2dc5
-root_request_uuid: 01a0eb94-650c-74bf-8dc5-c5c1cfb473a1
+record_uuid: 01a0ee2f-365b-74aa-a671-710e68bfc18c
+intent_ref: 01a0ee2f-365b-74aa-a671-710d41096ed1
+intent_ref_head: sha256:e045fc09fac3ade43ee03323a04a7b199180bfbc97b020dbb482d54dc0fc2063
+root_request_uuid: 01a0ee2f-365b-74aa-a671-710e68bfc18c
 caused_by_request: 01a0eb4f-c492-70e3-a61a-c7a8b1822dbf
 entity_uuid: 6c27ea00-65ee-4045-b31b-ae08ad34c80d
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
-resource_type: Storage.Pool
-type_version: 0.4.2
-type_ref: https://udlm.dev/registry/udlm/0.1/class/Storage.Pool/0.4.2
+resource_type: StoragePool
+type_version: 0.5.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/StoragePool/0.5.0
 handle: platform/storage/pool/app-tier-02
 generation: 1
 origin: declared
@@ -90,8 +93,8 @@ metadata:
         provider receives, which is this record''s execution slice and placement requirements. The triggering request
         waits blocked-transient on this one (DEP-017).'
 supersedes:
-  - 01a0eb52-84e6-71c0-b798-1dad32dcb191
+  - 01a0eb94-650c-74bf-8dc5-c5c1cfb473a1
 integrity:
-  head: sha256:50cc7e76dcd062d50a3e5b5a889573e11dc00d4daa810e5a888944ec34938cc7
-  previous: sha256:d82000532e81c6f05a910ddc8b8c07be32d5f69143320dc2b8ddf7772d7bcf4f
+  head: sha256:6a7821824bc4f3f233f59b7666ace4781977ac813142257d41a63e7a2d1d89e3
+  previous: sha256:50cc7e76dcd062d50a3e5b5a889573e11dc00d4daa810e5a888944ec34938cc7
   algorithm: sha256-jcs

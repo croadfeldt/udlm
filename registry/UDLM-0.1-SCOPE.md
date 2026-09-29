@@ -60,7 +60,7 @@ but executed by the control plane (ADR-008).
 | 3 | compute/provision-vm-standard | profile-resolution; policy §7.7; universal-audit | Covered |
 | 4 | compute/vm-intent-osac-placement | provider-contract §8 `realize_resources`; osac-better-together; provider provenance | Covered (placement algo = DCM ADR-019) |
 | 5 | compute/vm-status-provenance | per-state records: field-level `provenance`/`status`; drift computed from the latest realized and discovered records | Covered |
-| 6 | storage/provision-volume-bound-to-pool | `Storage.Volume`; tenancy; **quota** (now defined) | **Closed this release (P7)** |
+| 6 | storage/provision-volume-bound-to-pool | `Volume`; tenancy; **quota** (now defined) | **Closed this release (P7)** |
 | 7 | cross-domain/udlm-dependency-graph-data-model | ordering `edge_type`s; ADR-010 derived fault-domain/blast-radius; graph-integrity | Covered |
 | 8 | compute/cross-provider-dependency-ordering | graph-integrity DAG; DCM ADR-009; ADR-011 reserve ordering | Covered (convergence = DCM ADR-006) |
 | 9 | intent-fulfillment/operational-dependency-cascade | ADR-010 `UnmetDependency` (blocking, blast_radius) | Covered |

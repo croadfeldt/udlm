@@ -246,7 +246,7 @@ POST /api/v1/provider/contribute/resource-type-spec
 Authorization: mTLS + provider credential
 
 {
-  "resource_type_fqn": "Storage.DistributedVolume",
+  "resource_type_fqn": "Volume.Gluster",
   "tier": "organization",
   "version": "1.0.0",
   "schema": {
@@ -264,7 +264,7 @@ Authorization: mTLS + provider credential
 Response 202 Accepted:
 {
   "contribution_uuid": "<uuid>",
-  "resource_type_fqn": "Storage.DistributedVolume",
+  "resource_type_fqn": "Volume.Gluster",
   "status": "proposed",
   "review_required": true,
   "review_type": "reviewed"

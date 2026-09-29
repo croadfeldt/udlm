@@ -57,7 +57,7 @@ timeout_declarations:
     resource_type_overrides:
       # Some resource types legitimately take longer to provision
       Machine.BareMetalServer: PT4H
-      Storage.LargeVolume: PT2H
+      Volume: PT2H
     on_timeout: trigger DISPATCH_TIMEOUT recovery policy
 
   reserve_query_timeout:

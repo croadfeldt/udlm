@@ -35,7 +35,7 @@
       "minItems": 1,
       "items": { "type": "string" },
       "description": "The revision set the estate is pinned to — what it runs today. Pinned handles in `thing@version` or `thing@sha256:` form.",
-      "examples": [["Machine.VM@0.3.0", "Storage.Volume@1.2.0"]]
+      "examples": [["Machine.VM@0.3.0", "Volume@1.2.0"]]
     },
     "to_revisions": {
       "type": "array",

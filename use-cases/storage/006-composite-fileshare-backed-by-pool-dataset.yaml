@@ -3,8 +3,8 @@ handle: storage/composite-fileshare-backed-by-pool-dataset
 version: 1.0.0
 scenario:
   description: 'A platform engineer requests a file-serving stack as one composite intent: a
-    Storage.Pool provides capacity, a Storage.Dataset is carved from that pool with its mountpoint and
-    quota, and a Storage.FileShare exports that dataset. The three resources form a dependency chain —
+    StoragePool provides capacity, a Volume.ZFS is carved from that pool with its mountpoint and
+    quota, and a FileShare exports that dataset. The three resources form a dependency chain —
     Pool -> Dataset -> FileShare — and must realize in that order: the dataset cannot bind until the
     pool is Realized, and the share cannot export until the dataset is Realized and mounted. The
     dependency edges are first-class (the dataset references the pool, the share references the dataset),

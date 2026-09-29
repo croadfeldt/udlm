@@ -1,0 +1,108 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Volume.ZFS/0.6.0
+conforms_to: udlm/0.1
+uuid: 90eb6692-1b70-4dc1-b43b-bfedf44c317f
+record_type: class
+class: type
+resource_type: Volume.ZFS
+parent: Volume
+version: 0.6.0
+family: Resource
+status: active
+metadata:
+  display_name: ZFS Volume
+  description: 'A ZFS dataset or zvol, as a dialect of Volume: what a consumer orders is a volume (capacity, access
+    mode, filesystem or block) and ZFS is how one host-local provider realizes it — a mounted dataset when volume_mode
+    is filesystem, a zvol when block. Carved from a StoragePool, it cannot outlive its pool; datasets nest. Inherits
+    capacity (the quota or volsize), access_mode and volume_mode from Volume; adds the ZFS-native mountpoint, reported
+    usage and passthrough properties. Snapshot and replication policy is Policy (the control plane), not stored
+    here. Grounded in OpenZFS (dataset).'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-07-13T00:00:00Z'
+elements:
+  - element: mountpoint
+    scope: Volume.ZFS
+    optional: true
+    state: canonical
+    description: Filesystem mountpoint when volume_mode is filesystem (e.g. /export/gitlab); "none"/"-" if unmounted.
+    schema:
+      type: string
+      description: Filesystem mountpoint when volume_mode is filesystem (e.g. /export/gitlab); "none"/"-" if unmounted.
+  - element: used
+    scope: Volume.ZFS
+    optional: true
+    state: canonical
+    description: Space consumed as the provider reports it.
+    schema:
+      type: string
+      pattern: ^[0-9]+(\.[0-9]+)?(K|M|G|T|P|KB|MB|GB|TB|PB|KiB|MiB|GiB|TiB|PiB)$
+      description: Space consumed as the provider reports it.
+  - element: properties
+    scope: Volume.ZFS
+    optional: true
+    state: canonical
+    description: Provider-passthrough dataset properties (compression, recordsize, mountpoint inheritance, etc.).
+    schema:
+      type: object
+      additionalProperties:
+        type: string
+      description: Provider-passthrough dataset properties (compression, recordsize, mountpoint inheritance, etc.).
+spec_examples:
+  - capacity: 200Gi
+    access_mode: read_write_once
+    volume_mode: filesystem
+    mountpoint: /export/gitlab
+    used: 84.2G
+    properties:
+      compression: zstd
+      recordsize: 128K
+      atime: 'off'
+outputs:
+  device_or_path:
+    type: string
+    description: The realized mountpoint (filesystem) or /dev/zvol path (block).
+relationships:
+  - edge_type: depends_on
+    target: StoragePool
+    cardinality: 1..1
+    name: pool
+    description: The pool this dataset is carved from; the dataset cannot outlive its pool.
+  - edge_type: references
+    target: Volume.ZFS
+    cardinality: 0..1
+    name: parent_dataset
+    description: The parent dataset in the hierarchy (e.g. aspen/nc/data → aspen/nc), when nested.
+  - edge_type: contained_by
+    target: Machine.BareMetalHost
+    cardinality: 0..1
+    name: host
+    description: The host the pool (and thus this dataset) is local to.
+adopts:
+  - standard: OpenZFS
+    version: 2.x
+    standard_name: dataset (filesystem / volume)
+    role: dataset vocabulary (mountpoint, used, quota, properties, hierarchy)
+    source: https://openzfs.github.io/openzfs-docs/
+    license: CDDL-1.0
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+context:
+  purpose: Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host
+    workloads use.
+  plain_description: 'A volume realized by ZFS on one host: its `volume_mode` says whether it is a mounted dataset
+    (`filesystem`) or a zvol block device (`block`); its `capacity` is the quota or volsize; `mountpoint`, reported
+    `used` and passthrough `properties` are the ZFS-native details. It is what a podman container or host service
+    bind-mounts, so it is the storage node those workloads depend on. Volumes nest (parent chains) and cannot outlive
+    the pool they are carved from. Snapshot and replication policy is orchestration, not stored here.'
+  use_when:
+    - You need host services and containers tied to the specific dataset they store on, so the dataset outlives
+      them in shutdown order.
+    - You need the pool → dataset → workload chain explicit for capacity and migration planning.
+  not_for:
+    - The pool it is carved from — StoragePool owns the drives and redundancy.
+    - Cluster-provisioned volumes a platform attaches — order at Volume, or a Type of another provisioner; a ZFS
+      volume is host-local.
+    - A network share exported to other machines — FileShare exposes storage; this is the local storage itself.
+  works_with:
+    - StoragePool — the pool the volume is carved from.
+    - Machine.BareMetalHost — the host the volume is local to.
+    - Volume.ZFS — the parent dataset, when nested.

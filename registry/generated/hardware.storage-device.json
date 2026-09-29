@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.5.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.5.3",
   "conforms_to": "udlm/0.1",
   "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b",
   "resource_type": "Hardware.StorageDevice",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Hardware.StorageDevice",
-          "version": "0.5.2",
+          "version": "0.5.3",
           "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b"
         }
       ]
@@ -140,7 +140,7 @@
       "edge_type": "contained_by"
     },
     {
-      "target": "Storage.Cluster",
+      "target": "StorageCluster",
       "target_field": "block_storage_class",
       "cardinality": "0..1",
       "description": "For a virtual disk, the backing storage resource (block storage class) it is provisioned from.",
@@ -181,12 +181,12 @@
       "You need pool or cluster membership grounded in real devices (a vdev's members, a storage daemon's backing drive)."
     ],
     "not_for": [
-      "The consumable volume a workload attaches — Storage.Volume; a device is hardware, a volume is provisioned capacity.",
-      "The aggregation layer over drives — Storage.Pool (host-local) or Storage.Cluster (distributed)."
+      "The consumable volume a workload attaches — Volume; a device is hardware, a volume is provisioned capacity.",
+      "The aggregation layer over drives — StoragePool (host-local) or StorageCluster (distributed)."
     ],
     "works_with": [
       "Machine.BareMetalHost — the host the drive is installed in.",
-      "Storage.Pool — pools whose vdevs group these drives.",
+      "StoragePool — pools whose vdevs group these drives.",
       "Machine.VM — the guest a virtual disk is presented to."
     ]
   }

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Topology/0.5.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Topology/0.5.3
 conforms_to: udlm/0.1
 uuid: 34b1a133-4377-4bd6-b089-2345e8e80aab
 record_type: class
 class: base
 resource_type: Topology
-version: 0.5.2
+version: 0.5.3
 family: Resource
 status: active
 filed_under: [facility]
@@ -134,4 +134,4 @@ context:
   works_with:
   - Facility.Location — the physical containment the domains often mirror.
   - Machine.VM — placement intent resolved against domain kinds.
-  - Storage.Cluster — fault-domain-aware placement and maintenance gating.
+  - StorageCluster — fault-domain-aware placement and maintenance gating.

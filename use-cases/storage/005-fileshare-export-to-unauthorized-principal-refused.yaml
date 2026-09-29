@@ -2,7 +2,7 @@ uuid: uc-eb98bd5e-091b-4dcc-8e08-23e54c580c25
 handle: storage/fileshare-export-to-unauthorized-principal-refused
 version: 1.0.0
 scenario:
-  description: 'A platform engineer declares an export on a Storage.FileShare that grants access to a
+  description: 'A platform engineer declares an export on a FileShare that grants access to a
     principal outside the share''s authorized directory scope — a subject that resolves to no entry, or
     to an entry outside the group the share is authorized to serve. Success for this use case is the
     REFUSAL: the export must be rejected before it takes effect, never applied optimistically and walked
