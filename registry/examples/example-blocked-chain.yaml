@@ -1,33 +1,3 @@
-# asserts: DEP-017, FUL-001, FUL-002, FUL-003
-# proves: a member that has not realized says WHY and what it waits on, and the chain reaches a root
-#
-# THREE RECORDS, ONE STORY — the case the use-case corpus already designed and the model could not
-# record. A volume has no capacity. A container needs it. An app needs the container.
-#
-#   app  --blocked-permanent-->  container  --blocked-permanent-->  volume  (refused: the root)
-#
-# The refusal at the root is PERMANENT, so each link inherits blocked-permanent rather than
-# blocked-transient. That is the whole distinction: transient waits and converges when it can,
-# permanent is refused window-independently. Had the volume merely been short of capacity today,
-# the same three records would read blocked-transient and nobody would need to act.
-#
-# WHY THIS IS NOT A REFUSAL. Nothing here is wrong; it is EARLY. The container is blocked on a value
-# that arrives one step later, and refusing the request would fail something that was always going
-# to succeed. So the model holds the intent and records what is being waited on. Whether the wait
-# ever becomes permanent is the execution pipeline's call over the convergence window — the model's
-# job is to make that call rest on evidence rather than on a stopwatch.
-#
-# WHY EACH LINK NAMES ONLY ITS IMMEDIATE BLOCKER. The app does not carry a copy of "the volume".
-# The root is found by WALKING (app -> container -> volume), never by copying it down the chain —
-# a copied root is a second source that goes stale the moment the middle of the chain changes
-# (DRV-001). What each record owes is one honest hop.
-#
-# LIFECYCLE_STATE IS UNTOUCHED. All three are `Requested`. Blocking is an overlay on a lifecycle
-# that never leaves its five values, exactly as recovery and health are — there is no BLOCKED
-# lifecycle state and adding one would put the same fact on two axes.
-# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
-# read model, computed by registry/tools/entity_view.py; these records are what is stored.
----
 record_type: intent_record
 state: Intent
 entity_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
@@ -46,12 +16,11 @@ origin: backfilled
 fields:
   capacity: 500Gi
   access_mode: read_write_once
-
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
-record_uuid: 01a09385-cad9-72da-a308-da5c87c92f33
+record_uuid: 01a0eb4f-c2ed-735c-8686-0c85a56cd717
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Storage.Volume
@@ -66,6 +35,7 @@ fields:
   capacity: 500Gi
   access_mode: read_write_once
 intent_ref: 01a09385-cad9-72da-a308-da5b40f056be
+root_request_uuid: 01a0eb4f-c2ed-735c-8686-0c85a56cd717
 status:
   state: pending
   conditions:
@@ -74,6 +44,8 @@ status:
     reason: no pool in this zone can satisfy 500Gi, and none is planned
     last_transition_time: '2026-08-10T09:00:05Z'
 
+supersedes:
+- 01a09385-cad9-72da-a308-da5c87c92f33
 ---
 record_type: intent_record
 state: Intent
@@ -92,12 +64,11 @@ metadata:
 origin: backfilled
 fields:
   image: registry.cexample/orders-api:1.4.2
-
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
-record_uuid: 01a09385-cad9-72da-a308-da5eeb6f6ec6
+record_uuid: 01a0eb4f-c2ed-735c-8686-0c86ebe45029
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Container
@@ -111,6 +82,7 @@ metadata:
 fields:
   image: registry.cexample/orders-api:1.4.2
 intent_ref: 01a09385-cad9-72da-a308-da5dba42d6c4
+root_request_uuid: 01a0eb4f-c2ed-735c-8686-0c86ebe45029
 dependencies:
 - edge_type: depends_on
   strength: hard
@@ -126,6 +98,8 @@ status:
     blocked_on: udlm://estate/cexample/storage/orders-data
     last_transition_time: '2026-08-10T09:00:06Z'
 
+supersedes:
+- 01a09385-cad9-72da-a308-da5eeb6f6ec6
 ---
 record_type: intent_record
 state: Intent
@@ -148,7 +122,7 @@ fields: {}
 record_type: requested_record
 state: Requested
 entity_uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
-record_uuid: 01a09385-cad9-72da-a308-da60f47ce055
+record_uuid: 01a0eb4f-c2ee-77f7-818d-1703a1327f76
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Software.Service
@@ -161,6 +135,7 @@ metadata:
   display_name: Orders service
 fields: {}
 intent_ref: 01a09385-cad9-72da-a308-da5f4335b1e4
+root_request_uuid: 01a0eb4f-c2ee-77f7-818d-1703a1327f76
 dependencies:
 - edge_type: depends_on
   strength: hard
@@ -175,3 +150,5 @@ status:
     reason: the container this service runs on is blocked
     blocked_on: udlm://estate/cexample/app/orders-api
     last_transition_time: '2026-08-10T09:00:07Z'
+supersedes:
+- 01a09385-cad9-72da-a308-da60f47ce055

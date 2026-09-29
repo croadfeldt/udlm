@@ -1,11 +1,3 @@
-# asserts: GRP-INV-005
-# proves: a non-isolating grouping — many members, advisory, no exclusivity lock
-# Worked-example Resource Group: a Grouping using the EXPLICIT-set criterion —
-# the marked exception (identifier-scheme §9). A derivable criterion (labels, ownership)
-# is preferred wherever one exists; membership is still derived, never stored as a list.
-# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
-# read model, computed by registry/tools/entity_view.py; these records are what is stored.
----
 record_type: intent_record
 state: Intent
 entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
@@ -24,12 +16,11 @@ metadata:
 origin: backfilled
 fields:
   membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
-
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
-record_uuid: 01a09385-cabc-718b-a328-0cda5db64f84
+record_uuid: 01a0eb4f-c3f8-7098-9d8d-5f262c54457c
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Grouping
@@ -44,12 +35,14 @@ metadata:
 fields:
   membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
 intent_ref: 01a09385-cabc-718b-a328-0cd96a00da64
-
+root_request_uuid: 01a0eb4f-c3f8-7098-9d8d-5f262c54457c
+supersedes:
+- 01a09385-cabc-718b-a328-0cda5db64f84
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
-record_uuid: 01a09385-cabc-718b-a328-0cdb01c9ac44
+record_uuid: 01a0eb4f-c3f8-7098-9d8d-5f273b8bd7db
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Grouping
@@ -64,5 +57,7 @@ metadata:
 fields:
   membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
 outputs: {}
-requested_ref: 01a09385-cabc-718b-a328-0cda5db64f84
+requested_ref: 01a0eb4f-c3f8-7098-9d8d-5f262c54457c
 provider: estate/control-plane
+supersedes:
+- 01a09385-cabc-718b-a328-0cdb01c9ac44

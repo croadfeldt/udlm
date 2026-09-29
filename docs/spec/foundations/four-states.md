@@ -268,7 +268,7 @@ and nobody edits one.
 | Kind | Carries | Written by |
 |---|---|---|
 | intent | the fields as written; who wrote each one | the consumer |
-| requested | the fields after assembly and policy; the layers applied and the contributions left unapplied (`assembly`); the policies evaluated and what each decided (`policies`); the fulfillment status when a request is refused or blocked; the intent it came from (`intent_ref`); the edges placement resolved | the control plane |
+| requested | the root request it was expanded for (`root_request_uuid`, DEP-015 — a root names itself) and, on a request one provider made to another, the consumer's request that caused it (`caused_by_request`, DEP-018 — provenance, never authority); the fields after assembly and policy; the layers applied and the contributions left unapplied (`assembly`); the policies evaluated and what each decided (`policies`); the fulfillment status when a request is refused or blocked; the intent it came from (`intent_ref`); the edges placement resolved | the control plane |
 | realized | the fields as built; the outputs other things bind to; which provider instance built it (`provider`, a reference, not a string); health; placement; the natural keys discovery recognizes it by; the requested record it realizes (`requested_ref`) | the provider |
 | discovered | what a sweep saw — fields, outputs, and the edges it observed, each named by the natural key the probe read (RHY-007) — and which keys matched it to the entity | discovery |
 

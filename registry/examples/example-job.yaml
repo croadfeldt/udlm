@@ -1,10 +1,3 @@
-# The runs system-of-record, exercised: ONE Job class for every execution — the definition it
-# executes gives the domain (a filter, never a subtype). Immutable intent [definition_ref,
-# parameters]; run facts are typed outputs; the execution axis (data-model-core [D7]) moves
-# per run and never touches lifecycle_state.
-# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
-# read model, computed by registry/tools/entity_view.py; these records are what is stored.
----
 record_type: intent_record
 state: Intent
 entity_uuid: 4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44
@@ -28,12 +21,11 @@ fields:
   max_execution_time: PT1H
   on_max_exceeded: terminate
   trigger: schedule
-
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: 4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44
-record_uuid: 01a09385-cac2-758c-a3b9-a839faebc0d5
+record_uuid: 01a0eb4f-c375-7492-b86f-ade758ff18f4
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Job
@@ -53,12 +45,14 @@ fields:
   on_max_exceeded: terminate
   trigger: schedule
 intent_ref: 01a09385-cac2-758c-a3b9-a8388d5e5cb9
-
+root_request_uuid: 01a0eb4f-c375-7492-b86f-ade758ff18f4
+supersedes:
+- 01a09385-cac2-758c-a3b9-a839faebc0d5
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44
-record_uuid: 01a09385-cac2-758c-a3b9-a83a4f7bbaa3
+record_uuid: 01a0eb4f-c375-7492-b86f-ade8925f9587
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Job
@@ -81,7 +75,7 @@ outputs:
   results:
     status: COMPLETED
     snapshots_taken: 1
-requested_ref: 01a09385-cac2-758c-a3b9-a839faebc0d5
+requested_ref: 01a0eb4f-c375-7492-b86f-ade758ff18f4
 provider: estate/control-plane
 process:
   execution_state: COMPLETED
@@ -89,3 +83,5 @@ process:
   - entity_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
     effect_type: read
     effect_description: snapshotted the database
+supersedes:
+- 01a09385-cac2-758c-a3b9-a83a4f7bbaa3

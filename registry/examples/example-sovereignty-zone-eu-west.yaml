@@ -1,12 +1,3 @@
-# asserts: SOV-006
-# proves: a coined zone name declares what it means jurisdictionally, so an accreditation scoped DE can be matched against it
-#
-# The zone an entity's `sovereignty.zone: eu-west` resolves to. Without this record the label is a
-# string two peers can each read differently; with it, "is this placement covered by that
-# accreditation?" is arithmetic over ISO 3166 codes.
-# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
-# read model, computed by registry/tools/entity_view.py; these records are what is stored.
----
 record_type: intent_record
 state: Intent
 entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
@@ -28,14 +19,12 @@ fields:
   - NL
   regimes:
   - EU
-  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the
-    zone — an entity placed here could be sitting in NL.
-
+  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the zone — an entity placed here could be sitting in NL.
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
-record_uuid: 01a09385-cae6-7482-8808-5dcb54583708
+record_uuid: 01a0eb4f-c418-7356-9db9-c858f1579ead
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
 resource_type: SovereigntyZone
@@ -52,15 +41,16 @@ fields:
   - NL
   regimes:
   - EU
-  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the
-    zone — an entity placed here could be sitting in NL.
+  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the zone — an entity placed here could be sitting in NL.
 intent_ref: 01a09385-cae6-7482-8808-5dca49315792
-
+root_request_uuid: 01a0eb4f-c418-7356-9db9-c858f1579ead
+supersedes:
+- 01a09385-cae6-7482-8808-5dcb54583708
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
-record_uuid: 01a09385-cae6-7482-8808-5dcc6f317582
+record_uuid: 01a0eb4f-c418-7356-9db9-c85976487d08
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
 resource_type: SovereigntyZone
@@ -77,8 +67,9 @@ fields:
   - NL
   regimes:
   - EU
-  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the
-    zone — an entity placed here could be sitting in NL.
+  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the zone — an entity placed here could be sitting in NL.
 outputs: {}
-requested_ref: 01a09385-cae6-7482-8808-5dcb54583708
+requested_ref: 01a0eb4f-c418-7356-9db9-c858f1579ead
 provider: estate/control-plane
+supersedes:
+- 01a09385-cae6-7482-8808-5dcc6f317582

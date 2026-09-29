@@ -1,10 +1,7 @@
-# asserts: ENT-006, INT-001
-# proves: a test-harness run is an ordinary Job — the definition it executes gives the domain; the model, prompt digest, tool versions and sandbox image are the run's results, so no TestEvidence record has to repeat them.
----
 record_type: requested_record
 state: Requested
 entity_uuid: 9c4e2b7a-1d3f-4a5b-8c6d-0e1f2a3b4c5d
-record_uuid: 01a09a03-1237-7003-a003-0e5f3a2b1c50
+record_uuid: 01a0eb4f-c362-71cc-874e-de26602a9a13
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Job
@@ -34,12 +31,14 @@ fields:
   on_max_exceeded: terminate
   trigger: manual
 intent_ref: 01a09a0a-123e-700a-a00a-0e5f3a2b1c57
-
+root_request_uuid: 01a0eb4f-c362-71cc-874e-de26602a9a13
+supersedes:
+- 01a09a03-1237-7003-a003-0e5f3a2b1c50
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 9c4e2b7a-1d3f-4a5b-8c6d-0e1f2a3b4c5d
-record_uuid: 01a09a04-1238-7004-a004-0e5f3a2b1c51
+record_uuid: 01a0eb4f-c362-71cc-874e-de27cb346bc8
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Job
@@ -68,7 +67,7 @@ fields:
   max_execution_time: PT3H
   on_max_exceeded: terminate
   trigger: manual
-requested_ref: 01a09a03-1237-7003-a003-0e5f3a2b1c50
+requested_ref: 01a0eb4f-c362-71cc-874e-de26602a9a13
 provider: cexample/providers/ai-test-harness
 outputs:
   started_at: '2026-09-13T12:00:04Z'
@@ -100,6 +99,8 @@ process:
     effect_type: read
     effect_description: downloaded and ran the package in a sealed sandbox on two versions
 integrity:
-  head: sha256:b385c189d00a5436f456db245d062877f77176499c78e07a1c6c3e8577ba2591
-  previous: null
+  head: sha256:c6b6a2b8ea8ec5bc0ae17e4559f4bc05ca6a75a478bba6f01c9a7bc446fe275c
+  previous: sha256:b385c189d00a5436f456db245d062877f77176499c78e07a1c6c3e8577ba2591
   algorithm: sha256-jcs
+supersedes:
+- 01a09a04-1238-7004-a004-0e5f3a2b1c51

@@ -135,6 +135,16 @@
       "pattern": "^sha256:[0-9a-f]{64}$",
       "description": "Requested only: the `integrity.head` of the referenced intent record, present exactly when that record is sealed — binds the transition to the bytes it consumed, verifiable with no other record in hand (TRN-002)."
     },
+    "root_request_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Requested only: the record_uuid of the requested record at the root of the order this record belongs to — a root names itself; a record the control plane expanded from a declared dependency or a composition names the root's (DEP-015; the record form of service-dependencies.md §6.1 dependency_graph.root_request_uuid). Causation, not structure: parent_composite_uuid (CMP-007) is the other axis."
+    },
+    "caused_by_request": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Requested only, optional: on a request one provider originated toward another (PRV-012), the record_uuid of the consumer's requested record that made the need arise (DEP-018). Provenance only — a second axis from root_request_uuid, never walked for authority; may point across tenants (the provider sees the consumer's request uuid; the reverse direction is governed by resolution-is-not-disclosure, RHY-007)."
+    },
     "requested_ref": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
@@ -229,7 +239,9 @@
           "constituents": false,
           "policies": false,
           "intent_ref_head": false,
-          "requested_ref_head": false
+          "requested_ref_head": false,
+          "root_request_uuid": false,
+          "caused_by_request": false
         },
         "required": [
           "fields"
@@ -276,7 +288,8 @@
         },
         "required": [
           "fields",
-          "intent_ref"
+          "intent_ref",
+          "root_request_uuid"
         ]
       }
     },
@@ -312,7 +325,9 @@
                 "target_uuid"
               ]
             }
-          }
+          },
+          "root_request_uuid": false,
+          "caused_by_request": false
         },
         "required": [
           "fields",
@@ -365,7 +380,9 @@
           "sovereignty": false,
           "policies": false,
           "intent_ref_head": false,
-          "requested_ref_head": false
+          "requested_ref_head": false,
+          "root_request_uuid": false,
+          "caused_by_request": false
         },
         "required": [
           "fields"

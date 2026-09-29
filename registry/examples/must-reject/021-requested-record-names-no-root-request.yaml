@@ -1,0 +1,26 @@
+must_reject:
+  rule: DEP-015
+  gate: schema
+  expect_path: $
+  because: 'A requested record with no root_request_uuid. Every requested record names the root request it
+    was expanded for — a root names itself — so the whole of one order is recoverable from the records
+    alone (DEP-015). A requested record that names no root is an order nobody can reassemble: a child
+    expanded from a dependency or a composition would float free of the request that caused it, and the
+    audit question "what did this order cause" would need the dependency graph, which the records exist
+    to make unnecessary.'
+record:
+  __schema__: state-record.schema.json
+  record_type: requested_record
+  state: Requested
+  entity_uuid: 3b7c5e18-9a42-4d6f-8e21-5c0d7a9b3e14
+  record_uuid: 01a0b1c2-d3e4-7f5a-9b6c-7d8e9f0a1b2c
+  intent_ref: 01a0b1c2-d3e4-7f5a-9b6c-7d8e9f0a1b2b
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  conforms_to: udlm/0.1
+  resource_type: Container
+  type_version: 1.0.2
+  at: '2026-09-28T09:00:00Z'
+  time_source: authored example — no clock claim
+  fields:
+    image:
+      reference: registry.example.com/org/app:1.0
