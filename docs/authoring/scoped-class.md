@@ -148,8 +148,8 @@ declared clauses and every required element is present.
 
 ## 4. A worked pointer
 
-Copy the pair **`registry/classes/resource/machine/_base.yaml`** (the Base Class — `cpu`, `memory`, `storage`,
-`storage_tier`, `guest_os` at `Machine` scope) and **`registry/classes/resource/machine/vm.yaml`** (the Type Class
+Copy the pair **`registry/classes/resource/compute/machine/_base.yaml`** (the Base Class — `cpu`, `memory`, `storage`,
+`storage_tier`, `guest_os` at `Machine` scope) and **`registry/classes/resource/compute/machine/vm.yaml`** (the Type Class
 — `parent: Machine`, adding VM-only `firmware` and `boot_order`). Together they show a Base authored from
 scratch, a Type extending it under Liskov, a governed-vocabulary element (`storage_tier` →
 `values.reference_data_type`), and coverage pointing at `scoped-class/*` UCs. Their compiled output is

@@ -7,10 +7,10 @@ the record owns (family, resource_type, parent), so this gate makes it a VERIFIE
       OSPatch -> ospatch, VM -> vm; word-word boundaries hyphenate: BareMetalHost ->
       bare-metal-host) — i.e. the file sits at its ancestry's path, named by its own segment
   (c) `parent`, when present, == the dotted name one segment shorter (the directory ancestry)
-  (d) ADR-082: under `resource/` a Base MAY sit one level deeper, inside a usage-group directory —
-      `resource/<group>/<segments>` — and then `<group>` MUST be one of the terms its `filed_under`
+  (d) ADR-082 / CLS-013: under `resource/` a class sits inside its hosting-group directory —
+      `resource/<group>/<segments>` — and `<group>` MUST be one of the terms its Base's `filed_under`
       names (the git directory is one hard link; the others are generated views). The legacy
-      `resource/<segments>` form stays valid until every family has moved (ADR-082 rename PRs).
+      `resource/<segments>` form was retired once every family had moved (row 088).
 Exit 0 = every path is an honest projection; 1 = drift between path and record."""
 import glob
 import os
@@ -99,11 +99,17 @@ def main():
         # real class into the index-file layout.
         has_children = any(c.get("parent") == rt for c in _all_docs())
         want, indexed = expected_parts(doc, has_children)
-        # (d) usage-group directory: `resource/<group>/<segments>` is honest when <group> is a filing
-        # of this class's Base (ADR-082). Legacy `resource/<segments>` stays honest until the family moves.
-        grouped = (parts[0] == "resource" and len(parts) > 2 and parts[1] in _filed_under(doc, rt)
-                   and [parts[0]] + parts[2:] == want)
-        if parts != want and not grouped:
+        # (d) hosting group (CLS-013): under resource/ the second component is a filing of this class's
+        # Base and the rest is the class path; elsewhere the family directory holds the class directly.
+        if parts[0] == "resource":
+            ok = len(parts) > 2 and parts[1] in _filed_under(doc, rt) and [parts[0]] + parts[2:] == want
+            if not ok and len(parts) > 2 and parts[1] not in _filed_under(doc, rt) and [parts[0]] + parts[2:] == want:
+                fails.append(f"{rel}: hosted under {parts[1]!r}, which is not a filing of {rt.split('.')[0]} "
+                             f"(filed_under={sorted(_filed_under(doc, rt))}) — the hosting directory must be one of the class's groups (CLS-013)")
+                continue
+        else:
+            ok = parts == want
+        if not ok:
             fails.append(f"{rel}: path says {'/'.join(parts)!r}, expected {'/'.join(want)!r} "
                          f"(family={family}, resource_type={rt}, "
                          f"{'indexed — base tier or has children' if indexed else 'leaf'})")

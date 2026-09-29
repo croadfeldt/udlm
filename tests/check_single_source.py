@@ -44,11 +44,12 @@ A closed vocabulary may be DECLARED once. Every other site is one of:
              this the baseline silently becomes a permanent exemption list, which is how the debt
              stopped being visible the last time.
 
-**A NARROWING IS NOT A FORK, and the difference is the whole of ADR-038.** Three Hardware Type
-Classes each declare `device_class` as the four values they can actually be, against a family base
-that declares six. They coincide, and they are not one vocabulary declared three times: each is a
-Class making its own claim about what it supports, checked against its parent by
-`check_class_liskov`. Flagging them would teach authors to stop narrowing — which is the mechanism
+**A NARROWING IS NOT A FORK, and the difference is the whole of ADR-038.** A Type Class may declare
+an element as the subset of values it can actually be, against a parent that declares the full set
+(the hardware family did this with `device_class` until ADR-082 homed that vocabulary in
+`common-elements.schema.json`, where each Base now `$ref`s it). Those coincide, and they are not one
+vocabulary declared several times: each is a Class making its own claim about what it supports,
+checked against its parent by `check_class_liskov`. Flagging them would teach authors to stop narrowing — which is the mechanism
 the class system exists for. So a class element whose enum is CONTAINED in the enum its parent Class
 declares for the same element is skipped: it has a home (the parent), it is checked (Liskov), and it
 is saying something a `$ref` cannot say.

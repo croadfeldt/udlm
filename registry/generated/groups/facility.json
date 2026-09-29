@@ -20,7 +20,7 @@
       "class": "Topology",
       "version": "0.5.5",
       "instantiable": true,
-      "path": "registry/classes/resource/topology/_base.yaml",
+      "path": "registry/classes/resource/facility/topology/_base.yaml",
       "types": []
     }
   ]

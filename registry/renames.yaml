@@ -250,6 +250,23 @@ renames:
   registry/classes/resource/software/service.yaml: registry/classes/resource/services/workload/_base.yaml
   registry/generated/software.service.json: registry/generated/workload.json
 
+  # 2026-09-29 — the eight Resource Bases that were already filed move into their hosting group
+  # directories (ADR-082, CLS-013): the legacy `resource/<class>/` form is retired from the path gate.
+  # Same uuids, no record change — moving a home is a git mv.
+  registry/classes/resource/machine/_base.yaml: registry/classes/resource/compute/machine/_base.yaml
+  registry/classes/resource/machine/bare-metal-host.yaml: registry/classes/resource/compute/machine/bare-metal-host.yaml
+  registry/classes/resource/machine/lpar.yaml: registry/classes/resource/compute/machine/lpar.yaml
+  registry/classes/resource/machine/vm.yaml: registry/classes/resource/compute/machine/vm.yaml
+  registry/classes/resource/container/_base.yaml: registry/classes/resource/compute/container/_base.yaml
+  registry/classes/resource/kubernetes-cluster/_base.yaml: registry/classes/resource/compute/kubernetes-cluster/_base.yaml
+  registry/classes/resource/kubernetes-namespace/_base.yaml: registry/classes/resource/compute/kubernetes-namespace/_base.yaml
+  registry/classes/resource/kubernetes-node-pool/_base.yaml: registry/classes/resource/compute/kubernetes-node-pool/_base.yaml
+  registry/classes/resource/template/_base.yaml: registry/classes/resource/services/template/_base.yaml
+  registry/classes/resource/template/application/_base.yaml: registry/classes/resource/services/template/application/_base.yaml
+  registry/classes/resource/template/application/acme-three-tier.yaml: registry/classes/resource/services/template/application/acme-three-tier.yaml
+  registry/classes/resource/topology/_base.yaml: registry/classes/resource/facility/topology/_base.yaml
+  registry/classes/resource/ups/_base.yaml: registry/classes/resource/power/ups/_base.yaml
+
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
   # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),

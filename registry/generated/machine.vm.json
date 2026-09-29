@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.4",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.5",
   "conforms_to": "udlm/0.1",
   "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
   "resource_type": "Machine.VM",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -20,12 +20,12 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.1.2",
+          "version": "2.1.3",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Machine.VM",
-          "version": "2.0.4",
+          "version": "2.0.5",
           "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
         }
       ]

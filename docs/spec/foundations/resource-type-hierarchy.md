@@ -105,7 +105,7 @@ loop runs until every range has become a value. This is what makes placement eli
 rather than asserted: a provider is eligible exactly when every selected value falls inside its
 declared clauses and every element it requires is present.
 
-Worked example: `registry/classes/resource/machine/vm/cexample-cloud.yaml`. Authoring guide:
+Worked example: `registry/examples/classes/resource/machine/vm/cexample-cloud.yaml`. Authoring guide:
 `docs/authoring/scoped-class.md` §3a.
 
 ### 2.1 Registry Principles
