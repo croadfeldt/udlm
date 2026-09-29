@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddress/0.10.4
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddress/0.10.5
 conforms_to: udlm/0.1
 uuid: 6b7a4336-da9c-4b42-883d-44c96940f45a
 record_type: class
 class: type
 resource_type: Network.IPAddress
 parent: Network
-version: 0.10.4
+version: 0.10.5
 family: Resource
 status: active
 # OWN-007 — the ownership model is a type-level invariant, declared here and not settable per entity.
@@ -77,7 +77,7 @@ relationships:
   name: allocated_from
   target: Network.IPAddressPool
   cardinality: 0..1
-  description: The pool this address was carved from (mirrors Storage.Dataset.pool → Storage.Pool). Present
+  description: The pool this address was carved from (mirrors Volume.ZFS.pool → StoragePool). Present
     when the address is allocated from a Network.IPAddressPool rather than statically authored; a realized
     fact the provider populates, completing allocation-ownership.
 adopts:

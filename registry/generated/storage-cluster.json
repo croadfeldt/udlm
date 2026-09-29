@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Cluster/0.6.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StorageCluster/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "b3db807c-91a9-4ad3-bd28-b5a1042f740a",
-  "resource_type": "Storage.Cluster",
-  "version": "0.6.3",
+  "resource_type": "StorageCluster",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Storage Cluster",
-    "description": "A vendor-neutral distributed storage cluster that serves block, file, and/or object storage. The concrete technology (Ceph, etc.) is the PROVIDER, declared on the instance and in adopts[] — never in the type name. Consumers bind to the typed protocol outputs (storage classes / endpoints), not to the implementation. Grounded in SNIA Swordfish (StorageSystem) with Rook CephCluster as a reference implementation.",
+    "description": "A vendor-neutral distributed storage cluster that serves block, file, and/or object storage. The concrete technology (Ceph, etc.) is the PROVIDER, declared on the instance and in adopts[] — never in the type name. Consumers bind to the typed protocol outputs (storage classes / endpoints), not to the implementation. Grounded in SNIA Swordfish (StorageSystem) with Rook CephCluster as a reference implementation. A Base by the Base test (CLS-002): SNIA Swordfish StorageSystem abstracts over every distributed storage system, so an order for a cluster of given protocols, capacity and protection is fillable by any of them; a technology is a dialect Type beneath it (StorageCluster.Ceph), never the Base.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Storage",
-          "version": "1.1.0",
-          "uuid": "54aeaeac-0d9a-4531-8502-c92ea418ba26"
-        },
-        {
-          "class": "Storage.Cluster",
-          "version": "0.6.3",
+          "class": "StorageCluster",
+          "version": "0.7.0",
           "uuid": "b3db807c-91a9-4ad3-bd28-b5a1042f740a"
         }
       ]
@@ -153,6 +148,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "storage"
+  ],
   "context": {
     "purpose": "Models a distributed storage system serving block, file, and/or object storage — the platform volumes are provisioned from.",
     "plain_description": "A multi-node storage system — Ceph is the reference implementation, but the technology is the provider, never the type. It declares which `protocols` it serves (required: `block`, `file`, `object`), its `capacity` — an object whose `total` and `usable` are whole-number sizes like 50TB, not a bare size string — and its redundancy scheme, spelled `data_protection` (a `scheme` of `replication` or `erasure-coding`, plus replica count), and publishes the consumption surfaces: the block and file storage-class names volumes provision through, and the S3-compatible object endpoint. Its own nodes are hosts or VMs it depends on — the cluster needs its quorum up.",
@@ -161,14 +159,14 @@
       "You need the cluster's protocols, capacity, and protection scheme declared vendor-neutrally."
     ],
     "not_for": [
-      "A host-local pool of drives (ZFS zpool, LVM VG) — Storage.Pool; a Storage.Cluster is distributed across nodes.",
-      "The consumable volume — Storage.Volume, provisioned from this cluster.",
-      "The provisioning policy name — Storage.Class; the cluster backs a class, the class is the policy record."
+      "A host-local pool of drives (ZFS zpool, LVM VG) — StoragePool; a StorageCluster is distributed across nodes.",
+      "The consumable volume — Volume, provisioned from this cluster.",
+      "The provisioning policy name — StorageClass; the cluster backs a class, the class is the policy record."
     ],
     "works_with": [
       "Machine.BareMetalHost / Machine.VM — the nodes the cluster runs across.",
-      "Storage.Volume — volumes provisioned from the cluster.",
-      "Storage.Class — the class records naming what this cluster serves."
+      "Volume — volumes provisioned from the cluster.",
+      "StorageClass — the class records naming what this cluster serves."
     ]
   }
 }

@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.LPAR/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.LPAR/0.1.1
 conforms_to: udlm/0.1
 uuid: 6d2f8c1a-3b47-4e9d-a5c0-8f1e2b7d4a63
 record_type: class
 class: type
 resource_type: Machine.LPAR
 parent: Machine
-version: 0.1.0
+version: 0.1.1
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -163,5 +163,5 @@ context:
   - The partitioned system itself — that is Machine.BareMetalHost; the partition is contained_by it.
   works_with:
   - Machine.BareMetalHost — the frame that hosts the partition.
-  - Storage.Volume — the disks served through virtual I/O.
+  - Volume — the disks served through virtual I/O.
   - Network.VirtualNetwork — the network a virtual adapter attaches to.

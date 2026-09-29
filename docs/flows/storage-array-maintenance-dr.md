@@ -24,7 +24,7 @@ recoverable state, never an outage discovered by users.
 
 ## The stage — what this composes (by contract)
 
-- **The array:** a `Storage.Cluster` / `Storage.Pool` whose `Storage.FileShare`s are the
+- **The array:** a `StorageCluster` / `StoragePool` whose `FileShare`s are the
   producers ten applications bind to (`depends_on` edges; consumption via the shares'
   declared typed outputs — the [D8.3] binding surface).
 - **The clients:** ten applications (`Container` / `Machine.VM`
@@ -40,7 +40,7 @@ recoverable state, never an outage discovered by users.
 
 ```mermaid
 flowchart TD
-    A[Change record: breaking change\non Storage.Pool class] --> B[Impact set DERIVED:\n10 clients via depends_on edges]
+    A[Change record: breaking change\non StoragePool class] --> B[Impact set DERIVED:\n10 clients via depends_on edges]
     B --> C{Each client's availability policy}
     C -->|window-tolerant: 7| D[Scheduled for ordered quiesce\ninside the window]
     C -->|continuity-required: 3| E[DR cutover path]
@@ -95,7 +95,7 @@ filed as issues, not hand-waved. The **policy role** column separates policies t
 |---|---|---|---|
 | Impact set (the ten clients) | the entities' `dependencies[]` edges (state records) targeting the shares | **EXISTS** — validated: the estate's edge surface, same as shutdown order | Enriches: none needed — structure supplies the set; a policy may only widen review, never shrink the set |
 | Tolerance split (7 window / 3 continuity) | each client's availability policy (a Policy object `match`ed to the client) | Policy object + match **EXIST**; the tolerance-class vocabulary **PENDING-ADR** | Enriches (`transformation`): stamps each client's class; then Decides which path each takes |
-| DR gate (replica healthy, current, sized) | replica pool's declared outputs: `redundancy_status`, `degraded`, `fault_tolerance_remaining`, `spares_available` — **and the DR-pairing edge naming which pool is the replica** | Health outputs **EXIST** (Storage.Pool 0.3.x); the DR-pairing relationship **MISSING — issue #250** | Decides (`gating`): maintenance may not be scheduled until the gate passes |
+| DR gate (replica healthy, current, sized) | replica pool's declared outputs: `redundancy_status`, `degraded`, `fault_tolerance_remaining`, `spares_available` — **and the DR-pairing edge naming which pool is the replica** | Health outputs **EXIST** (StoragePool 0.3.x); the DR-pairing relationship **MISSING — issue #250** | Decides (`gating`): maintenance may not be scheduled until the gate passes |
 | Cutover re-bind | replica shares' declared outputs (the [D8.3] binding surface) | Mechanism **EXISTS**; FileShare's surface is **THIN — `mount_uri` only, issue #251** (re-bind possible, share-side verification is not) | Decides (`validation`): cutover verified or rolled back |
 | Client health post-cutover | client types' `run_state` / status outputs | **EXISTS** (VM/Container declared outputs) | Decides: proceed to window or roll back |
 | Window + ceremony | change policy clauses (window, approval, expedite) | **PENDING-ADR** (temporal clause vocabulary — validated absent from policy schema) | Decides: when execution may occur and under what authority |

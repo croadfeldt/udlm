@@ -2,7 +2,7 @@ uuid: uc-136d21a4-488f-4093-a45a-928e89dcdaf0
 handle: storage/provision-dataset-with-quota-compression
 version: 1.0.0
 scenario:
-  description: 'A platform engineer creates a Storage.Dataset (ZFS-style) on an existing Storage.Pool,
+  description: 'A platform engineer creates a Volume.ZFS (ZFS-style) on an existing StoragePool,
     declaring a mountpoint, a quota, and a compression setting. The dataset references its parent pool
     as its capacity source and carries these as declared intent properties, not provider-native tunables
     smuggled through a free-form field. The storage provider realizes the dataset on the named pool,

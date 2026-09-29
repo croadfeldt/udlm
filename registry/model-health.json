@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5415,
-    "mutations_rejected": 5415,
+    "mutations_attempted": 5443,
+    "mutations_rejected": 5443,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -50,6 +50,10 @@
       "Facility.PowerFeed": {
         "attempted": 52,
         "rejected": 52
+      },
+      "FileShare": {
+        "attempted": 120,
+        "rejected": 120
       },
       "Grouping": {
         "attempted": 56,
@@ -203,33 +207,21 @@
         "attempted": 46,
         "rejected": 46
       },
-      "Storage.Class": {
+      "StorageClass": {
         "attempted": 88,
         "rejected": 88
       },
-      "Storage.Cluster": {
+      "StorageCluster": {
         "attempted": 72,
         "rejected": 72
       },
-      "Storage.Dataset": {
-        "attempted": 44,
-        "rejected": 44
-      },
-      "Storage.FileShare": {
-        "attempted": 120,
-        "rejected": 120
-      },
-      "Storage.Layout": {
+      "StorageLayout": {
         "attempted": 89,
         "rejected": 89
       },
-      "Storage.Pool": {
+      "StoragePool": {
         "attempted": 122,
         "rejected": 122
-      },
-      "Storage.Volume": {
-        "attempted": 53,
-        "rejected": 53
       },
       "TaxonomyTerm": {
         "attempted": 61,
@@ -263,6 +255,14 @@
         "attempted": 60,
         "rejected": 60
       },
+      "Volume": {
+        "attempted": 53,
+        "rejected": 53
+      },
+      "Volume.ZFS": {
+        "attempted": 72,
+        "rejected": 72
+      },
       "Vulnerability": {
         "attempted": 66,
         "rejected": 66
@@ -284,6 +284,7 @@
       "Data.Database": 5,
       "Facility.Location": 1,
       "Facility.PowerFeed": 3,
+      "FileShare": 1,
       "Grouping": 0,
       "Grouping.Authorization": 0,
       "Grouping.Tenant": 0,
@@ -322,13 +323,10 @@
       "SoftwareImage": 0,
       "SoftwarePackage": 0,
       "SovereigntyZone": 0,
-      "Storage.Class": 1,
-      "Storage.Cluster": 3,
-      "Storage.Dataset": 1,
-      "Storage.FileShare": 1,
-      "Storage.Layout": 1,
-      "Storage.Pool": 5,
-      "Storage.Volume": 2,
+      "StorageClass": 1,
+      "StorageCluster": 3,
+      "StorageLayout": 1,
+      "StoragePool": 5,
       "TaxonomyTerm": 1,
       "Template": 0,
       "Template.Application": 1,
@@ -337,6 +335,8 @@
       "Topology": 1,
       "UPS": 7,
       "VexStatement": 0,
+      "Volume": 2,
+      "Volume.ZFS": 3,
       "Vulnerability": 0
     },
     "zero_output_types": [
@@ -359,6 +359,7 @@
     "one_output_types": [
       "Capability",
       "Facility.Location",
+      "FileShare",
       "Hardware.BMC",
       "Hardware.BiosProfile",
       "Hardware.NetworkInterface",
@@ -374,10 +375,8 @@
       "Network.VLAN",
       "Network.VirtualNetwork",
       "Software.Service",
-      "Storage.Class",
-      "Storage.Dataset",
-      "Storage.FileShare",
-      "Storage.Layout",
+      "StorageClass",
+      "StorageLayout",
       "TaxonomyTerm",
       "Template.Application",
       "Topology"
@@ -401,7 +400,7 @@
       "Machine",
       "Observability.LogShipper",
       "SovereigntyZone",
-      "Storage.Layout",
+      "StorageLayout",
       "Template",
       "Template.Application",
       "Topology",
@@ -417,6 +416,7 @@
       "Capability",
       "Container",
       "Data.Database",
+      "FileShare",
       "Job",
       "KubernetesCluster",
       "KubernetesNamespace",
@@ -438,13 +438,12 @@
       "Software.Service",
       "SoftwareImage",
       "SoftwarePackage",
-      "Storage.Class",
-      "Storage.Dataset",
-      "Storage.FileShare",
-      "Storage.Pool",
-      "Storage.Volume",
+      "StorageClass",
+      "StoragePool",
       "TaxonomyTerm",
       "Topology",
+      "Volume",
+      "Volume.ZFS",
       "Vulnerability"
     ],
     "uncovered": [
@@ -468,8 +467,8 @@
       "Network.Switch",
       "Network.VLAN",
       "SovereigntyZone",
-      "Storage.Cluster",
-      "Storage.Layout",
+      "StorageCluster",
+      "StorageLayout",
       "Template",
       "Template.Application",
       "TestEvidence",
@@ -499,7 +498,7 @@
       "Machine.VM": [
         "control-plane-servicetype-gen"
       ],
-      "Storage.Volume": [
+      "Volume": [
         "control-plane-servicetype-gen"
       ]
     },
@@ -511,6 +510,7 @@
       "Capability",
       "Facility.Location",
       "Facility.PowerFeed",
+      "FileShare",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
@@ -547,12 +547,10 @@
       "SoftwareImage",
       "SoftwarePackage",
       "SovereigntyZone",
-      "Storage.Class",
-      "Storage.Cluster",
-      "Storage.Dataset",
-      "Storage.FileShare",
-      "Storage.Layout",
-      "Storage.Pool",
+      "StorageClass",
+      "StorageCluster",
+      "StorageLayout",
+      "StoragePool",
       "TaxonomyTerm",
       "Template",
       "Template.Application",
@@ -561,6 +559,7 @@
       "Topology",
       "UPS",
       "VexStatement",
+      "Volume.ZFS",
       "Vulnerability"
     ],
     "consumed_by_at_least_one": 63

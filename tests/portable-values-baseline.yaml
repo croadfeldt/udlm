@@ -45,9 +45,9 @@ known:
   element: protocol
 - resource_type: Identity.Person
   element: external_subject
-- resource_type: Storage.Class
+- resource_type: StorageClass
   element: provisioner
-- resource_type: Storage.Class
+- resource_type: StorageClass
   element: tier
 - resource_type: Security.CredentialRef
   element: required_assurance
@@ -59,17 +59,15 @@ known:
   element: license
 - resource_type: SoftwarePackage
   element: type
-- resource_type: Storage.Dataset
-  element: quota
-- resource_type: Storage.Dataset
+- resource_type: Volume.ZFS
   element: used
-- resource_type: Storage.FileShare
+- resource_type: FileShare
   element: workgroup
-- resource_type: Storage.Pool
+- resource_type: StoragePool
   element: health
-- resource_type: Storage.Volume
+- resource_type: Volume
   element: capacity
-- resource_type: Storage.Volume
+- resource_type: Volume
   element: layout_entry
 - resource_type: TaxonomyTerm
   element: category

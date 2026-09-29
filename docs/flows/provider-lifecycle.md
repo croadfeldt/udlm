@@ -210,9 +210,9 @@ consumer_fields:
     description: "Kubernetes namespace — optional; a reference to an existing KubernetesNamespace, resolved by policy if omitted"
   - name: storage_class
     type: reference
-    reference_type: Storage.Class
+    reference_type: StorageClass
     required: false
-    description: "Storage class — optional; a reference to an existing Storage.Class, resolved by policy if omitted"
+    description: "Storage class — optional; a reference to an existing StorageClass, resolved by policy if omitted"
 ```
 
 The consumer sees `environment`, `vcpu`, `memory` as the primary choices. `namespace` and
@@ -222,7 +222,7 @@ post-placement. The provider declares *what* it needs at registration (Phase 1);
 exposes *whether* the consumer can supply it directly.
 
 Note the **field definition itself is a reference**, not free-form text: `namespace` and `storage_class`
-are `type: reference` pointing at `KubernetesNamespace` / `Storage.Class` records — the same shape
+are `type: reference` pointing at `KubernetesNamespace` / `StorageClass` records — the same shape
 used in the fill-strategy example below, the dispatch payload (Phase 4), and the "References, not strings"
 principle. That is what lets the field be presented as a drop-down of real, tenant-visible records and
 validated as a graph edge, rather than a string typed from memory. A field is defined as free-form text
@@ -344,7 +344,7 @@ disclosure). Expanding a provider group and filling a field narrows placement to
 Filling fields in two provider groups is a contradiction — the UI prevents it (expanding one
 collapses the others, or a radio-select at the group level picks the target provider). Drop-downs
 are populated from the provider's registered resources — namespaces from `KubernetesNamespace`
-records the consumer's tenant has access to, storage classes from `Storage.Class` records
+records the consumer's tenant has access to, storage classes from `StorageClass` records
 on the selected cluster.
 
 ### Two-stage intent
@@ -404,7 +404,7 @@ allowed.
 Key UX principles for Stage 2:
 
 - **Drop-downs, not free text.** Every provider-specific field is populated from the provider's
-  registered resources (KubernetesNamespace, Storage.Class, KubernetesNodePool) filtered to
+  registered resources (KubernetesNamespace, StorageClass, KubernetesNodePool) filtered to
   what the consumer's tenant has access to. The consumer picks from valid options, not from memory.
 - **Policy defaults pre-selected.** The enrichment policy selects a default before the consumer
   sees the form. The consumer can change it, but the happy path is "accept and submit."
@@ -454,7 +454,7 @@ consumer_fields:
     description: "Kubernetes namespace — defaulted by policy, overridable"
   - name: storage_class
     type: reference
-    reference_type: Storage.Class
+    reference_type: StorageClass
     required: false
     fill_strategy: prompt
     description: "Storage class — choose based on performance/cost needs"
@@ -525,7 +525,7 @@ spec:
 # the provider's Class; schema implementation is tracked in #199 (the retired provider_extensions
 # carrier is removed). For k8s-prod-east, addressed compute.vm.k8s-prod-east#<element>:
 #   namespace_ref     → KubernetesNamespace     "tenant-alpha-prod"  (e2f3a4b5-...)
-#   storage_class_ref → Storage.Class  "ceph-rbd-fast"      (c6d7e8f9-...)
+#   storage_class_ref → StorageClass  "ceph-rbd-fast"      (c6d7e8f9-...)
 
 request_context:
   tenant_uuid: "75ccf4ff-..."
@@ -540,9 +540,9 @@ string whose uuid path resolves the target and whose optional `@pin` names an im
 
 - `network_ref` → `Network.VirtualNetwork`
 - `namespace_ref` → `KubernetesNamespace`
-- `storage_class_ref` → `Storage.Class`
+- `storage_class_ref` → `StorageClass`
 - `ip_address` → `Network.IPAddress`
-- Storage volume attachments → `Storage.Volume`
+- Storage volume attachments → `Volume`
 
 **The principle:** if something has identity, lifecycle, and other resources depend on it — it's a
 resource type in the registry and gets a reference, not a bare string. A bare string is opaque to the
@@ -615,8 +615,8 @@ outputs:
 relationships_created:
   - edge_type: binds_to
     relation: attaches_to
-    target_type: Storage.Volume
-    target_ref: uuid/d8e9f0a1-...        # → realized Storage.Volume
+    target_type: Volume
+    target_ref: uuid/d8e9f0a1-...        # → realized Volume
     target_native_id: "ceph/pvc-a1b2c3"   # provider's native id for correlation
   - edge_type: binds_to
     relation: connects_to

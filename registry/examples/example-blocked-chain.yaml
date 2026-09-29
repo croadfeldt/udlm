@@ -1,12 +1,12 @@
 record_type: intent_record
 state: Intent
 entity_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
-record_uuid: 01a09385-cad9-72da-a308-da5b40f056be
+record_uuid: 01a0ee2f-364d-75a5-9861-1ec47ea0b689
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
-resource_type: Storage.Volume
-type_version: 0.11.2
-type_ref: https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.2
+resource_type: Volume
+type_version: 0.12.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Volume/0.12.0
 handle: cexample/storage/orders-data
 at: '2026-08-10T09:00:00Z'
 time_source: authored example — no clock claim
@@ -16,16 +16,18 @@ origin: backfilled
 fields:
   capacity: 500Gi
   access_mode: read_write_once
+supersedes:
+  - 01a09385-cad9-72da-a308-da5b40f056be
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
-record_uuid: 01a0eb4f-c2ed-735c-8686-0c85a56cd717
+record_uuid: 01a0ee2f-364d-75a5-9861-1ec5cb61cd53
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
-resource_type: Storage.Volume
-type_version: 0.11.2
-type_ref: https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.2
+resource_type: Volume
+type_version: 0.12.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Volume/0.12.0
 handle: cexample/storage/orders-data
 at: '2026-08-10T09:00:00Z'
 time_source: authored example — no clock claim
@@ -34,18 +36,17 @@ metadata:
 fields:
   capacity: 500Gi
   access_mode: read_write_once
-intent_ref: 01a09385-cad9-72da-a308-da5b40f056be
-root_request_uuid: 01a0eb4f-c2ed-735c-8686-0c85a56cd717
+intent_ref: 01a0ee2f-364d-75a5-9861-1ec47ea0b689
+root_request_uuid: 01a0ee2f-364d-75a5-9861-1ec5cb61cd53
 status:
   state: pending
   conditions:
-  - type: refused
-    status: 'True'
-    reason: no pool in this zone can satisfy 500Gi, and none is planned
-    last_transition_time: '2026-08-10T09:00:05Z'
-
+    - type: refused
+      status: 'True'
+      reason: no pool in this zone can satisfy 500Gi, and none is planned
+      last_transition_time: '2026-08-10T09:00:05Z'
 supersedes:
-- 01a09385-cad9-72da-a308-da5c87c92f33
+  - 01a0eb4f-c2ed-735c-8686-0c85a56cd717
 ---
 record_type: intent_record
 state: Intent
@@ -84,22 +85,21 @@ fields:
 intent_ref: 01a09385-cad9-72da-a308-da5dba42d6c4
 root_request_uuid: 01a0eb4f-c2ed-735c-8686-0c86ebe45029
 dependencies:
-- edge_type: depends_on
-  strength: hard
-  target_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
-  target_handle: cexample/storage/orders-data
-  relation: mounts
+  - edge_type: depends_on
+    strength: hard
+    target_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
+    target_handle: cexample/storage/orders-data
+    relation: mounts
 status:
   state: pending
   conditions:
-  - type: blocked-permanent
-    status: 'True'
-    reason: the volume this container mounts was permanently refused
-    blocked_on: udlm://estate/cexample/storage/orders-data
-    last_transition_time: '2026-08-10T09:00:06Z'
-
+    - type: blocked-permanent
+      status: 'True'
+      reason: the volume this container mounts was permanently refused
+      blocked_on: udlm://estate/cexample/storage/orders-data
+      last_transition_time: '2026-08-10T09:00:06Z'
 supersedes:
-- 01a09385-cad9-72da-a308-da5eeb6f6ec6
+  - 01a09385-cad9-72da-a308-da5eeb6f6ec6
 ---
 record_type: intent_record
 state: Intent
@@ -117,7 +117,6 @@ metadata:
   display_name: Orders service
 origin: backfilled
 fields: {}
-
 ---
 record_type: requested_record
 state: Requested
@@ -137,18 +136,18 @@ fields: {}
 intent_ref: 01a09385-cad9-72da-a308-da5f4335b1e4
 root_request_uuid: 01a0eb4f-c2ee-77f7-818d-1703a1327f76
 dependencies:
-- edge_type: depends_on
-  strength: hard
-  target_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
-  target_handle: cexample/app/orders-api
-  relation: runs_on
+  - edge_type: depends_on
+    strength: hard
+    target_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
+    target_handle: cexample/app/orders-api
+    relation: runs_on
 status:
   state: pending
   conditions:
-  - type: blocked-permanent
-    status: 'True'
-    reason: the container this service runs on is blocked
-    blocked_on: udlm://estate/cexample/app/orders-api
-    last_transition_time: '2026-08-10T09:00:07Z'
+    - type: blocked-permanent
+      status: 'True'
+      reason: the container this service runs on is blocked
+      blocked_on: udlm://estate/cexample/app/orders-api
+      last_transition_time: '2026-08-10T09:00:07Z'
 supersedes:
-- 01a09385-cad9-72da-a308-da60f47ce055
+  - 01a09385-cad9-72da-a308-da60f47ce055

@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.1
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Machine.VM
 parent: Machine
-version: 2.0.0
+version: 2.0.1
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -64,14 +64,14 @@ elements:
   scope: Machine.VM
   optional: true
   state: canonical
-  description: The Storage.Layout this VM realizes — handle/uuid reference to an existing Storage.Layout
+  description: The StorageLayout this VM realizes — handle/uuid reference to an existing StorageLayout
     whose entries describe the VM's disks (per-disk shape, boot designation, storage tier). Common-elements
     Refere
   schema:
-    description: The Storage.Layout this VM realizes — handle/uuid reference to an existing Storage.Layout
+    description: The StorageLayout this VM realizes — handle/uuid reference to an existing StorageLayout
       whose entries describe the VM's disks (per-disk shape, boot designation, storage tier). Common-elements
       Reference (handle string or {uuid, handle} object), following the location_ref/network_ref precedent.
-      Also carried as a references->Storage.Layout relationship (storage_layout).
+      Also carried as a references->StorageLayout relationship (storage_layout).
     $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: networks
   scope: Machine.VM
@@ -380,16 +380,16 @@ relationships:
   cardinality: 0..n
   description: Attaches to existing Network.VirtualNetwork(s) — see spec.networks[].network_ref.
 - edge_type: references
-  target: Storage.Layout
+  target: StorageLayout
   name: storage_layout
   cardinality: 0..1
-  description: The Storage.Layout this VM realizes — see spec.layout_ref; the layout's entries describe
+  description: The StorageLayout this VM realizes — see spec.layout_ref; the layout's entries describe
     the VM's disks.
 - edge_type: depends_on
-  target: Storage.Volume
+  target: Volume
   name: disk
   cardinality: 0..n
-  description: Consumes existing/allocated Storage.Volume(s) — the consumable volumes realizing its Storage.Layout
+  description: Consumes existing/allocated Volume(s) — the consumable volumes realizing its StorageLayout
     entries.
 adopts:
 - standard: Redfish
@@ -418,7 +418,7 @@ context:
     — as portable intent any virtualization provider can realize.
   plain_description: 'The request for one VM: how big — a named size class (`instance_size`), or explicit
     `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed
-    `storage_tier`), which Storage.Layout describes its disks (`layout_ref`), and which existing networks
+    `storage_tier`), which StorageLayout describes its disks (`layout_ref`), and which existing networks
     its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an
     existing location, not an invention. Once the provider builds it, the record carries realized facts
     back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider
@@ -428,18 +428,18 @@ context:
     across hypervisors.
   - You need VM records in the dependency graph so ordering (host before VM, VM before its services) is
     derivable.
-  - You need a VM's disk shape and addresses to reference existing Storage.Layout / Network.IPAddress
+  - You need a VM's disk shape and addresses to reference existing StorageLayout / Network.IPAddress
     records rather than duplicate them.
   not_for:
   - The physical machine it runs on — Machine.BareMetalHost.
   - A containerized workload — Container; the VM carries a full guest OS.
-  - The per-disk shape (sizes, boot designation) — Storage.Layout; the VM references one via layout_ref.
+  - The per-disk shape (sizes, boot designation) — StorageLayout; the VM references one via layout_ref.
   - The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's
     networks list declares attachment intent, not device inventory.
   works_with:
-  - Storage.Layout — the disk layout the VM realizes (per-disk shape, boot designation).
+  - StorageLayout — the disk layout the VM realizes (per-disk shape, boot designation).
   - Network.VirtualNetwork — the networks the VM's NICs attach to.
-  - Storage.Volume — the consumable volumes realizing its layout entries.
+  - Volume — the consumable volumes realizing its layout entries.
   - Facility.Location — where the VM is placed (selected from existing places, policy-governed).
   - Network.IPAddress — pre-allocated addresses the VM consumes.
 spec_examples:
@@ -479,7 +479,7 @@ spec_constraints:
   description: 'Deliberate exclusions: GPU/PCI passthrough and SR-IOV are Provider-Class SharedDataElements
     (ADR-038) — provider-variable capability, not portable base surface. Day-0 guest personalization (cloud-init/user-data)
     is an open design decision (process concern vs VM field) — tracked on the type, not silently absent.
-    Per-disk shape (sizes, boot designation) lives on Storage.Layout, referenced via layout_ref.'
+    Per-disk shape (sizes, boot designation) lives on StorageLayout, referenced via layout_ref.'
   oneOf:
   - required:
     - instance_size

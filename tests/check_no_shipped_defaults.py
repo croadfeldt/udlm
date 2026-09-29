@@ -14,7 +14,7 @@ type has **no provenance**: it appears in every estate that ever used the type, 
 chose it and no way to tell an intended value from an inherited one.
 
 The defaults found when this landed show why it matters — `Data.Database.version: "latest"`,
-`Storage.FileShare.protocol: "smb"`, `Storage.Volume.volume_mode: "filesystem"`. Each is one
+`FileShare.protocol: "smb"`, `Volume.volume_mode: "filesystem"`. Each is one
 organisation's opinion shipped to every consumer of a portable type.
 
   NDF-001  no `default` anywhere in a `base` or `type` class element schema.

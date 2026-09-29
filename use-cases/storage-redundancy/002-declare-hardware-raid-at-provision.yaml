@@ -2,7 +2,7 @@ uuid: uc-storage-redundancy-002
 handle: storage-redundancy/declare-hardware-raid-at-provision
 version: 1.0.0
 scenario:
-  description: "A platform engineer declares a bare-metal host's storage topology as a hardware_raid Storage.Pool\
+  description: "A platform engineer declares a bare-metal host's storage topology as a hardware_raid StoragePool\
     \ intent record contained_by the host, before the host is provisioned. The bare-metal provisioning\
     \ provider derives its RAID-controller configuration from the declared pool (members, native type,\
     \ canonical mapping), builds the virtual disk during provisioning, and the pool reaches Realized alongside\

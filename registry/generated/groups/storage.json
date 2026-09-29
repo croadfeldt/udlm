@@ -1,5 +1,50 @@
 {
   "usage_group": "storage",
   "generated": true,
-  "classes": []
+  "classes": [
+    {
+      "class": "FileShare",
+      "version": "0.7.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/storage/file-share/_base.yaml",
+      "types": []
+    },
+    {
+      "class": "StorageClass",
+      "version": "0.9.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/storage/storage-class/_base.yaml",
+      "types": []
+    },
+    {
+      "class": "StorageCluster",
+      "version": "0.7.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/storage/storage-cluster/_base.yaml",
+      "types": []
+    },
+    {
+      "class": "StorageLayout",
+      "version": "0.6.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/storage/storage-layout/_base.yaml",
+      "types": []
+    },
+    {
+      "class": "StoragePool",
+      "version": "0.5.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/storage/storage-pool/_base.yaml",
+      "types": []
+    },
+    {
+      "class": "Volume",
+      "version": "0.12.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/storage/volume/_base.yaml",
+      "types": [
+        "Volume.ZFS"
+      ]
+    }
+  ]
 }

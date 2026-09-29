@@ -20,6 +20,6 @@ consumes:
     noted_version: 0.7.7
   - resource_type: KubernetesCluster
     noted_version: 2.0.0
-  - resource_type: Storage.Volume
+  - resource_type: Volume
     noted_version: 0.11.6
 coverage: declared

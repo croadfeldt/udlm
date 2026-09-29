@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesCluster/2.0.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesCluster/2.0.1",
   "conforms_to": "udlm/0.1",
   "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c",
   "resource_type": "KubernetesCluster",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "KubernetesCluster",
-          "version": "2.0.0",
+          "version": "2.0.1",
           "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c"
         }
       ]
@@ -141,7 +141,7 @@
       "You need cluster-scoped resources (namespaces, node pools, storage classes) to have a single parent record they cannot outlive."
     ],
     "not_for": [
-      "A distributed storage cluster (Ceph and kin) — that is Storage.Cluster; this type is the container-orchestration platform.",
+      "A distributed storage cluster (Ceph and kin) — that is StorageCluster; this type is the container-orchestration platform.",
       "A group of nodes — that is KubernetesNodePool, always, whether ordered with the cluster or later (ruling 072)."
     ],
     "works_with": [

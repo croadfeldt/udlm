@@ -44,7 +44,7 @@ flowchart TD
 - **Three distinct refusals, three roots** — capability mismatch (no eligible host), unresolvable image
   (container), provider failure mid-realize (VM). Each is a must-reject with a resolution, named at its
   root (ADR-052), never a silent partial or an indefinite Pending.
-- **Composite reach** — a VM with an attached `Storage.Volume` carries the cross-resource dependency into
+- **Composite reach** — a VM with an attached `Volume` carries the cross-resource dependency into
   placement (the volume must be reservable where the VM lands).
 
 ## What UDLM does not decide

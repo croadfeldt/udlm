@@ -5,7 +5,7 @@
 nothing checked they lined up:
 
     capability   what a PROVIDER can do              realize_resources, serve_data
-    thing        what it offers                      Machine.VM, Storage.Volume
+    thing        what it offers                      Machine.VM, Volume
     action       what may be DONE to that thing      read, create, replicate
 
 Each was maintained on its own, and each drifted on its own. `provider-capability.yaml` had no gate
@@ -27,8 +27,8 @@ Each is a hole a consumer discovers at request time, and each is invisible in an
   TRI-001  every canonical capability reaches at least one action AND at least one thing
   TRI-002  every canonical action names a capability that exists (`enabled_by`)
   TRI-003  every capability CATEGORY (`<capability>/<Domain>`) names a domain that resolves to a
-           real class in the registry — a category for a domain that does not exist is a promise
-           against nothing
+           real class, a family, or a usage group (ADR-082) in the registry — a category for a
+           domain that does not exist is a promise against nothing
 
 **What this deliberately does NOT check, and the distinction is the whole design** (maintainer
 ruling 2026-08-11: *UDLM focuses on the mechanisms, not the correctness of the data*):
@@ -93,7 +93,15 @@ def class_domains():
             segs.add(d["resource_type"].split(".")[0])
             if d.get("family"):
                 fams.add(d["family"])
-    return segs | fams
+    # usage-group grain (ADR-082): a category may name a usage group — `realize_resources/Storage` is
+    # everything filed under `storage` — since the former folder Bases are groups now, not classes.
+    tax = os.path.join(ROOT, "registry", "taxonomies", "usage-group.yaml")
+    groups = set()
+    if os.path.exists(tax):
+        for t in (yaml.safe_load(open(tax, encoding="utf-8")) or {}).get("terms", []):
+            if t.get("parent") and t.get("curation_state") == "canonical":
+                groups.add(t["term"][:1].upper() + t["term"][1:])
+    return segs | fams | groups
 
 
 def main():

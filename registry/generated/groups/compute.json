@@ -11,7 +11,7 @@
     },
     {
       "class": "KubernetesCluster",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "instantiable": true,
       "path": "registry/classes/resource/kubernetes-cluster/_base.yaml",
       "types": []
@@ -32,7 +32,7 @@
     },
     {
       "class": "Machine",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "instantiable": true,
       "path": "registry/classes/resource/machine/_base.yaml",
       "types": [

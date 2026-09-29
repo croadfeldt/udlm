@@ -119,7 +119,7 @@ data:
 > | | is | lives in |
 > |---|---|---|
 > | **capability** | what a PROVIDER can do — `realize_resources`, `serve_data` | `taxonomies/provider-capability.yaml` |
-> | **thing** | what it offers — `Machine.VM`, `Storage.Volume` | the class system |
+> | **thing** | what it offers — `Machine.VM`, `Volume` | the class system |
 > | **action** | what may be DONE to that thing — `read`, `replicate` | `taxonomies/action.yaml` |
 >
 > This axis was previously labelled `capability` and carried ten terms of its own, overlapping the

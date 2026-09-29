@@ -2,7 +2,7 @@ uuid: uc-9ff3c3ae-5c4a-4d51-9c6d-d9f89fcf8d6d
 handle: storage/volume-request-exceeds-quota-refused
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Storage.Volume whose declared size exceeds the bound
+  description: 'A platform engineer requests a Volume whose declared size exceeds the bound
     pool''s available capacity — or the quota governing the requesting scope. Success for this use
     case is the REFUSAL: the request must be rejected before realization, never silently truncated
     to what fits (a size the consumer did not ask for) and never left Pending indefinitely waiting on

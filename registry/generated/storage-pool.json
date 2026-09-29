@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.4.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StoragePool/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "643156a0-5c7b-4fa7-bcfb-089c0a06d520",
-  "resource_type": "Storage.Pool",
-  "version": "0.4.2",
+  "resource_type": "StoragePool",
+  "version": "0.5.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Storage Pool",
-    "description": "A host-local storage pool aggregating physical drives into a redundancy-protected capacity source that datasets/volumes are carved from. The concrete technology (ZFS zpool, mdraid array, hardware-RAID virtual disk, LVM VG, btrfs) is the PROVIDER, declared on the instance and in adopts[] — never in the type name. Owns the vdev/redundancy topology so a derived shutdown honors it: a pool stops after the datasets it backs and before the drives it aggregates. Grounded in OpenZFS (zpool) + SNIA Swordfish StoragePool.",
+    "description": "A host-local storage pool aggregating physical drives into a redundancy-protected capacity source that datasets/volumes are carved from. The concrete technology (ZFS zpool, mdraid array, hardware-RAID virtual disk, LVM VG, btrfs) is the PROVIDER, declared on the instance and in adopts[] — never in the type name. Owns the vdev/redundancy topology so a derived shutdown honors it: a pool stops after the datasets it backs and before the drives it aggregates. Grounded in OpenZFS (zpool) + SNIA Swordfish StoragePool. A Base by the Base test (CLS-002): SNIA Swordfish StoragePool abstracts over every host-local redundancy group (ZFS, md, LVM, a controller virtual disk), so an order for protected capacity of a given kind is fillable by any of them. Spelled as Swordfish spells it.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Storage",
-          "version": "1.1.0",
-          "uuid": "54aeaeac-0d9a-4531-8502-c92ea418ba26"
-        },
-        {
-          "class": "Storage.Pool",
-          "version": "0.4.2",
+          "class": "StoragePool",
+          "version": "0.5.0",
           "uuid": "643156a0-5c7b-4fa7-bcfb-089c0a06d520"
         }
       ]
@@ -66,7 +61,7 @@
             "pattern": "^[0-9]+(\\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$"
           }
         },
-        "description": "Converted verbatim from the flat Storage.Pool spec."
+        "description": "Converted verbatim from the flat StoragePool spec."
       },
       "vdevs": {
         "type": "array",
@@ -243,6 +238,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "storage"
+  ],
   "context": {
     "purpose": "Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.",
     "plain_description": "The generic redundancy group — one shape for every backend, named by the required `pool_kind` (`zfs` for a zpool, `md` for an md array, `hardware_raid` for a controller virtual disk, `lvm` for a VG, `btrfs`): a set of drives on one host grouped into `vdevs`, each vdev carrying a protection scheme spelled `type` (mirror, raidz, stripe). The vdev topology is why the type exists — a flat dataset-on-host edge would lose which drives protect which data and how many failures the pool survives. It sits between the physical drives below and the datasets above, and orders accordingly: a pool stops after its datasets and before its drives.",
@@ -252,14 +250,14 @@
       "You have RAID anywhere — firmware, mdadm, zpool — and want one reusable model for it (declared hardware-RAID pools drive controller config at bare-metal provision time)."
     ],
     "not_for": [
-      "Distributed multi-node storage — Storage.Cluster.",
-      "The consumable unit workloads mount — Storage.Dataset, carved from the pool.",
+      "Distributed multi-node storage — StorageCluster.",
+      "The consumable unit workloads mount — Volume.ZFS, carved from the pool.",
       "An allocatable range of IP addresses — Network.IPAddressPool is the same pool pattern in the network domain.",
       "RAID fields on the host type — a host never carries RAID; it contains pools (see Machine.BareMetalHost)."
     ],
     "works_with": [
       "Machine.BareMetalHost — the host whose drives form the pool.",
-      "Storage.Dataset — the datasets carved from the pool.",
+      "Volume.ZFS — the datasets carved from the pool.",
       "Hardware.StorageDevice — the physical member drives of the vdevs."
     ]
   }

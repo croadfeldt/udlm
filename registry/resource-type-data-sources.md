@@ -8,7 +8,7 @@ authoritative standards list) · [registry/resource-type-spec.schema.json](resou
 
 ## 1. Purpose
 
-A new wave of infrastructure Resource Types (Machine.BareMetalHost, Storage.Cluster, Network.Gateway,
+A new wave of infrastructure Resource Types (Machine.BareMetalHost, StorageCluster, Network.Gateway,
 Network.AddressService, Security.DirectoryService, Facility.PowerFeed — plus Machine.VM and
 KubernetesCluster) bumps against well-established external
 schemas. Per **T5 / the Adopt disposition**, UDLM should **reference industry-standard data elements
@@ -55,7 +55,7 @@ and take OSAC **VM** (`ComputeInstance`) and **Cluster** (`ClusterSpec`) nearly 
 | **Machine.VM** | OSAC `ComputeInstance` (`cores`,`memory_gib`,`boot_disk`,`network_attachments[]`,`run_strategy`,`image`; status `state`+`conditions`+ips) — Tier 2 | the type itself | KubeVirt/libvirt specifics |
 | **KubernetesCluster** | OSAC `ClusterSpec` (`node_sets{host_type,size}`,`release_image`,`network{pod,service cidr}`; `api_url`/`console_url`) + heatmiser day-0 VIPs/CIDRs — Tier 2 | the type | — |
 | **Machine.BareMetalHost** | **Metal3 `BareMetalHost`** (`bmc.address`,`bootMACAddress`,`online`,`image`,`rootDeviceHints`; `status.hardware.{cpu,ramMebibytes,nics[],storage[],firmware}`,`provisioning.state`) + **Redfish `ComputerSystem`** (`ProcessorSummary`,`MemorySummary`,`PowerState`,`Boot*`,`UUID`) + heatmiser discovery manifest — Tier 2 | provision intent (role, image, target) | iDRAC/a supported board BMC |
-| **Storage.Cluster** (authored name; the Ceph-backed cluster type) | **Rook `CephCluster`** (`mon.count`,`storage`,`cephVersion.image`,`network`,`dashboard`; `status.ceph.{health,fsid}`) + native `ceph -s -f json` (`osdmap`,`pgmap`) — Tier 2 | cluster intent | — |
+| **StorageCluster** (authored name; the Ceph-backed cluster type) | **Rook `CephCluster`** (`mon.count`,`storage`,`cephVersion.image`,`network`,`dashboard`; `status.ceph.{health,fsid}`) + native `ceph -s -f json` (`osdmap`,`pgmap`) — Tier 2 | cluster intent | — |
 | **Network.Gateway** | **K8s Gateway API `Gateway`** (`gatewayClassName`,`listeners[]`,`addresses[]`) + OSAC `SecurityGroup` rule shape; NAT 5-tuple absorbed — Tier 2 | routing/NAT intent | pfSense/OPNsense |
 | **Network.AddressService** | **ISC Kea `Dhcp4`** (`subnet4[]`,`pools`,`reservations[]`,`option-data`) + **DNS RRs** (RFC 1035 `A/PTR/CNAME/NS/SOA`, RFC 3596 `AAAA`) — Tier 2; *DHCP+DNS = two projections of one allocation* | the address-service intent | — |
 | **Security.DirectoryService** (authored under Security, not Identity) | **RFC 4512** (`namingContexts`,`subschemaSubentry`,baseDN — already in catalog via RFC 4511) + FreeIPA (realm/KDC, CA=Dogtag, replicas) + OSAC `LdapConfig` connection facet — Tier 2 | the operated-directory intent | — |
@@ -64,7 +64,7 @@ and take OSAC **VM** (`ComputeInstance`) and **Cluster** (`ClusterSpec`) nearly 
 
 **Net coverage:** reusable definitions exist for all 8 types in the table (VM, Cluster,
 BareMetalHost, Gateway, and DirectoryService have OSAC/heatmiser sibling-project sources;
-Storage.Cluster, AddressService, and PowerFeed reference industry standards directly). dcm-project's
+StorageCluster, AddressService, and PowerFeed reference industry standards directly). dcm-project's
 service-type scope *explicitly excludes* bare metal, storage, networking, DHCP/DNS, identity, and
 power/facility — so for those the adoption target is the **industry standard**, not a sibling project.
 
@@ -136,4 +136,4 @@ it, not a second verdict.
 **TODO when defining the types:** verify the three `**verify**` licenses (OSAC, heatmiser repos) and
 record the confirmed value in each type's `adopts[]` entry.
 
-**Storage.Volume** (2026-07-07, #271) — Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume; the consumable volume distinct from Storage.Cluster (the cluster provisioner) and the host-local Storage.Pool/Dataset layer.
+**Volume** (2026-07-07, #271) — Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume; the consumable volume distinct from StorageCluster (the cluster provisioner) and the host-local StoragePool/Dataset layer.

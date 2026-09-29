@@ -165,7 +165,7 @@
       "relationships": [
         {
           "edge_type": "binds_to",
-          "target": "Storage.Class",
+          "target": "StorageClass",
           "target_field": "name",
           "cardinality": "0..1",
           "description": "EXAMPLE — consumer-declared: this provider class consumes the advertised storage class it schedules volumes onto (declared HERE, on the consumer — the target never lists its consumers)."

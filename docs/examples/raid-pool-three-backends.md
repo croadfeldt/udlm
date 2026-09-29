@@ -1,13 +1,13 @@
 # Worked example — one Pool type, three RAID implementations
 
-**What this settles:** the same `Storage.Pool` shape modeling a ZFS pool, an md boot mirror, and a
+**What this settles:** the same `StoragePool` shape modeling a ZFS pool, an md boot mirror, and a
 hardware-RAID virtual disk declared at bare-metal provision time — one reusable redundancy model,
 native vocabulary kept authoritative, canonical mapping for cross-backend queries.
 
 ## 1. ZFS (the shape's origin)
 
 ```yaml
-resource_type: Storage.Pool
+resource_type: StoragePool
 spec:
   pool_kind: zfs
   vdevs:

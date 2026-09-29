@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.8.1
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: type
 resource_type: Software.Service
 parent: Software
-version: 0.8.0
+version: 0.8.1
 family: Resource
 status: active
 metadata:
@@ -128,9 +128,9 @@ relationships:
   description: Or runs inside a VM.
 - edge_type: references
   name: uses_storage
-  target: Storage.Volume
+  target: Volume
   cardinality: 0..n
-  description: External storage the service uses (also Storage.Cluster / Storage.FileShare). TOSCA DependsOn.
+  description: External storage the service uses (also StorageCluster / FileShare). TOSCA DependsOn.
 - edge_type: depends_on
   name: requires
   target: Software.Service

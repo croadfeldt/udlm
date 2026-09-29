@@ -4,16 +4,16 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **63 types** (Access 8, Knowledge 9, Process 3, Resource 43). Every spec is strict (`additionalProperties: false`, 63/63 (100%)) and the instance-fuzz harness rejected 5415 of 5415 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 35/63 (55%) of types appear in at least one use case; 28 appear in none. 5 types are named by a specific consumer manifest; the other 58 are carried only by the 4 envelope-level (all-types) consumers. 15 types declare no outputs and 24 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **63 types** (Access 8, Knowledge 9, Process 3, Resource 43). Every spec is strict (`additionalProperties: false`, 63/63 (100%)) and the instance-fuzz harness rejected 5443 of 5443 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 35/63 (55%) of types appear in at least one use case; 28 appear in none. 5 types are named by a specific consumer manifest; the other 58 are carried only by the 4 envelope-level (all-types) consumers. 15 types declare no outputs and 23 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
 | Metric | Value | Reading |
 |---|---|---|
 | Types (by family) | 63 (Access 8, Knowledge 9, Process 3, Resource 43) | — |
-| Discrimination density | 5415/5415 = 100.00% | mutations rejected / attempted; 0 finding(s) |
+| Discrimination density | 5443/5443 = 100.00% | mutations rejected / attempted; 0 finding(s) |
 | Strictness coverage | 63/63 (100%) | asserted — a non-strict spec fails this tool |
-| Outputs adequacy | 15 zero-output, 24 one-output | declared Realized binding surface |
+| Outputs adequacy | 15 zero-output, 23 one-output | declared Realized binding surface |
 | Context coverage | 63/63 (100%) | plain-English `context` blocks |
 | Relationships coverage | 49/63 (77%) | types declaring `relationships[]` |
 | UC coverage | 35/63 (55%) | types appearing in >=1 use case (165 UC files scanned) |
@@ -26,7 +26,7 @@ downstream consumer can bind on.
 
 **Zero-output types (15):** `Access.Grouping`, `Automation`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Hardware.GraphicsProcessor`, `Hardware.Processor`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
 
-**One-output types (24):** `Capability`, `Facility.Location`, `Hardware.BMC`, `Hardware.BiosProfile`, `Hardware.NetworkInterface`, `Hardware.StorageDevice`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Network.AddressService`, `Network.DHCPScope`, `Network.DNSZone`, `Network.Gateway`, `Network.IPAddress`, `Network.VLAN`, `Network.VirtualNetwork`, `Software.Service`, `Storage.Class`, `Storage.Dataset`, `Storage.FileShare`, `Storage.Layout`, `TaxonomyTerm`, `Template.Application`, `Topology`
+**One-output types (23):** `Capability`, `Facility.Location`, `FileShare`, `Hardware.BMC`, `Hardware.BiosProfile`, `Hardware.NetworkInterface`, `Hardware.StorageDevice`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Network.AddressService`, `Network.DHCPScope`, `Network.DNSZone`, `Network.Gateway`, `Network.IPAddress`, `Network.VLAN`, `Network.VirtualNetwork`, `Software.Service`, `StorageClass`, `StorageLayout`, `TaxonomyTerm`, `Template.Application`, `Topology`
 
 ## UC coverage gaps
 
@@ -54,8 +54,8 @@ single-word handles could in principle match prose):
 - `Network.Switch`
 - `Network.VLAN`
 - `SovereigntyZone`
-- `Storage.Cluster`
-- `Storage.Layout`
+- `StorageCluster`
+- `StorageLayout`
 - `Template`
 - `Template.Application`
 - `TestEvidence`
@@ -73,12 +73,12 @@ All-types (envelope-level) consumers: `dav`, `graph-explorer`, `records-ci`, `re
 | `Data.Database` | control-plane-servicetype-gen |
 | `KubernetesCluster` | control-plane-servicetype-gen |
 | `Machine.VM` | control-plane-servicetype-gen |
-| `Storage.Volume` | control-plane-servicetype-gen |
+| `Volume` | control-plane-servicetype-gen |
 
 ## Coverage detail
 
 - Context blocks missing (0): none
-- `relationships[]` missing (14): `Access.Grouping`, `Automation`, `Automation.OSPatch`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Machine`, `Observability.LogShipper`, `SovereigntyZone`, `Storage.Layout`, `Template`, `Template.Application`, `Topology`, `Vulnerability`
+- `relationships[]` missing (14): `Access.Grouping`, `Automation`, `Automation.OSPatch`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Machine`, `Observability.LogShipper`, `SovereigntyZone`, `StorageLayout`, `Template`, `Template.Application`, `Topology`, `Vulnerability`
 
 ## Pending metrics (owned elsewhere, shape reserved)
 

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.7.7",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.7.8",
   "conforms_to": "udlm/0.1",
   "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337",
   "resource_type": "Data.Database",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Data.Database",
-          "version": "0.7.7",
+          "version": "0.7.8",
           "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337"
         }
       ]
@@ -124,7 +124,7 @@
       "edge_type": "binds_to",
       "name": "data_volume",
       "adopted_from": "Kubernetes PersistentVolumeClaim",
-      "target": "Storage.Volume",
+      "target": "Volume",
       "cardinality": "0..1",
       "description": "The persistent volume backing the database's data directory (binds its volume_handle output). Ordering: the volume is realized before the database that stores on it."
     },
@@ -166,11 +166,11 @@
       "You need the database's backing volume and host in the graph so ordering (volume before database, database before app) is derivable."
     ],
     "not_for": [
-      "The volume storing the data — Storage.Volume; the database references it.",
+      "The volume storing the data — Volume; the database references it.",
       "The secret material for connecting — that belongs with Security.CredentialRef (the current sensitive connection outputs are a known open decision)."
     ],
     "works_with": [
-      "Storage.Volume — the persistent volume backing the data directory.",
+      "Volume — the persistent volume backing the data directory.",
       "Machine.VM / KubernetesCluster — where the database runs, when self-hosted.",
       "Software.Service / Container — the consumers that bind to its connection outputs."
     ]

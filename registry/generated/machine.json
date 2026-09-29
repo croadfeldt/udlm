@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine/2.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine/2.1.1",
   "conforms_to": "udlm/0.1",
   "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9",
   "resource_type": "Machine",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -20,7 +20,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.1.0",
+          "version": "2.1.1",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         }
       ]
@@ -202,7 +202,7 @@
     ],
     "works_with": [
       "Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.",
-      "Storage.Volume and Network.VirtualNetwork — what the realized machine attaches to."
+      "Volume and Network.VirtualNetwork — what the realized machine attaches to."
     ]
   }
 }

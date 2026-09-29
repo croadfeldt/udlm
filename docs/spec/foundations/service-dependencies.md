@@ -467,7 +467,7 @@ The dependency graph is embedded in assembly provenance — not a separate entit
 # In placement.yaml — resolved dependency graph
 dependency_resolution:
   - dependency_role: storage
-    resource_type: Storage.Block
+    resource_type: Volume
     resolved_provider_uuid: <uuid>
     resolved_catalog_item_version: "1.2.0"
     reserved_entity_uuid: <uuid>

@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddressPool/0.7.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddressPool/0.7.2
 conforms_to: udlm/0.1
 uuid: 00257168-ae65-475c-bf34-f14f2e39f855
 record_type: class
 class: type
 resource_type: Network.IPAddressPool
 parent: Network
-version: 0.7.1
+version: 0.7.2
 family: Resource
 status: active
 # OWN-007 — the pool entity itself is owned outright by the platform Tenant; what it PRODUCES is an
@@ -18,7 +18,7 @@ metadata:
   description: 'A first-class allocatable range of IP addresses that Network.IPAddress records are carved
     from — the DHCP subnet pool (RFC 2131 subnet4 pools/ranges) as its own record, so allocation OWNERSHIP
     is expressible: which addresses are in play, which tenant/resource holds each, and whether the pool
-    is exhausted. Same allocatable-pool pattern as Storage.Pool→Storage.Dataset (a pool is the source;
+    is exhausted. Same allocatable-pool pattern as StoragePool→Volume.ZFS (a pool is the source;
     the carved record depends_on it). Distinct from Network.DHCPScope (the SERVICE-side subnet config
     a DHCP provider realizes) and Network.IPAddress (a single CONSUMED address): the Pool is the intent-side
     inventory the addresses are allocated FROM.'

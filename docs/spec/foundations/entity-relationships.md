@@ -445,7 +445,7 @@ The Resource Type Specification declares whether instances of a type can be shar
 ```yaml
 # On the Resource Type Specification
 resource_type_spec:
-  fully_qualified_name: Storage.SharedVolume
+  fully_qualified_name: Volume
   shareability:
     allowed: true
     default_sharing_scope: tenant    # tenant | cross_tenant
@@ -545,8 +545,8 @@ relationships:
     edge_type: depends_on
     strength: hard
     permitted_related_types:
-      - Storage.Block
-      - Storage.File
+      - Volume
+      - FileShare
     default_lifecycle_policy:
       on_related_destroy: destroy
       on_related_suspend: suspend
@@ -679,8 +679,8 @@ field_definition:
   type: object
   expansion:
     expand_to_entity: true
-    entity_resource_type_uuid: <uuid of Storage.Block>
-    entity_resource_type_name: Storage.Block
+    entity_resource_type_uuid: <uuid of Volume>
+    entity_resource_type_name: Volume
     default_binding_type: owned
     binding_types_permitted: [owned, referenced]
     default_lifecycle_policy:

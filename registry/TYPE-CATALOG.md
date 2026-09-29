@@ -134,7 +134,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 
 ## Data
 
-### Data.Database (0.7.7)
+### Data.Database (0.7.8)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -145,11 +145,11 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 - You need the database's backing volume and host in the graph so ordering (volume before database, database before app) is derivable.
 
 **Not for:**
-- The volume storing the data — Storage.Volume; the database references it.
+- The volume storing the data — Volume; the database references it.
 - The secret material for connecting — that belongs with Security.CredentialRef (the current sensitive connection outputs are a known open decision).
 
 **Works with:**
-- Storage.Volume — the persistent volume backing the data directory.
+- Volume — the persistent volume backing the data directory.
 - Machine.VM / KubernetesCluster — where the database runs, when self-hosted.
 - Software.Service / Container — the consumers that bind to its connection outputs.
 
@@ -192,6 +192,28 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 - Machine.BareMetalHost — hosts declare depends_on the feed(s) they draw from.
 - Network.Switch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.
 - Automation.Job — the shutdown job a feed's on-battery status triggers.
+
+## FileShare
+
+### FileShare (0.7.0)
+
+**Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
+
+A file server's sharing surface: the protocol (SMB today, extensible to NFS), the exported shares with their paths and access rules, and the directory service that authenticates the principals named in them — membership stays in the directory, referenced not copied. Share-level knobs the model doesn't type ride through a passthrough field the provider serializes (e.g. into smb.conf). Once realized, the reachable share URI is published.
+
+**Use when:**
+- You need network file shares — their paths, access lists, read-only flags — governed as data rather than living only in a config file.
+- You need share authentication tied to the directory service that holds the principals.
+
+**Not for:**
+- The local storage behind the share path — Volume.ZFS / Volume; the share exposes storage, it isn't the storage.
+- The identity data of who may connect — Security.DirectoryService holds it; shares reference principals.
+
+**Works with:**
+- Security.DirectoryService — authenticates the share principals.
+- Volume — the underlying storage the shares expose.
+- Machine.BareMetalHost / Container — where the file service runs.
+- Security.CredentialRef — service credentials (e.g. a keytab), by reference.
 
 ## Grouping
 
@@ -353,7 +375,7 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 - Machine.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.
 - Machine.VM — the guest a virtual CPU is presented to.
 
-### Hardware.StorageDevice (0.5.2)
+### Hardware.StorageDevice (0.5.3)
 
 **Purpose:** Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.
 
@@ -364,12 +386,12 @@ One storage device as a record: its required `capacity` — a whole-number quant
 - You need pool or cluster membership grounded in real devices (a vdev's members, a storage daemon's backing drive).
 
 **Not for:**
-- The consumable volume a workload attaches — Storage.Volume; a device is hardware, a volume is provisioned capacity.
-- The aggregation layer over drives — Storage.Pool (host-local) or Storage.Cluster (distributed).
+- The consumable volume a workload attaches — Volume; a device is hardware, a volume is provisioned capacity.
+- The aggregation layer over drives — StoragePool (host-local) or StorageCluster (distributed).
 
 **Works with:**
 - Machine.BareMetalHost — the host the drive is installed in.
-- Storage.Pool — pools whose vdevs group these drives.
+- StoragePool — pools whose vdevs group these drives.
 - Machine.VM — the guest a virtual disk is presented to.
 
 ## Identity
@@ -454,7 +476,7 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 
 ## KubernetesCluster
 
-### KubernetesCluster (2.0.0)
+### KubernetesCluster (2.0.1)
 
 **Purpose:** Declares a managed Kubernetes cluster — release and network ranges — as one provisionable intent; its node pools are KubernetesNodePool records contained by it.
 
@@ -465,7 +487,7 @@ The request for a control plane: which release and what internal network ranges 
 - You need cluster-scoped resources (namespaces, node pools, storage classes) to have a single parent record they cannot outlive.
 
 **Not for:**
-- A distributed storage cluster (Ceph and kin) — that is Storage.Cluster; this type is the container-orchestration platform.
+- A distributed storage cluster (Ceph and kin) — that is StorageCluster; this type is the container-orchestration platform.
 - A group of nodes — that is KubernetesNodePool, always, whether ordered with the cluster or later (ruling 072).
 
 **Works with:**
@@ -516,7 +538,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 
 ## Machine
 
-### Machine (2.1.0)
+### Machine (2.1.1)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -532,7 +554,7 @@ The most portable way to ask for a machine: how big, what image, what storage ti
 
 **Works with:**
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
-- Storage.Volume and Network.VirtualNetwork — what the realized machine attaches to.
+- Volume and Network.VirtualNetwork — what the realized machine attaches to.
 
 ### Machine.BareMetalHost (0.11.0)
 
@@ -557,7 +579,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - Hardware.NetworkInterface — the host's NICs, modeled as contained components.
 - Machine.VM — the guests the host runs.
 
-### Machine.LPAR (0.1.0)
+### Machine.LPAR (0.1.1)
 
 **Purpose:** Declares a logical partition on a partitioned system as one provisionable Machine.
 
@@ -573,30 +595,30 @@ The request for a slice of a big partitioned server: how much processor capacity
 
 **Works with:**
 - Machine.BareMetalHost — the frame that hosts the partition.
-- Storage.Volume — the disks served through virtual I/O.
+- Volume — the disks served through virtual I/O.
 - Network.VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.0.0)
+### Machine.VM (2.0.1)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
-The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`), which Storage.Layout describes its disks (`layout_ref`), and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.
+The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`), which StorageLayout describes its disks (`layout_ref`), and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.
 
 **Use when:**
 - You need to request a VM with declared size, OS, storage requirements, and network attachments, portable across hypervisors.
 - You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.
-- You need a VM's disk shape and addresses to reference existing Storage.Layout / Network.IPAddress records rather than duplicate them.
+- You need a VM's disk shape and addresses to reference existing StorageLayout / Network.IPAddress records rather than duplicate them.
 
 **Not for:**
 - The physical machine it runs on — Machine.BareMetalHost.
 - A containerized workload — Container; the VM carries a full guest OS.
-- The per-disk shape (sizes, boot designation) — Storage.Layout; the VM references one via layout_ref.
+- The per-disk shape (sizes, boot designation) — StorageLayout; the VM references one via layout_ref.
 - The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory.
 
 **Works with:**
-- Storage.Layout — the disk layout the VM realizes (per-disk shape, boot designation).
+- StorageLayout — the disk layout the VM realizes (per-disk shape, boot designation).
 - Network.VirtualNetwork — the networks the VM's NICs attach to.
-- Storage.Volume — the consumable volumes realizing its layout entries.
+- Volume — the consumable volumes realizing its layout entries.
 - Facility.Location — where the VM is placed (selected from existing places, policy-governed).
 - Network.IPAddress — pre-allocated addresses the VM consumes.
 
@@ -697,7 +719,7 @@ The router/firewall at the edge of a network: which functions it provides (routi
 - Network.DHCPScope — scopes serving the segments the gateway routes.
 - Network.Switch — the fabric behind the edge.
 
-### Network.IPAddress (0.10.4)
+### Network.IPAddress (0.10.5)
 
 **Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
 
@@ -717,7 +739,7 @@ One IP address, bound to the interface it is configured on, with how it came to 
 - Network.IPAddressPool — the pool the address was carved from.
 - Machine.VM — consumers that request or bring addresses.
 
-### Network.IPAddressPool (0.7.1)
+### Network.IPAddressPool (0.7.2)
 
 **Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
 
@@ -841,7 +863,7 @@ A statement of outcome: logs from a target host — the `target` object naming i
 
 ## Security
 
-### Security.CredentialRef (0.6.4)
+### Security.CredentialRef (0.6.5)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -858,7 +880,7 @@ A reference to a secret, never the secret. It names the kind of credential (the 
 
 **Works with:**
 - Identity.Person / Identity.ServiceAccount — whose credential this is.
-- Container / Software.Service / Storage.FileShare — consumers that reference it from env, mounts, or config.
+- Container / Software.Service / FileShare — consumers that reference it from env, mounts, or config.
 
 ### Security.DirectoryService (0.7.2)
 
@@ -883,7 +905,7 @@ The identity directory as a running server: which `protocols` it serves — requ
 
 ## Software
 
-### Software.Service (0.8.0)
+### Software.Service (0.8.1)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
@@ -967,9 +989,9 @@ What a zone name actually means. `eu-west` is Germany and the Netherlands, under
 - accreditation records — `scope.geographic_scope` speaks the same ISO 3166 vocabulary
 - a realized entity's `sovereignty.zone`, which cites a zone by handle
 
-## Storage
+## StorageClass
 
-### Storage.Class (0.8.0)
+### StorageClass (0.9.0)
 
 **Purpose:** Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.
 
@@ -980,16 +1002,18 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 - You need placement to pick storage by advertised capability (encrypted, fast, replicated).
 
 **Not for:**
-- The volume itself — Storage.Volume references a class.
-- The backing storage system — Storage.Cluster; the class is the policy naming what the cluster serves.
-- Host-local pools — Storage.Pool; a class is a platform-level provisioning policy.
+- The volume itself — Volume references a class.
+- The backing storage system — StorageCluster; the class is the policy naming what the cluster serves.
+- Host-local pools — StoragePool; a class is a platform-level provisioning policy.
 
 **Works with:**
-- Storage.Volume — volumes declare their class by reference.
-- Storage.Cluster — the storage cluster backing the class.
+- Volume — volumes declare their class by reference.
+- StorageCluster — the storage cluster backing the class.
 - Machine.VM — VM disks select a storage class.
 
-### Storage.Cluster (0.6.3)
+## StorageCluster
+
+### StorageCluster (0.7.0)
 
 **Purpose:** Models a distributed storage system serving block, file, and/or object storage — the platform volumes are provisioned from.
 
@@ -1000,56 +1024,18 @@ A multi-node storage system — Ceph is the reference implementation, but the te
 - You need the cluster's protocols, capacity, and protection scheme declared vendor-neutrally.
 
 **Not for:**
-- A host-local pool of drives (ZFS zpool, LVM VG) — Storage.Pool; a Storage.Cluster is distributed across nodes.
-- The consumable volume — Storage.Volume, provisioned from this cluster.
-- The provisioning policy name — Storage.Class; the cluster backs a class, the class is the policy record.
+- A host-local pool of drives (ZFS zpool, LVM VG) — StoragePool; a StorageCluster is distributed across nodes.
+- The consumable volume — Volume, provisioned from this cluster.
+- The provisioning policy name — StorageClass; the cluster backs a class, the class is the policy record.
 
 **Works with:**
 - Machine.BareMetalHost / Machine.VM — the nodes the cluster runs across.
-- Storage.Volume — volumes provisioned from the cluster.
-- Storage.Class — the class records naming what this cluster serves.
+- Volume — volumes provisioned from the cluster.
+- StorageClass — the class records naming what this cluster serves.
 
-### Storage.Dataset (0.5.3)
+## StorageLayout
 
-**Purpose:** Models a dataset carved from a host-local pool — the mounted filesystem or block device host workloads use.
-
-The consumable unit of host-local storage — its required `dataset_kind` says whether it is a `filesystem` (mounted), a `volume` (a zvol block device), or a `snapshot`; the same shape extends to LVM logical volumes and btrfs subvolumes — with its `mountpoint`, `quota`, and passthrough `properties`. It is what a podman container or host service bind-mounts, so it is the storage node those workloads depend on. Datasets nest (parent chains) and cannot outlive the pool they are carved from. Snapshot and replication policy is orchestration, not stored here.
-
-**Use when:**
-- You need host services and containers tied to the specific dataset they store on, so the dataset outlives them in shutdown order.
-- You need the pool → dataset → workload chain explicit for capacity and migration planning.
-
-**Not for:**
-- The pool it is carved from — Storage.Pool owns the drives and redundancy.
-- Cluster-provisioned volumes a platform attaches — Storage.Volume; a dataset is host-local.
-- A network share exported to other machines — Storage.FileShare exposes storage; a dataset is the local storage itself.
-
-**Works with:**
-- Storage.Pool — the pool the dataset is carved from.
-- Machine.BareMetalHost — the host the dataset is local to.
-- Storage.Dataset — the parent dataset, when nested.
-
-### Storage.FileShare (0.6.5)
-
-**Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
-
-A file server's sharing surface: the protocol (SMB today, extensible to NFS), the exported shares with their paths and access rules, and the directory service that authenticates the principals named in them — membership stays in the directory, referenced not copied. Share-level knobs the model doesn't type ride through a passthrough field the provider serializes (e.g. into smb.conf). Once realized, the reachable share URI is published.
-
-**Use when:**
-- You need network file shares — their paths, access lists, read-only flags — governed as data rather than living only in a config file.
-- You need share authentication tied to the directory service that holds the principals.
-
-**Not for:**
-- The local storage behind the share path — Storage.Dataset / Storage.Volume; the share exposes storage, it isn't the storage.
-- The identity data of who may connect — Security.DirectoryService holds it; shares reference principals.
-
-**Works with:**
-- Security.DirectoryService — authenticates the share principals.
-- Storage.Volume — the underlying storage the shares expose.
-- Machine.BareMetalHost / Container — where the file service runs.
-- Security.CredentialRef — service credentials (e.g. a keytab), by reference.
-
-### Storage.Layout (0.5.3)
+### StorageLayout (0.6.0)
 
 **Purpose:** Declares the per-disk shape of a compute consumer — named, sized entries with boot designation — as its own record, so disk layout is authored once and referenced, never duplicated inside each consumer.
 
@@ -1061,18 +1047,20 @@ The list of disks a machine should have: each entry names a disk (`name`, the st
 - You need disk shapes comparable across consumers by lifting the shape to a Template (ADR-033) — layout RECORDS stay per-consumer so realization is unambiguous.
 
 **Not for:**
-- The consumable volume itself — Storage.Volume; a layout entry may be realized by one.
-- The provisioning policy — Storage.Class; an entry requests a governed `storage_tier`, and the provider's chosen class is recorded per entry in `outputs.realized_volumes` (ADR-036: the native class is a realized fact, not intent).
+- The consumable volume itself — Volume; a layout entry may be realized by one.
+- The provisioning policy — StorageClass; an entry requests a governed `storage_tier`, and the provider's chosen class is recorded per entry in `outputs.realized_volumes` (ADR-036: the native class is a realized fact, not intent).
 - A shared multi-consumer layout record — one record per consumer; sharing is the ADR-033 Template tier.
-- Host-local ZFS/LVM layout a host service mounts — Storage.Dataset / Storage.Pool.
+- Host-local ZFS/LVM layout a host service mounts — Volume.ZFS / StoragePool.
 - The VM's numeric storage requirements (min_iops, encryption) — those live on the consumer's `storage` descriptor.
 
 **Works with:**
 - Machine.VM — the consumer that realizes this layout (spec.layout_ref).
-- Storage.Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).
-- Storage.Class — the provider-advertised class satisfying an entry's `storage_tier` (an advertised class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in the realization map).
+- Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).
+- StorageClass — the provider-advertised class satisfying an entry's `storage_tier` (an advertised class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in the realization map).
 
-### Storage.Pool (0.4.2)
+## StoragePool
+
+### StoragePool (0.5.0)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
@@ -1084,37 +1072,15 @@ The generic redundancy group — one shape for every backend, named by the requi
 - You have RAID anywhere — firmware, mdadm, zpool — and want one reusable model for it (declared hardware-RAID pools drive controller config at bare-metal provision time).
 
 **Not for:**
-- Distributed multi-node storage — Storage.Cluster.
-- The consumable unit workloads mount — Storage.Dataset, carved from the pool.
+- Distributed multi-node storage — StorageCluster.
+- The consumable unit workloads mount — Volume.ZFS, carved from the pool.
 - An allocatable range of IP addresses — Network.IPAddressPool is the same pool pattern in the network domain.
 - RAID fields on the host type — a host never carries RAID; it contains pools (see Machine.BareMetalHost).
 
 **Works with:**
 - Machine.BareMetalHost — the host whose drives form the pool.
-- Storage.Dataset — the datasets carved from the pool.
+- Volume.ZFS — the datasets carved from the pool.
 - Hardware.StorageDevice — the physical member drives of the vdevs.
-
-### Storage.Volume (0.11.6)
-
-**Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
-
-The unit of storage a workload asks for and attaches: requested `capacity`, how concurrently it may be attached — `access_mode`, in the model's snake_case spelling: `read_write_once`, `read_only_many`, `read_write_many`, `read_write_once_pod` (the Kubernetes camelCase forms do not validate) — `volume_mode` (filesystem versus raw block), and which `storage_class` provisions it. It is distinct from the platform that builds it and the devices that back it. Once realized, the provider's volume handle comes back, tying the request to the actual volume.
-
-**Use when:**
-- You need a workload's storage requested by capacity, access mode, and class, portable across provisioners.
-- You need volumes ordered in the graph: realized before their consumer, never outliving their provisioning cluster.
-
-**Not for:**
-- The provisioning policy — Storage.Class; the volume references a class by name.
-- The storage platform — Storage.Cluster provisions volumes.
-- Host-local ZFS/LVM storage a host service mounts — Storage.Dataset.
-- The physical drive — Hardware.StorageDevice.
-
-**Works with:**
-- Storage.Class — the class declaring what kind of storage the volume gets.
-- Storage.Cluster — the platform provisioning it.
-- Machine.VM — the consumer(s) it attaches to.
-- Data.Database — databases whose data directory it backs.
 
 ## TaxonomyTerm
 
@@ -1209,7 +1175,7 @@ The vulnerability-check dialect of test evidence: the subject is a package versi
 
 ## Topology
 
-### Topology (0.5.2)
+### Topology (0.5.3)
 
 **Purpose:** Declares the failure and locality domains — region, zone, rack, power, network — that placement, residency, and maintenance gating resolve against.
 
@@ -1227,7 +1193,7 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 **Works with:**
 - Facility.Location — the physical containment the domains often mirror.
 - Machine.VM — placement intent resolved against domain kinds.
-- Storage.Cluster — fault-domain-aware placement and maintenance gating.
+- StorageCluster — fault-domain-aware placement and maintenance gating.
 
 ## UPS
 
@@ -1262,6 +1228,50 @@ One statement per (vulnerability, package version). It carries the OpenVEX statu
 - An analysis has produced a draft exploitability claim that needs a reviewer before anyone relies on it.
 - A consumer or regulator asks what was verified about a known vulnerability in a shipped package.
 - An SBOM consumer needs the VEX status for a component and the evidence behind it.
+
+## Volume
+
+### Volume (0.12.0)
+
+**Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
+
+The unit of storage a workload asks for and attaches: requested `capacity`, how concurrently it may be attached — `access_mode`, in the model's snake_case spelling: `read_write_once`, `read_only_many`, `read_write_many`, `read_write_once_pod` (the Kubernetes camelCase forms do not validate) — `volume_mode` (filesystem versus raw block), and which `storage_class` provisions it. It is distinct from the platform that builds it and the devices that back it. Once realized, the provider's volume handle comes back, tying the request to the actual volume.
+
+**Use when:**
+- You need a workload's storage requested by capacity, access mode, and class, portable across provisioners.
+- You need volumes ordered in the graph: realized before their consumer, never outliving their provisioning cluster.
+
+**Not for:**
+- The provisioning policy — StorageClass; the volume references a class by name.
+- The storage platform — StorageCluster provisions volumes.
+- Host-local ZFS/LVM storage a host service mounts — Volume.ZFS.
+- The physical drive — Hardware.StorageDevice.
+
+**Works with:**
+- StorageClass — the class declaring what kind of storage the volume gets.
+- StorageCluster — the platform provisioning it.
+- Machine.VM — the consumer(s) it attaches to.
+- Data.Database — databases whose data directory it backs.
+
+### Volume.ZFS (0.6.0)
+
+**Purpose:** Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host workloads use.
+
+A volume realized by ZFS on one host: its `volume_mode` says whether it is a mounted dataset (`filesystem`) or a zvol block device (`block`); its `capacity` is the quota or volsize; `mountpoint`, reported `used` and passthrough `properties` are the ZFS-native details. It is what a podman container or host service bind-mounts, so it is the storage node those workloads depend on. Volumes nest (parent chains) and cannot outlive the pool they are carved from. Snapshot and replication policy is orchestration, not stored here.
+
+**Use when:**
+- You need host services and containers tied to the specific dataset they store on, so the dataset outlives them in shutdown order.
+- You need the pool → dataset → workload chain explicit for capacity and migration planning.
+
+**Not for:**
+- The pool it is carved from — StoragePool owns the drives and redundancy.
+- Cluster-provisioned volumes a platform attaches — order at Volume, or a Type of another provisioner; a ZFS volume is host-local.
+- A network share exported to other machines — FileShare exposes storage; this is the local storage itself.
+
+**Works with:**
+- StoragePool — the pool the volume is carved from.
+- Machine.BareMetalHost — the host the volume is local to.
+- Volume.ZFS — the parent dataset, when nested.
 
 ## Vulnerability
 

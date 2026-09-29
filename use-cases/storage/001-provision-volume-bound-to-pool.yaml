@@ -2,9 +2,9 @@ uuid: uc-55c7bfe6-2a99-4f37-9cc1-70256e61c177
 handle: storage/provision-volume-bound-to-pool
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a persistent Storage.Volume — the PVC-like unit an
+  description: 'A platform engineer requests a persistent Volume — the PVC-like unit an
     application consumes — declaring its size, access mode, and retain policy. The volume binds to
-    capacity from an existing Storage.Pool via a member reference to that pool; the pool is the
+    capacity from an existing StoragePool via a member reference to that pool; the pool is the
     single capacity source the volume draws from. The storage provider carves the requested size
     from the pool, honors the declared access mode and retain policy, and the volume reaches
     Realized with those properties published on its outputs (bound pool, provisioned size, access
