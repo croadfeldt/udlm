@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.BMC/0.6.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/BMC/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "ea6715e2-30d1-4a34-9611-00c85208e20a",
-  "resource_type": "Hardware.BMC",
-  "version": "0.6.3",
+  "resource_type": "BMC",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "BMC",
-    "description": "A host's baseboard management controller — its management address, protocol, and the power/reset control surface — modeled so power actions have a first-class target. Every board vendor ships its own BMC family; this record is vendor-neutral. Credentials are never inline (reference a Security.CredentialRef). `manages` points at the host it powers; power operations are Redfish (or a vendor tool like ipmitool where a board's Redfish is incomplete) — the mechanism is Policy (the control plane), not data.",
+    "description": "A host's baseboard management controller — its management address, protocol, and the power/reset control surface — modeled so power actions have a first-class target. Every board vendor ships its own BMC family; this record is vendor-neutral. Credentials are never inline (reference a Security.CredentialRef). `manages` points at the host it powers; power operations are Redfish (or a vendor tool like ipmitool where a board's Redfish is incomplete) — the mechanism is Policy (the control plane), not data. A Base by the Base test (CLS-002): Redfish Manager abstracts over every vendor's controller, so a management surface with an address and a protocol is one deliverable any host provider can realize.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-12T00:00:00Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Hardware",
-          "version": "1.2.0",
-          "uuid": "4c140843-579d-4f87-bffe-d197c300d81b"
-        },
-        {
-          "class": "Hardware.BMC",
-          "version": "0.6.3",
+          "class": "BMC",
+          "version": "0.7.0",
           "uuid": "ea6715e2-30d1-4a34-9611-00c85208e20a"
         }
       ]
@@ -33,16 +28,8 @@
     "additionalProperties": false,
     "properties": {
       "device_class": {
-        "type": "string",
-        "enum": [
-          "physical",
-          "virtual",
-          "passthrough",
-          "partition",
-          "aggregate",
-          "bridge"
-        ],
-        "description": "HOW A HARDWARE THING IS REALIZED (common-elements.md §7) — the full set every Hardware type draws from. Declared at the family base because the question is the same for a processor, a NIC and a drive; what differs is which answers are possible, and that is what a Type Class narrows.\nA child MAY narrow this to the subset it can actually be (ADR-038: refine, never contradict) — a socket cannot be an `aggregate`, so Hardware.Processor offers four of the six. It may not add a value, which is what makes the family set the ceiling rather than a suggestion, and what `check_class_liskov` enforces."
+        "$ref": "../common-elements.schema.json#/$defs/device_class_unit",
+        "description": "Device realization (common-elements.md §7): a physical controller, or a virtual BMC a hypervisor presents."
       },
       "management_address": {
         "type": "string",
@@ -108,6 +95,9 @@
       "disposition": "tier1_value"
     }
   ],
+  "filed_under": [
+    "hardware"
+  ],
   "context": {
     "purpose": "Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.",
     "plain_description": "The always-on management controller inside a server that answers even when the host is off — each board vendor ships its own flavor. This record carries its `management_address`, the single `protocol` it answers — `redfish`, `ipmi`, or the combined `redfish+ipmi` — and its `vendor`, and points at the one host it controls. Credentials are never stored here — they are referenced. It exists so that power that host off resolves to a concrete address and mechanism instead of prose.",
@@ -122,7 +112,7 @@
     "works_with": [
       "Machine.BareMetalHost — the host this BMC is the power/reset surface for.",
       "Security.CredentialRef — the BMC credential, by reference.",
-      "Hardware.BiosProfile — firmware profiles applied over the BMC's out-of-band path."
+      "Machine.BareMetalHost#firmware — the portable firmware settings the host converges to; vendor attribute sets are provider data applied over this BMC's path."
     ]
   }
 }

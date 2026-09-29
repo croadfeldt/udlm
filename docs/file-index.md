@@ -124,7 +124,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 
 - **`docs/guides/consumer-perspective.md`** — consumer-facing walkthrough of the model (promoted 2026-07-23; maintained with the spec — the cleanliness sweep covers it).
 - **`docs/guides/dependency-modeling.md`** — how the model represents dependencies (typed `edge_type` edges) and the four authoring patterns; resolution is DCM's.
-- **`docs/guides/host-network-and-config-model.md`** — host-network modeling design (bond/bridge via Hardware.NetworkInterface; Kea/NMstate projection).
+- **`docs/guides/host-network-and-config-model.md`** — host-network modeling design (bond/bridge via NetworkInterface; Kea/NMstate projection).
 - **`docs/design/custom-classes-best-practice.md`** — Provider-Class authoring best practice (search-first reuse; define at highest allowed scope).
 - **`docs/examples/vm-end-to-end-example.md`** — a VM from intent to realized, end to end.
 - **`docs/examples/provider-accreditation-worked-example.md`** — accreditation flow worked example (claim → attestation → verdict).

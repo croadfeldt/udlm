@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.8.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.8.6",
   "conforms_to": "udlm/0.1",
   "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e",
   "resource_type": "Network.VirtualNetwork",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Virtual Network",
-    "description": "A host- or cluster-scoped virtual network that workloads (VMs, pods) attach to — the attachment POINT between guest vNICs and the host L2 stack. Realized by e.g. a libvirt network (forward mode=bridge/nat/routed/isolated), a Kubernetes NetworkAttachmentDefinition (Multus/CNI), or an OVN logical switch — the vendor mechanism is the provider, never the type. Completes graph traversal guest → VirtualNetwork → (references) underlying bridge/uplink Hardware.NetworkInterface → bond → NIC → switch. Consumers declare attachment by binds_to on the consumer side (a VM binds_to its VirtualNetwork), which implies depends_on: the network exists before the guest starts; guests stop before it tears down.",
+    "description": "A host- or cluster-scoped virtual network that workloads (VMs, pods) attach to — the attachment POINT between guest vNICs and the host L2 stack. Realized by e.g. a libvirt network (forward mode=bridge/nat/routed/isolated), a Kubernetes NetworkAttachmentDefinition (Multus/CNI), or an OVN logical switch — the vendor mechanism is the provider, never the type. Completes graph traversal guest → VirtualNetwork → (references) underlying bridge/uplink NetworkInterface → bond → NIC → switch. Consumers declare attachment by binds_to on the consumer side (a VM binds_to its VirtualNetwork), which implies depends_on: the network exists before the guest starts; guests stop before it tears down.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-05T02:10:32Z",
     "generated": true,
@@ -22,7 +22,7 @@
         },
         {
           "class": "Network.VirtualNetwork",
-          "version": "0.8.5",
+          "version": "0.8.6",
           "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e"
         }
       ]
@@ -132,7 +132,7 @@
     },
     {
       "edge_type": "references",
-      "target": "Hardware.NetworkInterface",
+      "target": "NetworkInterface",
       "cardinality": "0..1",
       "description": "supporting_node (RFC 8345; renamed from underlying_device when relation names were adopted from standards, common-elements §9) — the bridge (or uplink) interface a forward_mode=bridge network forwards onto. The hop that joins the guest-attachment layer to the physical L2 stack (common-elements §7/§7a).",
       "name": "supporting_node",
@@ -187,13 +187,13 @@
     ],
     "not_for": [
       "The VLAN id or segment itself — Network.VLAN; a virtual network rides a segment, referenced not restated.",
-      "The host bridge device — Hardware.NetworkInterface (device_class bridge) supports this network from below.",
+      "The host bridge device — NetworkInterface (device_class bridge) supports this network from below.",
       "Per-guest NIC intent — that lives on Machine.VM's own networks list."
     ],
     "works_with": [
       "Machine.VM / KubernetesCluster — the guests that attach, and the scope that hosts the network.",
       "Network.VLAN — the underlying segment, selected by reference.",
-      "Hardware.NetworkInterface — the supporting bridge or uplink on the host.",
+      "NetworkInterface — the supporting bridge or uplink on the host.",
       "Network.IPAddressPool — the address pool scoped to this segment."
     ]
   },

@@ -440,7 +440,7 @@ POST {dispatch_endpoint}  { "operation": "reserve", "request_uuid": "<uuid>",
                             "entity_uuid": "<uuid>", "requested_ttl": "PT10M", "spec": { ... } }
 // -> 200 { "reservation_hold_uuid": "<uuid>", "granted_ttl": "PT10M",
 //          "expires_at": "2026-07-13T18:22:00Z",
-//          "realized_facts": { "bound_port": "<Hardware.NetworkInterface uuid>", ... } }
+//          "realized_facts": { "bound_port": "<NetworkInterface uuid>", ... } }
 
 // RENEW (TTL change) — re-issue reserve for an existing hold with a new requested_ttl (idempotent)
 POST {dispatch_endpoint}  { "operation": "reserve", "reservation_hold_uuid": "<uuid>",

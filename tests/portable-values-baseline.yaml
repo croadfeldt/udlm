@@ -21,27 +21,27 @@ known:
   element: release
 - resource_type: Facility.Location
   element: position
-- resource_type: Hardware.BMC
+- resource_type: BMC
   element: vendor
-- resource_type: Hardware.GraphicsProcessor
+- resource_type: GPU
   element: architecture
-- resource_type: Hardware.GraphicsProcessor
+- resource_type: GPU
   element: partition_mechanism
-- resource_type: Hardware.NetworkInterface
+- resource_type: NetworkInterface
   element: partition_mechanism
-- resource_type: Hardware.NetworkInterface
+- resource_type: NetworkInterface
   element: speed
-- resource_type: Hardware.Processor
+- resource_type: Processor
   element: architecture
-- resource_type: Hardware.Processor
+- resource_type: Processor
   element: partition_mechanism
-- resource_type: Hardware.StorageDevice
+- resource_type: StorageDevice
   element: capacity
-- resource_type: Hardware.StorageDevice
+- resource_type: StorageDevice
   element: media_type
-- resource_type: Hardware.StorageDevice
+- resource_type: StorageDevice
   element: partition_mechanism
-- resource_type: Hardware.StorageDevice
+- resource_type: StorageDevice
   element: protocol
 - resource_type: Identity.Person
   element: external_subject

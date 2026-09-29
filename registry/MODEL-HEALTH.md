@@ -4,33 +4,33 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **63 types** (Access 8, Knowledge 9, Process 3, Resource 43). Every spec is strict (`additionalProperties: false`, 63/63 (100%)) and the instance-fuzz harness rejected 5443 of 5443 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 35/63 (55%) of types appear in at least one use case; 28 appear in none. 5 types are named by a specific consumer manifest; the other 58 are carried only by the 4 envelope-level (all-types) consumers. 15 types declare no outputs and 23 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **62 types** (Access 8, Knowledge 9, Process 3, Resource 42). Every spec is strict (`additionalProperties: false`, 62/62 (100%)) and the instance-fuzz harness rejected 5400 of 5400 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 37/62 (59%) of types appear in at least one use case; 25 appear in none. 5 types are named by a specific consumer manifest; the other 57 are carried only by the 4 envelope-level (all-types) consumers. 15 types declare no outputs and 22 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
 | Metric | Value | Reading |
 |---|---|---|
-| Types (by family) | 63 (Access 8, Knowledge 9, Process 3, Resource 43) | — |
-| Discrimination density | 5443/5443 = 100.00% | mutations rejected / attempted; 0 finding(s) |
-| Strictness coverage | 63/63 (100%) | asserted — a non-strict spec fails this tool |
-| Outputs adequacy | 15 zero-output, 23 one-output | declared Realized binding surface |
-| Context coverage | 63/63 (100%) | plain-English `context` blocks |
-| Relationships coverage | 49/63 (77%) | types declaring `relationships[]` |
-| UC coverage | 35/63 (55%) | types appearing in >=1 use case (165 UC files scanned) |
-| Consumer coverage | 63/63 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
+| Types (by family) | 62 (Access 8, Knowledge 9, Process 3, Resource 42) | — |
+| Discrimination density | 5400/5400 = 100.00% | mutations rejected / attempted; 0 finding(s) |
+| Strictness coverage | 62/62 (100%) | asserted — a non-strict spec fails this tool |
+| Outputs adequacy | 15 zero-output, 22 one-output | declared Realized binding surface |
+| Context coverage | 62/62 (100%) | plain-English `context` blocks |
+| Relationships coverage | 48/62 (77%) | types declaring `relationships[]` |
+| UC coverage | 37/62 (59%) | types appearing in >=1 use case (165 UC files scanned) |
+| Consumer coverage | 62/62 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
 
 ## Outputs adequacy
 
 Outputs are the contract-checked binding surface — a type with none publishes nothing a
 downstream consumer can bind on.
 
-**Zero-output types (15):** `Access.Grouping`, `Automation`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Hardware.GraphicsProcessor`, `Hardware.Processor`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
+**Zero-output types (15):** `Access.Grouping`, `Automation`, `GPU`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Processor`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
 
-**One-output types (23):** `Capability`, `Facility.Location`, `FileShare`, `Hardware.BMC`, `Hardware.BiosProfile`, `Hardware.NetworkInterface`, `Hardware.StorageDevice`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Network.AddressService`, `Network.DHCPScope`, `Network.DNSZone`, `Network.Gateway`, `Network.IPAddress`, `Network.VLAN`, `Network.VirtualNetwork`, `Software.Service`, `StorageClass`, `StorageLayout`, `TaxonomyTerm`, `Template.Application`, `Topology`
+**One-output types (22):** `BMC`, `Capability`, `Facility.Location`, `FileShare`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Network.AddressService`, `Network.DHCPScope`, `Network.DNSZone`, `Network.Gateway`, `Network.IPAddress`, `Network.VLAN`, `Network.VirtualNetwork`, `NetworkInterface`, `Software.Service`, `StorageClass`, `StorageDevice`, `StorageLayout`, `TaxonomyTerm`, `Template.Application`, `Topology`
 
 ## UC coverage gaps
 
-Types appearing in no use case (28) — each is either ahead of its
+Types appearing in no use case (25) — each is either ahead of its
 scenarios or untested by any story (textual scan; a dotted handle is unambiguous,
 single-word handles could in principle match prose):
 
@@ -40,12 +40,6 @@ single-word handles could in principle match prose):
 - `Grouping`
 - `Grouping.Authorization`
 - `Grouping.Tenant`
-- `Hardware.BMC`
-- `Hardware.BiosProfile`
-- `Hardware.GraphicsProcessor`
-- `Hardware.NetworkInterface`
-- `Hardware.Processor`
-- `Hardware.StorageDevice`
 - `Identity.Group`
 - `Identity.Person`
 - `Identity.ServiceAccount`
@@ -53,8 +47,11 @@ single-word handles could in principle match prose):
 - `Network.Subnet`
 - `Network.Switch`
 - `Network.VLAN`
+- `NetworkInterface`
+- `Processor`
 - `SovereigntyZone`
 - `StorageCluster`
+- `StorageDevice`
 - `StorageLayout`
 - `Template`
 - `Template.Application`

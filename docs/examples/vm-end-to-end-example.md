@@ -1,6 +1,6 @@
 # Worked example — a VM, end to end, and the intermediary resources it surfaces
 
-**What this settles:** a concrete trace of one VM request from intent to realized, naming **every** resource and relationship — so we can see which intermediary types the model actually needs. The headline: the **vNIC is not a new type** (`Hardware.NetworkInterface` with `device_class: virtual`), and VLAN is a foundational **`Network.VLAN`** shared reference (like `Facility.Location`), not an inline field. This grounds ADR-009 (fulfillment), `foundational-resources.md` (selections), and the P1 VM enrichment in a real flow.
+**What this settles:** a concrete trace of one VM request from intent to realized, naming **every** resource and relationship — so we can see which intermediary types the model actually needs. The headline: the **vNIC is not a new type** (`NetworkInterface` with `device_class: virtual`), and VLAN is a foundational **`Network.VLAN`** shared reference (like `Facility.Location`), not an inline field. This grounds ADR-009 (fulfillment), `foundational-resources.md` (selections), and the P1 VM enrichment in a real flow.
 
 ## The request
 
@@ -40,14 +40,14 @@ Intent carries **no** IP, vNIC, host, or volume — none exist yet. It carries *
 | `net-vlan-20` | `Network.VLAN` (`encapsulation: vlan`, `segment_id: 20`) | network/fabric provider — the shared segment `net-dmz` and `br0@host-a` ride |
 | `pool-fast` | `StoragePool` | storage provider |
 | `host-a` | `Machine.BareMetalHost` (the hypervisor) | discovered; `contained_by fac-rack3` |
-| `br0@host-a` | `Hardware.NetworkInterface` `device_class: bridge`, vlan_membership→`net-vlan-20` (tagged) | the host bridge carrying the DMZ VLAN (the OVN-localnet path) |
+| `br0@host-a` | `NetworkInterface` `device_class: bridge`, vlan_membership→`net-vlan-20` (tagged) | the host bridge carrying the DMZ VLAN (the OVN-localnet path) |
 
 **Created by implementation (provider-reported, ADR-009 / provider-contract §1b):**
 
 | handle | type | key relationships |
 |---|---|---|
 | `vm-app` | `Machine.VM` | `contained_by host-a` · `references fac-rack3` (placement) · `references net-dmz` (attachment) |
-| `vnic-app-eth0` | **`Hardware.NetworkInterface` `device_class: virtual`**, vlan_membership→`net-vlan-20` | `contained_by vm-app` · `references net-dmz` · `parent_device br0@host-a` (rides the host bridge) |
+| `vnic-app-eth0` | **`NetworkInterface` `device_class: virtual`**, vlan_membership→`net-vlan-20` | `contained_by vm-app` · `references net-dmz` · `parent_device br0@host-a` (rides the host bridge) |
 | `ip-app` (192.0.2.55) | `Network.IPAddress` | `attaches_to vnic-app-eth0` — allocated by the network/IPAM provider |
 | `vol-app` (100Gi) | `Volume` | `provisioned_by pool-fast` · `attaches_to vm-app` |
 
@@ -82,7 +82,7 @@ Provisioning this graph is **reserve → barrier → commit**, not a single pass
 
 ## The intermediary types — what we actually need
 
-1. **vNIC — already covered, do NOT add `Hardware.VirtualInterface`.** A virtual NIC is `Hardware.NetworkInterface` with `device_class: virtual` (the enum already has `virtual | passthrough | bridge | aggregate | partition`). It carries `vlan_id` and stacks on the host bridge via `parent_device` — exactly the physical/bond/bridge/virtual stack the estate already models. Adding a parallel `Hardware.VirtualInterface` would duplicate it (minimal-surface: reject).
+1. **vNIC — already covered, do NOT add a `VirtualInterface` class.** A virtual NIC is `NetworkInterface` with `device_class: virtual` (the enum already has `virtual | passthrough | bridge | aggregate | partition`). It carries `vlan_id` and stacks on the host bridge via `parent_device` — exactly the physical/bond/bridge/virtual stack the estate already models. Adding a parallel `Hardware.VirtualInterface` would duplicate it (minimal-surface: reject).
 
 2. **VLAN — a foundational reference, like `Facility.Location` (settled).** A VLAN/segment is **not** an inline field; it is a first-class **`Network.VLAN`** foundational resource, owned/advertised by a network/fabric provider (or a platform data layer) and **selected by reference** — a shared reference serving the information/operational layer. `net-dmz` (Network.VirtualNetwork) `references net-vlan-20` (`Network.VLAN`, `encapsulation: vlan`, `segment_id: 20`); the vNIC rides that segment via the network it attaches to. One source of truth for the segment, referenced by every resource on it — so blast-radius and dependency reasoning traverse it. (A provider may offer a `Network.Port` variant; the org ratifies which — base guidance, not a mandate.)
 

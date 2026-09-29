@@ -380,8 +380,8 @@ Each hard constraint cites the UDLM contract it derives from.
     includes or omits the ancillary set, a provider declares inventory as a capability,
     conformance treats `ancillary` as an optional non-Tier-1 tier, and a non-implementing peer
     ignores them (must-ignore-unknown). The substrate/ancillary line: control-plane-**actionable**
-    components (BMC, NetworkInterface, BiosProfile) are substrate; observe-only components
-    (Processor, StorageDevice, GraphicsProcessor) are ancillary. *The `classification` schema
+    components (BMC, NetworkInterface) are substrate; observe-only components
+    (Processor, StorageDevice, GPU) are ancillary. *The `classification` schema
     carrier is pending — the invariant binds authoring now.*
 
 39. **Required cardinality states universality.** A relationship or field is declared `1..x`

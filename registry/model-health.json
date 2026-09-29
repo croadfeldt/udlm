@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 63,
+    "types": 62,
     "by_family": {
       "Access": 8,
       "Knowledge": 9,
       "Process": 3,
-      "Resource": 43
+      "Resource": 42
     }
   },
   "discrimination": {
-    "mutations_attempted": 5443,
-    "mutations_rejected": 5443,
+    "mutations_attempted": 5400,
+    "mutations_rejected": 5400,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -30,6 +30,10 @@
       "Automation.OSPatch": {
         "attempted": 122,
         "rejected": 122
+      },
+      "BMC": {
+        "attempted": 43,
+        "rejected": 43
       },
       "Capability": {
         "attempted": 43,
@@ -55,6 +59,10 @@
         "attempted": 120,
         "rejected": 120
       },
+      "GPU": {
+        "attempted": 73,
+        "rejected": 73
+      },
       "Grouping": {
         "attempted": 56,
         "rejected": 56
@@ -66,30 +74,6 @@
       "Grouping.Tenant": {
         "attempted": 66,
         "rejected": 66
-      },
-      "Hardware.BMC": {
-        "attempted": 43,
-        "rejected": 43
-      },
-      "Hardware.BiosProfile": {
-        "attempted": 39,
-        "rejected": 39
-      },
-      "Hardware.GraphicsProcessor": {
-        "attempted": 74,
-        "rejected": 74
-      },
-      "Hardware.NetworkInterface": {
-        "attempted": 156,
-        "rejected": 156
-      },
-      "Hardware.Processor": {
-        "attempted": 85,
-        "rejected": 85
-      },
-      "Hardware.StorageDevice": {
-        "attempted": 90,
-        "rejected": 90
       },
       "Identity.Group": {
         "attempted": 42,
@@ -179,9 +163,17 @@
         "attempted": 48,
         "rejected": 48
       },
+      "NetworkInterface": {
+        "attempted": 155,
+        "rejected": 155
+      },
       "Observability.LogShipper": {
         "attempted": 52,
         "rejected": 52
+      },
+      "Processor": {
+        "attempted": 84,
+        "rejected": 84
       },
       "Security.CredentialRef": {
         "attempted": 70,
@@ -214,6 +206,10 @@
       "StorageCluster": {
         "attempted": 72,
         "rejected": 72
+      },
+      "StorageDevice": {
+        "attempted": 89,
+        "rejected": 89
       },
       "StorageLayout": {
         "attempted": 89,
@@ -270,8 +266,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 63,
-    "total": 63
+    "strict_specs": 62,
+    "total": 62
   },
   "outputs": {
     "per_type": {
@@ -279,21 +275,17 @@
       "Access.IdentityEscrow": 4,
       "Automation": 0,
       "Automation.OSPatch": 3,
+      "BMC": 1,
       "Capability": 1,
       "Container": 2,
       "Data.Database": 5,
       "Facility.Location": 1,
       "Facility.PowerFeed": 3,
       "FileShare": 1,
+      "GPU": 0,
       "Grouping": 0,
       "Grouping.Authorization": 0,
       "Grouping.Tenant": 0,
-      "Hardware.BMC": 1,
-      "Hardware.BiosProfile": 1,
-      "Hardware.GraphicsProcessor": 0,
-      "Hardware.NetworkInterface": 1,
-      "Hardware.Processor": 0,
-      "Hardware.StorageDevice": 1,
       "Identity.Group": 1,
       "Identity.Person": 1,
       "Identity.ServiceAccount": 1,
@@ -316,7 +308,9 @@
       "Network.Switch": 2,
       "Network.VLAN": 1,
       "Network.VirtualNetwork": 1,
+      "NetworkInterface": 1,
       "Observability.LogShipper": 3,
+      "Processor": 0,
       "Security.CredentialRef": 3,
       "Security.DirectoryService": 3,
       "Software.Service": 1,
@@ -325,6 +319,7 @@
       "SovereigntyZone": 0,
       "StorageClass": 1,
       "StorageCluster": 3,
+      "StorageDevice": 1,
       "StorageLayout": 1,
       "StoragePool": 5,
       "TaxonomyTerm": 1,
@@ -342,11 +337,11 @@
     "zero_output_types": [
       "Access.Grouping",
       "Automation",
+      "GPU",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
-      "Hardware.GraphicsProcessor",
-      "Hardware.Processor",
+      "Processor",
       "SoftwareImage",
       "SoftwarePackage",
       "SovereigntyZone",
@@ -357,13 +352,10 @@
       "Vulnerability"
     ],
     "one_output_types": [
+      "BMC",
       "Capability",
       "Facility.Location",
       "FileShare",
-      "Hardware.BMC",
-      "Hardware.BiosProfile",
-      "Hardware.NetworkInterface",
-      "Hardware.StorageDevice",
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
@@ -374,8 +366,10 @@
       "Network.IPAddress",
       "Network.VLAN",
       "Network.VirtualNetwork",
+      "NetworkInterface",
       "Software.Service",
       "StorageClass",
+      "StorageDevice",
       "StorageLayout",
       "TaxonomyTerm",
       "Template.Application",
@@ -383,13 +377,13 @@
     ]
   },
   "context": {
-    "with_context": 63,
-    "total": 63,
+    "with_context": 62,
+    "total": 62,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 49,
-    "total": 63,
+    "with_relationships": 48,
+    "total": 62,
     "missing": [
       "Access.Grouping",
       "Automation",
@@ -413,10 +407,12 @@
       "Access.IdentityEscrow",
       "Automation",
       "Automation.OSPatch",
+      "BMC",
       "Capability",
       "Container",
       "Data.Database",
       "FileShare",
+      "GPU",
       "Job",
       "KubernetesCluster",
       "KubernetesNamespace",
@@ -453,12 +449,6 @@
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
-      "Hardware.BMC",
-      "Hardware.BiosProfile",
-      "Hardware.GraphicsProcessor",
-      "Hardware.NetworkInterface",
-      "Hardware.Processor",
-      "Hardware.StorageDevice",
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
@@ -466,8 +456,11 @@
       "Network.Subnet",
       "Network.Switch",
       "Network.VLAN",
+      "NetworkInterface",
+      "Processor",
       "SovereigntyZone",
       "StorageCluster",
+      "StorageDevice",
       "StorageLayout",
       "Template",
       "Template.Application",
@@ -507,19 +500,15 @@
       "Access.IdentityEscrow",
       "Automation",
       "Automation.OSPatch",
+      "BMC",
       "Capability",
       "Facility.Location",
       "Facility.PowerFeed",
       "FileShare",
+      "GPU",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
-      "Hardware.BMC",
-      "Hardware.BiosProfile",
-      "Hardware.GraphicsProcessor",
-      "Hardware.NetworkInterface",
-      "Hardware.Processor",
-      "Hardware.StorageDevice",
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
@@ -540,7 +529,9 @@
       "Network.Switch",
       "Network.VLAN",
       "Network.VirtualNetwork",
+      "NetworkInterface",
       "Observability.LogShipper",
+      "Processor",
       "Security.CredentialRef",
       "Security.DirectoryService",
       "Software.Service",
@@ -549,6 +540,7 @@
       "SovereigntyZone",
       "StorageClass",
       "StorageCluster",
+      "StorageDevice",
       "StorageLayout",
       "StoragePool",
       "TaxonomyTerm",
@@ -562,7 +554,7 @@
       "Volume.ZFS",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 63
+    "consumed_by_at_least_one": 62
   },
   "expressibility_coverage": {
     "value": null,

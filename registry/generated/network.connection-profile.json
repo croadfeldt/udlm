@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.ConnectionProfile/0.4.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.ConnectionProfile/0.4.3",
   "conforms_to": "udlm/0.1",
   "uuid": "7c322a52-3d41-4067-b9e2-967280517aa8",
   "resource_type": "Network.ConnectionProfile",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Network.ConnectionProfile",
-          "version": "0.4.2",
+          "version": "0.4.3",
           "uuid": "7c322a52-3d41-4067-b9e2-967280517aa8"
         }
       ]
@@ -147,7 +147,7 @@
     {
       "edge_type": "references",
       "name": "configures",
-      "target": "Hardware.NetworkInterface",
+      "target": "NetworkInterface",
       "cardinality": "1..1",
       "description": "configures — the adapter/port this profile applies to. Host-side declaration (dependent-side rule)."
     }
@@ -172,11 +172,11 @@
       "You need drift in host networking detected from data, not by logging into hosts."
     ],
     "not_for": [
-      "The interface device itself — Hardware.NetworkInterface; the profile configures a device that type inventories.",
-      "BIOS settings — Hardware.BiosProfile: the same opaque-body-plus-pinned-registry pattern, for firmware."
+      "The interface device itself — NetworkInterface; the profile configures a device that type inventories.",
+      "BIOS settings — the host's `firmware` element and, for vendor attribute sets, a Provider Class under Machine.BareMetalHost."
     ],
     "works_with": [
-      "Hardware.NetworkInterface — the adapter or port the profile applies to.",
+      "NetworkInterface — the adapter or port the profile applies to.",
       "Network.VLAN — the segments the configured VLANs and sub-interfaces ride."
     ]
   }

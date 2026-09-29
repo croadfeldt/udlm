@@ -133,7 +133,7 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
   `retry-semantics`, `rate-limit-and-backpressure`: finish or mark stable-by-reference before tag.
 - **Per-type `stability` field** — coarse maturity signal while the spec is `0.x`; deferred candidate
   (`SPEC-DESIGN-REQUIREMENTS`).
-- **Type completeness polish** — `relationships` blocks **added** to `Software.Service` / `Hardware.BMC` /
+- **Type completeness polish** — `relationships` blocks **added** to `Software.Service` / `BMC` /
   `Hardware.BiosProfile` (#98, 2026-07-15); `Security.CredentialRef` **defined** (#99, closing the
   referenced-but-undefined secrets-as-reference target). **Remaining:** 4 types are `portability: partial`
   (checked: `bmc`/`software.service` promoted to `portable`, `bios-profile` stays `partial` — its
@@ -154,7 +154,7 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
 
 the resource types in the registry (see `registry/MODEL-HEALTH.md`) (post-2026-07-15: DCM ADR-013 removes the 5 hardware-*component* types —
 memory-module / processor / storage-device / graphics-processor / power-supply, #88 — keeping
-BMC / BiosProfile / NetworkInterface; `Security.CredentialRef` added, #99) · 12 record schemas ·
+BMC / NetworkInterface; `Security.CredentialRef` added, #99) · 12 record schemas ·
 17 contracts (11 complete/stable, 6 draft — see §5/§6) · the prose ADRs in `docs/adr/` (see `docs/adr/README.md`) + JSON
 DecisionRecords · docs/spec/foundations/lifecycle/governance/design-principles doc set · 6 built-in profiles.
 
