@@ -283,6 +283,9 @@ renames:
   registry/generated/identity.group.json: registry/generated/identity-group.json
   registry/generated/access.identity-escrow.json: registry/generated/identity-escrow.json
 
+  # 2026-09-29 — the worked-example class mirror follows the hosting group (ADR-082, row 090).
+  registry/examples/classes/resource/machine/vm/cexample-cloud.yaml: registry/examples/classes/resource/compute/machine/vm/cexample-cloud.yaml
+
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
   # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),
