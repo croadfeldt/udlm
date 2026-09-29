@@ -11,7 +11,7 @@ off-vocabulary values, and the **refusal→audit-record** cross-cut.
 > **Use Cases:** `observed/estate-resource-observed` (positive),
 > `observed/observation-off-vocabulary-quarantined`, `audit/refusal-emits-audit-record` (must-reject).
 > **Personas:** platform-operator / information-provider-owner · **Perspective:** compliance-auditor.
-> **Types this covers:** `Hardware.*`, `Facility.*`, `Identity.*`, `Network.Switch`/`Network.VLAN`,
+> **Types this covers:** `Hardware.*`, `Facility.*`, `Identity.*`, `NetworkSwitch`/`VLAN`,
 > `Topology` — every type populated *from* the estate rather than authored as intent.
 
 **In one breath.** A provider observes a resource that already exists — a GPU, a BMC, a rack location, a

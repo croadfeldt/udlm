@@ -23,6 +23,10 @@
         "attempted": 130,
         "rejected": 130
       },
+      "AddressService": {
+        "attempted": 42,
+        "rejected": 42
+      },
       "Automation": {
         "attempted": 77,
         "rejected": 77
@@ -39,9 +43,21 @@
         "attempted": 43,
         "rejected": 43
       },
+      "ConnectionProfile": {
+        "attempted": 35,
+        "rejected": 35
+      },
       "Container": {
         "attempted": 235,
         "rejected": 235
+      },
+      "DHCPScope": {
+        "attempted": 95,
+        "rejected": 95
+      },
+      "DNSZone": {
+        "attempted": 152,
+        "rejected": 152
       },
       "Data.Database": {
         "attempted": 70,
@@ -74,6 +90,14 @@
       "Grouping.Tenant": {
         "attempted": 66,
         "rejected": 66
+      },
+      "IPAddress": {
+        "attempted": 39,
+        "rejected": 39
+      },
+      "IPAddressPool": {
+        "attempted": 87,
+        "rejected": 87
       },
       "Identity.Group": {
         "attempted": 42,
@@ -119,53 +143,17 @@
         "attempted": 246,
         "rejected": 246
       },
-      "Network.AddressService": {
-        "attempted": 42,
-        "rejected": 42
-      },
-      "Network.ConnectionProfile": {
-        "attempted": 35,
-        "rejected": 35
-      },
-      "Network.DHCPScope": {
-        "attempted": 95,
-        "rejected": 95
-      },
-      "Network.DNSZone": {
-        "attempted": 152,
-        "rejected": 152
-      },
-      "Network.Gateway": {
+      "NetworkGateway": {
         "attempted": 119,
         "rejected": 119
-      },
-      "Network.IPAddress": {
-        "attempted": 39,
-        "rejected": 39
-      },
-      "Network.IPAddressPool": {
-        "attempted": 87,
-        "rejected": 87
-      },
-      "Network.Subnet": {
-        "attempted": 66,
-        "rejected": 66
-      },
-      "Network.Switch": {
-        "attempted": 94,
-        "rejected": 94
-      },
-      "Network.VLAN": {
-        "attempted": 42,
-        "rejected": 42
-      },
-      "Network.VirtualNetwork": {
-        "attempted": 48,
-        "rejected": 48
       },
       "NetworkInterface": {
         "attempted": 155,
         "rejected": 155
+      },
+      "NetworkSwitch": {
+        "attempted": 94,
+        "rejected": 94
       },
       "Observability.LogShipper": {
         "attempted": 52,
@@ -219,6 +207,10 @@
         "attempted": 122,
         "rejected": 122
       },
+      "Subnet": {
+        "attempted": 66,
+        "rejected": 66
+      },
       "TaxonomyTerm": {
         "attempted": 61,
         "rejected": 61
@@ -247,9 +239,17 @@
         "attempted": 145,
         "rejected": 145
       },
+      "VLAN": {
+        "attempted": 42,
+        "rejected": 42
+      },
       "VexStatement": {
         "attempted": 60,
         "rejected": 60
+      },
+      "VirtualNetwork": {
+        "attempted": 48,
+        "rejected": 48
       },
       "Volume": {
         "attempted": 53,
@@ -273,11 +273,15 @@
     "per_type": {
       "Access.Grouping": 0,
       "Access.IdentityEscrow": 4,
+      "AddressService": 1,
       "Automation": 0,
       "Automation.OSPatch": 3,
       "BMC": 1,
       "Capability": 1,
+      "ConnectionProfile": 2,
       "Container": 2,
+      "DHCPScope": 1,
+      "DNSZone": 1,
       "Data.Database": 5,
       "Facility.Location": 1,
       "Facility.PowerFeed": 3,
@@ -286,6 +290,8 @@
       "Grouping": 0,
       "Grouping.Authorization": 0,
       "Grouping.Tenant": 0,
+      "IPAddress": 1,
+      "IPAddressPool": 4,
       "Identity.Group": 1,
       "Identity.Person": 1,
       "Identity.ServiceAccount": 1,
@@ -297,18 +303,9 @@
       "Machine.BareMetalHost": 8,
       "Machine.LPAR": 5,
       "Machine.VM": 7,
-      "Network.AddressService": 1,
-      "Network.ConnectionProfile": 2,
-      "Network.DHCPScope": 1,
-      "Network.DNSZone": 1,
-      "Network.Gateway": 1,
-      "Network.IPAddress": 1,
-      "Network.IPAddressPool": 4,
-      "Network.Subnet": 3,
-      "Network.Switch": 2,
-      "Network.VLAN": 1,
-      "Network.VirtualNetwork": 1,
+      "NetworkGateway": 1,
       "NetworkInterface": 1,
+      "NetworkSwitch": 2,
       "Observability.LogShipper": 3,
       "Processor": 0,
       "Security.CredentialRef": 3,
@@ -322,6 +319,7 @@
       "StorageDevice": 1,
       "StorageLayout": 1,
       "StoragePool": 5,
+      "Subnet": 3,
       "TaxonomyTerm": 1,
       "Template": 0,
       "Template.Application": 1,
@@ -329,7 +327,9 @@
       "TestEvidence.VulnerabilityCheck": 0,
       "Topology": 1,
       "UPS": 7,
+      "VLAN": 1,
       "VexStatement": 0,
+      "VirtualNetwork": 1,
       "Volume": 2,
       "Volume.ZFS": 3,
       "Vulnerability": 0
@@ -352,20 +352,18 @@
       "Vulnerability"
     ],
     "one_output_types": [
+      "AddressService",
       "BMC",
       "Capability",
+      "DHCPScope",
+      "DNSZone",
       "Facility.Location",
       "FileShare",
+      "IPAddress",
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
-      "Network.AddressService",
-      "Network.DHCPScope",
-      "Network.DNSZone",
-      "Network.Gateway",
-      "Network.IPAddress",
-      "Network.VLAN",
-      "Network.VirtualNetwork",
+      "NetworkGateway",
       "NetworkInterface",
       "Software.Service",
       "StorageClass",
@@ -373,7 +371,9 @@
       "StorageLayout",
       "TaxonomyTerm",
       "Template.Application",
-      "Topology"
+      "Topology",
+      "VLAN",
+      "VirtualNetwork"
     ]
   },
   "context": {
@@ -405,14 +405,20 @@
     "files_scanned": 165,
     "covered": [
       "Access.IdentityEscrow",
+      "AddressService",
       "Automation",
       "Automation.OSPatch",
       "BMC",
       "Capability",
+      "ConnectionProfile",
       "Container",
+      "DHCPScope",
+      "DNSZone",
       "Data.Database",
       "FileShare",
       "GPU",
+      "IPAddress",
+      "IPAddressPool",
       "Job",
       "KubernetesCluster",
       "KubernetesNamespace",
@@ -420,14 +426,7 @@
       "Machine",
       "Machine.BareMetalHost",
       "Machine.VM",
-      "Network.AddressService",
-      "Network.ConnectionProfile",
-      "Network.DHCPScope",
-      "Network.DNSZone",
-      "Network.Gateway",
-      "Network.IPAddress",
-      "Network.IPAddressPool",
-      "Network.VirtualNetwork",
+      "NetworkGateway",
       "Observability.LogShipper",
       "Security.CredentialRef",
       "Security.DirectoryService",
@@ -438,6 +437,8 @@
       "StoragePool",
       "TaxonomyTerm",
       "Topology",
+      "VLAN",
+      "VirtualNetwork",
       "Volume",
       "Volume.ZFS",
       "Vulnerability"
@@ -453,15 +454,14 @@
       "Identity.Person",
       "Identity.ServiceAccount",
       "Machine.LPAR",
-      "Network.Subnet",
-      "Network.Switch",
-      "Network.VLAN",
       "NetworkInterface",
+      "NetworkSwitch",
       "Processor",
       "SovereigntyZone",
       "StorageCluster",
       "StorageDevice",
       "StorageLayout",
+      "Subnet",
       "Template",
       "Template.Application",
       "TestEvidence",
@@ -498,10 +498,14 @@
     "named_by_none": [
       "Access.Grouping",
       "Access.IdentityEscrow",
+      "AddressService",
       "Automation",
       "Automation.OSPatch",
       "BMC",
       "Capability",
+      "ConnectionProfile",
+      "DHCPScope",
+      "DNSZone",
       "Facility.Location",
       "Facility.PowerFeed",
       "FileShare",
@@ -509,6 +513,8 @@
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
+      "IPAddress",
+      "IPAddressPool",
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
@@ -518,18 +524,9 @@
       "Machine",
       "Machine.BareMetalHost",
       "Machine.LPAR",
-      "Network.AddressService",
-      "Network.ConnectionProfile",
-      "Network.DHCPScope",
-      "Network.DNSZone",
-      "Network.Gateway",
-      "Network.IPAddress",
-      "Network.IPAddressPool",
-      "Network.Subnet",
-      "Network.Switch",
-      "Network.VLAN",
-      "Network.VirtualNetwork",
+      "NetworkGateway",
       "NetworkInterface",
+      "NetworkSwitch",
       "Observability.LogShipper",
       "Processor",
       "Security.CredentialRef",
@@ -543,6 +540,7 @@
       "StorageDevice",
       "StorageLayout",
       "StoragePool",
+      "Subnet",
       "TaxonomyTerm",
       "Template",
       "Template.Application",
@@ -550,7 +548,9 @@
       "TestEvidence.VulnerabilityCheck",
       "Topology",
       "UPS",
+      "VLAN",
       "VexStatement",
+      "VirtualNetwork",
       "Volume.ZFS",
       "Vulnerability"
     ],

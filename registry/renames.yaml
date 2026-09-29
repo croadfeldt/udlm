@@ -266,3 +266,33 @@ retired:
   registry/generated/hardware.processor.json: registry/generated/processor.json
   registry/generated/hardware.graphics-processor.json: registry/generated/gpu.json
   registry/generated/hardware.bmc.json: registry/generated/bmc.json
+
+  # 2026-09-29 — the Network folder dissolves into the `network` usage group (ADR-082, row 085). Each
+  # member is a Base by the Base test; `zone` and `tier` are homed once in common-elements.schema.json
+  # and declared on every network Base by $ref. Same uuids (ADR-051). The directory is the hosting group.
+  registry/classes/resource/network/_base.yaml#b4309667-2eed-4330-88d3-96bc94d54436: >-
+    retired 2026-09-29 — a dissolved folder; its members are IPAddress, IPAddressPool, Subnet, VLAN,
+    VirtualNetwork, NetworkGateway, NetworkSwitch, AddressService, DHCPScope, DNSZone and
+    ConnectionProfile, filed under the `network` usage group
+  registry/classes/resource/network/address-service.yaml: registry/classes/resource/network/address-service/_base.yaml
+  registry/classes/resource/network/connection-profile.yaml: registry/classes/resource/network/connection-profile/_base.yaml
+  registry/classes/resource/network/dhcpscope.yaml: registry/classes/resource/network/dhcpscope/_base.yaml
+  registry/classes/resource/network/dnszone.yaml: registry/classes/resource/network/dnszone/_base.yaml
+  registry/classes/resource/network/gateway.yaml: registry/classes/resource/network/network-gateway/_base.yaml
+  registry/classes/resource/network/ipaddress-pool.yaml: registry/classes/resource/network/ipaddress-pool/_base.yaml
+  registry/classes/resource/network/ipaddress.yaml: registry/classes/resource/network/ipaddress/_base.yaml
+  registry/classes/resource/network/subnet.yaml: registry/classes/resource/network/subnet/_base.yaml
+  registry/classes/resource/network/switch.yaml: registry/classes/resource/network/network-switch/_base.yaml
+  registry/classes/resource/network/virtual-network.yaml: registry/classes/resource/network/virtual-network/_base.yaml
+  registry/classes/resource/network/vlan.yaml: registry/classes/resource/network/vlan/_base.yaml
+  registry/generated/network.address-service.json: registry/generated/address-service.json
+  registry/generated/network.connection-profile.json: registry/generated/connection-profile.json
+  registry/generated/network.dhcpscope.json: registry/generated/dhcpscope.json
+  registry/generated/network.dnszone.json: registry/generated/dnszone.json
+  registry/generated/network.gateway.json: registry/generated/network-gateway.json
+  registry/generated/network.ipaddress-pool.json: registry/generated/ipaddress-pool.json
+  registry/generated/network.ipaddress.json: registry/generated/ipaddress.json
+  registry/generated/network.subnet.json: registry/generated/subnet.json
+  registry/generated/network.switch.json: registry/generated/network-switch.json
+  registry/generated/network.virtual-network.json: registry/generated/virtual-network.json
+  registry/generated/network.vlan.json: registry/generated/vlan.json

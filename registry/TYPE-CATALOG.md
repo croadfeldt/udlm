@@ -50,6 +50,28 @@ Some machines are routinely wiped and rebuilt, but parts of their identity must 
 - Machine.BareMetalHost — the typical host entity whose re-realization triggers restore.
 - Identity.ServiceAccount — the acting identity an escrowed credential may authenticate.
 
+## AddressService
+
+### AddressService (0.7.0)
+
+**Purpose:** Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.
+
+The thing that hands out addresses and answers name lookups, as a single, thin service record. It says which capabilities are served — the `services` list (`dhcp`, `dns`) — and whether service is redundant (`ha`, a boolean), and points at the host(s) or VM(s) running it. Its job in the model is ordering: hosts that need leases and name resolution depend on it, so it stops late and starts early. The serving software is a provider; the data it serves is projected from address records and scope/zone records.
+
+**Use when:**
+- You need shutdown/startup ordering to account for everything here needing DHCP/DNS up first.
+- You need the DHCP/DNS role pinned to the specific hosts that serve it.
+
+**Not for:**
+- A subnet's pools and options — DHCPScope is the config surface.
+- A zone and its records — DNSZone.
+- A single address — IPAddress.
+
+**Works with:**
+- Machine.BareMetalHost / Machine.VM — where the service runs; it stops before its host.
+- DHCPScope — the per-subnet config this service serves.
+- DNSZone — the zones it answers for.
+
 ## Automation
 
 ### Automation (1.2.0)
@@ -130,6 +152,26 @@ A single named thing a platform can do — e.g. workload placement, or secret ro
 - TaxonomyTerm — the canonical taxonomy a capability is mapped onto (normalized_to).
 - Capability — capabilities depend on other capabilities, forming the capability map.
 
+## ConnectionProfile
+
+### ConnectionProfile (0.5.0)
+
+**Purpose:** Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN membership — as declarative state a provider applies.
+
+What a host interface's network configuration should be, in NMstate's own schema: the opaque body is `desired_state`, interpreted against the pinned `nmstate_schema_version` it declares — the profile does not re-describe NMstate's fields. A NetworkManager-family provider applies it (a configuration-management engine, Kubernetes-NMState); the state read back from the host is published, and a difference between desired and discovered is drift. It replaces per-tool host-network variable files with one governed record per interface.
+
+**Use when:**
+- You need host interface config (static addressing, routes, VLANs on a bond) declared once and converged by automation.
+- You need drift in host networking detected from data, not by logging into hosts.
+
+**Not for:**
+- The interface device itself — NetworkInterface; the profile configures a device that type inventories.
+- BIOS settings — the host's `firmware` element and, for vendor attribute sets, a Provider Class under Machine.BareMetalHost.
+
+**Works with:**
+- NetworkInterface — the adapter or port the profile applies to.
+- VLAN — the segments the configured VLANs and sub-interfaces ride.
+
 ## Container
 
 ### Container (1.0.2)
@@ -152,6 +194,47 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - Security.CredentialRef — every secret the container consumes, by reference only.
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
+
+## DHCPScope
+
+### DHCPScope (0.9.0)
+
+**Purpose:** Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.
+
+One subnet's DHCP setup: the required `subnet` CIDR, the dynamic ranges leased from — `pools` here (start/end pairs; the allocation-side IPAddressPool calls its ranges `ranges`) — common `options` (router, dns_servers, domain_name), and `lease_time`. Reservations are not authored here — they are derived: every statically-allocated address record bound to an interface projects into this scope's reservation list, so the fact that an address belongs to a MAC lives in exactly one place. The DHCP server software is a provider; this record is what it renders its config from.
+
+**Use when:**
+- You need a subnet's dynamic ranges and options declared portably, independent of which DHCP server serves them.
+- You need static reservations to fall out of address records automatically instead of being maintained twice.
+
+**Not for:**
+- Allocation-side accounting of a range (who holds which address, is it exhausted) — IPAddressPool; the scope is service-side config. The two overlap on ranges by design, and both document it.
+- One address or reservation — IPAddress with static allocation; it projects into the scope.
+
+**Works with:**
+- IPAddress — the address records whose static allocations project into reservations.
+- AddressService — the operated service serving this scope.
+- Machine.BareMetalHost / Machine.VM — the servers the scope is served from.
+
+## DNSZone
+
+### DNSZone (0.6.0)
+
+**Purpose:** Declares an authoritative DNS zone — its name, role, and records — independent of the software serving it.
+
+One DNS zone — its required `zone_name`, e.g. example.com — with its authoritative role spelled `zone_type` (`primary`, `secondary`, `stub`, `forward`) and, optionally, its resource `records`. The serving software (BIND, directory-integrated DNS, a cloud DNS) is a provider. Once realized, the zone's nameservers are published. One asymmetry is a documented open decision: records here are authored inline, while the DHCP side derives its reservations from address records.
+
+**Use when:**
+- You need zones inventoried with their authoritative role and their serving relationships.
+- You need zone data declared portably so the serving software can change without the model changing.
+
+**Not for:**
+- The DNS service as a running dependency — AddressService; the zone is data, the service is what stops and starts.
+- The address facts behind A/PTR entries — those originate on IPAddress records; the zone holds the name-side projection.
+
+**Works with:**
+- Security.DirectoryService — when a directory service serves the zone.
+- AddressService — the operated DNS capability answering for the zone.
 
 ## Data
 
@@ -195,7 +278,7 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 - Machine.BareMetalHost — the equipment that declares its location.
 - Topology — the failure-domain view of the same physical reality.
 
-### Facility.PowerFeed (0.6.1)
+### Facility.PowerFeed (0.6.2)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
@@ -211,7 +294,7 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 
 **Works with:**
 - Machine.BareMetalHost — hosts declare depends_on the feed(s) they draw from.
-- Network.Switch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.
+- NetworkSwitch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.
 - Automation.Job — the shutdown job a feed's on-battery status triggers.
 
 ## FileShare
@@ -318,6 +401,49 @@ A tenant. A thing belongs to exactly one at a time, and that is a structural loc
 - Every estate record — tenant_uuid resolves here (TEN-001/003, [D3])
 - The governance matrix — isolation obligations are enforced over the derived member set
 
+## IPAddress
+
+### IPAddress (0.11.0)
+
+**Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
+
+One IP address, bound to the interface it is configured on, with how it came to be — `allocation`: `static` (a fixed reservation — this IS the DHCP reservation; there is no second record), `dhcp` (leased), or self-assigned as `link-layer` or `random` (SLAAC/privacy). The `address` itself is CIDR with prefix length — 192.0.2.10/24, never a bare 192.0.2.10. A static record authors the address up front; a dynamic one gets its address filled in once observed. From this one record, projections are derived — a DHCP scope's reservation list, name-side entries — instead of the same fact being retyped per system.
+
+**Use when:**
+- You need address assignments tracked per interface with their `allocation` origin (`static`, `dhcp`, `link-layer`, `random`).
+- You need one authoritative record that DHCP reservation lists and other projections derive from.
+
+**Not for:**
+- The range addresses come from — IPAddressPool.
+- The subnet's DHCP service configuration — DHCPScope.
+- The interface itself — NetworkInterface; the address attaches to it.
+
+**Works with:**
+- NetworkInterface — the interface the address is configured on.
+- IPAddressPool — the pool the address was carved from.
+- Machine.VM — consumers that request or bring addresses.
+
+## IPAddressPool
+
+### IPAddressPool (0.8.0)
+
+**Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
+
+A range of addresses that individual address records are carved from: the required subnet `prefix` (CIDR), the allocatable `ranges` inside it (start/end pairs — this allocation-side name differs from a DHCP scope's `pools` by design), `exclusions` (gateway, broadcast, known statics), and how addresses leave it — `allocation_mode`: `dynamic` (leased), `static` (reserved ahead of time), or `mixed`. Once realized it reports totals — allocated, free, exhausted — the signal capacity and placement policies read before asking for another address. Same pattern as a storage pool feeding datasets: the pool is the source, the carved record depends on it.
+
+**Use when:**
+- You need to know which addresses are in play, who holds each, and when a range is close to exhausted.
+- You need address allocation scoped to the one network segment the pool serves.
+
+**Not for:**
+- Service-side DHCP config for the subnet (options, lease time) — DHCPScope; the pool is intent-side inventory. The range overlap between the two is deliberate and documented on both.
+- A single address — IPAddress, carved from this pool.
+
+**Works with:**
+- IPAddress — the records carved from the pool (allocated_from).
+- VirtualNetwork — the segment the pool serves.
+- DHCPScope — the service-side projection of the same subnet.
+
 ## Identity
 
 ### Identity.Group (0.4.4)
@@ -379,7 +505,7 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 ## Job
 
-### Job (1.2.5)
+### Job (1.2.6)
 
 **Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
 
@@ -400,7 +526,7 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 
 ## KubernetesCluster
 
-### KubernetesCluster (2.0.1)
+### KubernetesCluster (2.0.2)
 
 **Purpose:** Declares a managed Kubernetes cluster — release and network ranges — as one provisionable intent; its node pools are KubernetesNodePool records contained by it.
 
@@ -417,7 +543,7 @@ The request for a control plane: which release and what internal network ranges 
 **Works with:**
 - KubernetesNamespace — the isolation boundaries carved inside the cluster.
 - KubernetesNodePool — homogeneous slices of the cluster's node capacity.
-- Network.VirtualNetwork — the network the cluster is realized onto.
+- VirtualNetwork — the network the cluster is realized onto.
 - Container — the workloads scheduled onto the cluster.
 - Software.Service (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
@@ -462,7 +588,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 
 ## Machine
 
-### Machine (2.1.1)
+### Machine (2.1.2)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -478,7 +604,7 @@ The most portable way to ask for a machine: how big, what image, what storage ti
 
 **Works with:**
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
-- Volume and Network.VirtualNetwork — what the realized machine attaches to.
+- Volume and VirtualNetwork — what the realized machine attaches to.
 
 ### Machine.BareMetalHost (0.12.0)
 
@@ -503,7 +629,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - NetworkInterface — the host's NICs, modeled as contained components.
 - Machine.VM — the guests the host runs.
 
-### Machine.LPAR (0.1.1)
+### Machine.LPAR (0.1.2)
 
 **Purpose:** Declares a logical partition on a partitioned system as one provisionable Machine.
 
@@ -520,9 +646,9 @@ The request for a slice of a big partitioned server: how much processor capacity
 **Works with:**
 - Machine.BareMetalHost — the frame that hosts the partition.
 - Volume — the disks served through virtual I/O.
-- Network.VirtualNetwork — the network a virtual adapter attaches to.
+- VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.0.2)
+### Machine.VM (2.0.3)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -531,7 +657,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 **Use when:**
 - You need to request a VM with declared size, OS, storage requirements, and network attachments, portable across hypervisors.
 - You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.
-- You need a VM's disk shape and addresses to reference existing StorageLayout / Network.IPAddress records rather than duplicate them.
+- You need a VM's disk shape and addresses to reference existing StorageLayout / IPAddress records rather than duplicate them.
 
 **Not for:**
 - The physical machine it runs on — Machine.BareMetalHost.
@@ -541,89 +667,14 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 **Works with:**
 - StorageLayout — the disk layout the VM realizes (per-disk shape, boot designation).
-- Network.VirtualNetwork — the networks the VM's NICs attach to.
+- VirtualNetwork — the networks the VM's NICs attach to.
 - Volume — the consumable volumes realizing its layout entries.
 - Facility.Location — where the VM is placed (selected from existing places, policy-governed).
-- Network.IPAddress — pre-allocated addresses the VM consumes.
+- IPAddress — pre-allocated addresses the VM consumes.
 
-## Network
+## NetworkGateway
 
-### Network.AddressService (0.6.3)
-
-**Purpose:** Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.
-
-The thing that hands out addresses and answers name lookups, as a single, thin service record. It says which capabilities are served — the `services` list (`dhcp`, `dns`) — and whether service is redundant (`ha`, a boolean), and points at the host(s) or VM(s) running it. Its job in the model is ordering: hosts that need leases and name resolution depend on it, so it stops late and starts early. The serving software is a provider; the data it serves is projected from address records and scope/zone records.
-
-**Use when:**
-- You need shutdown/startup ordering to account for everything here needing DHCP/DNS up first.
-- You need the DHCP/DNS role pinned to the specific hosts that serve it.
-
-**Not for:**
-- A subnet's pools and options — Network.DHCPScope is the config surface.
-- A zone and its records — Network.DNSZone.
-- A single address — Network.IPAddress.
-
-**Works with:**
-- Machine.BareMetalHost / Machine.VM — where the service runs; it stops before its host.
-- Network.DHCPScope — the per-subnet config this service serves.
-- Network.DNSZone — the zones it answers for.
-
-### Network.ConnectionProfile (0.4.3)
-
-**Purpose:** Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN membership — as declarative state a provider applies.
-
-What a host interface's network configuration should be, in NMstate's own schema: the opaque body is `desired_state`, interpreted against the pinned `nmstate_schema_version` it declares — the profile does not re-describe NMstate's fields. A NetworkManager-family provider applies it (a configuration-management engine, Kubernetes-NMState); the state read back from the host is published, and a difference between desired and discovered is drift. It replaces per-tool host-network variable files with one governed record per interface.
-
-**Use when:**
-- You need host interface config (static addressing, routes, VLANs on a bond) declared once and converged by automation.
-- You need drift in host networking detected from data, not by logging into hosts.
-
-**Not for:**
-- The interface device itself — NetworkInterface; the profile configures a device that type inventories.
-- BIOS settings — the host's `firmware` element and, for vendor attribute sets, a Provider Class under Machine.BareMetalHost.
-
-**Works with:**
-- NetworkInterface — the adapter or port the profile applies to.
-- Network.VLAN — the segments the configured VLANs and sub-interfaces ride.
-
-### Network.DHCPScope (0.8.4)
-
-**Purpose:** Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.
-
-One subnet's DHCP setup: the required `subnet` CIDR, the dynamic ranges leased from — `pools` here (start/end pairs; the allocation-side Network.IPAddressPool calls its ranges `ranges`) — common `options` (router, dns_servers, domain_name), and `lease_time`. Reservations are not authored here — they are derived: every statically-allocated address record bound to an interface projects into this scope's reservation list, so the fact that an address belongs to a MAC lives in exactly one place. The DHCP server software is a provider; this record is what it renders its config from.
-
-**Use when:**
-- You need a subnet's dynamic ranges and options declared portably, independent of which DHCP server serves them.
-- You need static reservations to fall out of address records automatically instead of being maintained twice.
-
-**Not for:**
-- Allocation-side accounting of a range (who holds which address, is it exhausted) — Network.IPAddressPool; the scope is service-side config. The two overlap on ranges by design, and both document it.
-- One address or reservation — Network.IPAddress with static allocation; it projects into the scope.
-
-**Works with:**
-- Network.IPAddress — the address records whose static allocations project into reservations.
-- Network.AddressService — the operated service serving this scope.
-- Machine.BareMetalHost / Machine.VM — the servers the scope is served from.
-
-### Network.DNSZone (0.5.2)
-
-**Purpose:** Declares an authoritative DNS zone — its name, role, and records — independent of the software serving it.
-
-One DNS zone — its required `zone_name`, e.g. example.com — with its authoritative role spelled `zone_type` (`primary`, `secondary`, `stub`, `forward`) and, optionally, its resource `records`. The serving software (BIND, directory-integrated DNS, a cloud DNS) is a provider. Once realized, the zone's nameservers are published. One asymmetry is a documented open decision: records here are authored inline, while the DHCP side derives its reservations from address records.
-
-**Use when:**
-- You need zones inventoried with their authoritative role and their serving relationships.
-- You need zone data declared portably so the serving software can change without the model changing.
-
-**Not for:**
-- The DNS service as a running dependency — Network.AddressService; the zone is data, the service is what stops and starts.
-- The address facts behind A/PTR entries — those originate on Network.IPAddress records; the zone holds the name-side projection.
-
-**Works with:**
-- Security.DirectoryService — when a directory service serves the zone.
-- Network.AddressService — the operated DNS capability answering for the zone.
-
-### Network.Gateway (0.6.2)
+### NetworkGateway (0.7.0)
 
 **Purpose:** Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.
 
@@ -634,76 +685,42 @@ The router/firewall at the edge of a network: which functions it provides (routi
 - You need segment boundaries (LAN, DMZ, mgmt) and their VLANs recorded at the edge that routes between them.
 
 **Not for:**
-- An L2 switch — Network.Switch; the gateway is the L3 edge.
+- An L2 switch — NetworkSwitch; the gateway is the L3 edge.
 - Service-level L4/L7 traffic entry (the Kubernetes Gateway API sense) — that is the adopted naming ancestor, but this type is the broader network edge; application ingress belongs to the platform.
-- Handing out addresses on its segments — Network.DHCPScope / Network.AddressService.
+- Handing out addresses on its segments — DHCPScope / AddressService.
 
 **Works with:**
-- Network.VLAN — each gateway segment rides a referenced VLAN.
-- Network.DHCPScope — scopes serving the segments the gateway routes.
-- Network.Switch — the fabric behind the edge.
+- VLAN — each gateway segment rides a referenced VLAN.
+- DHCPScope — scopes serving the segments the gateway routes.
+- NetworkSwitch — the fabric behind the edge.
 
-### Network.IPAddress (0.10.6)
+## NetworkInterface
 
-**Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
+### NetworkInterface (0.15.1)
 
-One IP address, bound to the interface it is configured on, with how it came to be — `allocation`: `static` (a fixed reservation — this IS the DHCP reservation; there is no second record), `dhcp` (leased), or self-assigned as `link-layer` or `random` (SLAAC/privacy). The `address` itself is CIDR with prefix length — 192.0.2.10/24, never a bare 192.0.2.10. A static record authors the address up front; a dynamic one gets its address filled in once observed. From this one record, projections are derived — a DHCP scope's reservation list, name-side entries — instead of the same fact being retyped per system.
+**Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
+
+One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. Identity facts — the MAC address (`mac_address`), location, serial, model — nest under the `identity` block, not at the top level. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing VLAN records, never by retyping raw tags.
 
 **Use when:**
-- You need address assignments tracked per interface with their `allocation` origin (`static`, `dhcp`, `link-layer`, `random`).
-- You need one authoritative record that DHCP reservation lists and other projections derive from.
+- You need the full host interface stack — NICs, bond, bridge, sub-interfaces — as records whose parent/member links mirror reality.
+- You need host-NIC-to-switch-port cabling (LLDP-discovered) in the graph for impact analysis.
+- You need a port's VLAN membership (native/tagged) declared against shared VLAN records.
 
 **Not for:**
-- The range addresses come from — Network.IPAddressPool.
-- The subnet's DHCP service configuration — Network.DHCPScope.
-- The interface itself — NetworkInterface; the address attaches to it.
+- The attachment point guests plug into — VirtualNetwork; a bridge here is the device, the VirtualNetwork is the workload-facing network on top of it.
+- The desired configuration applied to an interface (addressing, routes, DNS) — ConnectionProfile configures the device this type inventories.
+- The VLAN segment itself — VLAN; interfaces are members of a segment, they don't define it.
 
 **Works with:**
-- NetworkInterface — the interface the address is configured on.
-- Network.IPAddressPool — the pool the address was carved from.
-- Machine.VM — consumers that request or bring addresses.
+- Machine.BareMetalHost / NetworkSwitch — what contains the interface (host NIC vs switch port).
+- NetworkInterface — parent_device, lower_layer, and connects_to: partition parentage, bond/bridge membership, cable adjacency.
+- VLAN — the segments the port is a member of.
+- ConnectionProfile — the declarative config realized onto this interface.
 
-### Network.IPAddressPool (0.7.2)
+## NetworkSwitch
 
-**Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
-
-A range of addresses that individual address records are carved from: the required subnet `prefix` (CIDR), the allocatable `ranges` inside it (start/end pairs — this allocation-side name differs from a DHCP scope's `pools` by design), `exclusions` (gateway, broadcast, known statics), and how addresses leave it — `allocation_mode`: `dynamic` (leased), `static` (reserved ahead of time), or `mixed`. Once realized it reports totals — allocated, free, exhausted — the signal capacity and placement policies read before asking for another address. Same pattern as a storage pool feeding datasets: the pool is the source, the carved record depends on it.
-
-**Use when:**
-- You need to know which addresses are in play, who holds each, and when a range is close to exhausted.
-- You need address allocation scoped to the one network segment the pool serves.
-
-**Not for:**
-- Service-side DHCP config for the subnet (options, lease time) — Network.DHCPScope; the pool is intent-side inventory. The range overlap between the two is deliberate and documented on both.
-- A single address — Network.IPAddress, carved from this pool.
-
-**Works with:**
-- Network.IPAddress — the records carved from the pool (allocated_from).
-- Network.VirtualNetwork — the segment the pool serves.
-- Network.DHCPScope — the service-side projection of the same subnet.
-
-### Network.Subnet (0.1.0)
-
-**Purpose:** Give the layer 3 network a first-class identity, so a consumer can require an IP network without naming a segment, and an allocation pool has something to sit inside.
-
-The IP side of a network — the address range, the way out of it, and how hosts on it get an address. Usually paired with one VLAN, but not always, which is why it is its own thing.
-
-**Use when:**
-- A workload must land on a particular IP network, whatever segment carries it
-- An address pool needs an L3 network to belong to
-- A /28 is allocated from a larger prefix somebody else holds
-
-**Not for:**
-- The layer 2 segment — that is `Network.VLAN`, and a subnet may not map to exactly one
-- Handing out individual addresses — that is `Network.IPAddressPool` within this subnet
-- Routing between networks — that is `Network.Gateway`
-
-**Works with:**
-- `Network.VLAN` — the segment this subnet usually rides on, when there is one
-- `Network.IPAddressPool` — the allocatable ranges within this subnet
-- `Network.Gateway` — the egress from it
-
-### Network.Switch (0.7.4)
+### NetworkSwitch (0.8.0)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
@@ -716,78 +733,13 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 
 **Not for:**
 - A software bridge on a host — NetworkInterface with device_class bridge.
-- The routed/NAT edge — Network.Gateway.
-- The VLAN segments themselves — Network.VLAN; the switch carries segments, it doesn't define them.
+- The routed/NAT edge — NetworkGateway.
+- The VLAN segments themselves — VLAN; the switch carries segments, it doesn't define them.
 
 **Works with:**
 - NetworkInterface — its ports, and the host NICs those ports connect to.
 - Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.
-- Network.VLAN — segments carried on the fabric, including the referenced management VLAN.
-
-### Network.VLAN (0.5.5)
-
-**Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
-
-The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `vxlan` or `geneve` for an overlay VNI, `flat` for untagged — and its id, `segment_id`. It exists so a segment id appears in exactly one record — switch ports, host sub-interfaces, gateway segments, and virtual networks all reference the VLAN record rather than each retyping the tag. It is a root resource: dependents select an existing VLAN, they do not invent one inline.
-
-**Use when:**
-- You need one authoritative record per segment that ports, virtual networks, and gateway segments all reference.
-- You need overlay segments (VXLAN/Geneve VNIs) modeled with the same shape as 802.1Q VLANs.
-
-**Not for:**
-- The workload attachment point — Network.VirtualNetwork rides a VLAN; guests attach to the VirtualNetwork, not to the VLAN.
-- A port's tagging configuration — that is vlan_memberships on NetworkInterface, referencing this record.
-
-**Works with:**
-- NetworkInterface — ports and sub-interfaces declare membership by reference.
-- Network.VirtualNetwork — virtual networks ride a referenced segment.
-- Network.Switch — the fabric carrying the segment.
-- Network.Gateway — edge segments each ride a referenced VLAN.
-
-### Network.VirtualNetwork (0.8.6)
-
-**Purpose:** Models the attachment point workloads plug into — the host- or cluster-scoped network a guest names when it says attach me here.
-
-The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes NetworkAttachmentDefinition, an OVN logical switch — whichever; the mechanism is the provider. It declares how traffic leaves — `forward_mode`, in libvirt's vocabulary: `bridge` (straight onto a host bridge), `nat`, `routed`, or `isolated` — and references downward: the VLAN segment it rides and the host bridge or uplink interface supporting it. That downward reference completes the walkable path guest → virtual network → bridge → bond → NIC → switch.
-
-**Use when:**
-- You need VMs or pods to attach to networks by selecting an existing named network rather than describing L2 details inline.
-- You need the guest-to-physical-network path traversable for impact analysis — e.g. which guests a bridge change affects.
-
-**Not for:**
-- The VLAN id or segment itself — Network.VLAN; a virtual network rides a segment, referenced not restated.
-- The host bridge device — NetworkInterface (device_class bridge) supports this network from below.
-- Per-guest NIC intent — that lives on Machine.VM's own networks list.
-
-**Works with:**
-- Machine.VM / KubernetesCluster — the guests that attach, and the scope that hosts the network.
-- Network.VLAN — the underlying segment, selected by reference.
-- NetworkInterface — the supporting bridge or uplink on the host.
-- Network.IPAddressPool — the address pool scoped to this segment.
-
-## NetworkInterface
-
-### NetworkInterface (0.15.0)
-
-**Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
-
-One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. Identity facts — the MAC address (`mac_address`), location, serial, model — nest under the `identity` block, not at the top level. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing Network.VLAN records, never by retyping raw tags.
-
-**Use when:**
-- You need the full host interface stack — NICs, bond, bridge, sub-interfaces — as records whose parent/member links mirror reality.
-- You need host-NIC-to-switch-port cabling (LLDP-discovered) in the graph for impact analysis.
-- You need a port's VLAN membership (native/tagged) declared against shared VLAN records.
-
-**Not for:**
-- The attachment point guests plug into — Network.VirtualNetwork; a bridge here is the device, the VirtualNetwork is the workload-facing network on top of it.
-- The desired configuration applied to an interface (addressing, routes, DNS) — Network.ConnectionProfile configures the device this type inventories.
-- The VLAN segment itself — Network.VLAN; interfaces are members of a segment, they don't define it.
-
-**Works with:**
-- Machine.BareMetalHost / Network.Switch — what contains the interface (host NIC vs switch port).
-- NetworkInterface — parent_device, lower_layer, and connects_to: partition parentage, bond/bridge membership, cable adjacency.
-- Network.VLAN — the segments the port is a member of.
-- Network.ConnectionProfile — the declarative config realized onto this interface.
+- VLAN — segments carried on the fabric, including the referenced management VLAN.
 
 ## Observability
 
@@ -850,7 +802,7 @@ A reference to a secret, never the secret. It names the kind of credential (the 
 - Identity.Person / Identity.ServiceAccount — whose credential this is.
 - Container / Software.Service / FileShare — consumers that reference it from env, mounts, or config.
 
-### Security.DirectoryService (0.7.2)
+### Security.DirectoryService (0.7.3)
 
 **Purpose:** Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.
 
@@ -862,18 +814,18 @@ The identity directory as a running server: which `protocols` it serves — requ
 
 **Not for:**
 - The identities inside — Identity.Person / Identity.Group / Identity.ServiceAccount.
-- The DNS zones a directory suite serves — Network.DNSZone; related, but its own record.
+- The DNS zones a directory suite serves — DNSZone; related, but its own record.
 - The bind credential — Security.CredentialRef.
 
 **Works with:**
 - Machine.VM / Machine.BareMetalHost — where the directory runs.
 - Identity.Group — external groups sourced from this directory.
 - Software.Service — services requiring the directory, with hard/soft strength.
-- Network.DNSZone — zones served when DNS is directory-integrated.
+- DNSZone — zones served when DNS is directory-integrated.
 
 ## Software
 
-### Software.Service (0.8.1)
+### Software.Service (0.8.2)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
@@ -892,7 +844,7 @@ The application layer: the mail service, the registry, model serving — a named
 **Works with:**
 - Container — containerized constituents, by reference.
 - KubernetesCluster / Machine.BareMetalHost / Machine.VM — where the constituents run.
-- Data.Database / Security.DirectoryService / Network.AddressService — what the service requires.
+- Data.Database / Security.DirectoryService / AddressService — what the service requires.
 - Security.CredentialRef — the service's secrets, by reference.
 
 ## SoftwareImage
@@ -1049,7 +1001,7 @@ The list of disks a machine should have: each entry names a disk (`name`, the st
 
 ## StoragePool
 
-### StoragePool (0.5.1)
+### StoragePool (0.5.2)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
@@ -1063,13 +1015,36 @@ The generic redundancy group — one shape for every backend, named by the requi
 **Not for:**
 - Distributed multi-node storage — StorageCluster.
 - The consumable unit workloads mount — Volume.ZFS, carved from the pool.
-- An allocatable range of IP addresses — Network.IPAddressPool is the same pool pattern in the network domain.
+- An allocatable range of IP addresses — IPAddressPool is the same pool pattern in the network domain.
 - RAID fields on the host type — a host never carries RAID; it contains pools (see Machine.BareMetalHost).
 
 **Works with:**
 - Machine.BareMetalHost — the host whose drives form the pool.
 - Volume.ZFS — the datasets carved from the pool.
 - StorageDevice — the physical member drives of the vdevs.
+
+## Subnet
+
+### Subnet (0.2.0)
+
+**Purpose:** Give the layer 3 network a first-class identity, so a consumer can require an IP network without naming a segment, and an allocation pool has something to sit inside.
+
+The IP side of a network — the address range, the way out of it, and how hosts on it get an address. Usually paired with one VLAN, but not always, which is why it is its own thing.
+
+**Use when:**
+- A workload must land on a particular IP network, whatever segment carries it
+- An address pool needs an L3 network to belong to
+- A /28 is allocated from a larger prefix somebody else holds
+
+**Not for:**
+- The layer 2 segment — that is `VLAN`, and a subnet may not map to exactly one
+- Handing out individual addresses — that is `IPAddressPool` within this subnet
+- Routing between networks — that is `NetworkGateway`
+
+**Works with:**
+- `VLAN` — the segment this subnet usually rides on, when there is one
+- `IPAddressPool` — the allocatable ranges within this subnet
+- `NetworkGateway` — the egress from it
 
 ## TaxonomyTerm
 
@@ -1164,7 +1139,7 @@ The vulnerability-check dialect of test evidence: the subject is a package versi
 
 ## Topology
 
-### Topology (0.5.3)
+### Topology (0.5.4)
 
 **Purpose:** Declares the failure and locality domains — region, zone, rack, power, network — that placement, residency, and maintenance gating resolve against.
 
@@ -1177,7 +1152,7 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 
 **Not for:**
 - The physical places themselves — Facility.Location is where things sit; Topology is the failure/locality view constraints resolve against. A rack appears in both, on purpose, in different roles.
-- Network segments — Network.VLAN / Network.VirtualNetwork; a network domain here is a failure domain, not the segment object.
+- Network segments — VLAN / VirtualNetwork; a network domain here is a failure domain, not the segment object.
 
 **Works with:**
 - Facility.Location — the physical containment the domains often mirror.
@@ -1205,6 +1180,28 @@ A UPS as a thing you own, separate from the circuit it protects. You declare its
 - Software.Service — the NUT upsd (or equivalent) that observes the unit is a service on a host, named as the instance's provider.
 - Automation.Job — the graceful-shutdown job that the unit's status drives, via the feed.
 
+## VLAN
+
+### VLAN (0.6.0)
+
+**Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
+
+The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `vxlan` or `geneve` for an overlay VNI, `flat` for untagged — and its id, `segment_id`. It exists so a segment id appears in exactly one record — switch ports, host sub-interfaces, gateway segments, and virtual networks all reference the VLAN record rather than each retyping the tag. It is a root resource: dependents select an existing VLAN, they do not invent one inline.
+
+**Use when:**
+- You need one authoritative record per segment that ports, virtual networks, and gateway segments all reference.
+- You need overlay segments (VXLAN/Geneve VNIs) modeled with the same shape as 802.1Q VLANs.
+
+**Not for:**
+- The workload attachment point — VirtualNetwork rides a VLAN; guests attach to the VirtualNetwork, not to the VLAN.
+- A port's tagging configuration — that is vlan_memberships on NetworkInterface, referencing this record.
+
+**Works with:**
+- NetworkInterface — ports and sub-interfaces declare membership by reference.
+- VirtualNetwork — virtual networks ride a referenced segment.
+- NetworkSwitch — the fabric carrying the segment.
+- NetworkGateway — edge segments each ride a referenced VLAN.
+
 ## VexStatement
 
 ### VexStatement (0.1.0)
@@ -1217,6 +1214,29 @@ One statement per (vulnerability, package version). It carries the OpenVEX statu
 - An analysis has produced a draft exploitability claim that needs a reviewer before anyone relies on it.
 - A consumer or regulator asks what was verified about a known vulnerability in a shipped package.
 - An SBOM consumer needs the VEX status for a component and the evidence behind it.
+
+## VirtualNetwork
+
+### VirtualNetwork (0.9.0)
+
+**Purpose:** Models the attachment point workloads plug into — the host- or cluster-scoped network a guest names when it says attach me here.
+
+The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes NetworkAttachmentDefinition, an OVN logical switch — whichever; the mechanism is the provider. It declares how traffic leaves — `forward_mode`, in libvirt's vocabulary: `bridge` (straight onto a host bridge), `nat`, `routed`, or `isolated` — and references downward: the VLAN segment it rides and the host bridge or uplink interface supporting it. That downward reference completes the walkable path guest → virtual network → bridge → bond → NIC → switch.
+
+**Use when:**
+- You need VMs or pods to attach to networks by selecting an existing named network rather than describing L2 details inline.
+- You need the guest-to-physical-network path traversable for impact analysis — e.g. which guests a bridge change affects.
+
+**Not for:**
+- The VLAN id or segment itself — VLAN; a virtual network rides a segment, referenced not restated.
+- The host bridge device — NetworkInterface (device_class bridge) supports this network from below.
+- Per-guest NIC intent — that lives on Machine.VM's own networks list.
+
+**Works with:**
+- Machine.VM / KubernetesCluster — the guests that attach, and the scope that hosts the network.
+- VLAN — the underlying segment, selected by reference.
+- NetworkInterface — the supporting bridge or uplink on the host.
+- IPAddressPool — the address pool scoped to this segment.
 
 ## Volume
 

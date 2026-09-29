@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.8.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.8.2
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: type
 resource_type: Software.Service
 parent: Software
-version: 0.8.1
+version: 0.8.2
 family: Resource
 status: active
 metadata:
@@ -143,7 +143,7 @@ relationships:
   description: Requires a directory/identity service — strength hard|soft.
 - edge_type: depends_on
   name: requires
-  target: Network.AddressService
+  target: AddressService
   cardinality: 0..n
   description: Requires a DNS/DHCP address service — strength hard|soft.
 - edge_type: binds_to
@@ -202,5 +202,5 @@ context:
   works_with:
   - Container — containerized constituents, by reference.
   - KubernetesCluster / Machine.BareMetalHost / Machine.VM — where the constituents run.
-  - Data.Database / Security.DirectoryService / Network.AddressService — what the service requires.
+  - Data.Database / Security.DirectoryService / AddressService — what the service requires.
   - Security.CredentialRef — the service's secrets, by reference.

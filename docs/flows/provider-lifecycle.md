@@ -514,7 +514,7 @@ spec:
       type: ssd
   networks:
     - name: eth0
-      network_ref: uuid/b7e3f1a2-...   # → existing Network.VirtualNetwork
+      network_ref: uuid/b7e3f1a2-...   # → existing VirtualNetwork
       ip_mode: dynamic
       # RESOLVED, not necessarily stated. The consumer may have written a requirement
       # instead — a zone, a tier, a segment — and placement converged on this network
@@ -538,10 +538,10 @@ request_context:
 Every field that points at another resource carries a URF reference (identifier-scheme §9): one URL
 string whose uuid path resolves the target and whose optional `@pin` names an immutable version.
 
-- `network_ref` → `Network.VirtualNetwork`
+- `network_ref` → `VirtualNetwork`
 - `namespace_ref` → `KubernetesNamespace`
 - `storage_class_ref` → `StorageClass`
-- `ip_address` → `Network.IPAddress`
+- `ip_address` → `IPAddress`
 - Storage volume attachments → `Volume`
 
 **The principle:** if something has identity, lifecycle, and other resources depend on it — it's a
@@ -605,7 +605,7 @@ realized:
   vcpu: 4
   memory: 16384
   fqdn: "vm-0042.tenant-alpha-prod.k8s-east.internal"
-  ip_address: uuid/c9d4e5f6-...         # → realized Network.IPAddress
+  ip_address: uuid/c9d4e5f6-...         # → realized IPAddress
   storage_path: "/dev/rbd0"
 
 outputs:
@@ -620,8 +620,8 @@ relationships_created:
     target_native_id: "ceph/pvc-a1b2c3"   # provider's native id for correlation
   - edge_type: binds_to
     relation: connects_to
-    target_type: Network.VirtualNetwork
-    target_ref: uuid/b7e3f1a2-...        # → same Network.VirtualNetwork from intent
+    target_type: VirtualNetwork
+    target_ref: uuid/b7e3f1a2-...        # → same VirtualNetwork from intent
     target_native_id: "vlan-40"
 ```
 

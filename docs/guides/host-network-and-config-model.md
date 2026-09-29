@@ -54,15 +54,15 @@ the "ethernet adapter resource" Maintainer means, and it already covers macvlan/
 as an attribute of the adapter for now (our fleet is one-MAC-per-adapter); note that NetBox's separate
 MACAddress record is the blessed escalation path *if* we ever need permanent-vs-assigned or multi-MAC.
 
-### 2. IP → reuse `Network.IPAddress` as a **dependent record** (Maintainer's "IPaddress record dependency")
-`Network.IPAddress` already exists (`family`, `allocation` → `address`). Model each address as its own
+### 2. IP → reuse `IPAddress` as a **dependent record** (Maintainer's "IPaddress record dependency")
+`IPAddress` already exists (`family`, `allocation` → `address`). Model each address as its own
 record with a `depends_on` (or `references … relation: assigned_to`) edge to its `NetworkInterface`.
 Field shape follows the RFC 8344/NMstate convergent form (`address` CIDR + `allocation` as the `origin`
 discriminator). **A static DHCP reservation is just `allocation: static`** bound to an interface — not a
 new type. This matches RFC 8344 `origin=static`, NetBox `status=reserved`, Redfish `AddressOrigin=Static`.
 
 ### 3. NetworkManager config → **one new type, adopting NMstate by reference (Tier 2)**
-This is the only gap. Add a config resource (working name **`Network.ConnectionProfile`** / `Config.HostNetwork`)
+This is the only gap. Add a config resource (working name **`ConnectionProfile`** / `Config.HostNetwork`)
 whose body **conforms to the NMstate interface schema** rather than re-inventing fields: `state`,
 `ipv4`/`ipv6` (`enabled`/`dhcp`/`autoconf`/`address[]`), the type sub-objects (`vlan{base-iface,id}`,
 `link-aggregation{mode,port[]}`, `bridge{port[]}`, `mac-vlan{base-iface,mode}`), plus `routes.config[]`
@@ -73,22 +73,22 @@ body. It is net-negative — it supersedes bespoke per-tool host-network vars �
 OpenShift `NodeNetworkConfigurationPolicy.spec.desiredState` for free.
 
 ### 4. DHCP reservations → a projection, not a hand-list
-Today `Network.DHCPScope.reservations` is an inline array and the truth lives in a hand-maintained
-Ansible reservation list. Instead: **a reservation is derived** from every `Network.IPAddress` with
+Today `DHCPScope.reservations` is an inline array and the truth lives in a hand-maintained
+Ansible reservation list. Instead: **a reservation is derived** from every `IPAddress` with
 `allocation: static` that is bound to a `NetworkInterface` (which carries the MAC), contained by a
-host (which gives the hostname). A DHCP provider (e.g. Kea) realizing `Network.AddressService`
-renders its reservations from that set. `Network.DHCPScope.reservations` becomes a computed projection of the
+host (which gives the hostname). A DHCP provider (e.g. Kea) realizing `AddressService`
+renders its reservations from that set. `DHCPScope.reservations` becomes a computed projection of the
 estate, so "the DHCP provider's records live in UDLM format" is satisfied by construction — whichever provider.
 
 ## Data · Policy · Provider
 
-- **Data** — `NetworkInterface` (adapter + MAC), `Network.IPAddress` (the address, dynamic or
-  static), `Network.ConnectionProfile` (desired config), `Network.DHCPScope`/`Network.AddressService`
+- **Data** — `NetworkInterface` (adapter + MAC), `IPAddress` (the address, dynamic or
+  static), `ConnectionProfile` (desired config), `DHCPScope`/`AddressService`
   (the DHCP surface). Bindings are dependency edges; identity is uuid/handle.
 - **Policy** — which addresses are static vs pool; which pool an address allocates from
   (`ownership-sharing-allocation.md` IPAddressPool→IPAddress); reservation constraints (never hand out a
   reserved IP); who may own/allocate an address (tenant).
-- **Provider** — a DHCP address service (e.g. Kea, `Network.AddressService`) realizes reservations + leases
+- **Provider** — a DHCP address service (e.g. Kea, `AddressService`) realizes reservations + leases
   from the Data under Policy; NetworkManager (via Ansible, later Kubernetes-NMState) realizes
   `ConnectionProfile` onto the host and reports back discovered MAC/address; the DHCP generator is the
   read-side provider that renders provider config from the estate.
@@ -97,9 +97,9 @@ estate, so "the DHCP provider's records live in UDLM format" is satisfied by con
 
 1. `host-a` — a `Machine.BareMetalHost` record (workstation role).
 2. `host-a-eth0` — a `NetworkInterface`, `contained_by: host-a`, `mac_address: <new MAC>`.
-3. `host-a-ip` — a `Network.IPAddress`, `allocation: static`, `address: 192.0.2.91/24`,
+3. `host-a-ip` — a `IPAddress`, `allocation: static`, `address: 192.0.2.91/24`,
    `depends_on: host-a-eth0`. **This record is the reservation.**
-4. (optional now) `host-a-eth0-profile` — a `Network.ConnectionProfile` (NMstate body) `configures: host-a-eth0`.
+4. (optional now) `host-a-eth0-profile` — a `ConnectionProfile` (NMstate body) `configures: host-a-eth0`.
 5. The DHCP provider renders `{mac: <new>, ip: 192.0.2.91, hostname: host-a}` from #2–#3; the old MAC
    disappears when the record changes. Same edit reassigns the IP on any future motherboard swap.
 
@@ -112,11 +112,11 @@ estate, so "the DHCP provider's records live in UDLM format" is satisfied by con
   adopt-by-reference: UDLM owns identity + the conformance pointer, NMstate owns the body). Not just its
   vocabulary.
 - **Coverage — DECIDED:** all of Kea's reservation records live in UDLM format (fleet + IoT) — "Kea stores
-  its records in UDLM format." `Network.DHCPScope.reservations` becomes a projection of the estate.
+  its records in UDLM format." `DHCPScope.reservations` becomes a projection of the estate.
 
 ## Decided at ratification (2026-07-15, DCM ADR-023)
 
-- **Config type name — DECIDED:** `Network.ConnectionProfile`, attaching to the adapter via
+- **Config type name — DECIDED:** `ConnectionProfile`, attaching to the adapter via
   `references … relation: configures`.
 
 ## Still open
@@ -127,7 +127,7 @@ estate, so "the DHCP provider's records live in UDLM format" is satisfied by con
   own reviewed PR after this proposal is ratified.
 
 ## Ties
-#267 (host-network model: `parent_device`/`lower_layer`, `device_class`), `Network.IPAddress` +
-`Network.DHCPScope` + `Network.AddressService` (existing types), `ownership-sharing-allocation.md`
+#267 (host-network model: `parent_device`/`lower_layer`, `device_class`), `IPAddress` +
+`DHCPScope` + `AddressService` (existing types), `ownership-sharing-allocation.md`
 (IPAddressPool→IPAddress allocation), `docs/spec/principles/adopted-standards.md` (Tier-2 adopt-by-reference),
 and the DHCP estate in the estate's Ansible + DCM repos.

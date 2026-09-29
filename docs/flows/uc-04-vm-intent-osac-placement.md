@@ -98,7 +98,7 @@ flowchart LR
     direction TB
     PROV["Provider registration<br/>declares capability, capacity,<br/>and what each thing IS (§2.5a)"]
     DISC["Discovery<br/>observes what actually exists"]
-    PROV --> EST[("Estate<br/>Network.VLAN · Network.Subnet<br/>Network.VirtualNetwork · Network.IPAddressPool<br/>StorageClass · KubernetesNamespace")]
+    PROV --> EST[("Estate<br/>VLAN · Subnet<br/>VirtualNetwork · IPAddressPool<br/>StorageClass · KubernetesNamespace")]
     DISC --> EST
   end
 
@@ -141,8 +141,8 @@ anything is built:
 | 2 | Placement reads the estate | every segment, subnet and network a candidate provider reports, with its `zone` and `tier` | — |
 | 3 | Placement resolves the terms | what `dmz` and `high-throughput` REQUIRE — the floors behind the names | — |
 | 4 | Placement selects | the candidates clearing both floors | the chosen network on the payload |
-| 5 | Walk to the pool | `Network.IPAddressPool` within that subnet | — |
-| 6 | Reserve an address | the pool's free capacity | a held `Network.IPAddress` — **before the VM exists** |
+| 5 | Walk to the pool | `IPAddressPool` within that subnet | — |
+| 6 | Reserve an address | the pool's free capacity | a held `IPAddress` — **before the VM exists** |
 | 7 | Enrich | the selected provider's Provider Class | namespace, native storage class, native subnet |
 | 8 | Round again | the payload changed at 4–7 | re-validated against every policy |
 
@@ -165,7 +165,7 @@ any, all, or none of them:
 
 | Axis | The question | The provider reports | The consumer requires |
 |---|---|---|---|
-| **segment** | *which* logical network | `Network.VLAN`, via the `segment` edge | `networks[].vlan` |
+| **segment** | *which* logical network | `VLAN`, via the `segment` edge | `networks[].vlan` |
 | **zone** | *what kind* — DMZ, management, internal | `Network.zone` → a governed **taxonomy** term | `networks[].zone` |
 | **tier** | *how good* — bandwidth, latency | `Network.tier` → a governed **floor** | `networks[].tier` |
 
@@ -191,7 +191,7 @@ which derives no trust from network location (NIST SP 800-207) — UDLM already 
 **The segment axis survives leaving the datacenter.** `encapsulation` already carries
 vlan / vxlan / geneve / flat, so the class is a segment of which 802.1Q is one form. A public cloud
 exposes no VLAN — there the segment is a **VPC subnet**, adopted by reference (T5) rather than given
-a parallel class: the VPC is the `Network.VirtualNetwork` and the subnet is the addressed segment
+a parallel class: the VPC is the `VirtualNetwork` and the subnet is the addressed segment
 within it. The three clouds converged on that shape independently, so re-expressing it would invent
 a fourth.
 

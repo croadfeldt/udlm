@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.1.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.1.2
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Machine
-version: 2.1.1
+version: 2.1.2
 family: Resource
 status: active
 filed_under: [compute]
@@ -202,7 +202,7 @@ context:
   - When the form matters — order Machine.VM, Machine.BareMetalHost or Machine.LPAR.
   works_with:
   - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
-  - Volume and Network.VirtualNetwork — what the realized machine attaches to.
+  - Volume and VirtualNetwork — what the realized machine attaches to.
 spec_examples:
 - cpu:
     count: 4

@@ -1,28 +1,23 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Subnet/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Subnet/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "07faf9f7-511b-4a77-8743-092fa6ca06a1",
-  "resource_type": "Network.Subnet",
-  "version": "0.1.0",
+  "resource_type": "Subnet",
+  "version": "0.2.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Subnet",
     "maintainer": "UDLM project",
     "origination_timestamp": "2026-08-10T00:00:00Z",
-    "description": "An IP network — a prefix, its gateway, and how addresses on it are assigned. The layer 3 half of \"which network\", independently selectable from the layer 2 segment it usually sits on.",
+    "description": "An IP network — a prefix, its gateway, and how addresses on it are assigned. The layer 3 half of \"which network\", independently selectable from the layer 2 segment it usually sits on. A Base by the Base test (CLS-002): RFC 4632 CIDR and the public-cloud subnet abstract over every prefix with a gateway and assignment mode, so a subnet is one deliverable any network provider can carve.",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Network",
-          "version": "1.2.0",
-          "uuid": "b4309667-2eed-4330-88d3-96bc94d54436"
-        },
-        {
-          "class": "Network.Subnet",
-          "version": "0.1.0",
+          "class": "Subnet",
+          "version": "0.2.0",
           "uuid": "07faf9f7-511b-4a77-8743-092fa6ca06a1"
         }
       ]
@@ -33,40 +28,12 @@
     "additionalProperties": false,
     "properties": {
       "zone": {
-        "allOf": [
-          {
-            "$ref": "../data-reference.schema.json#/$defs/data_reference"
-          },
-          {
-            "required": [
-              "reference_data_type"
-            ],
-            "properties": {
-              "reference_data_type": {
-                "const": "network_zone"
-              }
-            }
-          }
-        ],
-        "description": "WHAT KIND OF NETWORK THIS IS — DMZ, management, internal, storage — as a governed TAXONOMY term (Knowledge.TaxonomyTerm), not a property bundle and not a floor. A CLASSIFICATION, NOT A REQUIREMENT, and the distinction is why this is a taxonomy where `tier` is reference data: a floor is something a second provider can MEET, a category is something a thing IS. Taxonomy is also the only one of the two that carries `normalization_rules`, which is what this needs — providers report `dmz-2`, `DMZ_RESTRICTED` and `dmz restricted`, and all three have to land on one canonical term before any policy can match on it. FOR PLACEMENT ONLY (maintainer ruling 2026-08-10). Nothing critical hangs off a zone directly: it is not an authorization, not a control, and not a boundary. ANYTHING REQUIRED BECAUSE OF A ZONE IS ENFORCED BY POLICY READING IT — the model carries the classification, policy acts on it, which is the same split that governs everything else here. That also keeps the model on the right side of zero-trust architecture, which derives no trust from network location (NIST SP 800-207); UDLM already ships a `zero_trust.posture` setting that a location-as-trust reading would contradict. ON THE BASE though it does not apply to every network type (maintainer ruling 2026-08-10): enough of the family carries a category that the base is the right home, and an element that some types leave unpopulated is what `optional` is for. Scope IS portability (ADR-038 §3) — a category two providers can both report is portable by definition. Provider-reported, like `tier`."
+        "$ref": "../common-elements.schema.json#/$defs/network_zone_ref",
+        "description": "What kind of network this is — a governed network-zone term, for placement only (common-elements.schema.json `network_zone_ref`)."
       },
       "tier": {
-        "allOf": [
-          {
-            "$ref": "../data-reference.schema.json#/$defs/data_reference"
-          },
-          {
-            "required": [
-              "reference_data_type"
-            ],
-            "properties": {
-              "reference_data_type": {
-                "const": "network_tier"
-              }
-            }
-          }
-        ],
-        "description": "HOW GOOD THIS NETWORK IS — a reference to a governed `network_tier`, exactly parallel to `storage_tier`. Each term DENOTES A FLOOR (bandwidth, latency), so asking for a tier is asking for the floor and any network meeting it qualifies: one provider's \"10G\" and another's \"high-throughput\" are interchangeable iff both clear it. That is what keeps the intent portable — the match is against the floor, never the string. NAME-SELECTABLE BUT REQUIREMENTS-AUTHORITATIVE (ADR-036, ruled 2026-07-27): a consumer may select by tier name, explicit requirements win where both are given, and the provider records its native class as a realized output rather than something the consumer had to know. ON THE BASE, NOT A TYPE, because performance is expected to be consumable by ALL network class providers and portable (maintainer ruling 2026-08-10). Scope IS portability (ADR-038 §3), so the category base is where a fact every provider must report belongs. Provider-reported at registration or discovery — the party that knows is the one that says."
+        "$ref": "../common-elements.schema.json#/$defs/network_tier_ref",
+        "description": "How good this network is — a governed network_tier floor the provider reports (common-elements.schema.json `network_tier_ref`)."
       },
       "prefix": {
         "type": "string",
@@ -83,7 +50,7 @@
       },
       "gateway_address": {
         "type": "string",
-        "description": "The default route off this subnet, as an address rather than a reference — the address is a property of the subnet, while the device answering it is a `Network.Gateway` and may change without the subnet changing. Absent means no default route (an isolated L3 network)."
+        "description": "The default route off this subnet, as an address rather than a reference — the address is a property of the subnet, while the device answering it is a `NetworkGateway` and may change without the subnet changing. Absent means no default route (an isolated L3 network)."
       },
       "address_assignment": {
         "type": "string",
@@ -138,14 +105,14 @@
     {
       "edge_type": "references",
       "name": "segment",
-      "target": "Network.VLAN",
+      "target": "VLAN",
       "cardinality": "0..1",
       "description": "The layer 2 segment this subnet rides on, WHERE THERE IS ONE. Optional and 0..1 on purpose: the L2-to-L3 mapping is not concrete — one segment may carry several subnets, and a cloud provider may expose no segment at all. A consumer selecting a subnet is making a different request from a consumer selecting a segment, and this edge is what relates them without merging them."
     },
     {
       "edge_type": "contained_by",
       "name": "network",
-      "target": "Network.VirtualNetwork",
+      "target": "VirtualNetwork",
       "cardinality": "0..1",
       "description": "The logical network (VPC analogue) this subnet belongs to, where the provider exposes one."
     }
@@ -165,12 +132,15 @@
       "standard": "Public-cloud subnet",
       "version": "AWS VPC subnet / Azure VNet subnet / GCP subnetwork (convergent de-facto model)",
       "standard_name": "VPC subnet",
-      "role": "The cloud realization of an L3 network. Recorded so a cloud provider naturalizes into this class rather than a cloud-only branch. The VPC that CONTAINS such a subnet has no class yet, and `contained_by → Network.VirtualNetwork` below is the on-prem attachment-point case rather than a VPC. Tracked separately: a subnet is useful without its container, and guessing the container's shape would be worse than leaving it open.",
+      "role": "The cloud realization of an L3 network. Recorded so a cloud provider naturalizes into this class rather than a cloud-only branch. The VPC that CONTAINS such a subnet has no class yet, and `contained_by → VirtualNetwork` below is the on-prem attachment-point case rather than a VPC. Tracked separately: a subnet is useful without its container, and guessing the container's shape would be worse than leaving it open.",
       "source": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html",
       "license": "vendor-documentation",
       "license_compatibility": "reference-only",
       "disposition": "tier1_value"
     }
+  ],
+  "filed_under": [
+    "network"
   ],
   "context": {
     "purpose": "Give the layer 3 network a first-class identity, so a consumer can require an IP network without naming a segment, and an allocation pool has something to sit inside.",
@@ -181,14 +151,14 @@
       "A /28 is allocated from a larger prefix somebody else holds"
     ],
     "not_for": [
-      "The layer 2 segment — that is `Network.VLAN`, and a subnet may not map to exactly one",
-      "Handing out individual addresses — that is `Network.IPAddressPool` within this subnet",
-      "Routing between networks — that is `Network.Gateway`"
+      "The layer 2 segment — that is `VLAN`, and a subnet may not map to exactly one",
+      "Handing out individual addresses — that is `IPAddressPool` within this subnet",
+      "Routing between networks — that is `NetworkGateway`"
     ],
     "works_with": [
-      "`Network.VLAN` — the segment this subnet usually rides on, when there is one",
-      "`Network.IPAddressPool` — the allocatable ranges within this subnet",
-      "`Network.Gateway` — the egress from it"
+      "`VLAN` — the segment this subnet usually rides on, when there is one",
+      "`IPAddressPool` — the allocatable ranges within this subnet",
+      "`NetworkGateway` — the egress from it"
     ]
   }
 }

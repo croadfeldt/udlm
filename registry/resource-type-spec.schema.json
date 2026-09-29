@@ -37,7 +37,7 @@
     "resource_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-      "description": "Type name, unique within its `family`. Domain-owned types: namespaced Category.Type (Machine.VM, Network.IPAddress). Cross-cutting / foundational types not owned by a single domain: single-segment (Capability, TaxonomyTerm, Topology) — disambiguated by `family` (registry/naming-conventions.md §1, docs/spec/foundations/knowledge-family.md)."
+      "description": "Type name, unique within its `family`. Domain-owned types: namespaced Category.Type (Machine.VM, IPAddress). Cross-cutting / foundational types not owned by a single domain: single-segment (Capability, TaxonomyTerm, Topology) — disambiguated by `family` (registry/naming-conventions.md §1, docs/spec/foundations/knowledge-family.md)."
     },
     "version": {
       "type": "string",
@@ -88,12 +88,12 @@
     "allocated_from_pool_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-      "description": "For `ownership_model: allocation` — the pool type instances of this type are carved from (Network.IPAddress → Network.IPAddressPool). Required when the ownership model is `allocation` and meaningless otherwise (validate.py enforces both directions). The reciprocal of the pool's `allocation_produces_type`; the pair is what lets placement find an eligible pool and what an AllocationRecord relationship binds."
+      "description": "For `ownership_model: allocation` — the pool type instances of this type are carved from (IPAddress → IPAddressPool). Required when the ownership model is `allocation` and meaningless otherwise (validate.py enforces both directions). The reciprocal of the pool's `allocation_produces_type`; the pair is what lets placement find an eligible pool and what an AllocationRecord relationship binds."
     },
     "allocation_produces_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-      "description": "For a POOL type — the allocation type carving from this pool produces (Network.IPAddressPool → Network.IPAddress). Its presence is what makes a type a pool: `is_pool` from the 0.1 prose is DERIVED from this field and deliberately not stored (DRV-001). The named type MUST declare `ownership_model: allocation` and name this type back in `allocated_from_pool_type` (validate.py enforces the round trip)."
+      "description": "For a POOL type — the allocation type carving from this pool produces (IPAddressPool → IPAddress). Its presence is what makes a type a pool: `is_pool` from the 0.1 prose is DERIVED from this field and deliberately not stored (DRV-001). The named type MUST declare `ownership_model: allocation` and name this type back in `allocated_from_pool_type` (validate.py enforces the round trip)."
     },
     "publicly_stakeable": {
       "type": "boolean",

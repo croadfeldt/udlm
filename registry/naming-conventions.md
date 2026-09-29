@@ -71,7 +71,7 @@ Three terms here are easy to collide; keep them distinct.
 
 A product that bundles several capabilities is modeled as **realizing multiple types**, not one bespoke
 type. Example: FreeIPA → `Security.DirectoryService` (LDAP+Kerberos, RFC 4511/4512/4120) **+**
-`Network.DNSZone` **+** (future) `Security.CertificateAuthority`. This keeps each type portable and
+`DNSZone` **+** (future) `Security.CertificateAuthority`. This keeps each type portable and
 reusable and avoids a `FreeIPA.Everything` corner.
 
 ## 3a. Asset vs. allocation vs. instance — don't mint redundant types
@@ -177,9 +177,9 @@ The new types, their category/tier, and the standard each adopts by reference. A
 | `NetworkInterface` | Hardware ✚ | Redfish `NetworkAdapter`/`NetworkPort` | NIC: mac, speed |
 | `Machine.BareMetalHost` | Machine | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | the physical **asset** (raw resource, §28); rollup of the hardware components (§26). An *allocation* to a consumer is the ownership model, not a separate type (§3a); a running *instance* is a realized entity. |
 | `StorageCluster` | Storage | SNIA Swordfish `StorageSystem` + Rook `CephCluster` (provider) | vendor-neutral; provider on instance; protocol outputs |
-| `Network.Gateway` | Network | K8s Gateway API (concept) / general L3 routing | routing/NAT/firewall edge |
-| `Network.DNSZone` | Network | RFC 1035 / 1034 | authoritative zone; external-dns `DNSEndpoint` as k8s-native ref |
-| `Network.DHCPScope` | Network | RFC 2131 (+ 8415) / ISC Kea subnet | address scope/range + reservations |
+| `NetworkGateway` | Network | K8s Gateway API (concept) / general L3 routing | routing/NAT/firewall edge |
+| `DNSZone` | Network | RFC 1035 / 1034 | authoritative zone; external-dns `DNSEndpoint` as k8s-native ref |
+| `DHCPScope` | Network | RFC 2131 (+ 8415) / ISC Kea subnet | address scope/range + reservations |
 | `Security.DirectoryService` | Security | RFC 4511/4512 (LDAP) + RFC 4120 (Kerberos) | the directory server; FreeIPA realizes this + DNSZone |
 | `Facility.PowerFeed` | Facility ✚ | Redfish DCIM `Circuit`/`PowerDistribution` + NUT (UPS) | power source; graph root for the homelab |
 

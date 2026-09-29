@@ -32,7 +32,7 @@ The hierarchy serves four goals:
 
 These terms are frequently conflated. The distinction is architectural:
 
-**Resource Type** — the classification category. Groups catalog items for portability and discovery. Vendor-neutral by requirement. Defines the field schema that any provider offering this type must support. Examples: `Machine.VM`, `Network.IPAddress`, `Process.AnsiblePlaybook`.
+**Resource Type** — the classification category. Groups catalog items for portability and discovery. Vendor-neutral by requirement. Defines the field schema that any provider offering this type must support. Examples: `Machine.VM`, `IPAddress`, `Process.AnsiblePlaybook`.
 
 **Resource Type Specification** — the versioned, formal definition of a Resource Type: field schema, constraints, lifecycle rules, portability classification, and allowed relationship types. Stored in the Resource Type Registry. Providers implement against a specific version. Example: `Machine.VM v2.1.0`.
 
@@ -63,7 +63,7 @@ These two terms are frequently conflated throughout the documentation. They are 
 **Resource Type Specification (Registry entry):**
 - Vendor-neutral definition of a resource type's fields, constraints, lifecycle rules, and portability classification
 - Lives in the Resource Type Registry (Tier 1, 2, or 3)
-- Examples: `Machine.VM v2.1.0`, `Network.VLAN v1.0.0`
+- Examples: `Machine.VM v2.1.0`, `VLAN v1.0.0`
 - Defines what the resource TYPE is, not what any specific provider offers
 
 **Provider Catalog Item (Service Catalog entry):**
@@ -305,7 +305,7 @@ Defines an abstract resource within a category. A Resource Type represents a cla
 - Resource Types declare their **base field specification** (universal fields only)
 - Resource Types are versioned and can be deprecated
 
-**Example:** `Machine.VM`, `Network.IPAddress`, `Network.FirewallRule`
+**Example:** `Machine.VM`, `IPAddress`, `FirewallRule`
 
 ---
 

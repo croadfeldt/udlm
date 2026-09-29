@@ -341,7 +341,7 @@ spec:
 
 # Realized State event for the new IPAddress entity:
 entity_uuid: ip-entity-uuid
-resource_type: Network.IPAddress
+resource_type: IPAddress
 ownership_model: allocation
 owned_by_tenant_uuid: a1b2c3d4-appteam-uuid    # AppTeam owns this
 allocated_from_pool_uuid: pool-entity-uuid      # NetworkOps owns the pool

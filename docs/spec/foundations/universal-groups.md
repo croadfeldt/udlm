@@ -608,7 +608,7 @@ cross_tenant_authorization:
   authorized_resources:
     - resource_uuid: <vlan-100-uuid>
       permitted_operations: [stake, read]
-    - resource_type: Network.IPAddress
+    - resource_type: IPAddress
       source_pool_uuid: <ippool-uuid>
       permitted_operations: [allocate]
 

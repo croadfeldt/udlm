@@ -35,7 +35,7 @@ The **base level** is the minimum a provider must implement for **a control plan
 config-projection spec).
 4. **Lifecycle functions** — the **two-phase realize** pair `reserve` / `commit`, plus `converge` / `decommission`: execute the four-state transitions the control plane drives (§6, §6a dispatch). Implementation is **reserve-then-commit** (ADR-011): `reserve` validates + holds with **no side effects**; `commit` builds the held reservation; nothing is committed until the whole reserved graph validates. All MUST be **idempotent / re-entrant** (ADR-006 convergence) so the control plane can re-drive.
 5a. **Selectable characteristics on what it advertises** — where a provider reports a resource that a consumer will be PLACED ON rather than handed (a network, a storage class, a namespace), it MUST report the characteristics that make one instance distinguishable from another for placement, not only a name. A name alone is unusable: five networks reported by one cluster and five by another are incomparable, and the placement author "does not know anything" about any of them — the objection that produced this clause (engineering review, 2026-08-10).
-   Concretely for networks: `zone` (what kind — a governed taxonomy term) and `tier` (how good — a governed floor), both on the Network base class. For storage: `tier` and `capabilities` on `StorageClass`. **THE PARTY THAT KNOWS IS THE PARTY THAT REPORTS** — a consumer cannot supply this and a hand-maintained mapping table goes stale, which is why it is a registration obligation rather than a field somebody may fill.
+   Concretely for networks: `zone` (what kind — a governed taxonomy term) and `tier` (how good — a governed floor), declared on every network Base from one home in `common-elements.schema.json`. For storage: `tier` and `capabilities` on `StorageClass`. **THE PARTY THAT KNOWS IS THE PARTY THAT REPORTS** — a consumer cannot supply this and a hand-maintained mapping table goes stale, which is why it is a registration obligation rather than a field somebody may fill.
    A characteristic the provider is SILENT about does not satisfy a requirement for it. Silence is not denial, but neither is it a promise, so a match refuses rather than assumes — the alternative is a workload placed on a network nobody claimed was isolated.
    What a provider MAY NOT do is report a native class name in place of a governed term: a term denotes a floor two providers can both clear (ADR-036), and a vendor name denotes only itself. The native name is reported as **realized output**, which is where it belongs.
 
@@ -61,14 +61,14 @@ A resource's relationships arise at two different points in the lifecycle, and t
 
 ### 1b.1 Accommodating a broker's custom information (DCM ADR-009 §3)
 
-When a provider brokers a dependency it does **not** own (a VM provider needs a `Network.IPAddress` the IP provider owns — `fulfillment: provider`), it conveys the criteria the dependency needs via a constituent `binding` into the target resource. **Most of what a broker conveys is a shared foundational reference, not custom info** — the IP case needs only the **target `Network.VLAN` segment (or `Facility.Location`)** so the IP provider knows *where* to allocate; no NIC, MAC, or switch-port is involved (binding the returned IP to a vNIC is the VM provider's own post-allocation concern). That path needs **no accommodation** — the base type already references the shared segment.
+When a provider brokers a dependency it does **not** own (a VM provider needs a `IPAddress` the IP provider owns — `fulfillment: provider`), it conveys the criteria the dependency needs via a constituent `binding` into the target resource. **Most of what a broker conveys is a shared foundational reference, not custom info** — the IP case needs only the **target `VLAN` segment (or `Facility.Location`)** so the IP provider knows *where* to allocate; no NIC, MAC, or switch-port is involved (binding the returned IP to a vNIC is the VM provider's own post-allocation concern). That path needs **no accommodation** — the base type already references the shared segment.
 
 Accommodation is the **rarer** case: a broker must convey **genuinely provider-specific realize-time state the base type does not model** (e.g. a vendor-specific offload or QoS class). A provider that **owns** a resource type therefore **MUST** make that type accommodate such fields in one of two sanctioned ways, and a **brokering** provider **MUST** use whichever the target offers when — and only when — a shared reference does not suffice:
 
 - **(a) Base-type extension surface** — the target type carries an open extension block (a provider-extension layer, `domain: provider`, `layering-and-versioning.md`) into which the broker's fields are written, namespaced to the contributing provider; the base type stays vendor-neutral.
 - **(b) Custom resource type layered on the base** — a derived type (`docs/spec/foundations/resource-type-hierarchy.md`) that extends the base and adds the broker's fields as first-class.
 
-A type that supports **neither** — where a genuinely-bespoke field is required — is **non-conformant for brokered fulfillment**. *Note:* `Network.IPAddress` is **not** such a case: it needs only the shared segment reference above, so it requires no extension and no derived type. Accommodation applies only where the base type cannot carry provider-specific realize-time state at all. See UDLM ADR-009 for the end-to-end flow.
+A type that supports **neither** — where a genuinely-bespoke field is required — is **non-conformant for brokered fulfillment**. *Note:* `IPAddress` is **not** such a case: it needs only the shared segment reference above, so it requires no extension and no derived type. Accommodation applies only where the base type cannot carry provider-specific realize-time state at all. See UDLM ADR-009 for the end-to-end flow.
 
 **Why.** The goal is to let the broker and the owning provider **exchange the full, contextual information the dependency needs** — not to constrain them to a fixed vocabulary. Usually that information is a **shared reference** both sides already understand (a segment, a location), and nothing bespoke crosses the boundary. Where a broker genuinely must convey provider-specific state the base type does not model, a sanctioned extension (a) or custom type (b) carries it faithfully, namespaced and typed, so nothing is dropped or approximated. Agreeing the shape in advance and validating it at admission follows from this, but the aim is the **complete, contextual exchange** itself.
 
@@ -616,8 +616,8 @@ Placement and consumer-selection only work over **real** resources. A `realize_r
 resource_advertisement:                 # returned from {capabilities_endpoint}, refreshed by lifecycle events
   category: realize_resources/Network    # the capability category this advertises for
   inventory:                             # the resources the provider OFFERS, as referenceable resources
-    - resource_ref: net-vlan-20          # identity of an offered foundational resource (Network.VLAN, Facility.Location, StoragePool, Machine.BareMetalHost, ...)
-      resource_type: Network.VLAN
+    - resource_ref: net-vlan-20          # identity of an offered foundational resource (VLAN, Facility.Location, StoragePool, Machine.BareMetalHost, ...)
+      resource_type: VLAN
       selectable: true                   # part of the consumer-selectable set (subject to eligibility)
   capacity:                              # the QUANTITATIVE input placement decides against, per offered resource
     - resource_ref: host-a
@@ -726,7 +726,7 @@ composite_service_capabilities:
       constituents:
         - resource_type: Machine.VM
           required_for_delivery: required
-        - resource_type: Network.IPAddress
+        - resource_type: IPAddress
           required_for_delivery: required
         - resource_type: DNS.Record
           required_for_delivery: partial

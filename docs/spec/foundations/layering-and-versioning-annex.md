@@ -300,8 +300,8 @@ flowchart TD
     S14 --> S5["Step 5: Pre-placement policies on parent"]
     S5 --> S6["Step 6: Placement loop — parent provider selected<br/>Also identifies required dependency providers"]
     S6 --> DEP{"For each dependency<br/>(parallel where ordering allows)"}
-    DEP --> IP["Network.IPAddress → own layer chain (Steps 1-4)<br/>Context: inherits parent resolved placement fields"]
-    DEP --> PORT["Network.Port → own layer chain (Steps 1-4)<br/>Context: inherits parent + IP resolution result"]
+    DEP --> IP["IPAddress → own layer chain (Steps 1-4)<br/>Context: inherits parent resolved placement fields"]
+    DEP --> PORT["NetworkInterface → own layer chain (Steps 1-4)<br/>Context: inherits parent + IP resolution result"]
     DEP --> DNS["DNS.Record → own layer chain (Steps 1-4)<br/>Context: inherits parent + IP + Port results"]
     IP --> S79["Steps 7-9: Post-placement, storage, dispatch<br/>Parent + all dependency payloads dispatched together"]
     PORT --> S79
@@ -313,7 +313,7 @@ flowchart TD
 request:
   resource_type: Machine.VM
   dependencies:
-    - resource_type: Network.IPAddress
+    - resource_type: IPAddress
       layer_exclusions:
         - layer_handle: "layers/ip-default-ttl-config"
           reason: "Custom TTL required — excluding default"

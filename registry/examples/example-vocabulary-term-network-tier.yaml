@@ -1,5 +1,5 @@
 # A VOCABULARY TERM (registry/vocabulary-term.schema.json) — one canonical term of the
-# `network_tier` vocabulary the Network Base Class's `tier` SharedDataElement is governed by
+# `network_tier` vocabulary every network Base's `tier` element is governed by
 # (ADR-038 §2).
 #
 # THIS WAS A LAYER, AND SHOULD NEVER HAVE BEEN ONE. It used to carry `record_type: layer` +
@@ -7,8 +7,8 @@
 # it: a layer contributes fields to an assembled payload, and this contributes nothing — it is a
 # term other records point AT. ADR-054 retired the layer form; ADR-058 settles this as the home.
 #
-# WHAT THE MOVE BUYS. `scope: Network` is new, and it is the whole point (ADR-058 §2): a term
-# canonical at the Network Base is portable to every Network provider, and the scope position IS
+# WHAT THE MOVE BUYS. `scope: Resource` (was `Network` until the folder dissolved, ADR-082), and it is the whole point (ADR-058 §2): a term
+# canonical at the Resource family is portable to every provider of a class that declares `tier`, and the scope position IS
 # that contract (ADR-038 §3) rather than a claim in prose. As a loose reference-data layer this term
 # had no scope at all — which is exactly how `os_image` and `vm_size` came to "mean many things".
 # `curation_state` is new for the same reason: the intake ladder (ADR-039) is now a state the record
@@ -27,23 +27,23 @@ record_type: vocabulary_term
 # published record is never edited (ADR-051) — and this is the model's own mechanism, the
 # one the reference-data corpus already demonstrates: the resolver follows `supersedes`,
 # so a consumer pinned to the old record still resolves and is marked impacted (DCM ADR-012 #2 — impact cascades up the reference graph).
-uuid: 3f5c81d0-6b74-4a29-9e13-5c2087ab41de
+uuid: 677bc79f-4859-455e-ab10-0cdb5086d38d
 supersedes:
-  - a827a652-8e10-4ecf-be04-a68a395052c2   # the retired `layer_type: reference_data` record
+  - 3f5c81d0-6b74-4a29-9e13-5c2087ab41de   # the record scoped at the Network folder, dissolved by ADR-082 (row 085)
 handle: platform/network-tiers/high-throughput
 conforms_to: udlm/0.1
 name: Network tier — high throughput
 description: Governed definition of the 'high-throughput' network tier — the shared source of truth for its floor.
-# MAJOR: the shape changed. The FLOOR did not — a consumer reading `min_bandwidth_mbps`
+# MINOR (2.1.0): the scope widened from the dissolved Network folder to the Resource family; the shape and the FLOOR did not change. The earlier MAJOR: the shape changed. The FLOOR did not — a consumer reading `min_bandwidth_mbps`
 # gets the same promise — but the record a resolver receives is a different shape, and the
 # publish law is about what a consumer receives, not about what the author intended.
-version: 2.0.0
+version: 2.1.0
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 status:
   state: active
 # The key: which vocabulary, and how far its meaning travels.
 vocabulary_kind: network_tier
-scope: Network
+scope: Resource
 term: high-throughput
 curation_state: canonical
 contributor:

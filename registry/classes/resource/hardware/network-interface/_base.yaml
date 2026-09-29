@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/NetworkInterface/0.15.0
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkInterface/0.15.1
 conforms_to: udlm/0.1
 uuid: 04f5c089-85b3-4a89-9b2e-d0c8d172ad23
 record_type: class
 class: base
 resource_type: NetworkInterface
-version: 0.15.0
+version: 0.15.1
 family: Resource
 status: active
 filed_under:
@@ -20,7 +20,7 @@ metadata:
     lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite
     vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces
     — is one traversable device tree in a single type (common-elements §7). Added 0.3.0: the same type also serves
-    SWITCH PORTS (contained_by Network.Switch), and a physical interface carries a connects_to adjacency (renamed
+    SWITCH PORTS (contained_by NetworkSwitch), and a physical interface carries a connects_to adjacency (renamed
     from connected_to, common-elements §9) to its LLDP-discovered peer termination point (host NIC ↔ switch port)
     — the cross-device edge that makes the estate graph traversable host → NIC → port → switch (common-elements
     §7a). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if)
@@ -161,28 +161,28 @@ elements:
     optional: true
     state: canonical
     description: 'Optional — an OBSERVED/discovered VLAN tag, a discovery convenience only. NOT authoritative: the
-      authoritative membership is `vlan_memberships` (references to Network.VLAN). Discovery may record a raw tag
+      authoritative membership is `vlan_memberships` (references to VLAN). Discovery may record a raw tag
       here; resolution promotes it into a vlan_memberships entry.'
     schema:
       type: integer
       minimum: 1
       maximum: 4094
       description: 'Optional — an OBSERVED/discovered VLAN tag, a discovery convenience only. NOT authoritative:
-        the authoritative membership is `vlan_memberships` (references to Network.VLAN). Discovery may record a
+        the authoritative membership is `vlan_memberships` (references to VLAN). Discovery may record a
         raw tag here; resolution promotes it into a vlan_memberships entry.'
   - element: vlan_memberships
     scope: NetworkInterface
     optional: true
     state: canonical
-    description: The port's VLAN membership set (802.1Q). Each entry REFERENCES an existing Network.VLAN (the shared
+    description: The port's VLAN membership set (802.1Q). Each entry REFERENCES an existing VLAN (the shared
       segment object — the id/encapsulation is pulled from there, adopt-not-absorb) and declares its mode. A trunk
-      carries many (one native/untagged + N tagged); an access port one. Each membership is also a references->Network.VLAN
+      carries many (one native/untagged + N tagged); an access port one. Each membership is also a references->VLAN
       edge.
     schema:
       type: array
-      description: The port's VLAN membership set (802.1Q). Each entry REFERENCES an existing Network.VLAN (the
+      description: The port's VLAN membership set (802.1Q). Each entry REFERENCES an existing VLAN (the
         shared segment object — the id/encapsulation is pulled from there, adopt-not-absorb) and declares its mode.
-        A trunk carries many (one native/untagged + N tagged); an access port one. Each membership is also a references->Network.VLAN
+        A trunk carries many (one native/untagged + N tagged); an access port one. Each membership is also a references->VLAN
         edge.
       items:
         type: object
@@ -192,7 +192,7 @@ elements:
         additionalProperties: false
         properties:
           network_vlan_ref:
-            description: Reference to Network.VLAN — the VLAN this membership tags. Common-elements Reference shape
+            description: Reference to VLAN — the VLAN this membership tags. Common-elements Reference shape
               (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.
             $ref: ../../../../common-elements.schema.json#/$defs/Reference
           mode:
@@ -227,7 +227,7 @@ relationships:
     name: guest
     description: For virtual / passthrough / partition, the guest the interface is presented to.
   - edge_type: contained_by
-    target: Network.Switch
+    target: NetworkSwitch
     cardinality: 0..1
     name: switch
     description: 'For a switch port: the switch it belongs to. Same type serves host NICs and switch ports — the
@@ -260,11 +260,11 @@ relationships:
     name: connects_to
     adopted_from: OASIS TOSCA ConnectsTo
   - edge_type: references
-    target: Network.VLAN
+    target: VLAN
     name: vlan_membership
     cardinality: 0..n
     description: The VLAN(s) this port is a member of (see spec.vlan_memberships); each carries a mode (native/tagged).
-      The port references the shared Network.VLAN objects rather than duplicating the id.
+      The port references the shared VLAN objects rather than duplicating the id.
 adopts:
   - standard: Redfish
     version: '2024.4'
@@ -325,21 +325,21 @@ context:
     pointing down at its members). The same type also serves switch ports. Identity facts — the MAC address (`mac_address`),
     location, serial, model — nest under the `identity` block, not at the top level. A physical interface carries
     a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable
-    path. VLAN membership is declared by referencing Network.VLAN records, never by retyping raw tags.'
+    path. VLAN membership is declared by referencing VLAN records, never by retyping raw tags.'
   use_when:
     - You need the full host interface stack — NICs, bond, bridge, sub-interfaces — as records whose parent/member
       links mirror reality.
     - You need host-NIC-to-switch-port cabling (LLDP-discovered) in the graph for impact analysis.
     - You need a port's VLAN membership (native/tagged) declared against shared VLAN records.
   not_for:
-    - The attachment point guests plug into — Network.VirtualNetwork; a bridge here is the device, the VirtualNetwork
+    - The attachment point guests plug into — VirtualNetwork; a bridge here is the device, the VirtualNetwork
       is the workload-facing network on top of it.
-    - The desired configuration applied to an interface (addressing, routes, DNS) — Network.ConnectionProfile configures
+    - The desired configuration applied to an interface (addressing, routes, DNS) — ConnectionProfile configures
       the device this type inventories.
-    - The VLAN segment itself — Network.VLAN; interfaces are members of a segment, they don't define it.
+    - The VLAN segment itself — VLAN; interfaces are members of a segment, they don't define it.
   works_with:
-    - Machine.BareMetalHost / Network.Switch — what contains the interface (host NIC vs switch port).
+    - Machine.BareMetalHost / NetworkSwitch — what contains the interface (host NIC vs switch port).
     - 'NetworkInterface — parent_device, lower_layer, and connects_to: partition parentage, bond/bridge membership,
       cable adjacency.'
-    - Network.VLAN — the segments the port is a member of.
-    - Network.ConnectionProfile — the declarative config realized onto this interface.
+    - VLAN — the segments the port is a member of.
+    - ConnectionProfile — the declarative config realized onto this interface.

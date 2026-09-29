@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.2.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.2.6",
   "conforms_to": "udlm/0.1",
   "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242",
   "resource_type": "Job",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "family": "Process",
   "status": "active",
   "metadata": {
@@ -18,7 +18,7 @@
       "sources": [
         {
           "class": "Job",
-          "version": "1.2.5",
+          "version": "1.2.6",
           "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242"
         }
       ]
@@ -163,14 +163,14 @@
     },
     {
       "edge_type": "depends_on",
-      "target": "Network.Switch",
+      "target": "NetworkSwitch",
       "cardinality": "0..n",
       "name": "fabric",
       "description": "Fabric the job traverses to reach its targets — connectivity outlives whatever the job is operating on."
     },
     {
       "edge_type": "depends_on",
-      "target": "Network.AddressService",
+      "target": "AddressService",
       "cardinality": "0..n",
       "name": "resolver",
       "description": "Name/address resolution the job uses to reach targets (typically soft — inventories can pin IPs)."

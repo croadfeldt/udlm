@@ -1,7 +1,7 @@
 uuid: 1b70eee7-3169-457a-a805-a91766823292
 handle: dns
 conforms_to: udlm/0.1
-resource_type: Network.AddressService
+resource_type: AddressService
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.1.0
 lifecycle_state: Discovered

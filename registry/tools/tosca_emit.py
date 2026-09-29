@@ -55,7 +55,7 @@ def tosca_type_name(resource_type):
 
 
 def req_name(target):
-    # Network.VirtualNetwork → virtual_network  (the requirement's local name)
+    # VirtualNetwork → virtual_network  (the requirement's local name)
     return _snake(target.split(".")[-1])
 
 

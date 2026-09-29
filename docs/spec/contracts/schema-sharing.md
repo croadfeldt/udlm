@@ -80,7 +80,7 @@ that catalogs all its declared types and extensions.
   "manifest": {
     "entity_types": [
       { "id": "Machine.VM", "version": "0.3.0", "schema_url": "/schemas/entity_types/Machine.VM/0.3.0" },
-      { "id": "Network.IPAddress", "version": "0.2.0", "schema_url": "/schemas/entity_types/Network.IPAddress/0.2.0" }
+      { "id": "IPAddress", "version": "0.2.0", "schema_url": "/schemas/entity_types/Network.IPAddress/0.2.0" }
     ],
     "event_types": [
       { "id": "request.scheduled", "version": "1.0.0", "schema_url": "/schemas/event_types/request.scheduled/1.0.0" }

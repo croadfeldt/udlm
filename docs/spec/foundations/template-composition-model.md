@@ -94,7 +94,7 @@ constituents:
     required_for_delivery: required
 
   - component_id: ip
-    resource_type: Network.IPAddress
+    resource_type: IPAddress
     provided_by: external
     depends_on: []
     required_for_delivery: required
@@ -106,7 +106,7 @@ constituents:
     required_for_delivery: required
 
   - component_id: lb
-    resource_type: Network.LoadBalancer
+    resource_type: LoadBalancer
     provided_by: self
     depends_on: [vm, ip]
     required_for_delivery: partial

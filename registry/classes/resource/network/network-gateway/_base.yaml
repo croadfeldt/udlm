@@ -1,0 +1,147 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkGateway/0.7.0
+conforms_to: udlm/0.1
+uuid: ceb29900-486a-4c51-ac66-d686d8030711
+record_type: class
+class: base
+resource_type: NetworkGateway
+version: 0.7.0
+family: Resource
+status: active
+filed_under:
+  - network
+metadata:
+  display_name: Network Gateway
+  description: 'A network edge gateway — routing / NAT / firewalling between network segments and to external networks.
+    Grounded in the Kubernetes Gateway API ''Gateway'' concept (a network entry/exit point); note UDLM''s NetworkGateway
+    is L3/edge (router/NAT/firewall), broader than the Gateway API''s L4/L7 service focus. Vendor specifics (a firewall
+    distribution or a vendor firewall appliance) are the provider/extension. A Base by the Base test (CLS-002):
+    the Kubernetes Gateway API and general L3 routing abstract over every routing, NAT and firewall edge, so a gateway
+    of given functions over given segments is fillable by any of them.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-06-27T00:38:59Z'
+elements:
+  - element: zone
+    scope: NetworkGateway
+    optional: true
+    state: proposed
+    description: What kind of network this is — a governed network-zone term, for placement only (common-elements.schema.json
+      `network_zone_ref`).
+    schema:
+      $ref: ../../../../common-elements.schema.json#/$defs/network_zone_ref
+  - element: tier
+    scope: NetworkGateway
+    optional: true
+    state: proposed
+    description: How good this network is — a governed network_tier floor the provider reports (common-elements.schema.json
+      `network_tier_ref`).
+    schema:
+      $ref: ../../../../common-elements.schema.json#/$defs/network_tier_ref
+  - element: functions
+    scope: NetworkGateway
+    optional: true
+    state: canonical
+    description: Edge functions this gateway provides.
+    schema:
+      type: array
+      items:
+        type: string
+        enum:
+          - routing
+          - nat
+          - firewall
+          - vpn
+          - l7-proxy
+      description: Edge functions this gateway provides.
+  - element: segments
+    scope: NetworkGateway
+    optional: true
+    state: canonical
+    description: Network segments the gateway bridges/routes between.
+    schema:
+      type: array
+      description: Network segments the gateway bridges/routes between.
+      items:
+        type: object
+        properties:
+          cidr:
+            $ref: ../../../../common-elements.schema.json#/$defs/cidr
+            description: Segment CIDR (canonical common-elements cidr).
+          role:
+            type: string
+            description: Segment role, e.g. wan | lan | dmz | mgmt.
+          vlan_ref:
+            description: Reference to VLAN — the VLAN this gateway segment serves. Common-elements Reference shape
+              (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.
+            $ref: ../../../../common-elements.schema.json#/$defs/Reference
+  - element: ip_family
+    scope: NetworkGateway
+    optional: true
+    state: canonical
+    description: 'Address families routed (common-elements: ip_family).'
+    schema:
+      type: string
+      enum:
+        - ipv4
+        - ipv6
+        - dual
+      description: 'Address families routed (common-elements: ip_family).'
+spec_examples:
+  - functions:
+      - routing
+      - nat
+      - firewall
+    segments:
+      - cidr: 203.0.113.0/24
+        role: wan
+        vlan_ref: wan-vlan
+      - cidr: 192.0.2.0/24
+        role: lan
+        vlan_ref: lan-vlan
+      - cidr: 198.51.100.0/24
+        role: dmz
+        vlan_ref: estate/dmz-vlan?resource_type==VLAN
+    ip_family: ipv4
+outputs:
+  external_address:
+    type: string
+    description: Public/WAN address the gateway presents (NAT egress / ingress) once Realized.
+relationships:
+  - edge_type: references
+    target: DHCPScope
+    cardinality: 0..n
+    description: Segments the gateway routes may have DHCP scopes served elsewhere.
+  - edge_type: references
+    name: segment_vlan
+    target: VLAN
+    cardinality: 0..n
+    description: segment_vlan — each segment rides a VLAN, referenced (vlan_ref), not an inline 802.1Q id (R5; foundational-resources
+      selected-not-invented).
+adopts:
+  - standard: Kubernetes-Gateway-API
+    version: 1.x
+    standard_name: Gateway
+    role: the portable 'gateway' (network entry/exit point) concept
+    source: https://gateway-api.sigs.k8s.io/
+    license: Apache-2.0
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+context:
+  purpose: Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node
+    the graph can reason about.
+  plain_description: 'The router/firewall at the edge of a network: which functions it provides (routing, NAT, firewall,
+    VPN) and which segments it connects, each segment referencing the VLAN it rides. The vendor box or software
+    (a firewall distribution, a vendor firewall appliance) is a provider. Detailed routing tables and firewall rulesets
+    are not modeled — the portable surface is functions and segments; once realized it publishes the external address
+    it presents.'
+  use_when:
+    - You need what connects this network to the outside as an explicit node with its segments.
+    - You need segment boundaries (LAN, DMZ, mgmt) and their VLANs recorded at the edge that routes between them.
+  not_for:
+    - An L2 switch — NetworkSwitch; the gateway is the L3 edge.
+    - Service-level L4/L7 traffic entry (the Kubernetes Gateway API sense) — that is the adopted naming ancestor,
+      but this type is the broader network edge; application ingress belongs to the platform.
+    - Handing out addresses on its segments — DHCPScope / AddressService.
+  works_with:
+    - VLAN — each gateway segment rides a referenced VLAN.
+    - DHCPScope — scopes serving the segments the gateway routes.
+    - NetworkSwitch — the fabric behind the edge.

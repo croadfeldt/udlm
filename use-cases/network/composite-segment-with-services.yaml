@@ -3,9 +3,9 @@ handle: network/composite-segment-with-services
 version: 1.0.0
 scenario:
   description: 'A platform engineer requests a complete network segment as one composite intent: a
-    Network.VirtualNetwork provides the L2 attachment point, a Network.Gateway gives it a routed edge, a
-    Network.DHCPScope hands out addresses on its subnet, a Network.DNSZone resolves names for it, and a
-    Network.ConnectionProfile describes how workloads attach. The resources form a dependency graph rooted
+    VirtualNetwork provides the L2 attachment point, a NetworkGateway gives it a routed edge, a
+    DHCPScope hands out addresses on its subnet, a DNSZone resolves names for it, and a
+    ConnectionProfile describes how workloads attach. The resources form a dependency graph rooted
     at the VirtualNetwork — the gateway, DHCP scope, DNS zone, and connection profile each reference the
     virtual network — and must realize in that order: none of the services can bind until the virtual
     network is Realized, and the connection profile is not usable until the segment''s address and name

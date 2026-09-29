@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "Topology",
-      "version": "0.5.3",
+      "version": "0.5.4",
       "instantiable": true,
       "path": "registry/classes/resource/topology/_base.yaml",
       "types": []

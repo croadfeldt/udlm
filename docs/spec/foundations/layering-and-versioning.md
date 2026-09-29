@@ -259,7 +259,7 @@ type_scope:
 **Examples:**
 - VM sizing layer (small, medium, large configurations for `Machine.VM`)
 - Web server configuration layer for `Machine.VM`
-- Network port configuration layer for `Network.Port`
+- Network port configuration layer for `NetworkInterface`
 - CL Web Service Data Layer for `Machine.VM` (exact scope)
 - General compute placement layer for `Machine.VM` and descendants
 

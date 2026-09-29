@@ -107,7 +107,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Kubernetes / CNCF ecosystem
 
 ### Kubernetes vocabularies — CANONICAL
-**Covers:** `Kubernetes` `Kubernetes NetworkAttachmentDefinition` `Kubernetes well-known topology labels` `Kubernetes-Gateway-API` · **Body:** CNCF/Kubernetes SIGs · **Since:** 2026-06-27 (Gateway API, topology labels) → 2026-07-05 (NAD 02:10:32Z, batch Job 03:29:34Z) · **Where:** Network.Gateway (Gateway API), Topology (well-known labels), Network.VirtualNetwork (NAD attachment vocabulary), Automation.Job (batch/v1 run-to-completion semantics — `activeDeadlineSeconds` ≈ `max_execution_time`).
+**Covers:** `Kubernetes` `Kubernetes NetworkAttachmentDefinition` `Kubernetes well-known topology labels` `Kubernetes-Gateway-API` · **Body:** CNCF/Kubernetes SIGs · **Since:** 2026-06-27 (Gateway API, topology labels) → 2026-07-05 (NAD 02:10:32Z, batch Job 03:29:34Z) · **Where:** NetworkGateway (Gateway API), Topology (well-known labels), VirtualNetwork (NAD attachment vocabulary), Automation.Job (batch/v1 run-to-completion semantics — `activeDeadlineSeconds` ≈ `max_execution_time`).
 **Why:** k8s is both a major producer and consumer in the estate (OCP) and the de-facto vocabulary source for cloud-native concepts; adopting its names keeps the control plane Provider boundary translation-free. Also adopted structurally elsewhere: `managedFields`/server-side apply was the model behind the merged schema's `ownership` block, retired by ruling 071 — one author per record now does that job. **License:** Apache-2.0 — compatible-reference.
 
 ### Kubernetes ObjectReference / ownerReference (object-reference shape) — PATTERN
@@ -127,17 +127,17 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** our actual Ceph control surface on OCP. **License:** Apache-2.0 — compatible-reference.
 
 ### external-dns — CANONICAL
-**Covers:** `external-dns` · **Since:** 2026-06-27T00:01:17Z · **Where:** Network.DNSZone (DNSEndpoint).
+**Covers:** `external-dns` · **Since:** 2026-06-27T00:01:17Z · **Where:** DNSZone (DNSEndpoint).
 **Why:** the cloud-native record-declaration shape. **License:** Apache-2.0 — compatible-reference.
 
 ## Network & identity services
 
 ### ISC Kea + RFC 2131 (DHCP) — CANONICAL
-**Covers:** `ISC Kea` `ISC-Kea` `RFC-2131` · **Since:** 2026-06-26T22:30:12Z / 2026-06-27T00:38:59Z · **Where:** Network.AddressService, Network.DHCPScope (subnet4/subnet).
+**Covers:** `ISC Kea` `ISC-Kea` `RFC-2131` · **Since:** 2026-06-26T22:30:12Z / 2026-06-27T00:38:59Z · **Where:** AddressService, DHCPScope (subnet4/subnet).
 **Why:** RFC 2131 defines the protocol concepts; Kea is the estate's operational DHCP implementation and its config vocabulary names the operational objects. Kea is MPL-2.0 → **reference-only** verdict (vocabulary referenced, no text reproduction); RFC — compatible-reference.
 
 ### IETF DNS — RFC 1035 family — CANONICAL
-**Covers:** `IETF DNS` `RFC-1035` `RFC-3596` · **Since:** 2026-06-26T22:30:12Z · **Where:** Network.AddressService, Network.DNSZone (RFC 3596 = the AAAA/IPv6 resource record, part of the same DNS-RR family).
+**Covers:** `IETF DNS` `RFC-1035` `RFC-3596` · **Since:** 2026-06-26T22:30:12Z · **Where:** AddressService, DNSZone (RFC 3596 = the AAAA/IPv6 resource record, part of the same DNS-RR family).
 **Why:** name-resolution vocabulary is IETF's; nothing to decide. **License:** IETF Trust — compatible-reference.
 
 ### Kerberos (RFC 4120) + LDAP (RFC 4511) — CANONICAL
@@ -145,7 +145,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** directory services are these protocols; FreeIPA/AD are providers. **License:** IETF Trust — compatible-reference.
 
 ### NMstate + IETF ietf-ip (RFC 8344) — host addressing & network config — CANONICAL
-**Covers:** `NMstate` `RFC-8344` · **Body:** nmstate.io (Red Hat) / IETF · **Since:** 2026-07-15 · **Where:** Network.IPAddress (`address` + `allocation`-as-`origin`, RFC 8344 `origin` = NMstate `ipv4/ipv6.address`), Network.ConnectionProfile (the NMstate interface schema by reference — state/ipv4/ipv6/vlan/link-aggregation/bridge/mac-vlan/routes/dns-resolver). Grounds the host-networking-as-data model (DCM ADR-023).
+**Covers:** `NMstate` `RFC-8344` · **Body:** nmstate.io (Red Hat) / IETF · **Since:** 2026-07-15 · **Where:** IPAddress (`address` + `allocation`-as-`origin`, RFC 8344 `origin` = NMstate `ipv4/ipv6.address`), ConnectionProfile (the NMstate interface schema by reference — state/ipv4/ipv6/vlan/link-aggregation/bridge/mac-vlan/routes/dns-resolver). Grounds the host-networking-as-data model (DCM ADR-023).
 **Why:** the open standards converge on `{address, prefix, origin}` + parent-by-reference (RFC 8343/8344, NMstate, NetBox, Redfish) — the strongest adopt signal. NMstate is NetworkManager's **declarative** desired-state API — **Apache-2.0, a Red Hat project** (RHEL `network`-role backend, OpenShift Kubernetes-NMState operator) — and maps 1:1 to `NodeNetworkConfigurationPolicy.spec.desiredState`. Tier-2 adopt-by-reference: UDLM owns identity + the conformance pointer, NMstate owns the config body. **License:** NMstate Apache-2.0 — compatible-reference; RFC 8344 IETF Trust — compatible-reference.
 
 ### OAuth 2.0 Rich Authorization Requests — RFC 9396 — PATTERN
@@ -200,7 +200,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `Ansible` · **Since (as adoption):** 2026-07-05T03:29:34Z (Automation.Job `process_type: playbook`); referenced in docs since 2026-04-07 · **Why:** playbook is the estate's dominant Process Resource form; the vocabulary names what actually runs. **License:** GPL-3.0 — reference-only.
 
 ### libvirt — CANONICAL
-**Covers:** `libvirt virtual network` · **Since:** 2026-07-05T02:10:32Z · **Where:** Network.VirtualNetwork (forward-mode vocabulary).
+**Covers:** `libvirt virtual network` · **Since:** 2026-07-05T02:10:32Z · **Where:** VirtualNetwork (forward-mode vocabulary).
 **Why:** the host-bridge attachment producer on all four virt hosts. **License:** LGPL — reference-only.
 
 ## Container

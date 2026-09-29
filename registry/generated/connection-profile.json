@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.ConnectionProfile/0.4.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/ConnectionProfile/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "7c322a52-3d41-4067-b9e2-967280517aa8",
-  "resource_type": "Network.ConnectionProfile",
-  "version": "0.4.3",
+  "resource_type": "ConnectionProfile",
+  "version": "0.5.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Connection Profile (host network config)",
-    "description": "The declarative NetworkManager desired-state for a host interface — addressing method, routes, DNS, and bond/bridge/VLAN membership — as a first-class estate record (DCM ADR-023). The body conforms to the NMstate interface schema by reference (Tier-2 adopt): UDLM owns identity + the version-pinned conformance pointer, NMstate owns the config body. Realized onto the host by a NetworkManager-family provider (a configuration-management engine, Kubernetes-NMState); maps 1:1 to Kubernetes-NMState NodeNetworkConfigurationPolicy.spec.desiredState. Supersedes bespoke per-tool host-network variables.",
+    "description": "The declarative NetworkManager desired-state for a host interface — addressing method, routes, DNS, and bond/bridge/VLAN membership — as a first-class estate record (DCM ADR-023). The body conforms to the NMstate interface schema by reference (Tier-2 adopt): UDLM owns identity + the version-pinned conformance pointer, NMstate owns the config body. Realized onto the host by a NetworkManager-family provider (a configuration-management engine, Kubernetes-NMState); maps 1:1 to Kubernetes-NMState NodeNetworkConfigurationPolicy.spec.desiredState. Supersedes bespoke per-tool host-network variables. A Base by the Base test (CLS-002): NMstate is the declarative interface-configuration contract every host provider can apply, so a profile is one deliverable independent of which host realizes it.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-15T00:00:00Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Network",
-          "version": "1.2.0",
-          "uuid": "b4309667-2eed-4330-88d3-96bc94d54436"
-        },
-        {
-          "class": "Network.ConnectionProfile",
-          "version": "0.4.3",
+          "class": "ConnectionProfile",
+          "version": "0.5.0",
           "uuid": "7c322a52-3d41-4067-b9e2-967280517aa8"
         }
       ]
@@ -33,40 +28,12 @@
     "additionalProperties": false,
     "properties": {
       "zone": {
-        "allOf": [
-          {
-            "$ref": "../data-reference.schema.json#/$defs/data_reference"
-          },
-          {
-            "required": [
-              "reference_data_type"
-            ],
-            "properties": {
-              "reference_data_type": {
-                "const": "network_zone"
-              }
-            }
-          }
-        ],
-        "description": "WHAT KIND OF NETWORK THIS IS — DMZ, management, internal, storage — as a governed TAXONOMY term (Knowledge.TaxonomyTerm), not a property bundle and not a floor. A CLASSIFICATION, NOT A REQUIREMENT, and the distinction is why this is a taxonomy where `tier` is reference data: a floor is something a second provider can MEET, a category is something a thing IS. Taxonomy is also the only one of the two that carries `normalization_rules`, which is what this needs — providers report `dmz-2`, `DMZ_RESTRICTED` and `dmz restricted`, and all three have to land on one canonical term before any policy can match on it. FOR PLACEMENT ONLY (maintainer ruling 2026-08-10). Nothing critical hangs off a zone directly: it is not an authorization, not a control, and not a boundary. ANYTHING REQUIRED BECAUSE OF A ZONE IS ENFORCED BY POLICY READING IT — the model carries the classification, policy acts on it, which is the same split that governs everything else here. That also keeps the model on the right side of zero-trust architecture, which derives no trust from network location (NIST SP 800-207); UDLM already ships a `zero_trust.posture` setting that a location-as-trust reading would contradict. ON THE BASE though it does not apply to every network type (maintainer ruling 2026-08-10): enough of the family carries a category that the base is the right home, and an element that some types leave unpopulated is what `optional` is for. Scope IS portability (ADR-038 §3) — a category two providers can both report is portable by definition. Provider-reported, like `tier`."
+        "$ref": "../common-elements.schema.json#/$defs/network_zone_ref",
+        "description": "What kind of network this is — a governed network-zone term, for placement only (common-elements.schema.json `network_zone_ref`)."
       },
       "tier": {
-        "allOf": [
-          {
-            "$ref": "../data-reference.schema.json#/$defs/data_reference"
-          },
-          {
-            "required": [
-              "reference_data_type"
-            ],
-            "properties": {
-              "reference_data_type": {
-                "const": "network_tier"
-              }
-            }
-          }
-        ],
-        "description": "HOW GOOD THIS NETWORK IS — a reference to a governed `network_tier`, exactly parallel to `storage_tier`. Each term DENOTES A FLOOR (bandwidth, latency), so asking for a tier is asking for the floor and any network meeting it qualifies: one provider's \"10G\" and another's \"high-throughput\" are interchangeable iff both clear it. That is what keeps the intent portable — the match is against the floor, never the string. NAME-SELECTABLE BUT REQUIREMENTS-AUTHORITATIVE (ADR-036, ruled 2026-07-27): a consumer may select by tier name, explicit requirements win where both are given, and the provider records its native class as a realized output rather than something the consumer had to know. ON THE BASE, NOT A TYPE, because performance is expected to be consumable by ALL network class providers and portable (maintainer ruling 2026-08-10). Scope IS portability (ADR-038 §3), so the category base is where a fact every provider must report belongs. Provider-reported at registration or discovery — the party that knows is the one that says."
+        "$ref": "../common-elements.schema.json#/$defs/network_tier_ref",
+        "description": "How good this network is — a governed network_tier floor the provider reports (common-elements.schema.json `network_tier_ref`)."
       },
       "nmstate_schema_version": {
         "type": "string",
@@ -164,6 +131,9 @@
       "disposition": "tier2_record"
     }
   ],
+  "filed_under": [
+    "network"
+  ],
   "context": {
     "purpose": "Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN membership — as declarative state a provider applies.",
     "plain_description": "What a host interface's network configuration should be, in NMstate's own schema: the opaque body is `desired_state`, interpreted against the pinned `nmstate_schema_version` it declares — the profile does not re-describe NMstate's fields. A NetworkManager-family provider applies it (a configuration-management engine, Kubernetes-NMState); the state read back from the host is published, and a difference between desired and discovered is drift. It replaces per-tool host-network variable files with one governed record per interface.",
@@ -177,7 +147,7 @@
     ],
     "works_with": [
       "NetworkInterface — the adapter or port the profile applies to.",
-      "Network.VLAN — the segments the configured VLANs and sub-interfaces ride."
+      "VLAN — the segments the configured VLANs and sub-interfaces ride."
     ]
   }
 }

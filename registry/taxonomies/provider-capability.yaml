@@ -97,7 +97,7 @@ terms:
     parent: realize_resources
     domain: Network
     curation_state: canonical
-    definition: Provision/manage Network.* resources (IP addresses, subnets, segments). e.g. an IPAM appliance allocating IPs.
+    definition: Provision/manage the classes filed under the `network` usage group (IP addresses, subnets, segments). e.g. an IPAM appliance allocating IPs.
   - term: serve_data/Network
     category: network-information
     root: provider-capability

@@ -278,7 +278,7 @@ def _ownership_index():
     resource-types/ — deliberately NOT generated/. A compiled spec is a projection of its class and
     contributes nothing the class does not already say, but indexing it lets a STALE artifact mask a
     broken class: a first cut of this check indexed generated/ last, so breaking the pool linkage in
-    Network.IPAddress's class produced no failure because the stale compiled copy still round-tripped.
+    IPAddress's class produced no failure because the stale compiled copy still round-tripped.
     Staleness is GEN-001's job; this check must not depend on that gate having run first."""
     global _OWNERSHIP_INDEX
     if _OWNERSHIP_INDEX is None:

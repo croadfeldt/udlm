@@ -18,9 +18,16 @@
     },
     {
       "class": "NetworkInterface",
-      "version": "0.15.0",
+      "version": "0.15.1",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/network-interface/_base.yaml",
+      "types": []
+    },
+    {
+      "class": "NetworkSwitch",
+      "version": "0.8.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/network/network-switch/_base.yaml",
       "types": []
     },
     {
