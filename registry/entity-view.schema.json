@@ -212,6 +212,9 @@
         "caused_by_request": {
           "type": "string",
           "description": "On the requested snapshot of a provider-originated request: the consumer's requested record that caused it (DEP-018)."
+        },
+        "dispatch": {
+          "$ref": "state-record.schema.json#/$defs/dispatch"
         }
       }
     },
@@ -272,7 +275,7 @@
       }
     },
     "data_role": {
-      "$ref": "state-record.schema.json#/$defs/data_role"
+      "$ref": "common-elements.schema.json#/$defs/data_role"
     },
     "discovered_snapshot": {
       "type": "object",

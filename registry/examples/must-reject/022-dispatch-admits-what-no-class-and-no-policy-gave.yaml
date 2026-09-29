@@ -1,0 +1,33 @@
+must_reject:
+  rule: DSP-002
+  gate: check_dispatch_slice
+  because: 'The receipt admits a path the class does not declare and no policy granted. Dispatch is zero
+    trust: the payload starts empty, the bound class defines required, and anything beyond it crosses only
+    by a recorded grant. A receipt showing more is the control plane leaking a tenant''s cost centre to a
+    compute provider, and the receipt exists so that this is visible.'
+record:
+  record_type: requested_record
+  state: Requested
+  entity_uuid: 5c1d7e29-3a48-4b6f-9d02-7e8f1a2b3c4d
+  record_uuid: 01a0c3d4-e5f6-7a1b-8c2d-3e4f5a6b7c8d
+  intent_ref: 01a0c3d4-e5f6-7a1b-8c2d-3e4f5a6b7c8c
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  conforms_to: udlm/0.1
+  resource_type: Machine.VM
+  type_version: 2.0.0
+  at: '2026-09-28T11:00:00Z'
+  time_source: authored example — no clock claim
+  fields:
+    cpu:
+      count: 2
+    memory:
+      size: 4Gi
+  policies: []
+  dispatch:
+    provider: lab/providers/libvirt-host-a
+    admitted:
+    - cpu.count
+    - memory.size
+    - tenant_cost_center
+    granted: []
+    stripped: []

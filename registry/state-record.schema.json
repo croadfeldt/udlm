@@ -103,13 +103,16 @@
       "description": "How this record came to exist: declared by its author; derived from a discovery (brownfield adoption); backfilled after the fact."
     },
     "metadata": {
-      "$ref": "#/$defs/metadata"
+      "$ref": "#/$defs/metadata",
+      "x-data-role": "audit"
     },
     "integrity": {
-      "$ref": "#/$defs/integrity"
+      "$ref": "#/$defs/integrity",
+      "x-data-role": "audit"
     },
     "audit": {
-      "$ref": "#/$defs/audit"
+      "$ref": "#/$defs/audit",
+      "x-data-role": "audit"
     },
     "fields": {
       "type": "object",
@@ -120,10 +123,12 @@
       "description": "The typed outputs the class declares — its binding surface (data-model-core [D8.3]). Realized and discovered only."
     },
     "provenance": {
-      "$ref": "#/$defs/provenance"
+      "$ref": "#/$defs/provenance",
+      "x-data-role": "audit"
     },
     "roles": {
-      "$ref": "#/$defs/roles"
+      "$ref": "#/$defs/roles",
+      "x-data-role": "governance"
     },
     "intent_ref": {
       "type": "string",
@@ -156,7 +161,8 @@
       "description": "Realized only: the `integrity.head` of the referenced requested record, present exactly when that record is sealed (TRN-002)."
     },
     "assembly": {
-      "$ref": "#/$defs/assembly"
+      "$ref": "#/$defs/assembly",
+      "x-data-role": "assembly"
     },
     "provider_preference": {
       "$ref": "#/$defs/provider_preference"
@@ -203,7 +209,12 @@
       "description": "Discovered only: which correlation-id schemes matched this observation to `entity_uuid` (dcm ADR-017 Decision C). Empty on an unclaimed observation."
     },
     "policies": {
-      "$ref": "#/$defs/policies"
+      "$ref": "#/$defs/policies",
+      "x-data-role": "governance"
+    },
+    "dispatch": {
+      "$ref": "#/$defs/dispatch",
+      "x-data-role": "governance"
     }
   },
   "allOf": [
@@ -241,7 +252,8 @@
           "intent_ref_head": false,
           "requested_ref_head": false,
           "root_request_uuid": false,
-          "caused_by_request": false
+          "caused_by_request": false,
+          "dispatch": false
         },
         "required": [
           "fields"
@@ -327,7 +339,8 @@
             }
           },
           "root_request_uuid": false,
-          "caused_by_request": false
+          "caused_by_request": false,
+          "dispatch": false
         },
         "required": [
           "fields",
@@ -382,7 +395,8 @@
           "intent_ref_head": false,
           "requested_ref_head": false,
           "root_request_uuid": false,
-          "caused_by_request": false
+          "caused_by_request": false,
+          "dispatch": false
         },
         "required": [
           "fields"
@@ -1462,15 +1476,7 @@
       }
     },
     "data_role": {
-      "enum": [
-        "execution",
-        "assembly",
-        "governance",
-        "audit",
-        "cost"
-      ],
-      "x-extensible-enum": true,
-      "description": "Data ROLE — the purpose axis (ADR-PROV-001; docs/spec/contracts/data-roles.md), ORTHOGONAL to data_classification (sensitivity). Governs dispatch: only `execution` crosses to a provider by default. execution = the provider needs it to realize the resource (the dispatch contract); assembly = control-plane assembly record (unapplied contributions, excluded layers); governance/audit/cost = other control-plane concerns. A provider may opt into non-execution roles via accepts_roles, subject to Governance-Matrix policy."
+      "$ref": "common-elements.schema.json#/$defs/data_role"
     },
     "at": {
       "type": "string",
@@ -1664,6 +1670,80 @@
           "reason": {
             "type": "string"
           }
+        }
+      }
+    },
+    "dispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "admitted"
+      ],
+      "description": "The receipt of what crossed to the provider (DSP-004). Control-plane only. `admitted` is exactly what was sent: the bound class's elements (DSP-002) plus policy grants (DSP-003), minus policy strips.",
+      "properties": {
+        "provider": {
+          "$ref": "common-elements.schema.json#/$defs/Reference",
+          "description": "The provider the payload went to."
+        },
+        "admitted": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Every dot-path into `fields` that crossed. Nothing else did."
+        },
+        "granted": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "policy"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "policy": {
+                "$ref": "common-elements.schema.json#/$defs/Reference"
+              },
+              "version": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Paths admitted beyond the bound class, each with the policy that granted it. That policy is also in `policies[]` with decision allow."
+        },
+        "stripped": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "policy"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "policy": {
+                "$ref": "common-elements.schema.json#/$defs/Reference"
+              },
+              "version": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Paths a policy removed, each with the policy."
         }
       }
     }

@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.12"
+version: "1.0.13"
 
 prefixes:
   - prefix: ACC
@@ -274,6 +274,11 @@ prefixes:
     name: Documentation rules
     home: CONTRIBUTING.md
     domain: How documents in this repo are written — audience, prose standard, references-carry-gist
+    status: active
+  - prefix: DSP
+    name: Dispatch (zero trust)
+    home: docs/spec/contracts/data-roles.md
+    domain: What crosses to a provider — deny by default, the bound class defines required, policy grants the rest, the record keeps the receipt
     status: active
   - prefix: TRN
     name: Transition provenance
