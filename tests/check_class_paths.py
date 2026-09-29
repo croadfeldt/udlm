@@ -7,8 +7,8 @@ the record owns (family, resource_type, parent), so this gate makes it a VERIFIE
       OSPatch -> ospatch, VM -> vm; word-word boundaries hyphenate: BareMetalHost ->
       bare-metal-host) — i.e. the file sits at its ancestry's path, named by its own segment
   (c) `parent`, when present, == the dotted name one segment shorter (the directory ancestry)
-  (d) ADR-082 / CLS-013: under `resource/` a class sits inside its hosting-group directory —
-      `resource/<group>/<segments>` — and `<group>` MUST be one of the terms its Base's `filed_under`
+  (d) ADR-082 / CLS-013: under a family with a group level (resource/, access/) a class sits inside its
+      hosting-group directory — `<family>/<group>/<segments>` — and `<group>` MUST be one of the terms its Base's `filed_under`
       names (the git directory is one hard link; the others are generated views). The legacy
       `resource/<segments>` form was retired once every family had moved (row 088).
 Exit 0 = every path is an honest projection; 1 = drift between path and record."""
@@ -26,6 +26,7 @@ CLASSES = os.path.join(ROOT, "registry", "classes")
 # rather than a convention someone remembers. They are excluded from the has-children logic on
 # purpose: an example must never force a real registry class into the index-file layout.
 EXAMPLE_CLASSES = os.path.join(ROOT, "registry", "examples", "classes")
+GROUPED = {"resource", "access"}   # families hosted by usage group (ADR-082 rows 082, 089)
 
 
 def kebab(seg):
@@ -101,7 +102,7 @@ def main():
         want, indexed = expected_parts(doc, has_children)
         # (d) hosting group (CLS-013): under resource/ the second component is a filing of this class's
         # Base and the rest is the class path; elsewhere the family directory holds the class directly.
-        if parts[0] == "resource":
+        if parts[0] in GROUPED:
             ok = len(parts) > 2 and parts[1] in _filed_under(doc, rt) and [parts[0]] + parts[2:] == want
             if not ok and len(parts) > 2 and parts[1] not in _filed_under(doc, rt) and [parts[0]] + parts[2:] == want:
                 fails.append(f"{rel}: hosted under {parts[1]!r}, which is not a filing of {rt.split('.')[0]} "

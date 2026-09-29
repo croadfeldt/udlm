@@ -1,27 +1,23 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 62,
+    "types": 63,
     "by_family": {
-      "Access": 8,
+      "Access": 9,
       "Knowledge": 9,
       "Process": 3,
       "Resource": 42
     }
   },
   "discrimination": {
-    "mutations_attempted": 5400,
-    "mutations_rejected": 5400,
+    "mutations_attempted": 5456,
+    "mutations_rejected": 5456,
     "density": 1.0,
     "findings": 0,
     "per_type": {
       "Access.Grouping": {
         "attempted": 57,
         "rejected": 57
-      },
-      "Access.IdentityEscrow": {
-        "attempted": 130,
-        "rejected": 130
       },
       "AddressService": {
         "attempted": 42,
@@ -99,17 +95,25 @@
         "attempted": 87,
         "rejected": 87
       },
-      "Identity.Group": {
-        "attempted": 42,
-        "rejected": 42
-      },
-      "Identity.Person": {
-        "attempted": 51,
-        "rejected": 51
-      },
-      "Identity.ServiceAccount": {
+      "Identity": {
         "attempted": 44,
         "rejected": 44
+      },
+      "Identity.Person": {
+        "attempted": 57,
+        "rejected": 57
+      },
+      "Identity.ServiceAccount": {
+        "attempted": 50,
+        "rejected": 50
+      },
+      "IdentityEscrow": {
+        "attempted": 130,
+        "rejected": 130
+      },
+      "IdentityGroup": {
+        "attempted": 42,
+        "rejected": 42
       },
       "Job": {
         "attempted": 85,
@@ -266,13 +270,12 @@
     }
   },
   "strictness": {
-    "strict_specs": 62,
-    "total": 62
+    "strict_specs": 63,
+    "total": 63
   },
   "outputs": {
     "per_type": {
       "Access.Grouping": 0,
-      "Access.IdentityEscrow": 4,
       "AddressService": 1,
       "Automation": 0,
       "Automation.OSPatch": 3,
@@ -292,9 +295,11 @@
       "Grouping.Tenant": 0,
       "IPAddress": 1,
       "IPAddressPool": 4,
-      "Identity.Group": 1,
+      "Identity": 0,
       "Identity.Person": 1,
       "Identity.ServiceAccount": 1,
+      "IdentityEscrow": 4,
+      "IdentityGroup": 1,
       "Job": 3,
       "KubernetesCluster": 4,
       "KubernetesNamespace": 2,
@@ -341,6 +346,7 @@
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
+      "Identity",
       "Processor",
       "SoftwareImage",
       "SoftwarePackage",
@@ -359,9 +365,9 @@
       "DNSZone",
       "FileShare",
       "IPAddress",
-      "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
+      "IdentityGroup",
       "Location",
       "NetworkGateway",
       "NetworkInterface",
@@ -377,13 +383,13 @@
     ]
   },
   "context": {
-    "with_context": 62,
-    "total": 62,
+    "with_context": 63,
+    "total": 63,
     "missing": []
   },
   "relationships": {
     "with_relationships": 48,
-    "total": 62,
+    "total": 63,
     "missing": [
       "Access.Grouping",
       "Automation",
@@ -391,6 +397,7 @@
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
+      "Identity",
       "LogShipper",
       "Machine",
       "SovereigntyZone",
@@ -404,7 +411,6 @@
   "uc_coverage": {
     "files_scanned": 165,
     "covered": [
-      "Access.IdentityEscrow",
       "AddressService",
       "Automation",
       "Automation.OSPatch",
@@ -421,6 +427,8 @@
       "GPU",
       "IPAddress",
       "IPAddressPool",
+      "Identity",
+      "IdentityEscrow",
       "Job",
       "KubernetesCluster",
       "KubernetesNamespace",
@@ -448,9 +456,9 @@
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
-      "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
+      "IdentityGroup",
       "Location",
       "Machine.LPAR",
       "NetworkInterface",
@@ -497,7 +505,6 @@
     },
     "named_by_none": [
       "Access.Grouping",
-      "Access.IdentityEscrow",
       "AddressService",
       "Automation",
       "Automation.OSPatch",
@@ -515,9 +522,11 @@
       "Grouping.Tenant",
       "IPAddress",
       "IPAddressPool",
-      "Identity.Group",
+      "Identity",
       "Identity.Person",
       "Identity.ServiceAccount",
+      "IdentityEscrow",
+      "IdentityGroup",
       "Job",
       "KubernetesNamespace",
       "KubernetesNodePool",
@@ -554,7 +563,7 @@
       "Vulnerability",
       "Workload"
     ],
-    "consumed_by_at_least_one": 62
+    "consumed_by_at_least_one": 63
   },
   "expressibility_coverage": {
     "value": null,

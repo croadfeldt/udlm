@@ -9,7 +9,7 @@ it. This gate fails on:
            a term that is not a canonical term of the usage-group root;
            `filed_under` on any RECORD (intent/requested/realized/discovered, or a folded example) —
            a filing is organization, never identity, and is never frozen into a sealed record.
-  CLS-011  an instantiable Resource-family Base with no filing (link count 0).
+  CLS-011  an instantiable Base of a family with a group level (Resource, Access) and no filing (link count 0).
 
 Exit 0 = clean; 1 = at least one violation. `--self-test` runs synthetic bad cases so a gate that
 cannot fail proves nothing.
@@ -24,6 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLASS_ROOTS = [os.path.join(ROOT, "registry", "classes"), os.path.join(ROOT, "registry", "examples", "classes")]
 RECORD_ROOTS = [os.path.join(ROOT, "registry", "examples")]
 TAXONOMY = os.path.join(ROOT, "registry", "taxonomies", "usage-group.yaml")
+GROUPED_FAMILIES = {"Resource", "Access"}   # families with a group level (ADR-082 rows 082, 089)
 RECORD_KINDS = {"intent_record", "requested_record", "realized_record", "discovered_record", "realized_entity"}
 
 
@@ -55,9 +56,9 @@ def check(classes, records, terms):
         for term in filed or []:
             if term not in terms:
                 fails.append(f"CLS-010 {path}: {name} is filed under {term!r}, which is not a canonical usage-group term")
-        if (d.get("class") == "base" and d.get("family") == "Resource" and d.get("instantiable") is not False
+        if (d.get("class") == "base" and d.get("family") in GROUPED_FAMILIES and d.get("instantiable") is not False
                 and not filed):
-            fails.append(f"CLS-011 {path}: {name} is an instantiable Resource Base with no filing — "
+            fails.append(f"CLS-011 {path}: {name} is an instantiable {d.get('family')} Base with no filing — "
                          f"declare `filed_under` with at least one usage-group term (link count ≥ 1)")
     for path, d in records:
         kind = d.get("record_type") or ("realized_entity" if "states" in d else None)

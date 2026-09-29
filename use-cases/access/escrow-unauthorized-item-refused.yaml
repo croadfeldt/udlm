@@ -2,7 +2,7 @@ uuid: uc-957c3905-2384-49ce-afed-59d9a53360d0
 handle: access/escrow-unauthorized-item-refused
 version: 1.0.0
 scenario:
-  description: 'A requester attempts to add an item to an Access.IdentityEscrow — an identity or an
+  description: 'A requester attempts to add an item to an IdentityEscrow — an identity or an
     access — that falls outside what the escrow policy authorizes for that escrow. Success for this use
     case is that the addition is REFUSED before it is admitted to the escrow, not quietly accepted so an
     unauthorized identity silently gains break-glass survival: the request must be driven to a typed

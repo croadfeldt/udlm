@@ -267,6 +267,22 @@ renames:
   registry/classes/resource/topology/_base.yaml: registry/classes/resource/facility/topology/_base.yaml
   registry/classes/resource/ups/_base.yaml: registry/classes/resource/power/ups/_base.yaml
 
+  # 2026-09-29 — the Access family gains its group level (ADR-082, row 089): `identity` (who) and
+  # `authorization` (what they may do), the identity-and-access split SCIM and RBAC already draw.
+  # Identity is a Base (SCIM User: Person and ServiceAccount are its forms); Identity.Group is the
+  # IdentityGroup Base (SCIM Group); Access.IdentityEscrow is the IdentityEscrow Base; the Access folder
+  # retires. Same uuids (ADR-051).
+  registry/classes/access/identity/_base.yaml: registry/classes/access/identity/identity/_base.yaml
+  registry/classes/access/identity/person.yaml: registry/classes/access/identity/identity/person.yaml
+  registry/classes/access/identity/service-account.yaml: registry/classes/access/identity/identity/service-account.yaml
+  registry/classes/access/identity/group.yaml: registry/classes/access/identity/identity-group/_base.yaml
+  registry/classes/access/identity-escrow.yaml: registry/classes/access/identity/identity-escrow/_base.yaml
+  registry/classes/access/grouping/_base.yaml: registry/classes/access/authorization/grouping/_base.yaml
+  registry/classes/access/grouping/tenant.yaml: registry/classes/access/authorization/grouping/tenant.yaml
+  registry/classes/access/grouping/authorization.yaml: registry/classes/access/authorization/grouping/authorization.yaml
+  registry/generated/identity.group.json: registry/generated/identity-group.json
+  registry/generated/access.identity-escrow.json: registry/generated/identity-escrow.json
+
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
   # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),
@@ -365,3 +381,7 @@ retired:
   registry/classes/resource/software/_base.yaml#e2f48d85-0f75-4015-9e92-be500701b108: >-
     retired 2026-09-29 — a dissolved folder, the last one; its member Software.Service is the Workload Base,
     filed under the `services` usage group
+
+  # 2026-09-29 — the Access folder (ADR-082, row 089).
+  registry/classes/access/_base.yaml#5c12d240-240e-4f78-a419-37bb546fed87: >-
+    retired 2026-09-29 — a dissolved folder; its member IdentityEscrow is a Base filed under `identity`

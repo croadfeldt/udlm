@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.4.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/IdentityGroup/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd",
-  "resource_type": "Identity.Group",
-  "version": "0.4.5",
+  "resource_type": "IdentityGroup",
+  "version": "0.5.0",
   "family": "Access",
   "status": "active",
   "metadata": {
     "display_name": "Identity Group",
-    "description": "An identity-side group of persons/service-accounts — identity DATA (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix). Distinct from a grouping: a grouping with record kind `access_grouping` is the control-plane-native RBAC subject-set that role-assignments bind to (and that the authority-enforcement voting model references); an Identity.Group models a group as it exists in a directory / IdP (e.g. an external group mapped to roles via auth-providers role_mapping) or a native logical grouping of accounts. A grouping (access_grouping) MAY reference an Identity.Group as its membership source. The two are kept distinct so external directory groups stay referenced (PIP), not custodied.",
+    "description": "An identity-side group of persons and service accounts — identity DATA, the subject side of the RBAC bridge (`Grouping` subject_bindings plus the function-capability matrix). A Base by the Base test (CLS-002): SCIM (RFC 7643) Group abstracts over every directory's and IdP's group, so a group with a handle, a source and members is one deliverable any of them serves. Distinct from `Grouping`, the control-plane-native anchor that groups RESOURCES by a stored criterion; this groups subjects.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Identity",
-          "version": "1.1.0",
-          "uuid": "db886a00-0e24-4ff7-992a-c6d546a34eb6"
-        },
-        {
-          "class": "Identity.Group",
-          "version": "0.4.5",
+          "class": "IdentityGroup",
+          "version": "0.5.0",
           "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd"
         }
       ]
@@ -38,7 +33,7 @@
       },
       "display_name": {
         "type": "string",
-        "description": "Converted verbatim from the flat Identity.Group spec."
+        "description": "Converted verbatim from the flat IdentityGroup spec."
       },
       "source": {
         "enum": [
@@ -101,7 +96,22 @@
       "description": "The directory this group is sourced from (for source=external)."
     }
   ],
+  "adopts": [
+    {
+      "standard": "SCIM",
+      "version": "RFC 7643",
+      "standard_name": "Group",
+      "role": "group-of-subjects vocabulary (displayName, members)",
+      "source": "https://www.rfc-editor.org/rfc/rfc7643",
+      "license": "IETF Trust (BCP 78)",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ],
   "entity_type": "Identity",
+  "filed_under": [
+    "identity"
+  ],
   "context": {
     "purpose": "Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.",
     "plain_description": "A named set of person and service-account identities, keyed by its required `handle`. Two sources — the required `source` property: a `built_in` group owns its `members` list locally; an `external` group mirrors a directory/IdP group and is referenced, never copied — membership stays authoritative in the directory. Access-control machinery binds roles to groups rather than to individuals, so joining or leaving a group is the whole access change.",

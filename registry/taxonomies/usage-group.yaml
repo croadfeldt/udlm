@@ -130,3 +130,11 @@ terms:
     curation_state: canonical
     definition: >-
       Things that run on behalf of the control plane — jobs, automation runs.
+
+  - term: authorization
+    root: usage-group
+    parent: usage-group
+    curation_state: canonical
+    definition: >-
+      What identities may do — groupings with their subject bindings, tenants, cross-tenant grants.
+      The other half of the identity-and-access split: `identity` is who, `authorization` is what.

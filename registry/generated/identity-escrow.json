@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Access.IdentityEscrow/0.4.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/IdentityEscrow/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b",
-  "resource_type": "Access.IdentityEscrow",
-  "version": "0.4.3",
+  "resource_type": "IdentityEscrow",
+  "version": "0.5.0",
   "family": "Access",
   "status": "active",
   "metadata": {
     "display_name": "Identity Escrow",
-    "description": "The contract for identity state that must SURVIVE its host entity's re-realization: which items are captured before a host is wiped or rebuilt, and restored — as a convergence gate — when it is re-realized. Each item wraps a CredentialRef (custody stays with the escrow store as issuer; the value never enters the model); the escrow binds to the host's entity UUID (which re-provisioning preserves), never to a realization generation. The escrowed_items list is the exhaustive survival allowlist: anything not listed does not survive the wipe default. Normative rules: ESC-* (docs/spec/foundations/identity-escrow.md). Demand case: a field-device fleet adopter whose devices are re-imaged on a fixed cadence but must keep their remote-access and application identities.",
+    "description": "The contract for identity state that must SURVIVE its host entity's re-realization: which items are captured before a host is wiped or rebuilt, and restored — as a convergence gate — when it is re-realized. Each item wraps a CredentialRef (custody stays with the escrow store as issuer; the value never enters the model); the escrow binds to the host's entity UUID (which re-provisioning preserves), never to a realization generation. The escrowed_items list is the exhaustive survival allowlist: anything not listed does not survive the wipe default. Normative rules: ESC-* (docs/spec/foundations/identity-escrow.md). Demand case: a field-device fleet adopter whose devices are re-imaged on a fixed cadence but must keep their remote-access and application identities. A Base of its own (CLS-002): the escrow contract is UDLM's — which items are captured before a host is wiped and restored as a convergence gate when it is re-realized — and every host and credential provider honours it the same way; nothing wider abstracts it, so it stands alone, filed under `identity` (row 089).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-25T00:00:00Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Access",
-          "version": "1.1.0",
-          "uuid": "5c12d240-240e-4f78-a419-37bb546fed87"
-        },
-        {
-          "class": "Access.IdentityEscrow",
-          "version": "0.4.3",
+          "class": "IdentityEscrow",
+          "version": "0.5.0",
           "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b"
         }
       ]
@@ -165,6 +160,9 @@
     }
   ],
   "entity_type": "Escrow",
+  "filed_under": [
+    "identity"
+  ],
   "context": {
     "purpose": "Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.",
     "plain_description": "Some machines are routinely wiped and rebuilt, but parts of their identity must not die with the disk: a remote-access enrollment, an application session, a device certificate. This record is the contract for that state. It lists the items to escrow, when each is captured (at registration, before a wipe) and when it is restored (on re-realization), and whether restore is required for the rebuild to count as converged. Each item points at a credential reference — the escrow store holds the material; the model only ever holds the pointer and the capture/restore evidence. Because the escrow is bound to the host's stable entity UUID rather than to any one installation, a re-imaged machine gets its identity back by contract, and a brand-new machine can never silently claim another machine's identity.",

@@ -4,9 +4,33 @@
   "classes": [
     {
       "class": "DirectoryService",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "instantiable": true,
       "path": "registry/classes/resource/identity/directory-service/_base.yaml",
+      "types": []
+    },
+    {
+      "class": "Identity",
+      "version": "1.2.0",
+      "instantiable": true,
+      "path": "registry/classes/access/identity/identity/_base.yaml",
+      "types": [
+        "Identity.Person",
+        "Identity.ServiceAccount"
+      ]
+    },
+    {
+      "class": "IdentityEscrow",
+      "version": "0.5.0",
+      "instantiable": true,
+      "path": "registry/classes/access/identity/identity-escrow/_base.yaml",
+      "types": []
+    },
+    {
+      "class": "IdentityGroup",
+      "version": "0.5.0",
+      "instantiable": true,
+      "path": "registry/classes/access/identity/identity-group/_base.yaml",
       "types": []
     }
   ]

@@ -28,28 +28,6 @@ A named handle for 'a suite of things treated as a unit' — a tenant, a team's 
 - The governance matrix — obligations enforcement and binding-edit meta-governance
 - Access.IdentityEscrow — the Access-family sibling
 
-### Access.IdentityEscrow (0.4.3)
-
-**Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
-
-Some machines are routinely wiped and rebuilt, but parts of their identity must not die with the disk: a remote-access enrollment, an application session, a device certificate. This record is the contract for that state. It lists the items to escrow, when each is captured (at registration, before a wipe) and when it is restored (on re-realization), and whether restore is required for the rebuild to count as converged. Each item points at a credential reference — the escrow store holds the material; the model only ever holds the pointer and the capture/restore evidence. Because the escrow is bound to the host's stable entity UUID rather than to any one installation, a re-imaged machine gets its identity back by contract, and a brand-new machine can never silently claim another machine's identity.
-
-**Use when:**
-- A host is periodically re-imaged or replaced and named identity state must survive the rebuild by contract, not by operator memory.
-- You need one legible allowlist of what persists across a wipe — everything else dying by default.
-- You need restore to gate convergence: a rebuilt host with a required item unrestored is visibly not converged, never silently identity-less.
-- You need decommission of an identity-bearing host to force an explicit, audited disposition of its escrowed identity (destroy or transfer).
-
-**Not for:**
-- The credential reference itself — that is CredentialRef; an escrow item wraps one, it does not replace it.
-- General backup or data protection of a host's contents — this carries identity state only, not data-migration payloads.
-- The identity that acts in requests — that is the Access family's Identity types (Identity.Person / Identity.ServiceAccount); an escrow preserves identity state across realizations, it is not itself an actor.
-
-**Works with:**
-- CredentialRef — the custody leg each escrowed item wraps; the escrow store is the issuer.
-- Machine.BareMetalHost — the typical host entity whose re-realization triggers restore.
-- Identity.ServiceAccount — the acting identity an escrowed credential may authenticate.
-
 ## AddressService
 
 ### AddressService (0.7.0)
@@ -280,7 +258,7 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 
 ## DirectoryService
 
-### DirectoryService (0.8.1)
+### DirectoryService (0.8.2)
 
 **Purpose:** Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.
 
@@ -291,13 +269,13 @@ The identity directory as a running server: which `protocols` it serves — requ
 - You need the directory replication topology (primary/replica) explicit for recovery planning.
 
 **Not for:**
-- The identities inside — Identity.Person / Identity.Group / Identity.ServiceAccount.
+- The identities inside — Identity.Person / IdentityGroup / Identity.ServiceAccount.
 - The DNS zones a directory suite serves — DNSZone; related, but its own record.
 - The bind credential — CredentialRef.
 
 **Works with:**
 - Machine.VM / Machine.BareMetalHost — where the directory runs.
-- Identity.Group — external groups sourced from this directory.
+- IdentityGroup — external groups sourced from this directory.
 - Workload — services requiring the directory, with hard/soft strength.
 - DNSZone — zones served when DNS is directory-integrated.
 
@@ -346,7 +324,7 @@ One GPU as a component record. The same type covers three shapes, distinguished 
 
 ## Grouping
 
-### Grouping (0.3.0)
+### Grouping (0.3.1)
 
 **Purpose:** Declares a grouping — the native anchor other things bind to: a membership criterion, the obligations members inherit, and the opaque subject bindings an authorization engine evaluates.
 
@@ -450,25 +428,28 @@ A range of addresses that individual address records are carved from: the requir
 
 ## Identity
 
-### Identity.Group (0.4.5)
+### Identity (1.2.0)
 
-**Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
+**Purpose:** Declares a subject the control plane authenticates and authorizes — a person or a service account — with the handle, actor type, authentication source and credential reference every identity provider serves.
 
-A named set of person and service-account identities, keyed by its required `handle`. Two sources — the required `source` property: a `built_in` group owns its `members` list locally; an `external` group mirrors a directory/IdP group and is referenced, never copied — membership stays authoritative in the directory. Access-control machinery binds roles to groups rather than to individuals, so joining or leaving a group is the whole access change.
+Who can act. An identity has a `handle`, an `actor_type` (`human` or `service_account`, which its two forms narrow to one), where it is `authenticated_by`, an optional `credential_ref` to the secret that proves it, and a `status`. It is the subject side of the RBAC bridge: a Grouping's subject bindings name identities, and the function-capability matrix says what those identities may do. Modelled on SCIM's User so a directory, an IdP and a cloud IAM all fill it the same way.
 
 **Use when:**
-- You need role assignments to bind to a set of identities instead of to individuals.
-- You need a directory (LDAP/IdP) group represented in the model without duplicating its membership.
+- You need a person or a service account as a first-class subject that groupings can bind and audit records can name.
+- You need identities portable across directories and identity providers by the SCIM vocabulary.
 
 **Not for:**
-- The directory server that hosts an external group — DirectoryService.
-- The secret an account authenticates with — CredentialRef; groups hold identities, never credentials.
+- A set of identities — IdentityGroup.
+- The secret itself — CredentialRef holds the reference; custody stays with the store.
+- What an identity may do — Grouping subject bindings and the function-capability matrix.
 
 **Works with:**
-- Identity.Person / Identity.ServiceAccount — the members, for built_in groups.
-- DirectoryService — the source of an external group's membership.
+- IdentityGroup — groups this identity belongs to.
+- Grouping — bindings that grant this identity access to resources.
+- CredentialRef — the credential that authenticates it.
+- DirectoryService — the directory that authenticates it.
 
-### Identity.Person (0.6.5)
+### Identity.Person (0.6.6)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
@@ -484,11 +465,11 @@ One human's identity: its `handle` (the login name) and its `actor_type` — alw
 - The directory server — DirectoryService is the server; this is one identity in it.
 
 **Works with:**
-- Identity.Group — memberships that drive role binding.
+- IdentityGroup — memberships that drive role binding.
 - CredentialRef — the person's credentials, by reference.
 - DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.6.5)
+### Identity.ServiceAccount (0.6.6)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
@@ -505,7 +486,51 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 **Works with:**
 - Identity.Person — the accountable owner.
 - CredentialRef — the account's key/token, by reference.
-- Identity.Group — memberships that grant it roles.
+- IdentityGroup — memberships that grant it roles.
+
+## IdentityEscrow
+
+### IdentityEscrow (0.5.0)
+
+**Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
+
+Some machines are routinely wiped and rebuilt, but parts of their identity must not die with the disk: a remote-access enrollment, an application session, a device certificate. This record is the contract for that state. It lists the items to escrow, when each is captured (at registration, before a wipe) and when it is restored (on re-realization), and whether restore is required for the rebuild to count as converged. Each item points at a credential reference — the escrow store holds the material; the model only ever holds the pointer and the capture/restore evidence. Because the escrow is bound to the host's stable entity UUID rather than to any one installation, a re-imaged machine gets its identity back by contract, and a brand-new machine can never silently claim another machine's identity.
+
+**Use when:**
+- A host is periodically re-imaged or replaced and named identity state must survive the rebuild by contract, not by operator memory.
+- You need one legible allowlist of what persists across a wipe — everything else dying by default.
+- You need restore to gate convergence: a rebuilt host with a required item unrestored is visibly not converged, never silently identity-less.
+- You need decommission of an identity-bearing host to force an explicit, audited disposition of its escrowed identity (destroy or transfer).
+
+**Not for:**
+- The credential reference itself — that is CredentialRef; an escrow item wraps one, it does not replace it.
+- General backup or data protection of a host's contents — this carries identity state only, not data-migration payloads.
+- The identity that acts in requests — that is the Access family's Identity types (Identity.Person / Identity.ServiceAccount); an escrow preserves identity state across realizations, it is not itself an actor.
+
+**Works with:**
+- CredentialRef — the custody leg each escrowed item wraps; the escrow store is the issuer.
+- Machine.BareMetalHost — the typical host entity whose re-realization triggers restore.
+- Identity.ServiceAccount — the acting identity an escrowed credential may authenticate.
+
+## IdentityGroup
+
+### IdentityGroup (0.5.0)
+
+**Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
+
+A named set of person and service-account identities, keyed by its required `handle`. Two sources — the required `source` property: a `built_in` group owns its `members` list locally; an `external` group mirrors a directory/IdP group and is referenced, never copied — membership stays authoritative in the directory. Access-control machinery binds roles to groups rather than to individuals, so joining or leaving a group is the whole access change.
+
+**Use when:**
+- You need role assignments to bind to a set of identities instead of to individuals.
+- You need a directory (LDAP/IdP) group represented in the model without duplicating its membership.
+
+**Not for:**
+- The directory server that hosts an external group — DirectoryService.
+- The secret an account authenticates with — CredentialRef; groups hold identities, never credentials.
+
+**Works with:**
+- Identity.Person / Identity.ServiceAccount — the members, for built_in groups.
+- DirectoryService — the source of an external group's membership.
 
 ## Job
 
@@ -1307,4 +1332,4 @@ The application layer: the mail service, the registry, model serving — a named
 - CredentialRef — the service's secrets, by reference.
 
 ---
-*62 types; 62 with context, 0 pending.*
+*63 types; 63 with context, 0 pending.*

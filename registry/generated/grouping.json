@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Grouping/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Grouping/0.3.1",
   "conforms_to": "udlm/0.1",
   "uuid": "2c8b6270-2eae-4ac4-8faa-3375dde3da3e",
   "resource_type": "Grouping",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Grouping",
-          "version": "0.3.0",
+          "version": "0.3.1",
           "uuid": "2c8b6270-2eae-4ac4-8faa-3375dde3da3e"
         }
       ]
@@ -88,6 +88,9 @@
   },
   "outputs": {},
   "entity_type": "Grouping",
+  "filed_under": [
+    "authorization"
+  ],
   "context": {
     "purpose": "Declares a grouping — the native anchor other things bind to: a membership criterion, the obligations members inherit, and the opaque subject bindings an authorization engine evaluates.",
     "plain_description": "A named set of things with a rule for what belongs in it. A tenant is a grouping with an isolation obligation; an authorization is a grouping that grants a stake. A plain Grouping is an advisory set — a deployment, a team's resources — with a derivable membership rule preferred over an explicit list.",

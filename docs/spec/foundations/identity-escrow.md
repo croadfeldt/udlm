@@ -1,7 +1,7 @@
 # Identity Escrow — identity state that survives re-realization (`ESC-*`)
 
-**What this owns.** The normative rules for `Access.IdentityEscrow`
-(`registry/classes/access/identity-escrow.yaml`): the contract for identity state that
+**What this owns.** The normative rules for `IdentityEscrow`
+(`registry/classes/access/identity/identity-escrow/_base.yaml`): the contract for identity state that
 must survive its host entity's re-realization. This file is the single home of the `ESC-*`
 rule family (`registry/rule-id-registry.yaml`).
 
@@ -20,7 +20,7 @@ lifecycle already decoupled from any one consumer. The rehydration doctrine
 (`docs/spec/foundations/four-states.md` — adoption and re-provisioning preserve the entity UUID) makes
 "the same machine, rebuilt" a stable identity. What no type carried was the **contract**:
 which items are captured, when, restored when, and what refuses if restore fails. That
-contract is `Access.IdentityEscrow`; these are its rules.
+contract is `IdentityEscrow`; these are its rules.
 
 ## Rules
 
