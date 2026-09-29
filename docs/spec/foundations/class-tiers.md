@@ -146,6 +146,7 @@ never from the tree alone. Neither replaces the other.
 | `CLS-006` | **A class is named for its deliverable.** A technology name appears only when the technology is the contract (a conformance-tested standard), never when it is a product. A Base is never named for a vendor; a Type is a form or a dialect; a Provider Class is the offering. |
 | `CLS-007` | **One short name, resolved on input, never stored.** A class MAY declare one `short_name` matching the `resource_type` pattern, unique case-insensitively against every canonical name and every other short name. It is accepted at every input surface, canonicalized on write, and MUST NOT appear in `$id`, `parent`, an element `scope`, a relationship `target`, or an offering list. Gate: `tests/check_class_short_names.py`. |
 | `CLS-008` | **Instantiability belongs to the Base.** `instantiable` MAY appear only on a Base Class (`class: base`); absent means true. Gate: `tests/check_class_short_names.py`. |
+| `CLS-009` | **An element's `role` only narrows.** An element may declare a data role (`registry/class.schema.json`; vocabulary in `common-elements.schema.json`). Absent means execution: required by every provider that binds the class (DSP-002). A non-execution role removes the element from the required set for every descendant. No role adds to what a provider gets; only policy does (DSP-003). |
 
 ## 9. Conformance
 

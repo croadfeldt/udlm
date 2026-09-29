@@ -702,6 +702,10 @@
           "items": {
             "$ref": "common-elements.schema.json#/$defs/constraint_clause"
           }
+        },
+        "role": {
+          "$ref": "common-elements.schema.json#/$defs/data_role",
+          "description": "The element's data role (data-roles.md). Absent means execution: required by any provider that binds this class. A non-execution role removes it from the required set (DSP-002). A role never adds to what a provider gets; only policy does (DSP-003)."
         }
       }
     }

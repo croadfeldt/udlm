@@ -381,6 +381,17 @@
         "Decommissioned"
       ],
       "description": "The five-value lifecycle state of an entity (data-model-core §3): the four states plus the tombstone. One home (VOC-001); the entity view's `lifecycle_state` and a composite's per-constituent state reference it."
+    },
+    "data_role": {
+      "enum": [
+        "execution",
+        "assembly",
+        "governance",
+        "audit",
+        "cost"
+      ],
+      "x-extensible-enum": true,
+      "description": "What a datum is for (data-roles.md), separate from how sensitive it is. execution = needed to build the resource; assembly = control-plane assembly record; governance = policy decisions; audit = audit-only; cost = cost attribution. No role is dispatched by default (DSP-001)."
     }
   }
 }

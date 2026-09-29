@@ -70,6 +70,12 @@ def _composition_constraints(record):
     return m.check_composition_constraints(record)
 
 
+def _dispatch_slice(record):
+    """DSP-002/003/004 — the dispatch receipt held to the rule; per-record, index = the served specs."""
+    m = _load("tests/check_dispatch_slice.py", "_dsp")
+    return m.judge(record, m.load_index())
+
+
 def _schema(record):
     """Schema validation as a bindable gate. Many requirements — uuid canonical form, the v4 version
     nibble and variant bits — are enforced by a `pattern` rather than by any semantic check, so a
@@ -133,6 +139,7 @@ GATES = {
     "check_class_constituents": _class_constituents,
     "check_composition_promotion": _composition_promotion,
     "check_fulfillment_conditions": _fulfillment_conditions,
+    "check_dispatch_slice": _dispatch_slice,
 }
 
 

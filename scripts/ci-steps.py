@@ -37,6 +37,7 @@ NAMES = {
     "python3 tests/check_state_records_only.py": "one record per state, never a folded record (RHY-006)",
     "python3 tests/check_transition_provenance.py": "transition provenance: every difference attributed (TRN-001/002/003)",
     "python3 tests/check_entity_views.py": "every shipped entity folds into a valid view (EVW-001)",
+    "python3 tests/check_dispatch_slice.py": "dispatch is zero trust; the requested record is the receipt (DSP-002/003/004)",
     "python3 tests/check_status_claims.py": "a completion claim cites an artifact that exists (STA-001)",
     "python3 tests/check_seal_facets.py": "seal facets are OpenLineage facets; the admission rule is structural (SEAL-001..004)",
     "python3 tests/check_adr_realization.py": "a decision says where it is realized; Accepted requires it (ADR-REAL-001..003)",

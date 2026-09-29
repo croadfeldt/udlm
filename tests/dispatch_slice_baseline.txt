@@ -1,0 +1,21 @@
+# Dispatch-receipt baseline (DSP-004; tests/check_dispatch_slice.py).
+#
+# Requested records shipped before ruling 081 that carry no `dispatch` receipt. Declared debt: each
+# is superseded with a receipt when its example set is next revisited. The worked example
+# (example-vm-app01-requested-record) is the model. This list only shrinks. Seeded 2026-09-28 at 16.
+DSP-004 registry/examples/example-blocked-chain.yaml#1 dispatch
+DSP-004 registry/examples/example-blocked-chain.yaml#3 dispatch
+DSP-004 registry/examples/example-blocked-chain.yaml#5 dispatch
+DSP-004 registry/examples/example-cross-tenant-authorization.yaml#1 dispatch
+DSP-004 registry/examples/example-identity-escrow.yaml#1 dispatch
+DSP-004 registry/examples/example-job-ai-test-harness-run.yaml#0 dispatch
+DSP-004 registry/examples/example-job.yaml#1 dispatch
+DSP-004 registry/examples/example-platform-tenant.yaml#1 dispatch
+DSP-004 registry/examples/example-resource-group.yaml#1 dispatch
+DSP-004 registry/examples/example-shared-vlan.yaml#1 dispatch
+DSP-004 registry/examples/example-sovereignty-zone-eu-west.yaml#1 dispatch
+DSP-004 registry/examples/example-sovereignty-zone-us-mn.yaml#1 dispatch
+DSP-004 registry/examples/example-tenant.yaml#1 dispatch
+DSP-004 registry/examples/example-test-evidence-records.yaml#1 dispatch
+DSP-004 registry/examples/example-vm-placed-on-provider.yaml#1 dispatch
+DSP-004 registry/examples/example-vm-with-cross-tenant-stake.yaml#1 dispatch

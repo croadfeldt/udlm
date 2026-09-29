@@ -1,8 +1,9 @@
-# asserts: DEP-015, DEP-018, PRV-012, ENT-006
+# asserts: DEP-015, DEP-018, PRV-012, ENT-006, DSP-002, DSP-004
 # proves: a request one provider makes to another is a record of its own — in the provider's tenant, under the provider's
 # authority, naming itself as root — and names the consumer's request that caused it as provenance, never as authority,
 # and never in what the storage provider receives.
 # Two records, one entity: the VM provider's intent for raw storage, and the requested record placement produced from it.
+# The requested record's dispatch receipt admits only the pool's own elements; `caused_by_request` is control-plane data and never crosses.
 ---
 record_type: intent_record
 state: Intent
@@ -46,10 +47,10 @@ integrity:
 ---
 record_type: requested_record
 state: Requested
-record_uuid: 01a0eb52-84e6-71c0-b798-1dad32dcb191
+record_uuid: 01a0eb94-650c-74bf-8dc5-c5c1cfb473a1
 intent_ref: 01a0eb52-84e6-71c0-b798-1dacd378c203
 intent_ref_head: sha256:51d2680d200fb1abebaab427968b53ae95f17eb59fc82620c19918e337ad2dc5
-root_request_uuid: 01a0eb52-84e6-71c0-b798-1dad32dcb191
+root_request_uuid: 01a0eb94-650c-74bf-8dc5-c5c1cfb473a1
 caused_by_request: 01a0eb4f-c492-70e3-a61a-c7a8b1822dbf
 entity_uuid: 6c27ea00-65ee-4045-b31b-ae08ad34c80d
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
@@ -66,6 +67,13 @@ fields:
   pool_kind: zfs
   capacity:
     size: 20Ti
+dispatch:
+  provider: lab/providers/zfs-storage-a
+  admitted:
+    - pool_kind
+    - capacity.size
+  granted: []
+  stripped: []
 assembly:
   applied:
     - source:
@@ -81,7 +89,9 @@ metadata:
         and the audit chain only; nothing about that request, its tenant or its entity is in the payload the storage
         provider receives, which is this record''s execution slice and placement requirements. The triggering request
         waits blocked-transient on this one (DEP-017).'
+supersedes:
+  - 01a0eb52-84e6-71c0-b798-1dad32dcb191
 integrity:
-  head: sha256:d82000532e81c6f05a910ddc8b8c07be32d5f69143320dc2b8ddf7772d7bcf4f
-  previous: null
+  head: sha256:50cc7e76dcd062d50a3e5b5a889573e11dc00d4daa810e5a888944ec34938cc7
+  previous: sha256:d82000532e81c6f05a910ddc8b8c07be32d5f69143320dc2b8ddf7772d7bcf4f
   algorithm: sha256-jcs

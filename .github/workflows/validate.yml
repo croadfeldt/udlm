@@ -78,6 +78,8 @@ jobs:
       - run: python3 tests/check_transition_provenance.py
       # Every shipped entity folds into a valid view (EVW-001)
       - run: python3 tests/check_entity_views.py
+      # Dispatch is zero trust; the requested record is the receipt (DSP-002/003/004)
+      - run: python3 tests/check_dispatch_slice.py
       - run: python3 tests/check_status_claims.py
       - run: python3 tests/check_seal_facets.py
       - run: python3 tests/check_adr_realization.py

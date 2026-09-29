@@ -172,13 +172,16 @@ provider_base_registration:
     - accreditation_uuid: <uuid>         # reference to registered accreditation
       framework: <framework>
 
-  # Data ROLES this provider accepts across the dispatch boundary (ADR-PROV-001;
-  # docs/spec/contracts/data-roles.md). Default [execution] — only execution-role data is naturalized
-  # to the provider. A provider MAY opt into non-execution roles (e.g. assembly context).
-  # The set actually delivered is the INTERSECTION of this declaration and what the
-  # Governance Matrix permits at the control plane→Provider boundary — sovereignty policy can strip a
-  # role the provider requested; it can never widen beyond this declaration.
+  # Roles this provider accepts (data-roles.md). Dispatch is deny-by-default (DSP-001): the provider
+  # gets the elements of the class it binds (DSP-002) and nothing else unless policy grants it
+  # (DSP-003). accepts_roles only narrows. What was delivered is on the requested record (DSP-004).
   accepts_roles: [execution]             # e.g. [execution, assembly]
+  # Data this provider needs beyond its class (PRV-013). Declared here or not considered. Policy
+  # grants, narrows or refuses each; the grant is recorded on the requested record.
+  requests_data:
+    - path: placement.location_ref
+      reason: "places the guest on the rack the estate chose; the provider cannot derive it"
+
 
   # What the provider needs FROM the implementation (optional). Matched against the implementation's
   # own capability advertisement at registration; the provider gets a matched-capabilities
@@ -1052,6 +1055,7 @@ The substrate requires the following invariants on capability discovery interact
 | `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capability/category grants no authority and is UNUSABLE until admitted — `effective_capabilities` starts empty. At registration control-plane records each declared capability/category in the control-plane-assigned verdict (`capability_admissions`) as `pending` — the platform-admin worklist. A platform admin dispositions each at **platform level** (`approved \| provisional \| denied` — coarse, platform-wide) via the Admin API (mechanism: the control-plane registration spec §7.4a; RBAC `platform_admin`; approver stringency is **profile-governed** per PROF-010 — "default safe": the security default derives from the platform profile(s) in use, and no profile weakens default-deny). **Granular / conditional approval** (per tenant/zone/resource/context) is **policy** — Governance-Matrix rules — not an admin-disposition field; domain granularity is inherent (a category IS verb×domain). the control plane enforces only the **computed intersecting ceiling** `effective_capabilities` — the default-deny formula is defined once in §2's `dcm_registration_verdict` (`effective_capabilities = declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted`; mirrors `PRV-008`/`accepts_roles`); a provider can never invoke outside it. The disposition is admin-set (never self-declared); every admission change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason), immutable, reconstructed LIFO. `provisional` = admitted but restricted/shadowed. |
 | `PRV-011` | **The `effective_capabilities` ceiling (`PRV-009`) is enforced at the dispatch boundary.** Every dispatch — placed, routed, pinned, or operator-overridden — re-checks that the target provider's `effective_capabilities` covers the required capability at the required grain (resource type at the required `spec_version`, §8.1) before any work is handed over. No routing mechanism, pin, or override exempts a dispatch from this check; a pin selects among eligible providers, it does not confer eligibility (§2b). A mismatch refuses **pre-dispatch** with `placement.capability_mismatch` — an eligibility outcome, distinct from `provider.unavailable`, which reports a provider that broke — carrying the required-versus-declared comparison so a mis-routed request is distinguishable from an unsatisfiable one. Eligibility is decided from the provider's registration declarations, never by attempting the operation and observing failure. |
 | `PRV-012` | **A provider may originate a request when its need crosses a provider boundary.** A provider that cannot satisfy a dispatched request from what it owns may request another provider's offering as a UDLM request of its own: from its service account, in its tenant, under its authority, evaluated by policy like any request, carrying `caused_by_request` (DEP-018). It may not act under the consumer's authority, reuse the consumer's `root_request_uuid`, or pass the fulfilling provider anything about the consumer: only its own request's execution slice and placement requirements cross. Growing a pool it already owns is mechanism, not a record (dcm ADR-023). Realization updates the graph as records: the new substrate's realized record, the provider's realized record `depends_on` it, a moved consumer entity gets a superseding realized record; RHY-007 observed edges are the backstop. |
+| `PRV-013` | **A provider declares what it needs beyond its class; policy decides.** Dispatch is zero trust (DSP-001..004). A provider gets the elements of the class it binds and nothing else by default. A further need goes in the registration's `requests_data`, with a reason. Policy grants, narrows or refuses each need, and may strip any element. `accepts_roles` only narrows. The requested record's `dispatch` block is the receipt. |
 
 ---
 
