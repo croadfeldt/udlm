@@ -2,7 +2,7 @@ uuid: uc-adad05bb-f56f-4858-91eb-582c51481d7c
 handle: access/identity-escrow-survival-allowlist
 version: 1.0.0
 scenario:
-  description: 'A security officer declares an Access.IdentityEscrow that carries a break-glass survival
+  description: 'A security officer declares an IdentityEscrow that carries a break-glass survival
     allowlist — the explicit, bounded set of identities and accesses that MUST survive a recovery
     scenario in which the normal identity source is unavailable. The allowlist is declared data, not a
     latent side effect: each entry names an identity and the access it retains, so that when the estate

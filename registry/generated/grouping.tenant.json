@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Grouping",
-          "version": "0.3.0",
+          "version": "0.3.1",
           "uuid": "2c8b6270-2eae-4ac4-8faa-3375dde3da3e"
         },
         {
@@ -108,6 +108,9 @@
   },
   "outputs": {},
   "entity_type": "Grouping",
+  "filed_under": [
+    "authorization"
+  ],
   "context": {
     "purpose": "The ownership and isolation border. Every record in the model carries a tenant_uuid pointing at one of these, and it is the referent that ownership, cost attribution, audit scope, drift accountability, and policy scope all resolve against.",
     "plain_description": "A tenant. A thing belongs to exactly one at a time, and that is a structural lock rather than a convention — crossing the border is a deliberate, recorded act, not a default. Tenants may nest: a child keeps its own resources and its own isolation, while the parent gets governance overlay, cost rollup, and audit aggregation across its children.",

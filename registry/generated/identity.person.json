@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.6.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.6.6",
   "conforms_to": "udlm/0.1",
   "uuid": "679b14ef-f169-441e-968d-dacafffe1966",
   "resource_type": "Identity.Person",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Identity",
-          "version": "1.1.0",
+          "version": "1.2.0",
           "uuid": "db886a00-0e24-4ff7-992a-c6d546a34eb6"
         },
         {
           "class": "Identity.Person",
-          "version": "0.6.5",
+          "version": "0.6.6",
           "uuid": "679b14ef-f169-441e-968d-dacafffe1966"
         }
       ]
@@ -40,12 +40,11 @@
         "type": "string",
         "description": "Converted verbatim from the flat Identity.Person spec."
       },
-      "email": {
-        "type": "string",
-        "description": "Converted verbatim from the flat Identity.Person spec."
-      },
       "actor_type": {
-        "const": "human",
+        "type": "string",
+        "enum": [
+          "human"
+        ],
         "description": "From the closed actor-type vocabulary (universal-audit); a Person is always `human`."
       },
       "authenticated_by": {
@@ -56,10 +55,6 @@
         "description": "Reference to CredentialRef — the credential record for this person. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
-      "external_subject": {
-        "type": "string",
-        "description": "The external IdP subject id when federated (a PIP reference, resolved not stored)."
-      },
       "status": {
         "enum": [
           "active",
@@ -67,6 +62,14 @@
           "disabled"
         ],
         "description": "Converted verbatim from the flat Identity.Person spec."
+      },
+      "email": {
+        "type": "string",
+        "description": "Converted verbatim from the flat Identity.Person spec."
+      },
+      "external_subject": {
+        "type": "string",
+        "description": "The external IdP subject id when federated (a PIP reference, resolved not stored)."
       }
     },
     "required": [
@@ -94,9 +97,9 @@
   "relationships": [
     {
       "edge_type": "contained_by",
-      "target": "Identity.Group",
+      "target": "IdentityGroup",
       "cardinality": "0..n",
-      "description": "Member of an access grouping (access_grouping) or Identity.Group; membership drives role binding (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix)."
+      "description": "Member of an access grouping (access_grouping) or IdentityGroup; membership drives role binding (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix)."
     },
     {
       "edge_type": "references",
@@ -105,7 +108,22 @@
       "description": "Credentials — referenced, never inline."
     }
   ],
+  "adopts": [
+    {
+      "standard": "SCIM",
+      "version": "RFC 7643",
+      "standard_name": "User",
+      "role": "identity/subject vocabulary (userName, displayName, active, userType; a person and a service account are both Users)",
+      "source": "https://www.rfc-editor.org/rfc/rfc7643",
+      "license": "IETF Trust (BCP 78)",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ],
   "entity_type": "Identity",
+  "filed_under": [
+    "identity"
+  ],
   "context": {
     "purpose": "Models a human account — the actor that gets authenticated, authorized, and audited.",
     "plain_description": "One human's identity: its `handle` (the login name) and its `actor_type` — always `human`, and required alongside the handle — plus display name, email, status, and how they authenticate (the built-in provider by default, or a directory/IdP when federated). It carries no secret material — a password or key is referenced through a CredentialRef, never stored. Every audited action and role assignment points back at this record's stable actor id.",
@@ -119,7 +137,7 @@
       "The directory server — DirectoryService is the server; this is one identity in it."
     ],
     "works_with": [
-      "Identity.Group — memberships that drive role binding.",
+      "IdentityGroup — memberships that drive role binding.",
       "CredentialRef — the person's credentials, by reference.",
       "DirectoryService — the external authenticator when federated."
     ]

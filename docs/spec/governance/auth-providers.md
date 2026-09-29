@@ -28,7 +28,7 @@ Every authentication mode UDLM admits — static API key, local users, GitHub OA
 Authentication and credential issuance are **capabilities** (yields) a provider declares — **not** separate provider kinds; there are no provider types, only capabilities (ADR-PROV-002). The verb vocabulary, capability categories, and registration floor are [provider-contract](../contracts/provider-contract.md) §§2, 8–9. Auth is declared via `auth_capability`; credential issuance via `Credential.*` + `credential_capability` ([Credentials](credentials.md) §1, the broker model). There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities any provider declares.
 
 > **Identity-model authority (UDLM vs an implementation's auth architecture).** This document and the
-> `Identity.*` types (`Identity.Person` / `Identity.ServiceAccount` / `Identity.Group`, the RBAC bridge (`Grouping` subject_bindings + the function-capability matrix))
+> `Identity.*` types (`Identity.Person` / `Identity.ServiceAccount` / `IdentityGroup`, the RBAC bridge (`Grouping` subject_bindings + the function-capability matrix))
 > are the **authoritative data contract** for actors/identities and the actor-type vocabulary (incl. the
 > `provider` actor). An implementation's authentication *implementation* — e.g. The control plane's IDM/IAM Authentication
 > Layer (`dcm-project/enhancements/.../authentication/authentication.md`: Keycloak/IdP, middleware,

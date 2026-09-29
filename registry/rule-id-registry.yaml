@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.14"
+version: "1.0.15"
 
 prefixes:
   - prefix: ACC
@@ -92,7 +92,7 @@ prefixes:
   - prefix: ESC
     name: Identity escrow
     home: docs/spec/foundations/identity-escrow.md
-    domain: Identity state surviving host re-realization (Access.IdentityEscrow contract rules)
+    domain: Identity state surviving host re-realization (IdentityEscrow contract rules)
     status: active
   - prefix: ERL
     name: Entity-relationship (legacy-renumbered)

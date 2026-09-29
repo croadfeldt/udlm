@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/DirectoryService/0.8.1
+$id: https://udlm.dev/registry/udlm/0.1/class/DirectoryService/0.8.2
 conforms_to: udlm/0.1
 uuid: b5a74015-f60e-49ff-9ff8-c704152cb958
 record_type: class
 class: base
 resource_type: DirectoryService
-version: 0.8.1
+version: 0.8.2
 family: Resource
 status: active
 filed_under:
@@ -129,11 +129,11 @@ context:
       them.
     - You need the directory replication topology (primary/replica) explicit for recovery planning.
   not_for:
-    - The identities inside — Identity.Person / Identity.Group / Identity.ServiceAccount.
+    - The identities inside — Identity.Person / IdentityGroup / Identity.ServiceAccount.
     - The DNS zones a directory suite serves — DNSZone; related, but its own record.
     - The bind credential — CredentialRef.
   works_with:
     - Machine.VM / Machine.BareMetalHost — where the directory runs.
-    - Identity.Group — external groups sourced from this directory.
+    - IdentityGroup — external groups sourced from this directory.
     - Workload — services requiring the directory, with hard/soft strength.
     - DNSZone — zones served when DNS is directory-integrated.
