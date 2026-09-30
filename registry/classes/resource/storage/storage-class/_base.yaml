@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StorageClass/0.9.0
+$id: https://udlm.dev/registry/udlm/0.1/class/StorageClass/0.10.0
 conforms_to: udlm/0.1
 uuid: 8bca0919-e6b1-483a-8b46-841cea6e4b6f
 record_type: class
 class: base
 resource_type: StorageClass
-version: 0.9.0
+version: 0.10.0
 family: Resource
 status: active
 filed_under:
@@ -86,6 +86,8 @@ elements:
         advertised class back to a tier so tier-authored intent (ADR-036: name-selectable, requirements-authoritative)
         resolves against class-based providers. The class chosen for a request is recorded consumer-side as a realized
         fact (e.g. a StorageLayout entry''s `storage_backing`), never in portable intent.'
+    values:
+      reference_data_type: storage_tier
   - element: capabilities
     scope: StorageClass
     optional: true

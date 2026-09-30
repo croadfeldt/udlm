@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StorageClass/0.9.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StorageClass/0.10.0",
   "conforms_to": "udlm/0.1",
   "uuid": "8bca0919-e6b1-483a-8b46-841cea6e4b6f",
   "resource_type": "StorageClass",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StorageClass",
-          "version": "0.9.0",
+          "version": "0.10.0",
           "uuid": "8bca0919-e6b1-483a-8b46-841cea6e4b6f"
         }
       ]
@@ -58,7 +58,7 @@
       },
       "tier": {
         "type": "string",
-        "description": "The governed `storage_tier` this class satisfies (ADR-038 §2 vocabulary; each term denotes a requirements floor). Maintainer ruling 2026-08-02: a provider MAY expose storage classes, but MUST map each advertised class back to a tier so tier-authored intent (ADR-036: name-selectable, requirements-authoritative) resolves against class-based providers. The class chosen for a request is recorded consumer-side as a realized fact (e.g. a StorageLayout entry's `storage_backing`), never in portable intent."
+        "description": "The governed `storage_tier` this class satisfies (ADR-038 §2 vocabulary; each term denotes a requirements floor). Maintainer ruling 2026-08-02: a provider MAY expose storage classes, but MUST map each advertised class back to a tier so tier-authored intent (ADR-036: name-selectable, requirements-authoritative) resolves against class-based providers. The class chosen for a request is recorded consumer-side as a realized fact (e.g. a StorageLayout entry's `storage_backing`), never in portable intent. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
       },
       "capabilities": {
         "type": "object",

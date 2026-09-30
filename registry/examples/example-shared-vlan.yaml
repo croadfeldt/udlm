@@ -23,7 +23,7 @@ supersedes:
 record_type: requested_record
 state: Requested
 entity_uuid: b448b93d-49b8-4c4a-bae5-56bef93edd22
-record_uuid: 01a0eed4-50b1-7253-bb5a-2a6b41849c93
+record_uuid: 01a0f335-682a-73ea-ac8e-5ba6d409f1fb
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
 resource_type: VLAN
@@ -38,15 +38,23 @@ fields:
   encapsulation: vlan
   segment_id: 1042
   name: tenant-fabric
+dispatch:
+  provider: estate/control-plane
+  admitted:
+    - encapsulation
+    - segment_id
+    - name
+  granted: []
+  stripped: []
 intent_ref: 01a0eed4-50b1-7253-bb5a-2a6ae07ecc37
-root_request_uuid: 01a0eed4-50b1-7253-bb5a-2a6b41849c93
+root_request_uuid: 01a0f335-682a-73ea-ac8e-5ba6d409f1fb
 supersedes:
-  - 01a0ee5e-bdfd-77f8-a3b4-a2ed8dabcb26
+  - 01a0eed4-50b1-7253-bb5a-2a6b41849c93
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: b448b93d-49b8-4c4a-bae5-56bef93edd22
-record_uuid: 01a0eed4-50b1-7253-bb5a-2a6cb28e6ca8
+record_uuid: 01a0f335-682a-73ea-ac8e-5ba7efff428a
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
 resource_type: VLAN
@@ -63,7 +71,15 @@ fields:
   name: tenant-fabric
 outputs:
   segment_ready: true
-requested_ref: 01a0eed4-50b1-7253-bb5a-2a6b41849c93
+requested_ref: 01a0f335-682a-73ea-ac8e-5ba6d409f1fb
 provider: estate/control-plane
 supersedes:
-  - 01a0ee5e-bdfd-77f8-a3b4-a2ee6b43ad1a
+  - 01a0eed4-50b1-7253-bb5a-2a6cb28e6ca8
+provenance:
+  outputs.segment_ready:
+    - source:
+        kind: provider
+        id: estate/control-plane
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-08-08T00:00:00Z'

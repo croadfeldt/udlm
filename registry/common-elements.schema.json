@@ -454,6 +454,158 @@
         }
       ],
       "description": "HOW GOOD THIS NETWORK IS — a governed `network_tier` term, each denoting a floor (bandwidth, latency) any provider that clears it satisfies; name-selectable but requirements-authoritative (ADR-036). The provider reports it (the party that knows is the party that says). One home (ADR-082); every network Base declares `tier` by $ref."
+    },
+    "partition_mechanism": {
+      "title": "Partition mechanism",
+      "type": "string",
+      "enum": [
+        "sr-iov",
+        "mediated",
+        "mig",
+        "vlan",
+        "macvlan",
+        "ipvlan",
+        "cpu-pinning",
+        "cpu-set",
+        "namespace",
+        "lun",
+        "other"
+      ],
+      "x-extensible-enum": true,
+      "description": "How a partition is carved from its physical parent (common-elements.md §7): SR-IOV VF, a mediated device (vGPU/mdev), an NVIDIA MIG slice, a VLAN/macvlan/ipvlan sub-interface, a pinned CPU set, an NVMe namespace or a LUN. One home (PVD-001); each hardware Base $refs it."
+    },
+    "isa": {
+      "title": "Instruction-set architecture",
+      "type": "string",
+      "enum": [
+        "x86_64",
+        "aarch64",
+        "armv7l",
+        "ppc64le",
+        "s390x",
+        "riscv64"
+      ],
+      "x-extensible-enum": true,
+      "description": "The ISA a processor or host runs, in the uname spelling the estate reports (Redfish ProcessorArchitecture is coarser). One home (PVD-001)."
+    },
+    "oci_architecture": {
+      "title": "OCI platform architecture",
+      "type": "string",
+      "enum": [
+        "amd64",
+        "arm64",
+        "arm",
+        "ppc64le",
+        "s390x",
+        "riscv64",
+        "386"
+      ],
+      "x-extensible-enum": true,
+      "description": "OCI image-spec platform.architecture (GOARCH spelling) — adopted codelist."
+    },
+    "oci_os": {
+      "title": "OCI platform OS",
+      "type": "string",
+      "enum": [
+        "linux",
+        "windows",
+        "darwin",
+        "freebsd"
+      ],
+      "x-extensible-enum": true,
+      "description": "OCI image-spec platform.os (GOOS spelling) — adopted codelist."
+    },
+    "media_type": {
+      "title": "Storage media",
+      "type": "string",
+      "enum": [
+        "hdd",
+        "ssd",
+        "nvme",
+        "optical",
+        "tape",
+        "other"
+      ],
+      "description": "Redfish Drive MediaType, lower-cased. One home (PVD-001)."
+    },
+    "storage_transport": {
+      "title": "Storage transport",
+      "type": "string",
+      "enum": [
+        "sata",
+        "sas",
+        "nvme",
+        "usb",
+        "fc",
+        "iscsi",
+        "virtio",
+        "other"
+      ],
+      "x-extensible-enum": true,
+      "description": "Redfish Drive Protocol (the bus/transport), lower-cased. One home (PVD-001)."
+    },
+    "cvss_severity": {
+      "title": "CVSS qualitative severity",
+      "type": "string",
+      "enum": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "description": "CVSS v3/v4 qualitative severity rating — adopted codelist."
+    },
+    "assurance_level": {
+      "title": "Authenticator assurance level",
+      "type": "string",
+      "enum": [
+        "aal1",
+        "aal2",
+        "aal3"
+      ],
+      "description": "NIST SP 800-63B AAL — adopted codelist."
+    },
+    "purl_type": {
+      "title": "Package URL type",
+      "type": "string",
+      "enum": [
+        "rpm",
+        "deb",
+        "apk",
+        "maven",
+        "npm",
+        "pypi",
+        "golang",
+        "cargo",
+        "gem",
+        "nuget",
+        "oci",
+        "docker",
+        "generic",
+        "other"
+      ],
+      "x-extensible-enum": true,
+      "description": "purl-spec package type — adopted codelist."
+    },
+    "gpu_architecture": {
+      "title": "GPU architecture",
+      "type": "string",
+      "enum": [
+        "rdna2",
+        "rdna3",
+        "rdna4",
+        "cdna2",
+        "cdna3",
+        "ampere",
+        "ada",
+        "hopper",
+        "blackwell",
+        "xe",
+        "other"
+      ],
+      "x-extensible-enum": true,
+      "description": "GPU generation as vendors name it, lower-cased; extensible because a new generation arrives before this list does."
     }
   }
 }

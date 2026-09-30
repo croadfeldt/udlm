@@ -15,16 +15,17 @@ metadata:
 origin: backfilled
 fields:
   jurisdictions:
-  - DE
-  - NL
+    - DE
+    - NL
   regimes:
-  - EU
-  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the zone — an entity placed here could be sitting in NL.
+    - EU
+  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the
+    zone — an entity placed here could be sitting in NL.
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
-record_uuid: 01a0eb4f-c418-7356-9db9-c858f1579ead
+record_uuid: 01a0f335-68ae-7665-8ebf-d0ba463ab890
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
 resource_type: SovereigntyZone
@@ -37,20 +38,29 @@ metadata:
   display_name: EU West
 fields:
   jurisdictions:
-  - DE
-  - NL
+    - DE
+    - NL
   regimes:
-  - EU
-  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the zone — an entity placed here could be sitting in NL.
+    - EU
+  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the
+    zone — an entity placed here could be sitting in NL.
+dispatch:
+  provider: estate/control-plane
+  admitted:
+    - jurisdictions
+    - regimes
+    - description
+  granted: []
+  stripped: []
 intent_ref: 01a09385-cae6-7482-8808-5dca49315792
-root_request_uuid: 01a0eb4f-c418-7356-9db9-c858f1579ead
+root_request_uuid: 01a0f335-68ae-7665-8ebf-d0ba463ab890
 supersedes:
-- 01a09385-cae6-7482-8808-5dcb54583708
+  - 01a0eb4f-c418-7356-9db9-c858f1579ead
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
-record_uuid: 01a0eb4f-c418-7356-9db9-c85976487d08
+record_uuid: 01a0f335-68ae-7665-8ebf-d0bbd2d85e30
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
 resource_type: SovereigntyZone
@@ -63,13 +73,14 @@ metadata:
   display_name: EU West
 fields:
   jurisdictions:
-  - DE
-  - NL
+    - DE
+    - NL
   regimes:
-  - EU
-  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the zone — an entity placed here could be sitting in NL.
+    - EU
+  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the
+    zone — an entity placed here could be sitting in NL.
 outputs: {}
-requested_ref: 01a0eb4f-c418-7356-9db9-c858f1579ead
+requested_ref: 01a0f335-68ae-7665-8ebf-d0ba463ab890
 provider: estate/control-plane
 supersedes:
-- 01a09385-cae6-7482-8808-5dcc6f317582
+  - 01a0eb4f-c418-7356-9db9-c85976487d08

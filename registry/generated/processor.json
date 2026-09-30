@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Processor/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Processor/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "418c9acb-3cd8-4e73-817d-8be2bdf13442",
   "resource_type": "Processor",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Processor",
-          "version": "0.6.0",
+          "version": "0.7.0",
           "uuid": "418c9acb-3cd8-4e73-817d-8be2bdf13442"
         }
       ]
@@ -32,7 +32,7 @@
         "description": "Device realization (common-elements.md §7). physical = a socket/package; virtual = vCPU."
       },
       "partition_mechanism": {
-        "type": "string",
+        "$ref": "../common-elements.schema.json#/$defs/partition_mechanism",
         "description": "Only when device_class=partition: e.g. cpu-pinning / cpu-set carved from a parent."
       },
       "identity": {
@@ -72,7 +72,7 @@
         "description": "Hardware thread count (Redfish TotalThreads)."
       },
       "architecture": {
-        "type": "string",
+        "$ref": "../common-elements.schema.json#/$defs/isa",
         "description": "ISA, e.g. x86-64, aarch64 (Redfish ProcessorArchitecture)."
       },
       "max_speed_mhz": {
@@ -95,7 +95,7 @@
         },
         "cores": 24,
         "threads": 48,
-        "architecture": "x86-64",
+        "architecture": "x86_64",
         "max_speed_mhz": 4035
       }
     ]

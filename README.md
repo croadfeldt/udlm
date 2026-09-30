@@ -88,4 +88,4 @@ retry-semantics, rate-limit-and-backpressure, schema-sharing, CONFORMANCE)
 were authored fresh during the split to make wire-compatibility explicit.
 
 The split planning record lives in the DCM repo at
-`architecture/00-split-manifest.md`.
+architecture/00-split-manifest.md in the DCM repo.

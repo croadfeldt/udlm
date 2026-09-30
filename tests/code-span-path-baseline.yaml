@@ -1,32 +1,5 @@
-_comment: "Burn-down baseline for the code-span arm of tests/check_links.py. Paths named inside a code span that\
-  \ resolve to no file, present when the arm landed 2026-08-12. Reported as WARN; a NEW one fails CI. These were\
-  \ never checked before \u2014 the gate read markdown links only, while the spec names a file in prose far more\
-  \ often than it links to one. Fix by pointing at the real path or removing the pointer, never by adding a line\
-  \ here."
-known:
-- file: AGENTS.md
-  path: docs/repo-cleanliness-review.md
-- file: AGENTS.md
-  path: docs/runbook-overnight-sweep.md
-- file: CLAUDE.md
-  path: docs/repo-cleanliness-review.md
-- file: CLAUDE.md
-  path: docs/runbook-overnight-sweep.md
-- file: README.md
-  path: architecture/00-split-manifest.md
-- file: docs/guides/consumer-perspective.md
-  path: architecture/operator-perspective.md
-- file: docs/guides/graph-integrity.md
-  path: registry/generated/dependency-graph.json
-- file: docs/guides/profiles.md
-  path: architecture/trust-profiles.md
-- file: docs/spec/foundations/four-states.md
-  path: operations/rehydration.md
-- file: docs/spec/foundations/resource-type-hierarchy.md
-  path: registry/classes/resource/machine/vm/cexample-cloud.yaml
-- file: registry/ENTITY-VIEW.md
-  path: instances/example-tenant.yaml
-- file: registry/ENTITY-VIEW.md
-  path: instances/orders-db.json
-- file: registry/standards-adoption-register.md
-  path: docs/spec/contracts/capability-discovery.md
+_comment: Burn-down baseline for the code-span arm of tests/check_links.py. Paths named inside a code span that
+  resolve to no file, present when the arm landed 2026-08-12. Reported as WARN; a NEW one fails CI. These were never
+  checked before — the gate read markdown links only, while the spec names a file in prose far more often than it
+  links to one. Fix by pointing at the real path or removing the pointer, never by adding a line here.
+known: []

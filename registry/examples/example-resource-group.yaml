@@ -20,7 +20,7 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
-record_uuid: 01a0eb4f-c3f8-7098-9d8d-5f262c54457c
+record_uuid: 01a0f335-68a6-761a-bf1c-62de9826e9cd
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Grouping
@@ -34,15 +34,21 @@ metadata:
   description: Groups the resources that make up the example orders deployment.
 fields:
   membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
+dispatch:
+  provider: estate/control-plane
+  admitted:
+    - membership_criterion
+  granted: []
+  stripped: []
 intent_ref: 01a09385-cabc-718b-a328-0cd96a00da64
-root_request_uuid: 01a0eb4f-c3f8-7098-9d8d-5f262c54457c
+root_request_uuid: 01a0f335-68a6-761a-bf1c-62de9826e9cd
 supersedes:
-- 01a09385-cabc-718b-a328-0cda5db64f84
+  - 01a0eb4f-c3f8-7098-9d8d-5f262c54457c
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
-record_uuid: 01a0eb4f-c3f8-7098-9d8d-5f273b8bd7db
+record_uuid: 01a0f335-68a6-761a-bf1c-62dffd6458b6
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Grouping
@@ -57,7 +63,7 @@ metadata:
 fields:
   membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
 outputs: {}
-requested_ref: 01a0eb4f-c3f8-7098-9d8d-5f262c54457c
+requested_ref: 01a0f335-68a6-761a-bf1c-62de9826e9cd
 provider: estate/control-plane
 supersedes:
-- 01a09385-cabc-718b-a328-0cdb01c9ac44
+  - 01a0eb4f-c3f8-7098-9d8d-5f273b8bd7db

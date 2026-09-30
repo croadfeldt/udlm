@@ -42,7 +42,7 @@ one-sided *graph*:
 - **`GRAPH-002`** — every edge `target` resolves to a real resource type or Class; a dangling target is
   refused, because the derived inverse would otherwise land on nothing.
 - **`GRAPH-003`** — every declared edge has a derivable inverse; the gate builds the two-sided adjacency
-  (declared + derived) and can emit it (`--emit` → `registry/generated/dependency-graph.json`) for a
+  (declared + derived) and can emit it (`--emit` → a dependency-graph JSON file, emitted on demand and not committed) for a
   consumer or the estate-explorer that wants the materialized bidirectional graph.
 
 ## The exposed data: `DependencyCycle`

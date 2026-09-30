@@ -154,7 +154,7 @@ Each row names the axis and its **owning table** (values live there, once — ci
 | Provenance **carrier** (derivable at homelab → full-inline where mandated) | `docs/spec/foundations/data-model-core.md` E4 / `layering-and-versioning.md` §provenance groups |
 | Store bindings (git as conforming carrier at homelab → per-tenant/WORM at fsi/sovereign) | `docs/spec/foundations/four-states.md` §store note ([D1]) |
 | Tenancy enforcement (`advisory` at homelab → hard boundaries) | `docs/spec/foundations/universal-groups.md` §enforcement model |
-| Trust/attestation floors per plane (implementation defaults) | DCM `architecture/trust-profiles.md` (implementation-side) |
+| Trust/attestation floors per plane (implementation defaults) | DCM architecture/trust-profiles.md in the DCM repo (implementation-side) |
 
 **The durability axis** (the one this page adds, per the profile ADRs' intent): homelab and dev sit at the same
 *strictness* end of the ladder but opposite *durability* ends — a distinction the settings tables don't carry

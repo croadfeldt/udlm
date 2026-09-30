@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.12.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.13.0",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Machine.BareMetalHost",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Machine.BareMetalHost",
-          "version": "0.12.1",
+          "version": "0.13.0",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]
@@ -167,7 +167,7 @@
         }
       },
       "architecture": {
-        "type": "string",
+        "$ref": "../common-elements.schema.json#/$defs/isa",
         "description": "System ISA, e.g. x86-64, aarch64."
       },
       "bios_version": {
@@ -283,7 +283,7 @@
         "storage": {
           "capacity": "8TB"
         },
-        "architecture": "x86-64",
+        "architecture": "x86_64",
         "bios_version": "2.10.1",
         "image": {
           "url": "https://images.example.com/rhcos-9.qcow2",

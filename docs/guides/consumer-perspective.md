@@ -5,7 +5,7 @@ Maps to: UDLM consumption
 
 # UDLM Consumer Perspective — the Driver's Handbook
 
-> This is the consumer-side companion to DCM's `architecture/operator-perspective.md`
+> This is the consumer-side companion to DCM's architecture/operator-perspective.md in the DCM repo
 > (the operator's manual). Together the two perspectives cover the system from
 > both sides — the **consumer** who submits intent and waits for realized state,
 > and the **operator** who runs the platform that makes implementation happen.
@@ -368,5 +368,5 @@ Once you've absorbed this perspective, the substrate docs you'll reach for most:
    verify it
 
 For the operator side (running an implementation), see DCM's
-`architecture/operator-perspective.md` at
+architecture/operator-perspective.md in the DCM repo at
 [github.com/dcm-project/dcm](https://github.com/dcm-project/dcm).

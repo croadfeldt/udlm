@@ -22,7 +22,7 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 9452b93b-5525-43e9-94ed-0eca2bfa38ca
-record_uuid: 01a0eb4f-c4b8-75c4-92a8-2cabc893bcca
+record_uuid: 01a0f335-68da-755c-9c8b-96caa27797e2
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Machine.VM
@@ -38,20 +38,27 @@ fields:
     count: 4
   memory:
     size: 16Gi
+dispatch:
+  provider: estate/control-plane
+  admitted:
+    - cpu.count
+    - memory.size
+  granted: []
+  stripped: []
 intent_ref: 01a09385-caa8-73ef-8584-1a69d195f6ab
-root_request_uuid: 01a0eb4f-c4b8-75c4-92a8-2cabc893bcca
+root_request_uuid: 01a0f335-68da-755c-9c8b-96caa27797e2
 provider_preference:
   provider: estate/providers/osac-primary
   strength: soft
   reason: Co-located with the payments storage estate; avoids a cross-fabric hop.
   set_by: platform-admin/alice
 supersedes:
-- 01a09385-caa8-73ef-8584-1a6a4a79952a
+  - 01a0eb4f-c4b8-75c4-92a8-2cabc893bcca
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 9452b93b-5525-43e9-94ed-0eca2bfa38ca
-record_uuid: 01a0eb4f-c4b8-75c4-92a8-2caccd4e19af
+record_uuid: 01a0f335-68da-755c-9c8b-96cb83e446c6
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Machine.VM
@@ -68,17 +75,17 @@ fields:
   memory:
     size: 16Gi
 outputs: {}
-requested_ref: 01a0eb4f-c4b8-75c4-92a8-2cabc893bcca
+requested_ref: 01a0f335-68da-755c-9c8b-96caa27797e2
 provider: estate/control-plane
 dependencies:
-- edge_type: binds_to
-  target_uuid: b448b93d-49b8-4c4a-bae5-56bef93edd22
-  target_handle: platform/vlan-1042
-  bound_field: network_attachment
-  resolved_at: '2026-08-08T00:00:00Z'
-integrity:
-  head: sha256:a3ff294998df007060877afa6d3ea6c13fb5b38e4f968393cbc96d703e74920c
-  previous: sha256:25519a80f416271faf2b6d993a45bfa7a83edfda9a58e53543090dd9723b44a0
-  algorithm: sha256-jcs
+  - edge_type: binds_to
+    target_uuid: b448b93d-49b8-4c4a-bae5-56bef93edd22
+    target_handle: platform/vlan-1042
+    bound_field: network_attachment
+    resolved_at: '2026-08-08T00:00:00Z'
 supersedes:
-- 01a09385-caa8-73ef-8584-1a6b3126ea0f
+  - 01a0eb4f-c4b8-75c4-92a8-2caccd4e19af
+integrity:
+  head: sha256:2599c51d06e8aa7782f0c9890acb1a6595cc01e596577a77e84a30761574b3d5
+  previous: sha256:a3ff294998df007060877afa6d3ea6c13fb5b38e4f968393cbc96d703e74920c
+  algorithm: sha256-jcs
