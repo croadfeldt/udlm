@@ -9,41 +9,4 @@
 # The baseline only SHRINKS: a line that stops failing is reported stale until removed, and a new
 # failure is never added here. Seeded 2026-09-27 at 42 findings; the worked example
 # (example-vm-app01-*) is clean and is the model for the rest.
-TRN-001 registry/examples/example-identity-escrow.yaml#2 outputs.items_restored
-TRN-001 registry/examples/example-identity-escrow.yaml#2 outputs.last_captured_at
-TRN-001 registry/examples/example-identity-escrow.yaml#2 outputs.last_restored_at
-TRN-001 registry/examples/example-identity-escrow.yaml#2 outputs.restore_verified
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.completed_at
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.execution_target
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.fix_pinning_confirmed
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.model_id
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.model_reasoning
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.mutation_score
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.prompt_sha256
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.run_id
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.sandbox_image
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.sandbox_image_digest
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.selfcheck.checks
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.selfcheck.passed
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.status
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.tests_accepted
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.tests_produced
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.tool_versions.git
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.tool_versions.pip
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.results.tool_versions.python
-TRN-001 registry/examples/example-job-ai-test-harness-run.yaml#1 outputs.started_at
-TRN-001 registry/examples/example-job.yaml#2 outputs.completed_at
-TRN-001 registry/examples/example-job.yaml#2 outputs.results.snapshots_taken
-TRN-001 registry/examples/example-job.yaml#2 outputs.results.status
-TRN-001 registry/examples/example-job.yaml#2 outputs.started_at
-TRN-001 registry/examples/example-job.yaml#2 targets
-TRN-001 registry/examples/example-shared-vlan.yaml#2 outputs.segment_ready
-TRN-001 registry/examples/example-test-evidence-records.yaml#2 outputs.bumps_survived
-TRN-001 registry/examples/example-test-evidence-records.yaml#2 outputs.regressions_caught
-TRN-001 registry/examples/example-test-evidence-records.yaml#2 scope
-TRN-001 registry/examples/example-vm-placed-on-provider.yaml#1 instance_family
-TRN-001 registry/examples/example-vm-placed-on-provider.yaml#1 namespace
-TRN-001 registry/examples/example-vm-placed-on-provider.yaml#1 native_storage_class
-TRN-001 registry/examples/example-vm-placed-on-provider.yaml#2 outputs.instance_id
-TRN-001 registry/examples/example-vm-placed-on-provider.yaml#2 outputs.power_state
-TRN-003 registry/examples/example-job-ai-test-harness-run.yaml#0 intent_ref
+# Burned down 2026-09-30: every shipped record attributes its differences and outputs; nothing is baselined.

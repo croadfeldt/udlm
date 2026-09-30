@@ -21,7 +21,7 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
-record_uuid: 01a0eb4f-c4a8-747d-8345-24a5269b31bd
+record_uuid: 01a0f335-686f-75fb-adad-2138db1277a4
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Machine.VM
@@ -40,15 +40,44 @@ fields:
   instance_family: memory-optimized
   namespace: tenant-dev
   native_storage_class: cexample/ssd-nvme
+dispatch:
+  provider: cexample-cloud
+  admitted:
+    - cpu.count
+    - memory.size
+  granted: []
+  stripped: []
 intent_ref: 01a09385-caa0-7144-936d-bc6ca95177a2
-root_request_uuid: 01a0eb4f-c4a8-747d-8345-24a5269b31bd
+root_request_uuid: 01a0f335-686f-75fb-adad-2138db1277a4
 supersedes:
-- 01a09385-caa1-7243-bdc5-9c105557c19d
+  - 01a0eb4f-c4a8-747d-8345-24a5269b31bd
+provenance:
+  instance_family:
+    - source:
+        kind: policy
+        id: cexample/policy/placement-defaults
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-08-07T09:14:06Z'
+  namespace:
+    - source:
+        kind: policy
+        id: cexample/policy/placement-defaults
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-08-07T09:14:06Z'
+  native_storage_class:
+    - source:
+        kind: policy
+        id: cexample/policy/placement-defaults
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-08-07T09:14:06Z'
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
-record_uuid: 01a0eb4f-c4a8-747d-8345-24a628733a68
+record_uuid: 01a0f335-686f-75fb-adad-2139abbbc2d9
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Machine.VM
@@ -70,10 +99,25 @@ fields:
 outputs:
   instance_id: cexample-i-0a1b2c3d
   power_state: running
-requested_ref: 01a0eb4f-c4a8-747d-8345-24a5269b31bd
+requested_ref: 01a0f335-686f-75fb-adad-2138db1277a4
 provider: cexample-cloud
 sovereignty:
   zone: eu-west
   classification: restricted
 supersedes:
-- 01a09385-caa1-7243-bdc5-9c1152fdbd8f
+  - 01a0eb4f-c4a8-747d-8345-24a628733a68
+provenance:
+  outputs.instance_id:
+    - source:
+        kind: provider
+        id: cexample-cloud
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-08-07T09:15:31Z'
+  outputs.power_state:
+    - source:
+        kind: provider
+        id: cexample-cloud
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-08-07T09:15:31Z'

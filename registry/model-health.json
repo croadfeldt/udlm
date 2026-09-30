@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5456,
-    "mutations_rejected": 5456,
+    "mutations_attempted": 5474,
+    "mutations_rejected": 5474,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -48,8 +48,8 @@
         "rejected": 235
       },
       "CredentialRef": {
-        "attempted": 70,
-        "rejected": 70
+        "attempted": 71,
+        "rejected": 71
       },
       "DHCPScope": {
         "attempted": 95,
@@ -72,8 +72,8 @@
         "rejected": 120
       },
       "GPU": {
-        "attempted": 73,
-        "rejected": 73
+        "attempted": 76,
+        "rejected": 76
       },
       "Grouping": {
         "attempted": 56,
@@ -144,8 +144,8 @@
         "rejected": 112
       },
       "Machine.BareMetalHost": {
-        "attempted": 218,
-        "rejected": 218
+        "attempted": 219,
+        "rejected": 219
       },
       "Machine.LPAR": {
         "attempted": 189,
@@ -160,8 +160,8 @@
         "rejected": 119
       },
       "NetworkInterface": {
-        "attempted": 155,
-        "rejected": 155
+        "attempted": 157,
+        "rejected": 157
       },
       "NetworkSwitch": {
         "attempted": 94,
@@ -172,16 +172,16 @@
         "rejected": 52
       },
       "Processor": {
-        "attempted": 84,
-        "rejected": 84
+        "attempted": 87,
+        "rejected": 87
       },
       "SoftwareImage": {
-        "attempted": 45,
-        "rejected": 45
+        "attempted": 47,
+        "rejected": 47
       },
       "SoftwarePackage": {
-        "attempted": 39,
-        "rejected": 39
+        "attempted": 40,
+        "rejected": 40
       },
       "SovereigntyZone": {
         "attempted": 46,
@@ -196,8 +196,8 @@
         "rejected": 72
       },
       "StorageDevice": {
-        "attempted": 89,
-        "rejected": 89
+        "attempted": 93,
+        "rejected": 93
       },
       "StorageLayout": {
         "attempted": 89,
@@ -260,8 +260,8 @@
         "rejected": 72
       },
       "Vulnerability": {
-        "attempted": 66,
-        "rejected": 66
+        "attempted": 67,
+        "rejected": 67
       },
       "Workload": {
         "attempted": 90,

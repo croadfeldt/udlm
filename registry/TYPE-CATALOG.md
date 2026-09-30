@@ -175,7 +175,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 
 ## CredentialRef
 
-### CredentialRef (0.7.1)
+### CredentialRef (0.8.0)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -303,7 +303,7 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 
 ## GPU
 
-### GPU (0.6.0)
+### GPU (0.7.0)
 
 **Purpose:** Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.
 
@@ -676,7 +676,7 @@ The most portable way to ask for a machine: how big, what image, what storage ti
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 
-### Machine.BareMetalHost (0.12.1)
+### Machine.BareMetalHost (0.13.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -766,7 +766,7 @@ The router/firewall at the edge of a network: which functions it provides (routi
 
 ## NetworkInterface
 
-### NetworkInterface (0.15.1)
+### NetworkInterface (0.16.0)
 
 **Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
 
@@ -834,7 +834,7 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 
 ## Processor
 
-### Processor (0.6.0)
+### Processor (0.7.0)
 
 **Purpose:** Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when the host rollup is not enough.
 
@@ -854,7 +854,7 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 
 ## SoftwareImage
 
-### SoftwareImage (0.2.2)
+### SoftwareImage (0.3.0)
 
 **Purpose:** Records a container image as a digest-identified fact — the anchor a container's software bill of materials hangs from.
 
@@ -874,7 +874,7 @@ One container image, identified by its content digest (one observed `tag` is rec
 
 ## SoftwarePackage
 
-### SoftwarePackage (0.2.1)
+### SoftwarePackage (0.3.0)
 
 **Purpose:** Records a software package or library as one shared fact per package URL, so every image containing it points at the same record.
 
@@ -916,7 +916,7 @@ What a zone name actually means. `eu-west` is Germany and the Netherlands, under
 
 ## StorageClass
 
-### StorageClass (0.9.0)
+### StorageClass (0.10.0)
 
 **Purpose:** Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.
 
@@ -960,7 +960,7 @@ A multi-node storage system — Ceph is the reference implementation, but the te
 
 ## StorageDevice
 
-### StorageDevice (0.6.0)
+### StorageDevice (0.7.0)
 
 **Purpose:** Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.
 
@@ -1289,7 +1289,7 @@ A volume realized by ZFS on one host: its `volume_mode` says whether it is a mou
 
 ## Vulnerability
 
-### Vulnerability (0.2.1)
+### Vulnerability (0.3.0)
 
 **Purpose:** Records a known vulnerability — CVE, GHSA, or OSV advisory — once, as the shared fact every affected package points at.
 

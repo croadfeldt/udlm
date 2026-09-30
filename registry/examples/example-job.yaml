@@ -17,7 +17,7 @@ fields:
     scope: database
     snapshot: true
   targets:
-  - uuid/7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
+    - uuid/7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
   max_execution_time: PT1H
   on_max_exceeded: terminate
   trigger: schedule
@@ -25,7 +25,7 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44
-record_uuid: 01a0eb4f-c375-7492-b86f-ade758ff18f4
+record_uuid: 01a0f335-6813-7708-9a75-57e6d9a7eb05
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Job
@@ -40,19 +40,31 @@ fields:
     scope: database
     snapshot: true
   targets:
-  - uuid/7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
+    - uuid/7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
   max_execution_time: PT1H
   on_max_exceeded: terminate
   trigger: schedule
+dispatch:
+  provider: estate/control-plane
+  admitted:
+    - definition_ref
+    - parameters.scope
+    - parameters.snapshot
+    - targets
+    - max_execution_time
+    - on_max_exceeded
+    - trigger
+  granted: []
+  stripped: []
 intent_ref: 01a09385-cac2-758c-a3b9-a8388d5e5cb9
-root_request_uuid: 01a0eb4f-c375-7492-b86f-ade758ff18f4
+root_request_uuid: 01a0f335-6813-7708-9a75-57e6d9a7eb05
 supersedes:
-- 01a09385-cac2-758c-a3b9-a839faebc0d5
+  - 01a0eb4f-c375-7492-b86f-ade758ff18f4
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44
-record_uuid: 01a0eb4f-c375-7492-b86f-ade8925f9587
+record_uuid: 01a0f335-6813-7708-9a75-57e7635cadb4
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Job
@@ -75,13 +87,49 @@ outputs:
   results:
     status: COMPLETED
     snapshots_taken: 1
-requested_ref: 01a0eb4f-c375-7492-b86f-ade758ff18f4
+requested_ref: 01a0f335-6813-7708-9a75-57e6d9a7eb05
 provider: estate/control-plane
 process:
   execution_state: COMPLETED
   affected_entities:
-  - entity_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
-    effect_type: read
-    effect_description: snapshotted the database
+    - entity_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
+      effect_type: read
+      effect_description: snapshotted the database
 supersedes:
-- 01a09385-cac2-758c-a3b9-a83a4f7bbaa3
+  - 01a0eb4f-c375-7492-b86f-ade8925f9587
+provenance:
+  targets:
+    - source:
+        kind: provider
+        id: estate/control-plane
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-07-07T02:12:05Z'
+  outputs.started_at:
+    - source:
+        kind: provider
+        id: estate/control-plane
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-07-07T02:12:05Z'
+  outputs.completed_at:
+    - source:
+        kind: provider
+        id: estate/control-plane
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-07-07T02:12:05Z'
+  outputs.results.status:
+    - source:
+        kind: provider
+        id: estate/control-plane
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-07-07T02:12:05Z'
+  outputs.results.snapshots_taken:
+    - source:
+        kind: provider
+        id: estate/control-plane
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-07-07T02:12:05Z'

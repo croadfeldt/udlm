@@ -53,7 +53,7 @@
     },
     {
       "class": "NetworkInterface",
-      "version": "0.15.1",
+      "version": "0.16.0",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/network-interface/_base.yaml",
       "types": []
