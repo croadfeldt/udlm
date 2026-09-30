@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.2.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366",
   "resource_type": "SoftwarePackage",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SoftwarePackage",
-          "version": "0.2.1",
+          "version": "0.3.0",
           "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366"
         }
       ]
@@ -40,7 +40,7 @@
         "description": "Package version (as parsed from the purl / SBOM component)."
       },
       "type": {
-        "type": "string",
+        "$ref": "../common-elements.schema.json#/$defs/purl_type",
         "description": "Package ecosystem / purl type (e.g. rpm, maven, npm, pypi, golang, deb)."
       },
       "license": {

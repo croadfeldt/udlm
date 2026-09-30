@@ -432,11 +432,12 @@
   }
  },
  "type:Automation.OSPatch.EngineBlue": {
-  "current": "1.1.1",
+  "current": "1.2.0",
   "path": "registry/classes/process/automation/ospatch/engine-blue.yaml",
   "versions": {
    "1.1.0": "sha256:e5958c4feec16d24ad81c3b47800a0093870f65f5ba8bf14c95297cb2ad39eea",
-   "1.1.1": "sha256:fc89e387beea34eaab5138df7317bb5aedb54287bf9d41d788f8b5f83ee3eda1"
+   "1.1.1": "sha256:fc89e387beea34eaab5138df7317bb5aedb54287bf9d41d788f8b5f83ee3eda1",
+   "1.2.0": "sha256:860e0083e1b6717b1e0ff0f90bc533fc2b9f5fb9eb39be1fb9bfe2aeb240977a"
   }
  },
  "type:Automation.OSPatch.EngineGreen": {
@@ -592,11 +593,12 @@
   }
  },
  "type:CredentialRef": {
-  "current": "0.7.1",
+  "current": "0.8.0",
   "path": "registry/classes/resource/security/credential-ref/_base.yaml",
   "versions": {
    "0.7.0": "sha256:e1b32e251fca9506d1026027483a413a738ee695e4b635760e9c0719bcc1cfbf",
-   "0.7.1": "sha256:be386c096a1b5fd8df9a5692c7ec3ead62d3072c512cc08fce440c862a5a26f1"
+   "0.7.1": "sha256:be386c096a1b5fd8df9a5692c7ec3ead62d3072c512cc08fce440c862a5a26f1",
+   "0.8.0": "sha256:ec783b706c34b5abe73ad9949c94bac8dc07b560c26a82309fa3bb41e9de0e27"
   }
  },
  "type:DHCPScope": {
@@ -706,10 +708,11 @@
   }
  },
  "type:GPU": {
-  "current": "0.6.0",
+  "current": "0.7.0",
   "path": "registry/classes/resource/hardware/gpu/_base.yaml",
   "versions": {
-   "0.6.0": "sha256:0c9f53c3dcef78ef8b61fab1c81f9ea255587e73785cac06d8c6918220f0cb74"
+   "0.6.0": "sha256:0c9f53c3dcef78ef8b61fab1c81f9ea255587e73785cac06d8c6918220f0cb74",
+   "0.7.0": "sha256:670927fac77c7dbb977b28a29bd002bc433a5597ac03340b0f0f032375d51953"
   }
  },
  "type:Grouping": {
@@ -998,12 +1001,13 @@
   }
  },
  "type:Machine.BareMetalHost": {
-  "current": "0.12.1",
+  "current": "0.13.0",
   "path": "registry/classes/resource/compute/machine/bare-metal-host.yaml",
   "versions": {
    "0.11.0": "sha256:74559543232fc83cd38c90ec25e206f788e14bc954ac3e3b7fe3a975d26173de",
    "0.12.0": "sha256:d82a1cbca4ce5de35bb4b651bf473a7fbbed6e42d908d4b519b8c3fb5785e953",
-   "0.12.1": "sha256:5bfd04817357c70050ddcda87f91eac9b73f21df71e946fce7254cf24a3b9a9f"
+   "0.12.1": "sha256:5bfd04817357c70050ddcda87f91eac9b73f21df71e946fce7254cf24a3b9a9f",
+   "0.13.0": "sha256:1df21ff8d974c758934503a6ac56306c774e8ee1f55cb991bf95cd3226bed84d"
   }
  },
  "type:Machine.LPAR": {
@@ -1213,11 +1217,12 @@
   }
  },
  "type:NetworkInterface": {
-  "current": "0.15.1",
+  "current": "0.16.0",
   "path": "registry/classes/resource/hardware/network-interface/_base.yaml",
   "versions": {
    "0.15.0": "sha256:fb9c11e5edad32b64a7f61e738ae176c853f42d667fe1bbb16b134fb24abbc0a",
-   "0.15.1": "sha256:11cfc1b3d1ee8ee2a7ddd7a9aa194abe0ccd2170e9850333e41aac397348a334"
+   "0.15.1": "sha256:11cfc1b3d1ee8ee2a7ddd7a9aa194abe0ccd2170e9850333e41aac397348a334",
+   "0.16.0": "sha256:665fc2165666ae3cd83d5f1a276b4dfb04ece23587a0a128bfc1d853c7197252"
   }
  },
  "type:NetworkSwitch": {
@@ -1376,10 +1381,11 @@
   }
  },
  "type:Processor": {
-  "current": "0.6.0",
+  "current": "0.7.0",
   "path": "registry/classes/resource/hardware/processor/_base.yaml",
   "versions": {
-   "0.6.0": "sha256:7bc4350d350c9ecb5c9ddc175238b09dc17f67f424a1cc8b98d9bac2941fdb80"
+   "0.6.0": "sha256:7bc4350d350c9ecb5c9ddc175238b09dc17f67f424a1cc8b98d9bac2941fdb80",
+   "0.7.0": "sha256:cc503a88c5a3f3103208666ed293432eee95b08923f923df0bf3fff9e9b1627a"
   }
  },
  "type:Security": {
@@ -1452,22 +1458,24 @@
   }
  },
  "type:SoftwareImage": {
-  "current": "0.2.2",
+  "current": "0.3.0",
   "path": "registry/classes/knowledge/software-image/_base.yaml",
   "versions": {
    "0.1.1": "sha256:2249bb711492dd03d8c84650a919c67ea637730ef2fe681c96430545cc10bc70",
    "0.2.0": "sha256:adb81aac308780f6cc8f548cd7de36b3fd03c23dedfce869253b90997aefd068",
    "0.2.1": "sha256:cff09c3602483415b4a2fb8b855fa572cd617fe8860157e2a21bc30520861a37",
-   "0.2.2": "sha256:613cdcf66a16ae9b9af7d6855e3632641e896d54611d86d961c1512daf78a8d5"
+   "0.2.2": "sha256:613cdcf66a16ae9b9af7d6855e3632641e896d54611d86d961c1512daf78a8d5",
+   "0.3.0": "sha256:bc64cdd6f5a86a885017f9a8e2651ff671cc8cead46809dbc881dbbdcfce1419"
   }
  },
  "type:SoftwarePackage": {
-  "current": "0.2.1",
+  "current": "0.3.0",
   "path": "registry/classes/knowledge/software-package/_base.yaml",
   "versions": {
    "0.1.0": "sha256:40f7c35de3837300c7ba68155f09d3b381f397c08131d117ffd059bc92c60e6e",
    "0.2.0": "sha256:f6eb0f7911780d3f89cb1d32e06edb5e570cef6f471adf1868a634aa7b765c1f",
-   "0.2.1": "sha256:df21ae324306a74a7cc927d69f8a348cbb23698179f14f5126a3cf0161d9eb52"
+   "0.2.1": "sha256:df21ae324306a74a7cc927d69f8a348cbb23698179f14f5126a3cf0161d9eb52",
+   "0.3.0": "sha256:a9cc268704c7d54af5ac49758a433b36bbd18c851de10333be9ba3e87e37e07c"
   }
  },
  "type:SovereigntyZone": {
@@ -1585,9 +1593,10 @@
   }
  },
  "type:StorageClass": {
-  "current": "0.9.0",
+  "current": "0.10.0",
   "path": "registry/classes/resource/storage/storage-class/_base.yaml",
   "versions": {
+   "0.10.0": "sha256:5683d68252993d9c775412580359aedbd5380c3f1a43e7ce39f7e74c0dae0f15",
    "0.9.0": "sha256:f04833cbf3e8feeb1f2ad415e43fcb24e0e73a51c70e6a8c29b74863636cddb6"
   }
  },
@@ -1599,10 +1608,11 @@
   }
  },
  "type:StorageDevice": {
-  "current": "0.6.0",
+  "current": "0.7.0",
   "path": "registry/classes/resource/hardware/storage-device/_base.yaml",
   "versions": {
-   "0.6.0": "sha256:1ee6e93a45aef34f508fc1f617342893992e6c8fb2cd34cd61a528e3dcc27575"
+   "0.6.0": "sha256:1ee6e93a45aef34f508fc1f617342893992e6c8fb2cd34cd61a528e3dcc27575",
+   "0.7.0": "sha256:332b15b0827474dd2b61445e9f8a884fb7ec8af1d1aeb3832d4a8b4ee1d3c294"
   }
  },
  "type:StorageLayout": {
@@ -1753,12 +1763,13 @@
   }
  },
  "type:Vulnerability": {
-  "current": "0.2.1",
+  "current": "0.3.0",
   "path": "registry/classes/knowledge/vulnerability/_base.yaml",
   "versions": {
    "0.1.1": "sha256:16e6e1c0de0d263e087a6a86de8f362198fb88af06f303725fe8bbbad82f4684",
    "0.2.0": "sha256:2a092769f9a41c7f7c091552047cd2571bc5e9e0452a66388d806c95d81ab3ae",
-   "0.2.1": "sha256:34aaf44e5cc866ad0d1a8839f3ec3e48529ba54ce8b3479837795b0795d8be81"
+   "0.2.1": "sha256:34aaf44e5cc866ad0d1a8839f3ec3e48529ba54ce8b3479837795b0795d8be81",
+   "0.3.0": "sha256:e951b0e702b5cbc1d3cedcb652b29d531b7b23524e895ba404179218e02b290e"
   }
  },
  "type:Workload": {

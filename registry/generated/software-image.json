@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwareImage/0.2.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwareImage/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "d9635416-81f7-431f-b3b7-dca3919a1f16",
   "resource_type": "SoftwareImage",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SoftwareImage",
-          "version": "0.2.2",
+          "version": "0.3.0",
           "uuid": "d9635416-81f7-431f-b3b7-dca3919a1f16"
         }
       ]
@@ -44,11 +44,11 @@
         "description": "The registry host serving the image (e.g. registry.example.com)."
       },
       "os": {
-        "type": "string",
+        "$ref": "../common-elements.schema.json#/$defs/oci_os",
         "description": "Target OS from the image config (OCI platform.os)."
       },
       "arch": {
-        "type": "string",
+        "$ref": "../common-elements.schema.json#/$defs/oci_architecture",
         "description": "Target architecture from the image config (OCI platform.architecture)."
       }
     },

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/GPU/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/GPU/0.7.0
 conforms_to: udlm/0.1
 uuid: 7456b9f8-f215-4b75-ae6a-edd8cc854949
 record_type: class
 class: base
 resource_type: GPU
-version: 0.6.0
+version: 0.7.0
 family: Resource
 status: active
 filed_under:
@@ -39,7 +39,7 @@ elements:
     state: canonical
     description: 'Only when device_class=partition: e.g. mediated (NVIDIA vGPU / Linux mdev), mig, sr-iov.'
     schema:
-      type: string
+      $ref: ../../../../common-elements.schema.json#/$defs/partition_mechanism
       description: 'Only when device_class=partition: e.g. mediated (NVIDIA vGPU / Linux mdev), mig, sr-iov.'
   - element: identity
     scope: GPU
@@ -85,7 +85,7 @@ elements:
     state: canonical
     description: GPU architecture / generation, e.g. RDNA4, Hopper.
     schema:
-      type: string
+      $ref: ../../../../common-elements.schema.json#/$defs/gpu_architecture
       description: GPU architecture / generation, e.g. RDNA4, Hopper.
 spec_examples:
   - device_class: physical
@@ -97,7 +97,7 @@ spec_examples:
       role: compute
     memory:
       size: 48GB
-    architecture: RDNA3
+    architecture: rdna3
 relationships:
   - target: Machine.BareMetalHost
     cardinality: 0..1

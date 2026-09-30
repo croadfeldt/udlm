@@ -39,6 +39,23 @@ def load_index():
         roles = d.get("element_roles") or {}  # a compiled spec may carry element roles; absent = execution
         execution = {k for k in props if roles.get(k, "execution") == "execution"}
         idx[d.get("resource_type")] = (execution, set(props) - execution)
+    # Provider Classes are not served as flat specs (generate_class_specs serves Types and orderable
+    # Bases), yet a record may bind one. Its element set is its parent's plus what it declares.
+    import yaml
+    provider_classes = []
+    for p in glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"), recursive=True):
+        try:
+            d = yaml.safe_load(open(p, encoding="utf-8")) or {}
+        except yaml.YAMLError:
+            continue
+        if d.get("record_type") == "class" and d.get("class") == "provider":
+            provider_classes.append(d)
+    for d in sorted(provider_classes, key=lambda c: c["resource_type"].count(".")):
+        parent_exe, parent_ctl = idx.get(d.get("parent"), (set(), set()))
+        own = d.get("elements") or []
+        exe = {e["element"] for e in own if e.get("role", "execution") == "execution"}
+        ctl = {e["element"] for e in own if e.get("role", "execution") != "execution"}
+        idx[d["resource_type"]] = ((parent_exe | exe) - ctl, (parent_ctl | ctl) - exe)
     return idx
 
 

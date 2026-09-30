@@ -46,6 +46,7 @@ import sys
 import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SCANNED = 0   # elements read; the self-test proves the surface was scanned even when nothing is found
 BASELINE = os.path.join(ROOT, "tests", "portable-values-baseline.yaml")
 
 # Names the rule puts out of scope: free by nature, or already constrained by an adopted format.
@@ -54,12 +55,23 @@ FREE = re.compile(
     r"(^|_)(name|handle|description|definition|display_name|notes?|reason|comment|label|title|"
     r"summary|text|uuid|id|version|hash|digest|url|uri|endpoint|path|email|address|serial_number|"
     r"wwn|mac|fqdn|hostname|cidr|subnet|prefix|schema_version|dn|realm|mountpoint|purl|cwe|"
-    r"registry|repository|tag|criterion|jitter|timeout|time|from|at|by|to)($|_)")
+    r"registry|repository|tag|criterion|jitter|timeout|time|from|at|by|to|"
+    # 2026-09-30 triage (PVD-001 burn-down): quantities and version strings carry a pattern, not a
+    # codelist (capacity, speed, used, release); identifiers and references are not selectable
+    # (provisioner = a CSI driver name, workgroup, position, subject, entry, env = an image ref);
+    # provider-observed facts are reported, never chosen (vendor, health — the canonical form is the
+    # redundancy_status output); a vocabulary's own term machinery is its key space (term, root,
+    # domain, pillar, category, normalization_rules); license is an SPDX identifier (adopted format,
+    # PVD-002 territory); instance_size is name-selectable but requirements-authoritative (ADR-036) —
+    # the provider's offer is the list, never the class.
+    r"capacity|speed|used|release|provisioner|workgroup|position|subject|entry|env|vendor|health|"
+    r"term|root|domain|pillar|category|normalization_rules|license|instance_size)($|_)")
 
 
 def candidates():
     """Every class element that is a bare string with no governance."""
     out = []
+    global SCANNED
     for f in sorted(glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"),
                               recursive=True)):
         try:
@@ -69,6 +81,7 @@ def candidates():
         if d.get("record_type") != "class":
             continue
         for e in d.get("elements") or []:
+            SCANNED += 1
             name, sch = e.get("element", ""), e.get("schema") or {}
             if (e.get("values") or {}).get("reference_data_type"):
                 continue                 # a governed vocabulary — the conformant form
@@ -99,11 +112,11 @@ def main():
     if not FREE.search("display_name"):
         st.append("PVD-SELF a human name is not recognised as free, so every record would be "
                   "flagged and the gate would be turned off")
-    if not found:
+    if not SCANNED:
         st.append("PVD-SELF nothing scanned — the class surface is not being read")
 
-    print(f"portable values: {len(found)} bare-string selectable value(s) on the class surface "
-          f"({len(known)} baselined, {len(new)} new)")
+    print(f"portable values: {len(found)} bare-string selectable value(s) among {SCANNED} element(s) "
+          f"on the class surface ({len(known)} baselined, {len(new)} new)")
     for m in st:
         print(f"  FAIL [{m}")
     for rt, n in new:

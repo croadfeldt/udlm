@@ -48,7 +48,7 @@ supersedes:
 record_type: requested_record
 state: Requested
 entity_uuid: 2a822681-403d-4895-b7aa-c70546e20c93
-record_uuid: 01a0eed4-50bd-74c0-b47e-90966e31e0c2
+record_uuid: 01a0f335-67d9-7392-b90e-fc4be9110960
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: IdentityEscrow
@@ -82,15 +82,21 @@ fields:
       restore_on:
         - re_realization
       required: false
+dispatch:
+  provider: device-registration-provider
+  admitted:
+    - escrowed_items
+  granted: []
+  stripped: []
 intent_ref: 01a0eed4-50bd-74c0-b47e-9095d61f880a
-root_request_uuid: 01a0eed4-50bd-74c0-b47e-90966e31e0c2
+root_request_uuid: 01a0f335-67d9-7392-b90e-fc4be9110960
 supersedes:
-  - 01a0eeab-7ab3-73ad-aa94-a86560fe1d9f
+  - 01a0eed4-50bd-74c0-b47e-90966e31e0c2
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 2a822681-403d-4895-b7aa-c70546e20c93
-record_uuid: 01a0eed4-50bd-74c0-b47e-9097f23fe1a3
+record_uuid: 01a0f335-67d9-7392-b90e-fc4c13703c2b
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: IdentityEscrow
@@ -131,7 +137,7 @@ outputs:
   items_restored:
     - remote-access
     - app-session
-requested_ref: 01a0eed4-50bd-74c0-b47e-90966e31e0c2
+requested_ref: 01a0f335-67d9-7392-b90e-fc4be9110960
 provider: device-registration-provider
 dependencies: []
 status:
@@ -142,4 +148,33 @@ status:
       reason: RestoreVerified
       last_transition_time: '2026-07-21T14:02:40Z'
 supersedes:
-  - 01a0eeab-7ab3-73ad-aa94-a8661c0218ae
+  - 01a0eed4-50bd-74c0-b47e-9097f23fe1a3
+provenance:
+  outputs.last_captured_at:
+    - source:
+        kind: provider
+        id: device-registration-provider
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-07-21T14:02:40Z'
+  outputs.last_restored_at:
+    - source:
+        kind: provider
+        id: device-registration-provider
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-07-21T14:02:40Z'
+  outputs.restore_verified:
+    - source:
+        kind: provider
+        id: device-registration-provider
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-07-21T14:02:40Z'
+  outputs.items_restored:
+    - source:
+        kind: provider
+        id: device-registration-provider
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-07-21T14:02:40Z'

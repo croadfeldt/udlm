@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/CredentialRef/0.7.1
+$id: https://udlm.dev/registry/udlm/0.1/class/CredentialRef/0.8.0
 conforms_to: udlm/0.1
 uuid: 942b6cc9-a0d5-4f91-8c5c-ade4ecdf5b50
 record_type: class
 class: base
 resource_type: CredentialRef
-version: 0.7.1
+version: 0.8.0
 family: Resource
 status: active
 filed_under:
@@ -103,7 +103,7 @@ elements:
     description: The minimum assurance the consumer requires — NIST 800-63B AAL (credentials.md §12.2). A provider
       whose credential capability cannot reach this floor is filtered out before binding (declare-and-select).
     schema:
-      type: string
+      $ref: ../../../../common-elements.schema.json#/$defs/assurance_level
       description: The minimum assurance the consumer requires — NIST 800-63B AAL (credentials.md §12.2). A provider
         whose credential capability cannot reach this floor is filtered out before binding (declare-and-select).
 spec_examples:
@@ -116,7 +116,7 @@ spec_examples:
       operations:
         - read
         - list
-    required_assurance: AAL2
+    required_assurance: aal2
 outputs:
   resolved:
     type: boolean

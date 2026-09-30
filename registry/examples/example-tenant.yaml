@@ -12,7 +12,8 @@ at: '2026-08-06T00:00:00Z'
 time_source: authored example — no clock claim
 metadata:
   display_name: Example Payments Tenant
-  description: Worked-example ownership and isolation boundary. Owns the orders-db example entity; all its costs, policy scope, drift scope, and audit scope roll up here.
+  description: Worked-example ownership and isolation boundary. Owns the orders-db example entity; all its costs,
+    policy scope, drift scope, and audit scope roll up here.
 origin: backfilled
 fields:
   membership_criterion: estate?tenant_uuid=={self}
@@ -22,7 +23,7 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-record_uuid: 01a0eb4f-c434-7066-a737-8674b5ad4933
+record_uuid: 01a0f335-68d1-7632-b3a7-c26824c656e6
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Grouping.Tenant
@@ -33,20 +34,28 @@ at: '2026-08-06T00:00:00Z'
 time_source: authored example — no clock claim
 metadata:
   display_name: Example Payments Tenant
-  description: Worked-example ownership and isolation boundary. Owns the orders-db example entity; all its costs, policy scope, drift scope, and audit scope roll up here.
+  description: Worked-example ownership and isolation boundary. Owns the orders-db example entity; all its costs,
+    policy scope, drift scope, and audit scope roll up here.
 fields:
   membership_criterion: estate?tenant_uuid=={self}
   obligations:
     isolation: logical
+dispatch:
+  provider: estate/control-plane
+  admitted:
+    - membership_criterion
+    - obligations.isolation
+  granted: []
+  stripped: []
 intent_ref: 01a09385-caae-72fa-9c62-73757c48054e
-root_request_uuid: 01a0eb4f-c434-7066-a737-8674b5ad4933
+root_request_uuid: 01a0f335-68d1-7632-b3a7-c26824c656e6
 supersedes:
-- 01a09385-caae-72fa-9c62-7376982fd027
+  - 01a0eb4f-c434-7066-a737-8674b5ad4933
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-record_uuid: 01a0eb4f-c434-7066-a737-8675b4e8c706
+record_uuid: 01a0f335-68d1-7632-b3a7-c2691646eb4c
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Grouping.Tenant
@@ -57,13 +66,14 @@ at: '2026-08-06T00:00:00Z'
 time_source: authored example — no clock claim
 metadata:
   display_name: Example Payments Tenant
-  description: Worked-example ownership and isolation boundary. Owns the orders-db example entity; all its costs, policy scope, drift scope, and audit scope roll up here.
+  description: Worked-example ownership and isolation boundary. Owns the orders-db example entity; all its costs,
+    policy scope, drift scope, and audit scope roll up here.
 fields:
   membership_criterion: estate?tenant_uuid=={self}
   obligations:
     isolation: logical
 outputs: {}
-requested_ref: 01a0eb4f-c434-7066-a737-8674b5ad4933
+requested_ref: 01a0f335-68d1-7632-b3a7-c26824c656e6
 provider: estate/control-plane
 supersedes:
-- 01a09385-caae-72fa-9c62-7377788d7120
+  - 01a0eb4f-c434-7066-a737-8675b4e8c706

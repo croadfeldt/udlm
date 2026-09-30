@@ -15,13 +15,14 @@ metadata:
 origin: backfilled
 fields:
   jurisdictions:
-  - US-MN
-  description: A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring one here would claim an exact-match scope that does not exist.
+    - US-MN
+  description: A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring one here
+    would claim an exact-match scope that does not exist.
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: 52e4eb99-c7c2-4d52-a062-fff06a125b24
-record_uuid: 01a0eb4f-c426-7714-a4ac-7d6e332b5e38
+record_uuid: 01a0f335-68c9-7792-b99d-6d3c58b02d06
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
 resource_type: SovereigntyZone
@@ -34,17 +35,25 @@ metadata:
   display_name: Minnesota (state-sovereign)
 fields:
   jurisdictions:
-  - US-MN
-  description: A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring one here would claim an exact-match scope that does not exist.
+    - US-MN
+  description: A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring one here
+    would claim an exact-match scope that does not exist.
+dispatch:
+  provider: estate/control-plane
+  admitted:
+    - jurisdictions
+    - description
+  granted: []
+  stripped: []
 intent_ref: 01a09385-caeb-71ab-ba43-94f9cfa401a8
-root_request_uuid: 01a0eb4f-c426-7714-a4ac-7d6e332b5e38
+root_request_uuid: 01a0f335-68c9-7792-b99d-6d3c58b02d06
 supersedes:
-- 01a09385-caeb-71ab-ba43-94fad145dc7e
+  - 01a0eb4f-c426-7714-a4ac-7d6e332b5e38
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 52e4eb99-c7c2-4d52-a062-fff06a125b24
-record_uuid: 01a0eb4f-c426-7714-a4ac-7d6f7f65dcd0
+record_uuid: 01a0f335-68c9-7792-b99d-6d3da296e21a
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
 resource_type: SovereigntyZone
@@ -57,10 +66,11 @@ metadata:
   display_name: Minnesota (state-sovereign)
 fields:
   jurisdictions:
-  - US-MN
-  description: A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring one here would claim an exact-match scope that does not exist.
+    - US-MN
+  description: A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring one here
+    would claim an exact-match scope that does not exist.
 outputs: {}
-requested_ref: 01a0eb4f-c426-7714-a4ac-7d6e332b5e38
+requested_ref: 01a0f335-68c9-7792-b99d-6d3c58b02d06
 provider: estate/control-plane
 supersedes:
-- 01a09385-caeb-71ab-ba43-94fbf79d86f6
+  - 01a0eb4f-c426-7714-a4ac-7d6f7f65dcd0

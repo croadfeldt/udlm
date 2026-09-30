@@ -1,1 +1,110 @@
-AGENTS.md
+# AGENTS.md — UDLM
+
+> Cross-agent context file ([agents.md](https://agents.md) standard). `CLAUDE.md` is a symlink to this
+> file so Claude Code reads the same source of truth. Keep this current as the spec evolves.
+
+## What this repo is
+
+**UDLM — the Universal Data Lifecycle Model.** A vendor-neutral, **Apache-2.0**, **pre-1.0
+(`udlm/0.1`)** specification: the data model for declaring data-center resources (intent), realizing
+them, discovering them, and rebuilding them. It is *spec and schema only* — no runtime/controller lives
+here (DCM realizes the model; see the isolation table below).
+
+## Layout
+
+```
+docs/spec/        THE normative prose tier (ADR-062): foundations/ (four states, entity
+                  types/families, entities, layering, groups), contracts/, governance/,
+                  lifecycle/, principles/ — ratification covers docs/spec/ + registry/
+docs/             everything else humans read: adr/ dr/ design/ authoring/ flows/ guides/
+                  examples/ research/ + file-index.md
+registry/         Resource-type registry + the meta-schema + the definition RULES + common elements
+  SPEC-DESIGN-REQUIREMENTS.md   ← THE rules every type/element MUST follow (read this first)
+  resource-type-spec.schema.json ← the flat-spec meta-schema (generated/ artifacts validate against it)
+  class.schema.json              ← the CLASS meta-schema — classes/ is the authored surface
+  profiles/                      ← the deployment profiles (activatable postures)
+  classes/<family>/…/_base.yaml  ← ALL definitions (ADR-061 index-file hierarchy); flat specs are
+                                   GENERATED projections in registry/generated/ (never authored)
+  common-elements.md             ← canonical shared shapes (Quantity, ComputeResources, Identity, …)
+  resource-type-data-sources.md  ← which industry standard each type adopts, + license verdicts
+use-cases/        the CI-consumed coverage corpus · tests/ the gates · scripts/ signoff
+```
+
+## Operating rules (non-negotiable)
+
+- **Commits:** `--no-gpg-sign`, author = the repo owner's public git identity (match `git log -1 --format='%an <%ae>'`), trailer
+  `Co-Authored-By: <the Claude model in use> <noreply@anthropic.com>`. This repo is on **GitHub**
+  (`croadfeldt/udlm`) — use `gh`, not `glab`.
+- **PRs are subject-scoped** — one logical thing per PR, ≤2–3k lines.
+- **Run `bash scripts/signoff.sh` before every PR.** It runs every gate CI runs, then prints the
+  judgment checklist. The list is **derived** from `.github/workflows/validate.yml` (via
+  `scripts/ci-steps.py`) rather than restated, so it cannot drift from CI, and it refuses to run
+  rather than report a vacuous pass if it reads a short list. The cleanliness bar and sweep process
+  live in the dav repo: docs/repo-cleanliness-review.md (the twelve questions) +
+  docs/runbook-overnight-sweep.md.
+- **Audience: human engineers. Voice: software and data-model architect** — declarative,
+  model-grounded, references carry their gist, no editorializing.
+- **The definition rules are law.** Every new resource type or common element MUST satisfy
+  `registry/SPEC-DESIGN-REQUIREMENTS.md`. The load-bearing ones:
+  - **No vendor-exclusive data in the portable spec** (§17, §24). Provider-specific data is a
+    **Provider-Class `SharedDataElement`** (ADR-038); the old `provider_extensions`/`provider_hints`
+    carriers are removed — the validator rejects them (schema implementation tracked in #199).
+  - **Reuse canonical common-elements** (§24–25) — **snake_case** (settled 2026-06-27; never re-litigate), explicit-unit `Quantity`, RFC 3339.
+  - **Adopt standards by reference, record provenance + license** (§22–23): every `adopts[]` entry
+    carries `source` (name/version/URL) and `license` + `license_compatibility`
+    (`compatible-vendor` | `compatible-reference` | `reference-only`). UDLM is Apache-2.0 — copying
+    schema text only from Apache-compatible sources; copyleft (GPL/MPL) is **reference-by-name only**.
+  - **Component granularity is both-ways** (§26): the parent always carries the **rollup** data element
+    (`memory.size`); a component MAY *also* be a first-class `Hardware.*` entity `contained_by` it,
+    toggled by `composition_visibility`. Rollup = reconciled aggregate; mismatch = drift.
+  - **Same-type instances must be distinguishable** (§27): every component carries the canonical
+    `Identity` (`location` → `serial_number`/`wwn` → `role`) so two identical DIMMs / two same-use
+    drives are individually addressable.
+  - **Raw resources are first-class** (§28): a type MUST be instantiable with Discovered state and **no
+    Intent** (racked-but-unallocated, brownfield), carrying `lifecycle_state: available`, later
+    **adopted** (Intent attached, UUID preserved).
+- **Adding a type:** author a CLASS in `registry/classes/<family>/…` (ADR-061 layout; ADR-038 grammar),
+  following `registry/naming-conventions.md` and the registry process (`docs/spec/governance/registry-governance.md` §3,
+  `CONTRIBUTING.md`); the generator emits the flat spec into `registry/generated/`; fill
+  `adopts[]` with source+license; reuse common-elements; ship ≥1 worked example; never inline
+  vendor-exclusive fields. The standard each type adopts is tabulated in
+  `registry/resource-type-data-sources.md`.
+
+## Isolation (where things live)
+
+| Concern | Repo |
+|---|---|
+| **Spec + resource-type registry** (the *types*) | `udlm` (this repo, croadfeldt/udlm) |
+| **DCM** control-plane / consumer code | `dcm` (croadfeldt/dcm) |
+| **DAV** review console | `dav` (croadfeldt/dav) |
+| **Estate DATA** (instances, the dependency graph) | a private estate-data repo (kept off GitHub — no personal infrastructure in the public specs) |
+
+Estate **values** in examples stay anonymized — `cexample/*` org names and RFC 5737 addresses are the
+anonymization vocabulary (the estate-token gate enforces it); only the real repo pointers above are literal.
+
+## Current state
+
+**0.1 surface is complete** (the September release is **0.1**; 1.0 is only the earned milestone —
+never conflate them). All ADRs and DecisionRecords are **Proposed**: ratification sits with the
+engineering team (issue #217) — never claim Accepted/ratified status.
+
+**Write to this reality:**
+- **Edge model:** `edge_type` (`depends_on`|`contained_by`|`binds_to`|`references`) + `strength`
+  (hard|soft) + declared `relation`; nature is derived; the Atomic/Composite **shape is derived**
+  (`has_constituents`), never stored (ADR-027 addendum); `kind`/`dependency_type`/
+  `relationship_type` are rejected vocabulary, guarded by tests/check_model_vocabulary.py (incl. prose).
+- **No `provider_extensions`** — the validator rejects it; provider-specific data is a
+  Provider-Class `SharedDataElement` (ADR-038).
+- **provider-contract.md owns the whole provider/capability surface**: registration §2, sovereignty
+  obligations `SOV-*` §2a, capability profiles §8, registry §9, discovery wire protocol §10.
+- **Six profiles:** homelab → dev → standard → prod → fsi → sovereign (`docs/guides/profiles.md`).
+- **Audit is Merkle** (RFC 9162): events are `audit.integrity_alert`/`audit.integrity_break`;
+  linear hash-chain wording is a defect.
+- **Core tenet T9:** the substrate never translates into a provider's native spec.
+
+**In flight:** engineering ratification pass (#217); the dcm-project downstream publishing wave
+(UC-priority split per the Jordi criteria — 21-UC-required PRs first); `SharedDataElement` schema
+implementation (#199); Ansible estate discovery feeding Discovered state (croadfeldt/dcm#79).
+
+**Navigation:** `docs/file-index.md` (ownership per file) · `registry/UDLM-0.1-SCOPE.md` (the 21
+UCs + tag gate) · `docs/adr/README.md` (decision index) · `CONTRIBUTING.md` (the checklist).

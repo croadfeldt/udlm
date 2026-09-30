@@ -30,7 +30,7 @@ fields:
   version_range: ==3.4.0
   source_version: requirements.txt@cfa8f4a3292b
   call_sites:
-  - app/auth.py
+    - app/auth.py
   validation:
     baseline_pass: true
     coverage_delta: 0.0
@@ -40,18 +40,17 @@ fields:
     differential: changed
 provenance:
   fields.validation:
-  - source:
-      kind: provider
-      id: cexample/providers/ai-test-harness
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-13T13:17:27Z'
-
+    - source:
+        kind: provider
+        id: cexample/providers/ai-test-harness
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-13T13:17:27Z'
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
-record_uuid: 01a0eb4f-c44e-71eb-b782-7e9b62d1aa19
+record_uuid: 01a0f335-684e-7382-a17b-e6053083d82d
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: TestEvidence.VulnerabilityCheck.AiTestHarness
@@ -79,7 +78,7 @@ fields:
   version_range: ==3.4.0
   source_version: requirements.txt@cfa8f4a3292b
   call_sites:
-  - app/auth.py
+    - app/auth.py
   validation:
     baseline_pass: true
     coverage_delta: 0.0
@@ -87,15 +86,43 @@ fields:
     unique_mutants_killed: 0
     flake_runs: 2
     differential: changed
+dispatch:
+  provider: cexample/providers/ai-test-harness
+  admitted:
+    - test_id
+    - subject_ref
+    - category
+    - result.outcome
+    - result.duration_ms
+    - result.format
+    - result.report_ref
+    - result.report_digest
+    - job_ref
+    - file_path
+    - file_digest
+    - vulnerability_ref
+    - vulnerability_role
+    - vex_statement_ref
+    - version_range
+    - source_version
+    - call_sites
+    - validation.baseline_pass
+    - validation.coverage_delta
+    - validation.mutants_killed
+    - validation.unique_mutants_killed
+    - validation.flake_runs
+    - validation.differential
+  granted: []
+  stripped: []
 intent_ref: 01a09a05-1239-7005-a005-0e5f3a2b1c52
-root_request_uuid: 01a0eb4f-c44e-71eb-b782-7e9b62d1aa19
+root_request_uuid: 01a0f335-684e-7382-a17b-e6053083d82d
 supersedes:
-- 01a09a0b-123f-700b-a00b-0e5f3a2b1c58
+  - 01a0eb4f-c44e-71eb-b782-7e9b62d1aa19
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
-record_uuid: 01a0eb4f-c44e-71eb-b782-7e9cf8ee009e
+record_uuid: 01a0f335-684e-7382-a17b-e6066878548c
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: TestEvidence.VulnerabilityCheck.AiTestHarness
@@ -124,7 +151,7 @@ fields:
   version_range: ==3.4.0
   source_version: requirements.txt@cfa8f4a3292b
   call_sites:
-  - app/auth.py
+    - app/auth.py
   validation:
     baseline_pass: true
     coverage_delta: 0.0
@@ -133,29 +160,50 @@ fields:
     flake_runs: 2
     differential: changed
   scope: overlay
-requested_ref: 01a0eb4f-c44e-71eb-b782-7e9b62d1aa19
+requested_ref: 01a0f335-684e-7382-a17b-e6053083d82d
 provider: cexample/providers/ai-test-harness
 provenance:
   fields.scope:
-  - source:
-      kind: actor
-      id: cexample/people/reviewer-1
-    operation_type: set
-    sequence: 1
-    timestamp: '2026-09-14T09:30:00Z'
+    - source:
+        kind: actor
+        id: cexample/people/reviewer-1
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-14T09:30:00Z'
+  scope:
+    - source:
+        kind: provider
+        id: cexample/providers/ai-test-harness
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-14T09:30:00Z'
+  outputs.bumps_survived:
+    - source:
+        kind: provider
+        id: cexample/providers/ai-test-harness
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-14T09:30:00Z'
+  outputs.regressions_caught:
+    - source:
+        kind: provider
+        id: cexample/providers/ai-test-harness
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-14T09:30:00Z'
 adopted_standards:
-- standard: in-toto Attestation Framework
-  requested_version: '1.0'
-  provider_version: '1.0'
-  effective_version: '1.0'
-  translated: false
-  resolved_at: '2026-09-14T09:30:00Z'
+  - standard: in-toto Attestation Framework
+    requested_version: '1.0'
+    provider_version: '1.0'
+    effective_version: '1.0'
+    translated: false
+    resolved_at: '2026-09-14T09:30:00Z'
 outputs:
   bumps_survived: 0
   regressions_caught: 0
-integrity:
-  head: sha256:65f2e5bb9b6347834108171162afdd888504ba16b8a1d7dc02f233242cdd7fd8
-  previous: sha256:8fed0d55fb2868ebec6f4eff551dde6e678606d3a428848469e86b661a33e156
-  algorithm: sha256-jcs
 supersedes:
-- 01a09a06-123a-7006-a006-0e5f3a2b1c53
+  - 01a0eb4f-c44e-71eb-b782-7e9cf8ee009e
+integrity:
+  head: sha256:25fc5a2548023de9828e5e961238a3c90aeef0a42a7610b9769df2ed27bf896a
+  previous: sha256:65f2e5bb9b6347834108171162afdd888504ba16b8a1d7dc02f233242cdd7fd8
+  algorithm: sha256-jcs
