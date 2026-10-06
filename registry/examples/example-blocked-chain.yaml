@@ -22,7 +22,7 @@ supersedes:
 record_type: requested_record
 state: Requested
 entity_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
-record_uuid: 01a0ee2f-364d-75a5-9861-1ec5cb61cd53
+record_uuid: 01a112d4-3de9-7588-9e9e-ee579f1d60d0
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Volume
@@ -36,8 +36,13 @@ metadata:
 fields:
   capacity: 500Gi
   access_mode: read_write_once
+dispatch:
+  provider: estate/control-plane
+  admitted: []
+  granted: []
+  stripped: []
 intent_ref: 01a0ee2f-364d-75a5-9861-1ec47ea0b689
-root_request_uuid: 01a0ee2f-364d-75a5-9861-1ec5cb61cd53
+root_request_uuid: 01a112d4-3de9-7588-9e9e-ee579f1d60d0
 status:
   state: pending
   conditions:
@@ -46,7 +51,7 @@ status:
       reason: no pool in this zone can satisfy 500Gi, and none is planned
       last_transition_time: '2026-08-10T09:00:05Z'
 supersedes:
-  - 01a0eb4f-c2ed-735c-8686-0c85a56cd717
+  - 01a0ee2f-364d-75a5-9861-1ec5cb61cd53
 ---
 record_type: intent_record
 state: Intent
@@ -69,7 +74,7 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
-record_uuid: 01a0eb4f-c2ed-735c-8686-0c86ebe45029
+record_uuid: 01a112d4-3de9-7588-9e9e-ee58b3272517
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Container
@@ -82,8 +87,13 @@ metadata:
   display_name: Orders API container
 fields:
   image: registry.cexample/orders-api:1.4.2
+dispatch:
+  provider: estate/control-plane
+  admitted: []
+  granted: []
+  stripped: []
 intent_ref: 01a09385-cad9-72da-a308-da5dba42d6c4
-root_request_uuid: 01a0eb4f-c2ed-735c-8686-0c86ebe45029
+root_request_uuid: 01a112d4-3de9-7588-9e9e-ee58b3272517
 dependencies:
   - edge_type: depends_on
     strength: hard
@@ -99,7 +109,7 @@ status:
       blocked_on: udlm://estate/cexample/storage/orders-data
       last_transition_time: '2026-08-10T09:00:06Z'
 supersedes:
-  - 01a09385-cad9-72da-a308-da5eeb6f6ec6
+  - 01a0eb4f-c2ed-735c-8686-0c86ebe45029
 ---
 record_type: intent_record
 state: Intent
@@ -123,7 +133,7 @@ supersedes:
 record_type: requested_record
 state: Requested
 entity_uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
-record_uuid: 01a0ee84-c436-7483-a79e-c510ed90839b
+record_uuid: 01a112d4-3de9-7588-9e9e-ee59704b732c
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Workload
@@ -135,8 +145,13 @@ time_source: authored example — no clock claim
 metadata:
   display_name: Orders service
 fields: {}
+dispatch:
+  provider: estate/control-plane
+  admitted: []
+  granted: []
+  stripped: []
 intent_ref: 01a0ee84-c436-7483-a79e-c50fdae7e8a7
-root_request_uuid: 01a0ee84-c436-7483-a79e-c510ed90839b
+root_request_uuid: 01a112d4-3de9-7588-9e9e-ee59704b732c
 dependencies:
   - edge_type: depends_on
     strength: hard
@@ -152,4 +167,4 @@ status:
       blocked_on: udlm://estate/cexample/app/orders-api
       last_transition_time: '2026-08-10T09:00:07Z'
 supersedes:
-  - 01a0eb4f-c2ee-77f7-818d-1703a1327f76
+  - 01a0ee84-c436-7483-a79e-c510ed90839b

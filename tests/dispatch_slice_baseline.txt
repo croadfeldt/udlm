@@ -1,12 +1,6 @@
 # Dispatch-receipt baseline (DSP-004; tests/check_dispatch_slice.py).
 #
-# Requested records shipped before ruling 081 that carry no `dispatch` receipt. Declared debt: each
 # is superseded with a receipt when its example set is next revisited. The worked example
 # (example-vm-app01-requested-record) is the model. This list only shrinks. Seeded 2026-09-28 at 16.
-# 2026-09-30: burned down to the three blocked-chain requested records. Each was refused before any
-# provider was selected, so no dispatch happened and there is nothing to receipt. Whether a refused
 # request carries an empty receipt (provider = the placement authority, admitted []) or none is a
-# ruling; until then these stay declared.
-DSP-004 registry/examples/example-blocked-chain.yaml#1 dispatch
-DSP-004 registry/examples/example-blocked-chain.yaml#3 dispatch
-DSP-004 registry/examples/example-blocked-chain.yaml#5 dispatch
+# Burned down 2026-10-06: every requested record carries its receipt, a refused one an empty one (DSP-004, row 091).
