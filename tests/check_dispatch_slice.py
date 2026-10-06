@@ -123,6 +123,12 @@ def key(finding):
 
 def self_test():
     index = {"Machine.VM": ({"cpu", "memory", "networks"}, {"cost_attribution"})}
+    refused = {"record_type": "requested_record", "resource_type": "Machine.VM", "handle": "r",
+               "status": {"state": "pending", "conditions": [{"type": "refused", "status": "True"}]},
+               "dispatch": {"provider": "estate/control-plane", "admitted": [], "granted": [], "stripped": []}}
+    if judge(refused, index, "self-test"):
+        print("FAIL self-test: a refused request's empty receipt (DSP-004, row 091) was flagged")
+        return 1
     good = {"record_type": "requested_record", "resource_type": "Machine.VM", "handle": "t",
             "policies": [{"policy": "lab/policy/placement-facts", "decision": "allow"}],
             "dispatch": {"provider": "p", "admitted": ["cpu.count", "memory.size", "placement.location_ref"],
