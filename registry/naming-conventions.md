@@ -33,7 +33,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
 ## 2. Categories are usage groups
 
 A category is a term of the usage-group taxonomy (`registry/taxonomies/usage-group.yaml`;
-`docs/spec/foundations/resource-type-hierarchy.md` §2.2). A class declares `filed_under: [...]` on
+`docs/spec/foundations/class-tiers.md` §3). A class declares `filed_under: [...]` on
 its Base — one or more terms, Unix hard-link semantics (`CLS-010`) — and lives on disk in one of
 them (`CLS-013`). Adding a filing bumps nothing.
 

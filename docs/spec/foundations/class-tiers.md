@@ -1,6 +1,6 @@
 # Class tiers — Base, Type, and Provider Class
 
-**Related Documents:** [Resource Type Hierarchy](resource-type-hierarchy.md) | [Registry Governance](../governance/registry-governance.md) | [Provider Contract](../contracts/provider-contract.md) | [Portable-value discipline](../principles/portable-values.md)
+**Related Documents:** [Registry Governance](../governance/registry-governance.md) | [Provider Contract](../contracts/provider-contract.md) | [Portable-value discipline](../principles/portable-values.md)
 
 The home of the **CLS** rule family. This document defines the three class tiers the registry is
 built from and the one question every tier answers: *who can realize an order placed here?*
@@ -133,6 +133,27 @@ Depth stops at three. The `resource_type` pattern in `registry/class.schema.json
 three segments, and that is the cap; version, capability advertisement and authority are the
 three cheaper axes to reach for first (ADR-038, *Naming depth*).
 
+### 5.1 The offer is the Provider Class
+
+Three words name three different things:
+
+- A **class** is the definition (this document). Its compiled flat spec, `registry/generated/<class>.json`,
+  is what the older documents called a *resource type specification*.
+- A provider's **offer** (its *catalog item*) is not prose beside the class. It
+  is declared on the Provider Class: what the provider **requires** to realize a request is an element it
+  adds with `optional: false`; what it **supports**, the values and ranges on offer, is `supports` on the
+  element. `schema` says what is valid and stays portable; `supports` says what is offered here, may
+  narrow the schema and never exceeds it, and a child's clauses sit inside its parent's (`LSK-001`).
+- A **request** is the offer with its ranges collapsed: each range becomes one selected value, or
+  nothing where the element is optional. Layers and policy perform the collapse until every range is a
+  value, which is what makes placement eligibility computable: a provider is eligible exactly when every
+  selected value falls inside its clauses and every element it requires is present.
+
+One artifact, two readings: as an offer it says what the provider satisfies; as a menu it says what a
+consumer may select. A catalog reads it. Restating the options on a second surface is drift waiting to
+happen (`DRV-001`). Worked example: `registry/examples/classes/resource/compute/machine/vm/cexample-cloud.yaml`;
+authoring: `docs/authoring/scoped-class.md` §3a.
+
 ## 6. What a name may say
 
 A class is named for its deliverable. A technology name appears only when the technology is the
@@ -156,12 +177,24 @@ Renaming a short name is a rename and goes through `registry/renames.yaml`. Bare
 
 ## 7. Portability, read off the tree
 
-The three tiers are the field-level portability classes of
-[resource-type-hierarchy.md §4](resource-type-hierarchy.md#4-portability-classification) seen
-structurally: Base elements are `universal`, Type elements `conditional`, Provider Class elements
-`provider-specific` or `exclusive`. The tree names and validates. The portability of a given
-*request* is computed from field classification and what providers advertise (ADR-PROV-002),
-never from the tree alone. Neither replaces the other.
+Every element carries a portability classification, fixed once its class version is published, and
+the tier an element sits at is that classification seen structurally:
+
+| Classification | Tier | What it promises |
+|---|---|---|
+| `universal` | Base element | every provider implementing the class supports it |
+| `conditional` | Type element | providers that declare the Type support it |
+| `provider-specific` | Provider Class element | using it binds the request to that provider; marked `portability_breaking` |
+| `exclusive` | Provider Class element | one provider is the only implementor of the technology; declared, not inferred |
+
+Five requirements hold regardless of tier: a `universal` element MUST be supported by every provider
+implementing the class; a `provider-specific` element MUST be marked `portability_breaking`; a consumer
+MUST be warned when a request carries one; `exclusive` is the only sanctioned exception to vendor
+neutrality, declared in the registry; and a class that carries a provider-specific element as universal
+is invalid. The classification rides each element's `portability` block in the flat spec
+(`registry/resource-type-spec.schema.json`). The tree names and validates. The portability of a given
+*request* is computed from the classification and what providers advertise (ADR-PROV-002), never from
+the tree alone.
 
 ## 8. Rules
 

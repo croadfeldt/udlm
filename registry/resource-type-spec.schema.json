@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/resource-type-spec.schema.json",
   "title": "UDLM Resource Type Specification",
-  "description": "Meta-schema that every Resource Type Specification in the UDLM Resource Type Registry MUST validate against. JSON Schema 2020-12 is the normative wire format for entity-type definitions (docs/spec/contracts/schema-sharing.md). A Resource Type Specification is the versioned, formal definition of a Resource Type: field schema, constraints, lifecycle rules, portability classification, typed realized outputs, and allowed relationship types (docs/spec/foundations/resource-type-hierarchy.md). This meta-schema is itself part of the UDLM spec and is versioned on the SPEC axis.",
+  "description": "Meta-schema that every Resource Type Specification in the UDLM Resource Type Registry MUST validate against. JSON Schema 2020-12 is the normative wire format for entity-type definitions (docs/spec/contracts/schema-sharing.md). A Resource Type Specification is the versioned, formal definition of a Resource Type: field schema, constraints, lifecycle rules, portability classification, typed realized outputs, and allowed relationship types (docs/spec/foundations/class-tiers.md). This meta-schema is itself part of the UDLM spec and is versioned on the SPEC axis.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -75,7 +75,7 @@
         "partial",
         "provider-specific"
       ],
-      "description": "Portability classification (docs/spec/foundations/resource-type-hierarchy.md). Any deviation from full portability MUST be explicitly declared. DERIVED (ADR-027 addendum, 3rd finding): portability is scope × advertised capabilities (the control plane's eligible-set computation), not a stored self-declaration — a provider does not declare its own portability; support is decided by target providers/orgs. Optional; authored specs may omit it."
+      "description": "Portability classification (docs/spec/foundations/class-tiers.md §7). Any deviation from full portability MUST be explicitly declared. DERIVED (ADR-027 addendum, 3rd finding): portability is scope × advertised capabilities (the control plane's eligible-set computation), not a stored self-declaration — a provider does not declare its own portability; support is decided by target providers/orgs. Optional; authored specs may omit it."
     },
     "ownership_model": {
       "enum": [

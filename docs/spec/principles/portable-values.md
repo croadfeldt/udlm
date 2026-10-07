@@ -28,6 +28,22 @@ vocabulary or a value the name heuristic could not tell from one.
 Do not default to "reference": a reference to a *non-portable* type just relocates the leak — that is the trap
 PVD catches.
 
+## The three shapes, applied per element
+
+A class author decides per element how its values are governed. Three shapes; the selection rule above
+says which.
+
+| Shape | Form on the element | Use when | Adding a value |
+|---|---|---|---|
+| **Governed reference** | `values.reference_data_type`, or a `data_reference` schema | the valid set is owned by an authority, changes over time, and each value carries structured data (a location, an OS image, a network zone, a storage tier) | add a term to the reference data; no class change |
+| **Codelist** | `enum` (an adopted codelist by `$ref` where a standard has one) | the values are intrinsic to the class (an access mode, a protocol, a topology) and do not depend on what an organization has approved | a class version |
+| **Free text** | `pattern`, or no constraint | genuinely non-referential text: names, descriptions, labels, provider-reported identifiers | — |
+
+A provider narrows a codelist or a range on its Provider Class through `supports` and never widens it
+(class-tiers §5.1). Reference data follows the same lifecycle, authority and versioning as classes do;
+the authority that curates a vocabulary is the authority on what values are valid for every element that
+references it. Moving an element from a codelist to a governed reference is a MINOR change.
+
 ## Enforcement
 
 - **Automated** — `tests/check_portable_values.py` (`PVD-001`, CI-wired) flags (a) a `spec` string

@@ -5,7 +5,7 @@
 >
 > The Data abstraction — typed entity extensions (Resource, Process; each Atomic or Composite)
 
-**Related Documents:** [Entity-Type Families](entity-type-families.md) | [Context and Purpose](context-and-purpose.md) | [Four States](four-states.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Resource/Service Entities](resource-service-entities.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)
+**Related Documents:** [Entity-Type Families](entity-type-families.md) | [Context and Purpose](context-and-purpose.md) | [Four States](four-states.md) | [Class Tiers](class-tiers.md) | [Resource/Service Entities](resource-service-entities.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)
 
 > **Families & shape.** The entity kinds below split by **family**: **Resource** (maintained states) and
 > **Process** (bounded executions) — see [Entity-Type Families](entity-type-families.md). A family is a
