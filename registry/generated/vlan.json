@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/VLAN/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/VLAN/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426",
   "resource_type": "VLAN",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "VLAN / Network Segment ID",
-    "description": "A foundational network segment identifier — a VLAN (IEEE 802.1Q) or an overlay VNI (VXLAN/Geneve) — owned and advertised by a network/fabric provider and/or defined in a platform data layer, and SELECTED by reference from the resources that ride it (a VirtualNetwork, a NetworkInterface). A root resource (docs/guides/foundational-resources.md): dependents reference an existing VLAN, they do not invent one. The concrete encapsulation is provider data; a provider may offer a variant as a Type that the org ratifies. A Base by the Base test (CLS-002): IEEE 802.1Q and the overlay encapsulations abstract over every fabric segment, so a segment of a given id and encapsulation is one deliverable any fabric provider can realize.",
+    "description": "A fabric segment identifier: an IEEE 802.1Q VLAN or an overlay VNI (VXLAN, Geneve). A Base by the Base test (CLS-002): 802.1Q and the overlay encapsulations abstract over every fabric segment, so a segment of a given id and encapsulation is one deliverable any fabric provider realizes. A root resource: it is owned and advertised by a fabric provider or a platform data layer, and the resources that ride it (a VirtualNetwork, a NetworkInterface) select it by reference and never invent one.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "VLAN",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426"
         }
       ]
@@ -43,17 +43,17 @@
           "geneve",
           "flat"
         ],
-        "description": "Segmentation type. vlan = 802.1Q; vxlan/geneve = overlay VNI; flat = untagged."
+        "description": "Segmentation type: `vlan` (802.1Q), `vxlan` or `geneve` (overlay VNI), `flat` (untagged)."
       },
       "segment_id": {
         "type": "integer",
         "minimum": 0,
         "maximum": 16777215,
-        "description": "The VLAN id (1-4094 for 802.1Q) or VNI (0-16777215 for VXLAN/Geneve). Omitted for flat."
+        "description": "The VLAN id (1–4094) or VNI (0–16777215). Omitted for flat."
       },
       "name": {
         "type": "string",
-        "description": "Human name for the segment, e.g. dmz."
+        "description": "Human name for the segment (dmz)."
       }
     },
     "required": [

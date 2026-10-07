@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Subnet/0.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Subnet/0.2.1
 conforms_to: udlm/0.1
 uuid: 07faf9f7-511b-4a77-8743-092fa6ca06a1
 record_type: class
 class: base
 resource_type: Subnet
-version: 0.2.0
+version: 0.2.1
 family: Resource
 status: active
 filed_under:
@@ -13,10 +13,10 @@ metadata:
   display_name: Subnet
   maintainer: UDLM project
   origination_timestamp: '2026-08-10T00:00:00Z'
-  description: 'An IP network — a prefix, its gateway, and how addresses on it are assigned. The layer 3 half of
-    "which network", independently selectable from the layer 2 segment it usually sits on. A Base by the Base test
-    (CLS-002): RFC 4632 CIDR and the public-cloud subnet abstract over every prefix with a gateway and assignment
-    mode, so a subnet is one deliverable any network provider can carve.'
+  description: 'An IP network: a prefix, its gateway, and how addresses on it are assigned. The layer-3 half of
+    "which network", selectable independently of the layer-2 segment it usually rides. A Base by the Base test (CLS-002):
+    RFC 4632 CIDR and the public-cloud subnet abstract over every prefix with a gateway and an assignment mode,
+    so a subnet is one deliverable any network provider carves.'
 context:
   purpose: Give the layer 3 network a first-class identity, so a consumer can require an IP network without naming
     a segment, and an allocation pool has something to sit inside.
@@ -75,39 +75,43 @@ elements:
     scope: Subnet
     optional: false
     state: proposed
-    description: 'The IP network in CIDR notation (RFC 4632) — `198.51.100.0/24`, `2001:db8::/64`. Required: a subnet
-      without a prefix is not a subnet, it is a name.'
+    description: 'The IP network in CIDR (198.51.100.0/24, 2001:db8::/64). Required: a subnet without a prefix is
+      a name, not a subnet.'
     schema:
       type: string
-      description: CIDR prefix, IPv4 or IPv6 (RFC 4632).
+      description: 'The IP network in CIDR (198.51.100.0/24, 2001:db8::/64). Required: a subnet without a prefix
+        is a name, not a subnet.'
   - element: ip_family
     scope: Subnet
     optional: true
     state: proposed
-    description: Address family. Derivable from `prefix` and carried anyway ONLY where a provider reports it independently;
-      a value disagreeing with the prefix is drift, not an override.
+    description: Address family. Derivable from `prefix`; carried only where a provider reports it independently,
+      and a disagreement with the prefix is drift, never an override.
     schema:
       type: string
       enum:
         - ipv4
         - ipv6
       x-extensible-enum: true
+      description: Address family. Derivable from `prefix`; carried only where a provider reports it independently,
+        and a disagreement with the prefix is drift, never an override.
   - element: gateway_address
     scope: Subnet
     optional: true
     state: proposed
-    description: The default route off this subnet, as an address rather than a reference — the address is a property
-      of the subnet, while the device answering it is a `NetworkGateway` and may change without the subnet changing.
-      Absent means no default route (an isolated L3 network).
+    description: 'The default route off this subnet, as an address: the address belongs to the subnet, the device
+      answering it is a NetworkGateway and may change. Absent means an isolated L3 network.'
     schema:
       type: string
+      description: 'The default route off this subnet, as an address: the address belongs to the subnet, the device
+        answering it is a NetworkGateway and may change. Absent means an isolated L3 network.'
   - element: address_assignment
     scope: Subnet
     optional: true
     state: proposed
-    description: How a host on this subnet gets its address. `pool` means an IPAddressPool within this subnet hands
-      one out and it is reserved before realization — which is what lets an address be held while the workload is
-      still hypothetical (ADR-011).
+    description: 'How a host on this subnet gets its address: `pool` (an IPAddressPool within the subnet hands one
+      out, reserved before realization so an address can be held while the workload is still hypothetical), `dhcp`,
+      `static`.'
     schema:
       type: string
       enum:
@@ -116,17 +120,21 @@ elements:
         - slaac
         - pool
       x-extensible-enum: true
+      description: 'How a host on this subnet gets its address: `pool` (an IPAddressPool within the subnet hands
+        one out, reserved before realization so an address can be held while the workload is still hypothetical),
+        `dhcp`, `static`.'
   - element: dns_servers
     scope: Subnet
     optional: true
     state: proposed
-    description: Resolvers offered to hosts on this subnet. Secondary to prefix and gateway (maintainer ruling 2026-08-10
-      — IPs, gateways and DNS are secondary to segment and performance), carried because a provider reports it with
-      the subnet and a consumer cannot obtain it any other way.
+    description: Resolvers offered to hosts on this subnet. Carried because a provider reports it with the subnet
+      and a consumer cannot obtain it any other way.
     schema:
       type: array
       items:
         type: string
+      description: Resolvers offered to hosts on this subnet. Carried because a provider reports it with the subnet
+        and a consumer cannot obtain it any other way.
 spec_examples:
   - prefix: 198.51.100.0/24
     ip_family: ipv4

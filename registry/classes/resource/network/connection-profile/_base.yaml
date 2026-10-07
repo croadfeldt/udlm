@@ -1,24 +1,21 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/ConnectionProfile/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/ConnectionProfile/0.5.1
 conforms_to: udlm/0.1
 uuid: 7c322a52-3d41-4067-b9e2-967280517aa8
 record_type: class
 class: base
 resource_type: ConnectionProfile
-version: 0.5.0
+version: 0.5.1
 family: Resource
 status: active
 filed_under:
   - network
 metadata:
   display_name: Connection Profile (host network config)
-  description: 'The declarative NetworkManager desired-state for a host interface — addressing method, routes, DNS,
-    and bond/bridge/VLAN membership — as a first-class estate record (DCM ADR-023). The body conforms to the NMstate
-    interface schema by reference (Tier-2 adopt): UDLM owns identity + the version-pinned conformance pointer, NMstate
-    owns the config body. Realized onto the host by a NetworkManager-family provider (a configuration-management
-    engine, Kubernetes-NMState); maps 1:1 to Kubernetes-NMState NodeNetworkConfigurationPolicy.spec.desiredState.
-    Supersedes bespoke per-tool host-network variables. A Base by the Base test (CLS-002): NMstate is the declarative
-    interface-configuration contract every host provider can apply, so a profile is one deliverable independent
-    of which host realizes it.'
+  description: 'The declarative desired state of a host interface — addressing method, routes, DNS, bond, bridge
+    and VLAN membership — as an estate record. A Base by the Base test (CLS-002): NMstate is the declarative interface-configuration
+    contract every host provider can apply, so a profile is one deliverable independent of which host realizes it.
+    UDLM owns the identity and the version-pinned conformance pointer; NMstate owns the body (adopt by reference).
+    Maps one to one to a Kubernetes-NMState NodeNetworkConfigurationPolicy desired state.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-15T00:00:00Z'
 elements:
@@ -42,26 +39,25 @@ elements:
     scope: ConnectionProfile
     optional: false
     state: canonical
-    description: The pinned NMstate interface-schema version the `desired_state` body conforms to (the conformance
-      pointer; NMstate releasing a new version does NOT force a UDLM schema change — the Tier-2 litmus).
+    description: The NMstate interface-schema version the `desired_state` body conforms to. A new NMstate release
+      does not force a UDLM change; the pointer moves.
     schema:
       type: string
-      description: The pinned NMstate interface-schema version the `desired_state` body conforms to (the conformance
-        pointer; NMstate releasing a new version does NOT force a UDLM schema change — the Tier-2 litmus).
+      description: The NMstate interface-schema version the `desired_state` body conforms to. A new NMstate release
+        does not force a UDLM change; the pointer moves.
   - element: desired_state
     scope: ConnectionProfile
     optional: false
     state: canonical
-    description: Opaque NMstate desired-state body — `state`, `ipv4`/`ipv6` (`enabled`/`dhcp`/`autoconf`/`address[]`),
-      the type sub-objects (`vlan`/`link-aggregation`/`bridge`/`mac-vlan`), `routes.config[]`, `dns-resolver.config`.
-      NOT restated field-by-field (adopt-by-reference); interpreted against `nmstate_schema_version`. 1:1 with NNCP.spec.desiredState.
+    description: 'The NMstate desired-state body, interpreted against `nmstate_schema_version` and not restated
+      field by field: `state`, `ipv4`/`ipv6`, the type sub-objects (`vlan`, `link-aggregation`, `bridge`, `mac-vlan`),
+      `routes`, `dns-resolver`.'
     schema:
       type: object
       additionalProperties: true
-      description: Opaque NMstate desired-state body — `state`, `ipv4`/`ipv6` (`enabled`/`dhcp`/`autoconf`/`address[]`),
-        the type sub-objects (`vlan`/`link-aggregation`/`bridge`/`mac-vlan`), `routes.config[]`, `dns-resolver.config`.
-        NOT restated field-by-field (adopt-by-reference); interpreted against `nmstate_schema_version`. 1:1 with
-        NNCP.spec.desiredState.
+      description: 'The NMstate desired-state body, interpreted against `nmstate_schema_version` and not restated
+        field by field: `state`, `ipv4`/`ipv6`, the type sub-objects (`vlan`, `link-aggregation`, `bridge`, `mac-vlan`),
+        `routes`, `dns-resolver`.'
 spec_examples:
   - nmstate_schema_version: '2.2'
     desired_state:

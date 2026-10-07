@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/IPAddressPool/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/IPAddressPool/0.8.1
 conforms_to: udlm/0.1
 uuid: 00257168-ae65-475c-bf34-f14f2e39f855
 record_type: class
 class: base
 resource_type: IPAddressPool
-version: 0.8.0
+version: 0.8.1
 family: Resource
 status: active
 filed_under:
@@ -13,14 +13,12 @@ ownership_model: whole_allocation
 allocation_produces_type: IPAddress
 metadata:
   display_name: IP Address Pool
-  description: 'A first-class allocatable range of IP addresses that IPAddress records are carved from — the DHCP
-    subnet pool (RFC 2131 subnet4 pools/ranges) as its own record, so allocation OWNERSHIP is expressible: which
-    addresses are in play, which tenant/resource holds each, and whether the pool is exhausted. Same allocatable-pool
-    pattern as StoragePool→Volume.ZFS (a pool is the source; the carved record depends_on it). Distinct from DHCPScope
-    (the SERVICE-side subnet config a DHCP provider realizes) and IPAddress (a single CONSUMED address): the Pool
-    is the intent-side inventory the addresses are allocated FROM. A Base by the Base test (CLS-002): RFC 8344 and
-    DHCP pool semantics abstract over every allocatable address range, so a pool of a given prefix and ranges is
-    fillable by any IPAM or DHCP provider.'
+  description: 'An allocatable range of IP addresses that IPAddress records are carved from, so allocation ownership
+    is expressible: which addresses are in play, who holds each, whether the pool is exhausted. A Base by the Base
+    test (CLS-002): RFC 8344 and DHCP pool semantics abstract over every allocatable range, so a pool of a given
+    prefix and ranges is fillable by any IPAM or DHCP provider. The same pool pattern as StoragePool and Volume:
+    the carved record depends on its pool. Distinct from DHCPScope (the service-side configuration) and IPAddress
+    (one consumed address).'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-16T06:00:00Z'
 elements:
@@ -44,28 +42,26 @@ elements:
     scope: IPAddressPool
     optional: false
     state: canonical
-    description: The subnet the pool draws from, as CIDR (RFC 8344), e.g. 192.0.2.0/24.
+    description: The subnet the pool draws from, in CIDR.
     schema:
       $ref: ../../../../common-elements.schema.json#/$defs/cidr
-      description: The subnet the pool draws from, as CIDR (RFC 8344), e.g. 192.0.2.0/24.
+      description: The subnet the pool draws from, in CIDR.
   - element: ip_family
     scope: IPAddressPool
     optional: true
     state: canonical
-    description: Address family (canonical ip_family, common-elements §2.4).
+    description: Address family.
     schema:
       $ref: ../../../../common-elements.schema.json#/$defs/ip_family
-      description: Address family (canonical ip_family, common-elements §2.4).
+      description: Address family.
   - element: ranges
     scope: IPAddressPool
     optional: true
     state: canonical
-    description: The allocatable ranges within the prefix (RFC 2131 subnet4 pools). Absent = the whole prefix minus
-      exclusions is allocatable.
+    description: The allocatable ranges within the prefix. Absent means the whole prefix minus exclusions.
     schema:
       type: array
-      description: The allocatable ranges within the prefix (RFC 2131 subnet4 pools). Absent = the whole prefix
-        minus exclusions is allocatable.
+      description: The allocatable ranges within the prefix. Absent means the whole prefix minus exclusions.
       items:
         type: object
         required:
@@ -82,28 +78,28 @@ elements:
     scope: IPAddressPool
     optional: true
     state: canonical
-    description: 'How addresses leave the pool: dynamic = leased on request (DHCP), static = fixed reservations
-      bound ahead of time, mixed = both. Aligns with IPAddress.allocation on the carved record.'
+    description: 'How addresses leave the pool: `dynamic` (leased on request), `static` (reservations bound ahead
+      of time), `mixed`. Aligns with `allocation` on the carved IPAddress.'
     schema:
       type: string
       enum:
         - dynamic
         - static
         - mixed
-      description: 'How addresses leave the pool: dynamic = leased on request (DHCP), static = fixed reservations
-        bound ahead of time, mixed = both. Aligns with IPAddress.allocation on the carved record.'
+      description: 'How addresses leave the pool: `dynamic` (leased on request), `static` (reservations bound ahead
+        of time), `mixed`. Aligns with `allocation` on the carved IPAddress.'
   - element: exclusions
     scope: IPAddressPool
     optional: true
     state: canonical
-    description: Addresses withheld from allocation (gateway, broadcast, known-static, avoid-buggy). Not carved
-      even if inside a range.
+    description: Addresses withheld from allocation (gateway, broadcast, known statics); never carved even inside
+      a range.
     schema:
       type: array
       items:
         $ref: ../../../../common-elements.schema.json#/$defs/ip_address
-      description: Addresses withheld from allocation (gateway, broadcast, known-static, avoid-buggy). Not carved
-        even if inside a range.
+      description: Addresses withheld from allocation (gateway, broadcast, known statics); never carved even inside
+        a range.
 spec_examples:
   - prefix: 192.0.2.0/24
     ip_family: ipv4

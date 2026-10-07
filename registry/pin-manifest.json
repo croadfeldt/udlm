@@ -399,10 +399,11 @@
   }
  },
  "type:AddressService": {
-  "current": "0.7.0",
+  "current": "0.7.1",
   "path": "registry/classes/resource/network/address-service/_base.yaml",
   "versions": {
-   "0.7.0": "sha256:377066fb42b239091f0f70c4a0954c32780c7237534c7ce353c1336224ccc79f"
+   "0.7.0": "sha256:377066fb42b239091f0f70c4a0954c32780c7237534c7ce353c1336224ccc79f",
+   "0.7.1": "sha256:35cf048fea87d79f2d3b797cba1c37a9814993fa32b46d946b3f88bc00328edf"
   }
  },
  "type:Automation": {
@@ -574,10 +575,11 @@
   }
  },
  "type:ConnectionProfile": {
-  "current": "0.5.0",
+  "current": "0.5.1",
   "path": "registry/classes/resource/network/connection-profile/_base.yaml",
   "versions": {
-   "0.5.0": "sha256:c90c997f0c3c4b9f8ca3552e0680665057c71d1b86cd6e33bb5c9478dc4a19ff"
+   "0.5.0": "sha256:c90c997f0c3c4b9f8ca3552e0680665057c71d1b86cd6e33bb5c9478dc4a19ff",
+   "0.5.1": "sha256:2084b731ee73ef336393dab210e299f06a3856109e3e3a74a65ddc5dce77d61e"
   }
  },
  "type:Container": {
@@ -604,18 +606,20 @@
   }
  },
  "type:DHCPScope": {
-  "current": "0.9.0",
+  "current": "0.9.1",
   "path": "registry/classes/resource/network/dhcpscope/_base.yaml",
   "versions": {
-   "0.9.0": "sha256:de773e932badc209fe36770fc82f05b60ee21d77e04088b135e2e2cb88e16d85"
+   "0.9.0": "sha256:de773e932badc209fe36770fc82f05b60ee21d77e04088b135e2e2cb88e16d85",
+   "0.9.1": "sha256:a0d75d66d4e0c3cb4b001b09e717db35a8182f07ad5a493234360fc8ca67a635"
   }
  },
  "type:DNSZone": {
-  "current": "0.6.1",
+  "current": "0.6.2",
   "path": "registry/classes/resource/network/dnszone/_base.yaml",
   "versions": {
    "0.6.0": "sha256:10259fd28413f99b2769248fcecf17bbcd7bc669ebe72f8f51d607eb94f8b1c7",
-   "0.6.1": "sha256:9f30abec9078f8371d043b6bd89838d60db4231c5a5f52f7aef71f2f5266f8ac"
+   "0.6.1": "sha256:9f30abec9078f8371d043b6bd89838d60db4231c5a5f52f7aef71f2f5266f8ac",
+   "0.6.2": "sha256:68bf34bd41bc3e98830abafca4d997143f56dd3dc62fc93729c7a1319ccef552"
   }
  },
  "type:Data": {
@@ -837,17 +841,19 @@
   }
  },
  "type:IPAddress": {
-  "current": "0.11.0",
+  "current": "0.11.1",
   "path": "registry/classes/resource/network/ipaddress/_base.yaml",
   "versions": {
-   "0.11.0": "sha256:22203d2eb12f76a623edb4e9e50b874ec3d07946054045170ab1b481d2f212a0"
+   "0.11.0": "sha256:22203d2eb12f76a623edb4e9e50b874ec3d07946054045170ab1b481d2f212a0",
+   "0.11.1": "sha256:60ec12455e7d12f9746d21cf8b2fa2d28dcecb41d09383d48aa038c53b2fae2a"
   }
  },
  "type:IPAddressPool": {
-  "current": "0.8.0",
+  "current": "0.8.1",
   "path": "registry/classes/resource/network/ipaddress-pool/_base.yaml",
   "versions": {
-   "0.8.0": "sha256:227ed10b3ef25dec0a8d6630c2ced814c4cdd44812ce0991aaf0f67ee292e2da"
+   "0.8.0": "sha256:227ed10b3ef25dec0a8d6630c2ced814c4cdd44812ce0991aaf0f67ee292e2da",
+   "0.8.1": "sha256:4d00bebf3850049ebd8c8778dad18c047a463febabd1da73ed025f6c62c264dd"
   }
  },
  "type:Identity": {
@@ -1221,10 +1227,11 @@
   }
  },
  "type:NetworkGateway": {
-  "current": "0.7.0",
+  "current": "0.7.1",
   "path": "registry/classes/resource/network/network-gateway/_base.yaml",
   "versions": {
-   "0.7.0": "sha256:7bfefa80e85837dfd48c717103316fc3e9e97c99d8306691fac3fb2cf2212117"
+   "0.7.0": "sha256:7bfefa80e85837dfd48c717103316fc3e9e97c99d8306691fac3fb2cf2212117",
+   "0.7.1": "sha256:166d8078dca7651f500442b372897d21e939afba4bc6a9517642918322d50895"
   }
  },
  "type:NetworkInterface": {
@@ -1238,11 +1245,12 @@
   }
  },
  "type:NetworkSwitch": {
-  "current": "0.8.1",
+  "current": "0.8.2",
   "path": "registry/classes/resource/network/network-switch/_base.yaml",
   "versions": {
    "0.8.0": "sha256:ace15ce147815b84de30ef687c851c5e56349705a02ee3b19224d15aa2c3a5af",
-   "0.8.1": "sha256:5ba59ccf6a610c11ff646ec0fdeefe323e9fdac5b1a503e6bcb40cc0eed7c760"
+   "0.8.1": "sha256:5ba59ccf6a610c11ff646ec0fdeefe323e9fdac5b1a503e6bcb40cc0eed7c760",
+   "0.8.2": "sha256:a265712c43f8f7a7cf6a3857e16722a230f9a13e90f58f1f8a1f803ede31e32f"
   }
  },
  "type:Observability": {
@@ -1650,10 +1658,11 @@
   }
  },
  "type:Subnet": {
-  "current": "0.2.0",
+  "current": "0.2.1",
   "path": "registry/classes/resource/network/subnet/_base.yaml",
   "versions": {
-   "0.2.0": "sha256:99e604af82567e6137059a609e053604883e40c2e6ed82b8ccf97a1bc74fcd15"
+   "0.2.0": "sha256:99e604af82567e6137059a609e053604883e40c2e6ed82b8ccf97a1bc74fcd15",
+   "0.2.1": "sha256:999c355d7342cbfae70813c29f9d95f13af94355ec92457759974e3d2746ff9c"
   }
  },
  "type:TaxonomyTerm": {
@@ -1744,10 +1753,11 @@
   }
  },
  "type:VLAN": {
-  "current": "0.6.0",
+  "current": "0.6.1",
   "path": "registry/classes/resource/network/vlan/_base.yaml",
   "versions": {
-   "0.6.0": "sha256:4def725005f6af2498254d70398d09fef0fcbe81eca57c10e8bc3423b135c624"
+   "0.6.0": "sha256:4def725005f6af2498254d70398d09fef0fcbe81eca57c10e8bc3423b135c624",
+   "0.6.1": "sha256:0c53ca44a6a67fb686afe82d1ac117e37c38b64261e43190dbb6eb10f4ef5ef3"
   }
  },
  "type:VexStatement": {
@@ -1758,10 +1768,11 @@
   }
  },
  "type:VirtualNetwork": {
-  "current": "0.9.0",
+  "current": "0.9.1",
   "path": "registry/classes/resource/network/virtual-network/_base.yaml",
   "versions": {
-   "0.9.0": "sha256:0a1d1680fbd6393e055600902dabd8337b13ed7fc0e29ff3fce9a154f757040d"
+   "0.9.0": "sha256:0a1d1680fbd6393e055600902dabd8337b13ed7fc0e29ff3fce9a154f757040d",
+   "0.9.1": "sha256:03faf8e5cbfca520ef008405dcd26d9b2e26712a0a11e4043787b31282531ece"
   }
  },
  "type:Volume": {

@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/DNSZone/0.6.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/DNSZone/0.6.2",
   "conforms_to": "udlm/0.1",
   "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5",
   "resource_type": "DNSZone",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "DNS Zone",
-    "description": "An authoritative DNS zone. Grounded in RFC 1034/1035 (the DNS zone + resource-record model); external-dns DNSEndpoint is the Kubernetes-native cross-walk. The serving software is the provider. A Base by the Base test (CLS-002): RFC 1035 defines a zone and its records the same way for every authoritative server, so any of them can serve one; it is served data, distinct from the AddressService that serves it.",
+    "description": "An authoritative DNS zone and its records. A Base by the Base test (CLS-002): RFC 1034/1035 define a zone the same way for every authoritative server, so any of them serves one; the serving software is the provider, and external-dns DNSEndpoint is the Kubernetes-native crosswalk. Served data, distinct from the AddressService that serves it.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "DNSZone",
-          "version": "0.6.1",
+          "version": "0.6.2",
           "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5"
         }
       ]
@@ -37,7 +37,7 @@
       },
       "zone_name": {
         "type": "string",
-        "description": "Fully-qualified zone name, e.g. example.com (RFC 1035 domain name)."
+        "description": "Fully qualified zone name (example.com)."
       },
       "zone_type": {
         "type": "string",
@@ -47,11 +47,11 @@
           "forward",
           "stub"
         ],
-        "description": "Authoritative role for this zone."
+        "description": "Authoritative role: `primary` or `secondary`."
       },
       "records": {
         "type": "array",
-        "description": "Resource records (RFC 1035). Optional — a zone may be summarized without enumerating records.",
+        "description": "Resource records (RFC 1035). Optional: a zone may be recorded without enumerating them.",
         "items": {
           "type": "object",
           "required": [

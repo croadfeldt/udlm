@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "AddressService",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/address-service/_base.yaml",
       "types": []
