@@ -1,24 +1,21 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/CredentialRef/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/CredentialRef/0.8.1
 conforms_to: udlm/0.1
 uuid: 942b6cc9-a0d5-4f91-8c5c-ade4ecdf5b50
 record_type: class
 class: base
 resource_type: CredentialRef
-version: 0.8.0
+version: 0.8.1
 family: Resource
 status: active
 filed_under:
   - security
 metadata:
   display_name: Credential Reference
-  description: 'A named reference to a credential held by a credential-issuing provider — the target every secrets-as-reference
-    field points at (Container/Software.Service `credential_ref`, Auth Provider bind refs). It declares WHICH credential
-    (closed type vocabulary), held WHERE (issuer + provider-side secret_path), at what assurance floor — never the
-    value. Resolved at realization by the provider; the value flows directly to the authorized consumer, never through
-    the control plane. Secret material NEVER appears in the data model, audit, source control, or logs (docs/spec/governance/credentials.md
-    §1.1). A Base by the Base test (CLS-002): every secret store — Vault, a Kubernetes Secret, an external-secrets
-    provider — resolves a reference by issuer, path and version the same way, so a credential reference is one deliverable
-    any of them can serve; the secret itself never enters the model.'
+  description: 'A named reference to a credential a credential-issuing provider holds: which kind, held where, at
+    what assurance floor — never the value. A Base by the Base test (CLS-002): every secret store (Vault, a Kubernetes
+    Secret, an external-secrets provider) resolves a reference by issuer, path and version the same way, so a reference
+    is one deliverable any of them serves. The provider resolves it at realization and the value flows directly
+    to the authorized consumer; secret material never appears in the model, the audit, source control or logs.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-15T00:00:00Z'
 elements:
@@ -26,8 +23,8 @@ elements:
     scope: CredentialRef
     optional: false
     state: canonical
-    description: Which kind of credential this references — resolves to the matching Credential.* resource the issuer
-      holds (credentials.md §2).
+    description: 'Which kind of credential: `api_key`, `jwt`, `x509_certificate`, `ssh_key`, `secret`, `signing_key`,
+      `encryption_key`, `service_account_token`, `database_password`, `kubeconfig`, `hsm_backed_key`.'
     schema:
       type: string
       enum:
@@ -42,50 +39,40 @@ elements:
         - database_password
         - kubeconfig
         - hsm_backed_key
-      description: Which kind of credential this references — resolves to the matching Credential.* resource the
-        issuer holds (credentials.md §2).
+      description: 'Which kind of credential: `api_key`, `jwt`, `x509_certificate`, `ssh_key`, `secret`, `signing_key`,
+        `encryption_key`, `service_account_token`, `database_password`, `kubeconfig`, `hsm_backed_key`.'
   - element: issuer_ref
     scope: CredentialRef
     optional: true
     state: canonical
-    description: Reference to the issuing provider or CA record — the issuer of this credential. Common-elements
-      Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque
-      string.
+    description: Reference to the issuing provider or CA.
     schema:
-      description: Reference to the issuing provider or CA record — the issuer of this credential. Common-elements
-        Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque
-        string.
+      description: Reference to the issuing provider or CA.
       $ref: ../../../../common-elements.schema.json#/$defs/Reference
   - element: secret_path
     scope: CredentialRef
     optional: true
     state: canonical
-    description: The provider-side path/handle the issuer resolves the value at (e.g. "providers/kubevirt/service-account").
-      Only the path is ever recorded — never the value.
+    description: The provider-side path the issuer resolves the value at. Only the path is recorded.
     schema:
       type: string
-      description: The provider-side path/handle the issuer resolves the value at (e.g. "providers/kubevirt/service-account").
-        Only the path is ever recorded — never the value.
+      description: The provider-side path the issuer resolves the value at. Only the path is recorded.
   - element: version
     scope: CredentialRef
     optional: true
     state: canonical
-    description: Advisory version pin (`latest` or a specific version); the issuer resolves it and records the concrete
-      version in outputs (audit, not the value).
+    description: Advisory version pin (`latest` or a version); the issuer records the concrete version in outputs.
     schema:
       type: string
-      description: Advisory version pin (`latest` or a specific version); the issuer resolves it and records the
-        concrete version in outputs (audit, not the value).
+      description: Advisory version pin (`latest` or a version); the issuer records the concrete version in outputs.
   - element: scope
     scope: CredentialRef
     optional: true
     state: canonical
-    description: What the credential is scoped to (least-privilege) — mirrors the credential_record scope in credentials.md
-      §5; the provider enforces.
+    description: What the credential is scoped to (least privilege); the provider enforces it.
     schema:
       type: object
-      description: What the credential is scoped to (least-privilege) — mirrors the credential_record scope in credentials.md
-        §5; the provider enforces.
+      description: What the credential is scoped to (least privilege); the provider enforces it.
       additionalProperties: false
       properties:
         entity_uuid:
@@ -100,12 +87,12 @@ elements:
     scope: CredentialRef
     optional: true
     state: canonical
-    description: The minimum assurance the consumer requires — NIST 800-63B AAL (credentials.md §12.2). A provider
-      whose credential capability cannot reach this floor is filtered out before binding (declare-and-select).
+    description: 'The minimum assurance the consumer requires (NIST 800-63B AAL: aal1, aal2, aal3). A provider that
+      cannot reach it is filtered out before binding.'
     schema:
       $ref: ../../../../common-elements.schema.json#/$defs/assurance_level
-      description: The minimum assurance the consumer requires — NIST 800-63B AAL (credentials.md §12.2). A provider
-        whose credential capability cannot reach this floor is filtered out before binding (declare-and-select).
+      description: 'The minimum assurance the consumer requires (NIST 800-63B AAL: aal1, aal2, aal3). A provider
+        that cannot reach it is filtered out before binding.'
 spec_examples:
   - credential_type: service_account_token
     issuer_ref: kubevirt-service-account-issuer

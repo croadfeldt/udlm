@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "DirectoryService",
-      "version": "0.8.2",
+      "version": "0.8.3",
       "instantiable": true,
       "path": "registry/classes/resource/identity/directory-service/_base.yaml",
       "types": []
