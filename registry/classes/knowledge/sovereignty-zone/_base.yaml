@@ -22,61 +22,48 @@
 # Knowledge family on the Vulnerability precedent: a curated record with structured attributes,
 # declared by the party that holds the truth, never realized by a provider. Its lifecycle is curation
 # — established at setup, then governed — not provisioning.
-$id: https://udlm.dev/registry/udlm/0.1/class/SovereigntyZone/0.1.1
+$id: https://udlm.dev/registry/udlm/0.1/class/SovereigntyZone/0.1.2
 conforms_to: udlm/0.1
 uuid: e44193cc-a41f-4bf6-bfcf-aa70029dc10e
 record_type: class
 class: base
 resource_type: SovereigntyZone
-version: 0.1.1
+version: 0.1.2
 family: Knowledge
 status: active
-
 metadata:
   display_name: Sovereignty Zone
-  description: >-
-    A named sovereignty zone declared in ISO 3166 terms — what a coined label like `eu-west` actually
-    means jurisdictionally. Entities cite the zone by handle; accreditations state their scope in the
-    same vocabulary; the residency-subsumption match is then computable rather than assumed. Carries
-    no physical location by design.
+  description: 'A named sovereignty zone in ISO 3166 terms: what a coined label like `eu-west` means jurisdictionally.
+    Entities cite the zone by handle and accreditations state their scope in the same vocabulary, so the residency
+    match is computable rather than assumed. Carries no physical location by design.'
   maintainer: UDLM project
   origination_timestamp: '2026-08-09T00:00:00Z'
-
 entity_type: SovereigntyZone
-
 context:
-  purpose: >-
-    Give a coined zone name a declared meaning, so that "is this entity's placement covered by that
-    accreditation?" is a question the model can answer.
-  plain_description: >-
-    What a zone name actually means. `eu-west` is Germany and the Netherlands, under EU law. Written
+  purpose: Give a coined zone name a declared meaning, so that "is this entity's placement covered by that accreditation?"
+    is a question the model can answer.
+  plain_description: What a zone name actually means. `eu-west` is Germany and the Netherlands, under EU law. Written
     down once by whoever knows, so every peer reads the same answer and an auditor gets exactly one.
   use_when:
     - An entity's `sovereignty.zone` needs to be checked against an accreditation's geographic scope
     - A peer must understand your zone names without a private mapping table
     - A zone spans more than one jurisdiction, or sits under a supranational regime
   not_for:
-    - Physical location — a site, a rack, a datacenter. That is `Location`, and it does not
-      cross a peer boundary
-    - Naming an authority or a peer — that is the URF `//authority/` axis, which is naming rather
-      than location
-    - Recording where a workload happens to run right now. This declares what a zone MEANS, not what
-      is in it; membership derives from the entities that cite it
+    - Physical location — a site, a rack, a datacenter. That is `Location`, and it does not cross a peer boundary
+    - Naming an authority or a peer — that is the URF `//authority/` axis, which is naming rather than location
+    - Recording where a workload happens to run right now. This declares what a zone MEANS, not what is in it; membership
+      derives from the entities that cite it
   works_with:
     - accreditation records — `scope.geographic_scope` speaks the same ISO 3166 vocabulary
     - a realized entity's `sovereignty.zone`, which cites a zone by handle
-
 elements:
   - element: jurisdictions
     scope: SovereigntyZone
     optional: false
     state: proposed
-    description: >-
-      The jurisdictions this zone spans, as ISO 3166 codes — 3166-1 for a country (`DE`), 3166-2 for
-      a subdivision (`US-MN`). Required, and required to be non-empty: a zone whose jurisdictions are
-      unknown cannot be matched against any accreditation, so declaring it without them records a
-      name and answers nothing. More than one is normal — a zone that spans DE and NL states both,
-      and an accreditation must cover all of them to cover the zone.
+    description: 'The jurisdictions the zone spans, as ISO 3166 codes: 3166-1 for a country (`DE`), 3166-2 for a
+      subdivision (`US-MN`). Required and non-empty: a zone without them cannot be matched against any accreditation.
+      More than one is normal, and an accreditation must cover all of them to cover the zone.'
     schema:
       type: array
       minItems: 1
@@ -85,34 +72,39 @@ elements:
         type: string
         pattern: ^[A-Z]{2}(-[A-Z0-9]{1,3})?$
         description: ISO 3166-1 alpha-2, optionally with a 3166-2 subdivision (`DE`, `US-MN`).
-
+      description: 'The jurisdictions the zone spans, as ISO 3166 codes: 3166-1 for a country (`DE`), 3166-2 for
+        a subdivision (`US-MN`). Required and non-empty: a zone without them cannot be matched against any accreditation.
+        More than one is normal, and an accreditation must cover all of them to cover the zone.'
   - element: regimes
     scope: SovereigntyZone
     optional: true
     state: proposed
-    description: >-
-      Supranational regimes the zone sits under (`EU`). Separate from `jurisdictions` because a
-      regime is not a country and does not subsume the same way: an accreditation scoped `EU` is not
-      an accreditation scoped `DE`, and §3.8 matches a distinct sovereignty regime EXACTLY rather
-      than by containment. Absent means no supranational regime applies.
+    description: 'Supranational regimes the zone sits under (`EU`). Separate from `jurisdictions` because a regime
+      does not subsume the way a country does: an accreditation scoped `EU` is not one scoped `DE`, and §3.8 matches
+      a regime exactly. Absent means none applies.'
     schema:
       type: array
       uniqueItems: true
       items:
         type: string
         pattern: ^[A-Z][A-Z0-9-]{1,15}$
-
+      description: 'Supranational regimes the zone sits under (`EU`). Separate from `jurisdictions` because a regime
+        does not subsume the way a country does: an accreditation scoped `EU` is not one scoped `DE`, and §3.8 matches
+        a regime exactly. Absent means none applies.'
   - element: description
     scope: SovereigntyZone
     optional: true
     state: proposed
-    description: >-
-      What this zone is for, in the operator's own words — the sentence that makes a coined name
-      legible to someone who did not coin it.
+    description: 'What the zone is for, in the operator''s words: the sentence that makes a coined name legible
+      to someone who did not coin it.'
     schema:
       type: string
-
+      description: 'What the zone is for, in the operator''s words: the sentence that makes a coined name legible
+        to someone who did not coin it.'
 spec_examples:
-  - jurisdictions: [DE, NL]
-    regimes: [EU]
+  - jurisdictions:
+      - DE
+      - NL
+    regimes:
+      - EU
     description: Western European zone — customer data stays inside the EU.

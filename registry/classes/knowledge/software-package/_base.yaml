@@ -1,19 +1,18 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/SoftwarePackage/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/SoftwarePackage/0.3.1
 conforms_to: udlm/0.1
 uuid: df4b2ff1-c6d4-4075-a355-ee85db5bc366
 record_type: class
 class: base
 resource_type: SoftwarePackage
-version: 0.3.0
+version: 0.3.1
 family: Knowledge
 status: active
 metadata:
   display_name: Software Package
-  description: 'A software package / library as a Knowledge-family fact — one record per purl, shared by every SoftwareImage
-    that contains it (one entity, many referrers). Knowledge, not a Resource: discovered by a scanner sweep, never
-    provider-realized. ADOPT (not absorb) the Package-URL (purl) spec and SPDX/CycloneDX component identity by reference
-    (T5): purl is the portable correlation id; the component schema is not restated. Contained by SoftwareImage
-    (contains); references Vulnerability (affected_by).'
+  description: 'A software package or library as a fact: one record per purl, shared by every SoftwareImage that
+    contains it. A Knowledge class: discovered by a scanner sweep, never provider-realized. Package URL and SPDX/CycloneDX
+    component identity are adopted by reference; the purl is the portable correlation id. Contained by SoftwareImage;
+    references Vulnerability.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-22T00:00:00Z'
 entity_type: SoftwarePackage
@@ -22,44 +21,44 @@ elements:
     scope: SoftwarePackage
     optional: false
     state: canonical
-    description: Package URL (purl) — the portable identity and dedup key, e.g. pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1.
+    description: Package URL, the portable identity and dedup key (pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1).
       One record per purl.
     schema:
       type: string
-      description: Package URL (purl) — the portable identity and dedup key, e.g. pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1.
+      description: Package URL, the portable identity and dedup key (pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1).
         One record per purl.
   - element: name
     scope: SoftwarePackage
     optional: true
     state: canonical
-    description: Package name (as parsed from the purl / SBOM component).
+    description: Package name, as parsed from the purl or SBOM.
     schema:
       type: string
-      description: Package name (as parsed from the purl / SBOM component).
+      description: Package name, as parsed from the purl or SBOM.
   - element: version
     scope: SoftwarePackage
     optional: true
     state: canonical
-    description: Package version (as parsed from the purl / SBOM component).
+    description: Package version, as parsed.
     schema:
       type: string
-      description: Package version (as parsed from the purl / SBOM component).
+      description: Package version, as parsed.
   - element: type
     scope: SoftwarePackage
     optional: true
     state: canonical
-    description: Package ecosystem / purl type (e.g. rpm, maven, npm, pypi, golang, deb).
+    description: Package ecosystem, the purl type (rpm, deb, npm, pypi, …).
     schema:
       $ref: ../../../common-elements.schema.json#/$defs/purl_type
-      description: Package ecosystem / purl type (e.g. rpm, maven, npm, pypi, golang, deb).
+      description: Package ecosystem, the purl type (rpm, deb, npm, pypi, …).
   - element: license
     scope: SoftwarePackage
     optional: true
     state: canonical
-    description: Declared license as an SPDX license identifier (e.g. Apache-2.0), where the SBOM reports one.
+    description: Declared license as an SPDX identifier (Apache-2.0), where the SBOM reports one.
     schema:
       type: string
-      description: Declared license as an SPDX license identifier (e.g. Apache-2.0), where the SBOM reports one.
+      description: Declared license as an SPDX identifier (Apache-2.0), where the SBOM reports one.
 spec_examples:
   - purl: pkg:rpm/redhat/openssl@3.0.7-18.el9?arch=x86_64
     name: openssl

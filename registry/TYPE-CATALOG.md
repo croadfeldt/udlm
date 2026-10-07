@@ -52,7 +52,7 @@ The thing that hands out addresses and answers name lookups, as a single, thin s
 
 ## Automation
 
-### Automation (1.2.0)
+### Automation (1.2.1)
 
 **Purpose:** Declares an automation — what a run is, portable across engines — so any engine that exposes run, status and cancel can execute it.
 
@@ -70,7 +70,7 @@ The definition of something that can be run: what it takes in, what it gives bac
 - Job — the receipt of running it.
 - Automation.OSPatch — a Type that narrows it.
 
-### Automation.OSPatch (1.2.2)
+### Automation.OSPatch (1.2.3)
 
 **Purpose:** The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.
 
@@ -112,7 +112,7 @@ The always-on management controller inside a server that answers even when the h
 
 ## Capability
 
-### Capability (0.4.0)
+### Capability (0.4.1)
 
 **Purpose:** Names one discrete platform capability so architecture analysis can track, normalize, and gap-score it.
 
@@ -324,7 +324,7 @@ One GPU as a component record. The same type covers three shapes, distinguished 
 
 ## Grouping
 
-### Grouping (0.3.1)
+### Grouping (0.3.2)
 
 **Purpose:** Declares a grouping — the native anchor other things bind to: a membership criterion, the obligations members inherit, and the opaque subject bindings an authorization engine evaluates.
 
@@ -341,7 +341,7 @@ A named set of things with a rule for what belongs in it. A tenant is a grouping
 - Grouping.Tenant and Grouping.Authorization — the Types that narrow it.
 - Any resource — a member by criterion.
 
-### Grouping.Authorization (0.1.0)
+### Grouping.Authorization (0.1.1)
 
 **Purpose:** One grouping permitting another to use something it holds. The grant is a record with its own identity and lifecycle, so it can be found, audited, time-bounded, and withdrawn.
 
@@ -362,7 +362,7 @@ Permission for the members of one grouping to use resources held by another — 
 - Grouping.Tenant — the usual pair of boundaries a grant spans
 - The required-grant set (CTX-005) — derived from a request's edges and diffed against these
 
-### Grouping.Tenant (0.1.0)
+### Grouping.Tenant (0.1.1)
 
 **Purpose:** The ownership and isolation border. Every record in the model carries a tenant_uuid pointing at one of these, and it is the referent that ownership, cost attribution, audit scope, drift accountability, and policy scope all resolve against.
 
@@ -428,7 +428,7 @@ A range of addresses that individual address records are carved from: the requir
 
 ## Identity
 
-### Identity (1.2.0)
+### Identity (1.2.1)
 
 **Purpose:** Declares a subject the control plane authenticates and authorizes — a person or a service account — with the handle, actor type, authentication source and credential reference every identity provider serves.
 
@@ -449,7 +449,7 @@ Who can act. An identity has a `handle`, an `actor_type` (`human` or `service_ac
 - CredentialRef — the credential that authenticates it.
 - DirectoryService — the directory that authenticates it.
 
-### Identity.Person (0.6.6)
+### Identity.Person (0.6.7)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
@@ -469,7 +469,7 @@ One human's identity: its `handle` (the login name) and its `actor_type` — alw
 - CredentialRef — the person's credentials, by reference.
 - DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.6.6)
+### Identity.ServiceAccount (0.6.7)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
@@ -490,7 +490,7 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 ## IdentityEscrow
 
-### IdentityEscrow (0.5.0)
+### IdentityEscrow (0.5.1)
 
 **Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
 
@@ -514,7 +514,7 @@ Some machines are routinely wiped and rebuilt, but parts of their identity must 
 
 ## IdentityGroup
 
-### IdentityGroup (0.5.0)
+### IdentityGroup (0.5.1)
 
 **Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
 
@@ -534,7 +534,7 @@ A named set of person and service-account identities, keyed by its required `han
 
 ## Job
 
-### Job (1.2.7)
+### Job (1.2.8)
 
 **Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
 
@@ -854,7 +854,7 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 
 ## SoftwareImage
 
-### SoftwareImage (0.3.0)
+### SoftwareImage (0.3.1)
 
 **Purpose:** Records a container image as a digest-identified fact — the anchor a container's software bill of materials hangs from.
 
@@ -874,7 +874,7 @@ One container image, identified by its content digest (one observed `tag` is rec
 
 ## SoftwarePackage
 
-### SoftwarePackage (0.3.0)
+### SoftwarePackage (0.3.1)
 
 **Purpose:** Records a software package or library as one shared fact per package URL, so every image containing it points at the same record.
 
@@ -894,7 +894,7 @@ One package at one version — identified by its purl (Package URL), the portabl
 
 ## SovereigntyZone
 
-### SovereigntyZone (0.1.1)
+### SovereigntyZone (0.1.2)
 
 **Purpose:** Give a coined zone name a declared meaning, so that "is this entity's placement covered by that accreditation?" is a question the model can answer.
 
@@ -1053,7 +1053,7 @@ The IP side of a network — the address range, the way out of it, and how hosts
 
 ## TaxonomyTerm
 
-### TaxonomyTerm (0.4.1)
+### TaxonomyTerm (0.4.2)
 
 **Purpose:** Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.
 
@@ -1112,7 +1112,7 @@ A ready-made application shape. Somebody who knows how the pieces fit wrote it d
 
 ## TestEvidence
 
-### TestEvidence (0.3.0)
+### TestEvidence (0.3.1)
 
 **Purpose:** Records the evidence a test provides about a subject — any test, from any suite, in the result format the suite already emits.
 
@@ -1131,7 +1131,7 @@ One test, what it was about, and how it went: the subject it exercised, the kind
 - TestEvidence.VulnerabilityCheck — the Type for CVE checks.
 - VexStatement — cites evidence records.
 
-### TestEvidence.VulnerabilityCheck (0.1.0)
+### TestEvidence.VulnerabilityCheck (0.1.1)
 
 **Purpose:** Records one test that checks one known vulnerability in one package version, so a claim that a vulnerability is fixed or reachable can be traced to a test that ran.
 
@@ -1209,7 +1209,7 @@ The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `v
 
 ## VexStatement
 
-### VexStatement (0.1.0)
+### VexStatement (0.1.1)
 
 **Purpose:** Records one exploitability claim about one vulnerability in one package version, with the evidence it rests on, as a fact Product Security can confirm.
 
@@ -1289,7 +1289,7 @@ A volume realized by ZFS on one host: its `volume_mode` says whether it is a mou
 
 ## Vulnerability
 
-### Vulnerability (0.3.0)
+### Vulnerability (0.3.1)
 
 **Purpose:** Records a known vulnerability — CVE, GHSA, or OSV advisory — once, as the shared fact every affected package points at.
 

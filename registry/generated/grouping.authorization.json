@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Grouping.Authorization/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Grouping.Authorization/0.1.1",
   "conforms_to": "udlm/0.1",
   "uuid": "9d41c8e2-05b7-4a36-b8f9-1c7e3a604b52",
   "resource_type": "Grouping.Authorization",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "family": "Access",
   "status": "active",
   "metadata": {
     "display_name": "Grouping Authorization",
-    "description": "One grouping's recorded permission for another to use resources it holds — who granted, who received, which resources, what may be done, and until when. Usually two tenants, which is the case CTX-001 depends on and revocation and expiry act on; the record itself is boundary-agnostic because any grouping can declare isolation. A grant permits use and never transfers ownership.",
+    "description": "One grouping's recorded permission for another to use resources it holds: who granted, who received, which resources, what may be done, until when. Usually two tenants; the record is boundary-agnostic because any grouping may declare isolation. A grant permits use and never transfers ownership.",
     "maintainer": "UDLM project",
     "origination_timestamp": "2026-08-08T00:00:00Z",
     "generated": true,
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Grouping",
-          "version": "0.3.1",
+          "version": "0.3.2",
           "uuid": "2c8b6270-2eae-4ac4-8faa-3375dde3da3e"
         },
         {
           "class": "Grouping.Authorization",
-          "version": "0.1.0",
+          "version": "0.1.1",
           "uuid": "9d41c8e2-05b7-4a36-b8f9-1c7e3a604b52"
         }
       ]
@@ -56,12 +56,12 @@
             }
           }
         },
-        "description": "The RBAC bridge: external subject-expressions whose holders this grouping is FOR. Opaque by design — parsing or evaluating one would re-import the permission engine the model excludes.\n"
+        "description": "External subject expressions whose holders this grouping is for: the RBAC bridge. Opaque by design; parsing or evaluating one would re-import the permission engine the model excludes."
       },
       "membership_criterion": {
         "type": "string",
         "format": "udlm-filter-url",
-        "description": "The RULE that derives the member set — a stored URF filter (identifier-scheme 9; declared fields only, URF-005), never the set itself. Idioms: tenancy \"estate?tenant_uuid=={self}\" (exclusivity is structural — the field is scalar); ownership \"estate?owned_by=={self}\"; labels \"estate?labels.concern==payments\"; explicit set \"estate?uuid=in=(a,b)\" — the marked exception, prefer any derivable form; exclusion \"estate?tenant_uuid==abc;member_of!=access/groupings/hold\".\n"
+        "description": "The rule that derives the member set: a stored URF filter over declared fields (URF-005), never the set itself. Idioms: tenancy `estate?tenant_uuid=={self}`, ownership `estate?owned_by=={self}`, labels `estate?labels.concern==payments`, exclusion `estate?tenant_uuid==abc;member_of!=access/groupings/hold`; an explicit set `estate?uuid=in=(a,b)` is the marked exception."
       },
       "obligations": {
         "type": "object",
@@ -76,17 +76,17 @@
             ]
           }
         },
-        "description": "Unit-level requirements the engine enforces over the derived set — physical: stores and placement partition by this grouping's uuid (IdP group -> binding -> this anchor -> tenant_uuid -> partitioned stores; every hop on existing machinery).\n"
+        "description": "Unit-level requirements the engine enforces over the derived set, such as isolation: stores and placement partition by this grouping's uuid."
       },
       "granted_by": {
         "type": "string",
         "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-        "description": "The grouping that holds the resources and is giving permission — a Grouping.Tenant in the common case, any isolating grouping in general. A grant across a grouping that declares `obligations.isolation: none` permits nothing, because nothing was closed."
+        "description": "The grouping that holds the resources and gives permission: a Grouping.Tenant in the common case, any isolating grouping in general. A grant across a grouping whose `obligations.isolation` is `none` permits nothing, because nothing was closed."
       },
       "granted_to": {
         "type": "string",
         "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-        "description": "The grouping whose members receive permission. MUST differ from the granting grouping — a grant to yourself is not a grant, and the boundary it would cross does not exist."
+        "description": "The grouping whose members receive permission. MUST differ from `granted_by`: a grant to yourself crosses no boundary."
       },
       "authorized_operations": {
         "type": "array",
@@ -101,21 +101,21 @@
           ],
           "x-extensible-enum": true
         },
-        "description": "What the receiving grouping's members may do with the resources this grant scopes. `stake` takes a share of a shareable resource; `allocate` carves an owned portion from a pool; `read` sees declared fields without using it. Ownership is never among them — a grant permits use, never transfer."
+        "description": "What the receiving members may do: `stake` (take a share of a shareable resource), `allocate` (carve an owned portion from a pool), `read` (see declared fields). Ownership is never among them."
       },
       "valid_from": {
         "type": "string",
         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-        "description": "When the grant takes effect. Absent means immediately on creation."
+        "description": "When the grant takes effect; absent means on creation."
       },
       "expires_at": {
         "type": "string",
         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-        "description": "When the grant lapses. Expiry is treated exactly as explicit revocation (CTX-003): dependent entities enter review, and nothing is seized. Absent means the grant runs until revoked — #406 argues that is the wrong default and proposes bounding it, which this element makes addressable."
+        "description": "When the grant lapses. Expiry is treated exactly as explicit revocation (CTX-003): dependents enter review, nothing is seized. Absent means until revoked; #406 argues a bounded default and this element is where that lands."
       },
       "platform_managed": {
         "type": "boolean",
-        "description": "Set when a platform administrator created this grant on a grouping's behalf rather than the granting grouping creating it itself (CTX-004). It is visible to that grouping, not only to the administrator (CTX-007) — a grant made in your name is one you can audit.\nOn the record rather than derived from the audit because revocation acts on it: a platform-managed grant notifies the platform administrator as well as both groupings (§13.4), and an operation should not have to walk the audit chain to know who to tell. WHO created the grant is a different question and is NOT here — the audit record requires actor, subject, and action on every act, and that is history rather than something an operation acts on (ADR-059)."
+        "description": "Set when a platform administrator created the grant on the granting grouping's behalf (CTX-004); visible to that grouping (CTX-007), and on the record rather than derived from the audit because revocation notifies the administrator as well as both groupings. Who created the grant is the audit's question, not this element's."
       }
     },
     "required": [

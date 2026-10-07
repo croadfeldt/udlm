@@ -1,81 +1,81 @@
-_comment: "Burn-down baseline for tests/check_implementation_neutrality.py (IMP-001). Unmarked implementation references across the whole normative tier \u2014 docs/spec/, docs/adr/ AND registry/ (generated/\
-  \ excluded: a reference there is a projection of one in the authored class, and failing on both makes one defect look like two). Reported as WARN; a NEW one fails CI. Entries store a HASH of the line,\
-  \ never the line \u2014 an early version stored the text and the estate-token gate caught it copying a denylisted token into tests/. Shrink with every burn-down PR (#503); never add an entry to silence\
-  \ a new violation."
+_comment: 'Burn-down baseline for tests/check_implementation_neutrality.py (IMP-001). Unmarked implementation references
+  across the whole normative tier — docs/spec/, docs/adr/ AND registry/ (generated/ excluded: a reference there
+  is a projection of one in the authored class, and failing on both makes one defect look like two). Reported as
+  WARN; a NEW one fails CI. Entries store a HASH of the line, never the line — an early version stored the text
+  and the estate-token gate caught it copying a denylisted token into tests/. Shrink with every burn-down PR (#503);
+  never add an entry to silence a new violation.'
 known:
-- file: docs/adr/ADR-027-entity-family-model.md
-  hash: b2d6e5227e8fc9ad
-- file: docs/adr/ADR-030-convergence-lifecycle-model.md
-  hash: cbd72abd1bf84683
-- file: docs/adr/ADR-033-templates.md
-  hash: 51fd0e52c2ea8f6e
-- file: docs/adr/ADR-033-templates.md
-  hash: ebb8a9b42f158b0c
-- file: docs/adr/ADR-052-intent-fulfillment-dependency-nature.md
-  hash: e51cd0a274c9b239
-- file: docs/adr/ADR-059-the-working-record-and-its-provenance-chains.md
-  hash: 8a56a2ce7cdd7d7d
-- file: docs/adr/ADR-COST-001-metering-placement-reference-dont-model.md
-  hash: bde4ce53e30eccc7
-- file: docs/adr/ADR-COST-001-metering-placement-reference-dont-model.md
-  hash: 9d9ebf05bb9f6650
-- file: docs/adr/ADR-PROV-002-provider-capabilities-and-categories.md
-  hash: 8c00bd76116ec4e7
-- file: docs/adr/ADR-PROV-002-provider-capabilities-and-categories.md
-  hash: e1d93f5184d4777b
-- file: docs/adr/README.md
-  hash: c2ddde54526bb03d
-- file: docs/adr/README.md
-  hash: 1c3a23355e42813f
-- file: docs/adr/README.md
-  hash: ed05b20400b3f459
-- file: docs/adr/README.md
-  hash: 7f9e32d9a8412735
-- file: docs/spec/foundations/entity-type-families.md
-  hash: 320c4f09b61deeec
-- file: docs/spec/foundations/entity-type-families.md
-  hash: 55fe663f4bca8be7
-- file: docs/spec/foundations/entity-type-families.md
-  hash: a8071bfe0c46e305
-- file: docs/spec/foundations/knowledge-family.md
-  hash: 13b6a35eff425264
-- file: docs/spec/foundations/knowledge-family.md
-  hash: 9e50775f327d028c
-- file: docs/spec/foundations/knowledge-family.md
-  hash: 03b87c4bf3cd57c1
-- file: docs/spec/foundations/knowledge-family.md
-  hash: 098bcdcfe9e4d392
-- file: docs/spec/foundations/knowledge-family.md
-  hash: de92bb75f6087b91
-- file: docs/spec/principles/adopted-standards.md
-  hash: 7706a44039e2cdf4
-- file: docs/spec/principles/naming-charter.md
-  hash: 032b46b411e6484f
-- file: docs/spec/principles/naming-charter.md
-  hash: ac8a85d2449fea7a
-- file: registry/classes/knowledge/capability/_base.yaml
-  hash: 6f075508a304708a
-- file: registry/naming-conventions.md
-  hash: 2fb91a4df9a6ff66
-- file: registry/pin-manifest.json
-  hash: c93f633a13ed42ac
-- file: registry/renames.yaml
-  hash: 21acbd34425388b9
-- file: registry/renames.yaml
-  hash: 7fae8ecfed1f5b39
-- file: registry/renames.yaml
-  hash: 1365b8387aeccd58
-- file: registry/standards-adoption-register.md
-  hash: 78b730440f13ae7f
-- file: registry/taxonomies/dcm-function.yaml
-  hash: 97f4b7c7cb53bc5e
-- file: registry/taxonomies/dcm-function.yaml
-  hash: 4e4fa9effff5dc17
-- file: registry/taxonomies/dcm-function.yaml
-  hash: 4629cf6b40a4982b
-- file: registry/taxonomies/dcm-function.yaml
-  hash: c9b63be7ba55435a
-- file: registry/taxonomies/dcm-function.yaml
-  hash: f313c61f28aaa0d4
-- file: registry/taxonomies/provider-capability.yaml
-  hash: eb5c72916af387c9
+  - file: docs/adr/ADR-027-entity-family-model.md
+    hash: b2d6e5227e8fc9ad
+  - file: docs/adr/ADR-030-convergence-lifecycle-model.md
+    hash: cbd72abd1bf84683
+  - file: docs/adr/ADR-033-templates.md
+    hash: 51fd0e52c2ea8f6e
+  - file: docs/adr/ADR-033-templates.md
+    hash: ebb8a9b42f158b0c
+  - file: docs/adr/ADR-052-intent-fulfillment-dependency-nature.md
+    hash: e51cd0a274c9b239
+  - file: docs/adr/ADR-059-the-working-record-and-its-provenance-chains.md
+    hash: 8a56a2ce7cdd7d7d
+  - file: docs/adr/ADR-COST-001-metering-placement-reference-dont-model.md
+    hash: bde4ce53e30eccc7
+  - file: docs/adr/ADR-COST-001-metering-placement-reference-dont-model.md
+    hash: 9d9ebf05bb9f6650
+  - file: docs/adr/ADR-PROV-002-provider-capabilities-and-categories.md
+    hash: 8c00bd76116ec4e7
+  - file: docs/adr/ADR-PROV-002-provider-capabilities-and-categories.md
+    hash: e1d93f5184d4777b
+  - file: docs/adr/README.md
+    hash: c2ddde54526bb03d
+  - file: docs/adr/README.md
+    hash: 1c3a23355e42813f
+  - file: docs/adr/README.md
+    hash: ed05b20400b3f459
+  - file: docs/adr/README.md
+    hash: 7f9e32d9a8412735
+  - file: docs/spec/foundations/entity-type-families.md
+    hash: 320c4f09b61deeec
+  - file: docs/spec/foundations/entity-type-families.md
+    hash: 55fe663f4bca8be7
+  - file: docs/spec/foundations/entity-type-families.md
+    hash: a8071bfe0c46e305
+  - file: docs/spec/foundations/knowledge-family.md
+    hash: 13b6a35eff425264
+  - file: docs/spec/foundations/knowledge-family.md
+    hash: 9e50775f327d028c
+  - file: docs/spec/foundations/knowledge-family.md
+    hash: 03b87c4bf3cd57c1
+  - file: docs/spec/foundations/knowledge-family.md
+    hash: 098bcdcfe9e4d392
+  - file: docs/spec/foundations/knowledge-family.md
+    hash: de92bb75f6087b91
+  - file: docs/spec/principles/adopted-standards.md
+    hash: 7706a44039e2cdf4
+  - file: docs/spec/principles/naming-charter.md
+    hash: 032b46b411e6484f
+  - file: docs/spec/principles/naming-charter.md
+    hash: ac8a85d2449fea7a
+  - file: registry/naming-conventions.md
+    hash: 2fb91a4df9a6ff66
+  - file: registry/pin-manifest.json
+    hash: c93f633a13ed42ac
+  - file: registry/renames.yaml
+    hash: 21acbd34425388b9
+  - file: registry/renames.yaml
+    hash: 7fae8ecfed1f5b39
+  - file: registry/renames.yaml
+    hash: 1365b8387aeccd58
+  - file: registry/standards-adoption-register.md
+    hash: 78b730440f13ae7f
+  - file: registry/taxonomies/dcm-function.yaml
+    hash: 97f4b7c7cb53bc5e
+  - file: registry/taxonomies/dcm-function.yaml
+    hash: 4e4fa9effff5dc17
+  - file: registry/taxonomies/dcm-function.yaml
+    hash: 4629cf6b40a4982b
+  - file: registry/taxonomies/dcm-function.yaml
+    hash: c9b63be7ba55435a
+  - file: registry/taxonomies/dcm-function.yaml
+    hash: f313c61f28aaa0d4
+  - file: registry/taxonomies/provider-capability.yaml
+    hash: eb5c72916af387c9

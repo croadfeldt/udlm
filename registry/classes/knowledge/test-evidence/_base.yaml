@@ -1,155 +1,184 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.3.1
 conforms_to: udlm/0.1
 uuid: 3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63
 record_type: class
 class: base
 resource_type: TestEvidence
-version: 0.3.0
+version: 0.3.1
 family: Knowledge
 status: active
 metadata:
   display_name: Test Evidence
-  description: 'One test and its outcome about one subject, as a Knowledge-family fact any test suite can
-    produce: a CI run of unit tests, a role tested with Molecule, a conformance suite against a cluster, a
-    burn-in against a host, or a generated test against a dependency. It says what the test is, what it is
-    about (a reference to any entity), what kind of test it is, what happened (the result, in an adopted
-    test-report format), and which run produced it (a Job, by reference). Knowledge, not a Resource: it is
-    observed by running the test and curated by a reviewer. Lifecycle is the family''s curation reading of
-    the four states (knowledge-family.md §2): a proposed test is an intent record, one under review is a
-    requested record, an accepted test is a realized record with `scope`, a retired one is deprecated with
-    its reason. ADOPT by reference (T5): the result body is CTRF (preferred) or JUnit XML, pointed at and
-    summarized, never restated; the signed projection of a realized record is an in-toto Statement with the
-    test-result/v0.1 predicate whose subject is this record''s integrity head. The join runs one way,
-    statement to record. Types narrow the subject and the purpose; a Provider Class carries what only one
-    producer knows.'
+  description: 'One test and its outcome about one subject, as a fact any test suite can produce: a unit-test run,
+    a role tested with Molecule, a conformance suite against a cluster, a burn-in against a host, a generated test
+    against a dependency. It says what the test is, what it is about (any entity, by reference), what kind it is,
+    what happened (in an adopted report format, by reference) and which Job ran it. A Knowledge class: observed
+    by running the test, curated by a reviewer; a proposed test is an intent record, one under review a requested
+    record, an accepted one a realized record with `scope`. The result body is CTRF or JUnit XML, pointed at and
+    summarized, never restated; the signed projection of a realized record is an in-toto Statement with the test-result
+    predicate over this record''s integrity head. Types narrow the subject and purpose; a Provider Class carries
+    what only one producer knows.'
   maintainer: udlm-registry
   origination_timestamp: '2026-09-13T00:00:00Z'
 entity_type: TestEvidence
 elements:
-- element: test_id
-  scope: TestEvidence
-  optional: false
-  state: proposed
-  description: Stable identifier of the test across edits, as the producing suite names it.
-  schema:
-    type: string
-    description: Stable identifier of the test across edits.
-- element: subject_ref
-  scope: TestEvidence
-  optional: false
-  state: proposed
-  description: What the test is about, as a reference to any entity — a software package, a service, a class record, a host, a cluster.
-  schema:
-    $ref: ../../../common-elements.schema.json#/$defs/Reference
-- element: category
-  scope: TestEvidence
-  optional: false
-  state: proposed
-  description: The kind of test, as a closed set of generic kinds. What a test is for (a vulnerability check, a benchmark) is a Type, not a category.
-  schema:
-    type: string
-    enum: [unit, functional, negative, fuzz, integration, conformance, performance, security]
-    description: The kind of test.
-- element: result
-  scope: TestEvidence
-  optional: false
-  state: proposed
-  description: What happened, summarized here and carried in full in an adopted test-report format (CTRF preferred, JUnit XML accepted) that the report reference points at.
-  schema:
-    type: object
-    additionalProperties: false
-    required: [outcome, format]
-    properties:
-      outcome:
-        type: string
-        enum: [passed, failed, skipped, error]
-        description: The test's outcome on the subject, as the report format defines it.
-      duration_ms:
-        type: integer
-        description: Wall time of the test in milliseconds.
-      format:
-        type: string
-        enum: [ctrf, junit-xml]
-        description: The adopted report format the full result is in.
-      report_ref:
-        type: string
-        description: 'Where the full report is: a path relative to the run''s artifacts, or a reference.'
-      report_digest:
-        type: string
-        pattern: ^sha256:[0-9a-f]{64}$
-        description: Digest of the full report, sha256 with the same prefix the integrity block uses.
-    description: What happened.
-- element: job_ref
-  scope: TestEvidence
-  optional: false
-  state: proposed
-  description: The Job (Process family) that ran the test. Its realized record carries the runner, its versions, and where it ran; none of that is restated here.
-  schema:
-    $ref: ../../../common-elements.schema.json#/$defs/Reference
-- element: file_path
-  scope: TestEvidence
-  optional: true
-  state: proposed
-  description: Path of the test's source within the suite it belongs to, when the test is a file.
-  schema:
-    type: string
-    description: Path of the test's source within its suite.
-- element: file_digest
-  scope: TestEvidence
-  optional: true
-  state: proposed
-  description: Digest of that file, sha256 with the same prefix the integrity block uses.
-  schema:
-    type: string
-    pattern: ^sha256:[0-9a-f]{64}$
-    description: Digest of the test's source file.
-- element: scope
-  scope: TestEvidence
-  optional: true
-  state: proposed
-  description: 'On the realized record only. Where an accepted test lives: overlay (a suite kept beside a subject that cannot carry it, one reviewer) or standard (the product-wide suite, two reviewers).'
-  schema:
-    type: string
-    enum: [overlay, standard]
-    description: overlay or standard.
+  - element: test_id
+    scope: TestEvidence
+    optional: false
+    state: proposed
+    description: Stable identifier of the test across edits, as the producing suite names it.
+    schema:
+      type: string
+      description: Stable identifier of the test across edits, as the producing suite names it.
+  - element: subject_ref
+    scope: TestEvidence
+    optional: false
+    state: proposed
+    description: 'What the test is about: a reference to any entity (a package, a service, a class record, a host,
+      a cluster).'
+    schema:
+      $ref: ../../../common-elements.schema.json#/$defs/Reference
+      description: 'What the test is about: a reference to any entity (a package, a service, a class record, a host,
+        a cluster).'
+  - element: category
+    scope: TestEvidence
+    optional: false
+    state: proposed
+    description: The kind of test, from a closed set of generic kinds. What a test is for (a vulnerability check,
+      a benchmark) is a Type, not a category.
+    schema:
+      type: string
+      enum:
+        - unit
+        - functional
+        - negative
+        - fuzz
+        - integration
+        - conformance
+        - performance
+        - security
+      description: The kind of test, from a closed set of generic kinds. What a test is for (a vulnerability check,
+        a benchmark) is a Type, not a category.
+  - element: result
+    scope: TestEvidence
+    optional: false
+    state: proposed
+    description: 'What happened: `outcome`, `duration_ms`, `format` (CTRF or JUnit XML) and the `report_ref` and
+      `report_digest` of the full report.'
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - outcome
+        - format
+      properties:
+        outcome:
+          type: string
+          enum:
+            - passed
+            - failed
+            - skipped
+            - error
+          description: The test's outcome on the subject, as the report format defines it.
+        duration_ms:
+          type: integer
+          description: Wall time of the test in milliseconds.
+        format:
+          type: string
+          enum:
+            - ctrf
+            - junit-xml
+          description: The adopted report format the full result is in.
+        report_ref:
+          type: string
+          description: 'Where the full report is: a path relative to the run''s artifacts, or a reference.'
+        report_digest:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+          description: Digest of the full report, sha256 with the same prefix the integrity block uses.
+      description: 'What happened: `outcome`, `duration_ms`, `format` (CTRF or JUnit XML) and the `report_ref` and
+        `report_digest` of the full report.'
+  - element: job_ref
+    scope: TestEvidence
+    optional: false
+    state: proposed
+    description: The Job that ran the test. Its realized record carries the runner, versions and location; none
+      of that is restated here.
+    schema:
+      $ref: ../../../common-elements.schema.json#/$defs/Reference
+      description: The Job that ran the test. Its realized record carries the runner, versions and location; none
+        of that is restated here.
+  - element: file_path
+    scope: TestEvidence
+    optional: true
+    state: proposed
+    description: Path of the test's source within its suite, when the test is a file.
+    schema:
+      type: string
+      description: Path of the test's source within its suite, when the test is a file.
+  - element: file_digest
+    scope: TestEvidence
+    optional: true
+    state: proposed
+    description: sha256 digest of that file, with the integrity block's prefix.
+    schema:
+      type: string
+      pattern: ^sha256:[0-9a-f]{64}$
+      description: sha256 digest of that file, with the integrity block's prefix.
+  - element: scope
+    scope: TestEvidence
+    optional: true
+    state: proposed
+    description: 'On the realized record only. Where an accepted test lives: `overlay` (a suite kept beside a subject
+      that cannot carry it; one reviewer) or `standard` (the product-wide suite; two reviewers).'
+    schema:
+      type: string
+      enum:
+        - overlay
+        - standard
+      description: 'On the realized record only. Where an accepted test lives: `overlay` (a suite kept beside a
+        subject that cannot carry it; one reviewer) or `standard` (the product-wide suite; two reviewers).'
 relationships:
-- edge_type: references
-  target: Job
-  cardinality: 1..1
-  description: produced_by — the run that executed the test.
+  - edge_type: references
+    target: Job
+    cardinality: 1..1
+    description: produced_by — the run that executed the test.
 adopts:
-- standard: CTRF
-  version: '1.0'
-  standard_name: Common Test Report Format
-  role: the preferred full-result body, pointed at by result.report_ref and summarized in result; the first test-report format adopted here
-  source: https://ctrf.io/
-  license: MIT
-  license_compatibility: compatible-reference
-  disposition: tier1_value
-- standard: JUnit XML
-  version: xunit2
-  standard_name: JUnit XML test report
-  role: the accepted full-result body every CI tool emits, pointed at by result.report_ref
-  source: https://github.com/testmoapp/junitxml
-  license: reference-only
-  license_compatibility: reference-only
-  disposition: tier1_value
-- standard: in-toto Attestation Framework
-  version: '1.0'
-  standard_name: in-toto Statement with the test-result/v0.1 predicate
-  role: the signed projection of the realized record; its subject digest is this record's integrity head; the statement schema is not restated
-  source: https://in-toto.io/attestation/test-result/v0.1
-  license: Apache-2.0
-  license_compatibility: compatible-reference
-  disposition: tier1_value
-- standard: SLSA
-  version: '1.2'
-  standard_name: Build and Source provenance levels
-  role: the level claims a consumer may derive from the signed projection and the producing Job's own provenance; carried by reference, never asserted on this record
-  source: https://slsa.dev/spec/v1.2/
-  license: CC-BY-4.0
-  license_compatibility: compatible-reference
-  disposition: tier1_value
+  - standard: CTRF
+    version: '1.0'
+    standard_name: Common Test Report Format
+    role: the preferred full-result body, pointed at by result.report_ref and summarized in result; the first test-report
+      format adopted here
+    source: https://ctrf.io/
+    license: MIT
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+  - standard: JUnit XML
+    version: xunit2
+    standard_name: JUnit XML test report
+    role: the accepted full-result body every CI tool emits, pointed at by result.report_ref
+    source: https://github.com/testmoapp/junitxml
+    license: reference-only
+    license_compatibility: reference-only
+    disposition: tier1_value
+  - standard: in-toto Attestation Framework
+    version: '1.0'
+    standard_name: in-toto Statement with the test-result/v0.1 predicate
+    role: the signed projection of the realized record; its subject digest is this record's integrity head; the
+      statement schema is not restated
+    source: https://in-toto.io/attestation/test-result/v0.1
+    license: Apache-2.0
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+  - standard: SLSA
+    version: '1.2'
+    standard_name: Build and Source provenance levels
+    role: the level claims a consumer may derive from the signed projection and the producing Job's own provenance;
+      carried by reference, never asserted on this record
+    source: https://slsa.dev/spec/v1.2/
+    license: CC-BY-4.0
+    license_compatibility: compatible-reference
+    disposition: tier1_value
 context:
   purpose: Records the evidence a test provides about a subject — any test, from any suite, in the result format
     the suite already emits.
@@ -158,21 +187,21 @@ context:
     more to say binds here; a suite that checks a vulnerability binds at TestEvidence.VulnerabilityCheck; a producer
     with metrics of its own binds at its Provider Class.'
   use_when:
-  - Any test suite's results need to live in the estate as evidence with provenance.
-  - A test result should be citable by other records (a VEX statement, a finding) by uuid.
+    - Any test suite's results need to live in the estate as evidence with provenance.
+    - A test result should be citable by other records (a VEX statement, a finding) by uuid.
   not_for:
-  - The run — that is a Job.
-  - A vulnerability claim — that is VexStatement, which cites this evidence.
+    - The run — that is a Job.
+    - A vulnerability claim — that is VexStatement, which cites this evidence.
   works_with:
-  - Job — the run that produced the evidence.
-  - TestEvidence.VulnerabilityCheck — the Type for CVE checks.
-  - VexStatement — cites evidence records.
+    - Job — the run that produced the evidence.
+    - TestEvidence.VulnerabilityCheck — the Type for CVE checks.
+    - VexStatement — cites evidence records.
 spec_examples:
-- test_id: scheduler::test_reserve_slot
-  subject_ref: estate/cexample/apps/scheduler
-  category: unit
-  result:
-    outcome: passed
-    duration_ms: 12
-    format: junit-xml
-  job_ref: estate/cexample/jobs/ci-run-000123
+  - test_id: scheduler::test_reserve_slot
+    subject_ref: estate/cexample/apps/scheduler
+    category: unit
+    result:
+      outcome: passed
+      duration_ms: 12
+      format: junit-xml
+    job_ref: estate/cexample/jobs/ci-run-000123
