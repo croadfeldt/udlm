@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine/2.1.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine/2.1.4",
   "conforms_to": "udlm/0.1",
   "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9",
   "resource_type": "Machine",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -12,7 +12,7 @@
     "maintainer": "UDLM maintainers",
     "origination_timestamp": "2026-07-27T21:00:00Z",
     "title": "Machine Base Class",
-    "description": "The Machine Base Class (renamed from Compute — ADR-068; the Base test is ADR-069, home docs/spec/foundations/class-tiers.md). A Machine is an OS-bearing execution environment ordered as one deliverable: an image booted onto cpu, memory, disk and network. Its members are the forms that deliverable takes — Machine.VM, Machine.BareMetalHost, Machine.LPAR — and any provider offering one of them can realize an order placed here; OpenStack Nova with Ironic, Cluster API's Machine, and TOSCA's Compute node type are the industry abstractions that already treat them as one thing. Every element here is a SharedDataElement at `Machine` scope, honorable by every form. Containers and Kubernetes clusters are NOT machines: they left this Base because they cannot honor `guest_os` (Container) or carry Kubernetes-only vocabulary (KubernetesCluster).",
+    "description": "An OS-bearing machine ordered as one deliverable: an image booted onto cpu, memory, disk and network. A Base by the Base test (CLS-002): OpenStack Nova with Ironic, Cluster API's Machine and TOSCA's Compute node already treat a VM, a bare-metal host and a logical partition as one thing, so an order placed here is fillable by any provider offering one of the three forms. Every element here is honoured by every form. A container or a Kubernetes cluster is not a machine (rows 068, 069).",
     "prompt_version": "class-p0-keystone-2026-07-27",
     "generated": true,
     "compilation_provenance": {
@@ -20,7 +20,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.1.3",
+          "version": "2.1.4",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         }
       ]
@@ -32,7 +32,7 @@
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small | medium | large, ordered and comparable; common-elements §2.2). Sizes the machine in place of explicit cpu and memory; the provider maps the class to concrete resources at realization. A machine may be declared by size class alone."
       },
       "cpu": {
         "type": "object",
@@ -53,7 +53,7 @@
             "description": "Optional topology hint: cores per socket. Provider-support-dependent."
           }
         },
-        "description": "Unifies vcpu (VM) / cpu (BareMetal) / resources.cpu (Container) — the same concept under three names today. The provider naturalizes to its native model (kubevirt domain cpu, vSphere sockets×cores, EC2 vCPUs)."
+        "description": "CPU requirement: `count` is the virtual CPUs the OS sees; sockets and cores per socket are optional topology hints. The provider maps it to its native model (hypervisor sockets×cores, cloud vCPUs)."
       },
       "memory": {
         "type": "object",
@@ -77,11 +77,11 @@
             }
           }
         },
-        "description": "Reconciles the drift the sweep found (VM had {hugepages,size}, BareMetal had {size}): `hugepages` becomes an optional Base element."
+        "description": "Memory requirement: `size` as a quantity (16Gi); `hugepages` optional."
       },
       "storage": {
         "type": "object",
-        "description": "The reference-discipline storage requirements descriptor (PVD-001, Machine Base Class shape) — numeric minima the realizing storage must meet. The requested performance class is the governed `storage_tier` element, not an inline enum here.",
+        "description": "Numeric storage requirements the realizing storage must meet — IOPS, throughput, replication, encryption. The performance class is the governed `storage_tier` element, not a value here.",
         "properties": {
           "min_iops": {
             "type": "integer",
@@ -102,10 +102,10 @@
       },
       "storage_tier": {
         "type": "string",
-        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Machine Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+        "description": "The requested storage performance class — a governed `storage_tier` term (standard | performance | archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036): a tier name resolves to its floor, explicit `storage` requirements win where both are given, and any provider class that clears the floor qualifies. The provider records the native class it chose as a realized output. Profile decides whether a bare term or a data_reference is required. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
       },
       "guest_os": {
-        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-PROV-002); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
+        "description": "The requested operating system. Portable form: a data_reference to an `os_image` term the provider advertises. Inline `{type, version}` is the portability-breaking escape. Optional: a machine may be declared by sizing alone; a profile may require it.",
         "oneOf": [
           {
             "type": "object",

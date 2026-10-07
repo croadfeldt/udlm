@@ -580,7 +580,7 @@
   }
  },
  "type:Container": {
-  "current": "1.0.6",
+  "current": "1.0.7",
   "path": "registry/classes/resource/compute/container/_base.yaml",
   "versions": {
    "1.0.0": "sha256:92633f880404503be454c87a88d699228f45eb88096b70d708c510ed2472a10d",
@@ -589,7 +589,8 @@
    "1.0.3": "sha256:15853333e48b4a344e250d0d1e1058be2f691bee59288de45183da5ae9afabba",
    "1.0.4": "sha256:384d2e468bbe49021a813eac2e18551199f1f74142baf03057fa2cdbae06c2f5",
    "1.0.5": "sha256:9ec6d6a99a462cf2fc0228fe8d1e61af3a751f58b174230b0236879d6f39fdd4",
-   "1.0.6": "sha256:df914266e857445216ef2c4ad79123c23b99be7499edd6b0be4fc4368441e703"
+   "1.0.6": "sha256:df914266e857445216ef2c4ad79123c23b99be7499edd6b0be4fc4368441e703",
+   "1.0.7": "sha256:c43aab4574314d1b27cc85f3bb56136fc100c5e8af5d0a2ff3891df55214bc7a"
   }
  },
  "type:CredentialRef": {
@@ -941,7 +942,7 @@
   }
  },
  "type:KubernetesCluster": {
-  "current": "2.0.3",
+  "current": "2.0.4",
   "path": "registry/classes/resource/compute/kubernetes-cluster/_base.yaml",
   "versions": {
    "1.0.0": "sha256:63ac01bc1f59283bbca00463f1854007cc80dca120f820a24d348b3e94cd379d",
@@ -950,11 +951,12 @@
    "2.0.0": "sha256:1e9fff2fc2c63a8c4e95dd441dd5f5322b0b65b8305bd98ba564b88d69fe9e6d",
    "2.0.1": "sha256:2e6692df1a0b93c1bbf9bee756c1bcf890afaa5b7aa7851825aaee743d3c08ea",
    "2.0.2": "sha256:7a5aed4011bc22ce6a8204349675674164e9a83a60c455bfc9dcb491917cc176",
-   "2.0.3": "sha256:a3cf42b4328ce293ca6c05036c5832dd190ef9c98e6ac87bb25419a4f4dea101"
+   "2.0.3": "sha256:a3cf42b4328ce293ca6c05036c5832dd190ef9c98e6ac87bb25419a4f4dea101",
+   "2.0.4": "sha256:ecd16a296fff6246ee8c1abb8993783a8618a11345109732972b75ceb67f4d96"
   }
  },
  "type:KubernetesNamespace": {
-  "current": "1.1.4",
+  "current": "1.1.5",
   "path": "registry/classes/resource/compute/kubernetes-namespace/_base.yaml",
   "versions": {
    "1.0.0": "sha256:55ac98400ff778439395fcd60fe85712312b867c613b695aea2ccf98b77f2d30",
@@ -962,16 +964,18 @@
    "1.1.1": "sha256:e2257af7ccb8f3f2d516b1bb6a26a492bd49875d56f6c6f246155394e373851e",
    "1.1.2": "sha256:7a41ef423c87dc54284ecc8509504006792392d18f0369076aa30a9033f77eb3",
    "1.1.3": "sha256:ca21238d10e5aaad8ae2322b51816737c9f062ca8f3d4cf1bae578f4c9d5f75c",
-   "1.1.4": "sha256:817d60097bbebaf41754496f810bf3d7740f66d95d8aa82e7ba18616a8ecd246"
+   "1.1.4": "sha256:817d60097bbebaf41754496f810bf3d7740f66d95d8aa82e7ba18616a8ecd246",
+   "1.1.5": "sha256:94546b94ed6e44341b11f4369228a9174d7b833b2f19450a236bc2ea570bc3e2"
   }
  },
  "type:KubernetesNodePool": {
-  "current": "1.1.1",
+  "current": "1.1.2",
   "path": "registry/classes/resource/compute/kubernetes-node-pool/_base.yaml",
   "versions": {
    "1.0.0": "sha256:00f2fec962aa6b864fef384deae079c7c1564a88c2fdbd1b556aa4dcbd9ef245",
    "1.1.0": "sha256:9ca412bb67c69767b6003c5532629de81fff76ba14004a6232e627cd968a19ac",
-   "1.1.1": "sha256:8ca40f38e2a371b3ba09b7dcd7a13672095fc1217b4b796b38270ab251c8786a"
+   "1.1.1": "sha256:8ca40f38e2a371b3ba09b7dcd7a13672095fc1217b4b796b38270ab251c8786a",
+   "1.1.2": "sha256:7c6a038721f3f8163c5a0a4935cee2cd2b493e256faa73f085c070c4a0e5af26"
   }
  },
  "type:Location": {
@@ -990,38 +994,41 @@
   }
  },
  "type:Machine": {
-  "current": "2.1.3",
+  "current": "2.1.4",
   "path": "registry/classes/resource/compute/machine/_base.yaml",
   "versions": {
    "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
    "2.1.0": "sha256:d23b79fabe69e262ad82946fedccedbf7b46a3e88b91cf0febd08740de7705fb",
    "2.1.1": "sha256:a39ae7310d695dae1343af26eb6acbbb9214484a9602d938744d1f44478758f8",
    "2.1.2": "sha256:36ed5cd256dd0b68c2b59aeef408539cb21e5600167980abb820a36ddd565ff9",
-   "2.1.3": "sha256:19b8aa6a712997dcab98aa6ecfa3d003ef18cdbc561f6b2d04a6225c2fb3a9bf"
+   "2.1.3": "sha256:19b8aa6a712997dcab98aa6ecfa3d003ef18cdbc561f6b2d04a6225c2fb3a9bf",
+   "2.1.4": "sha256:1f966ba2f309c50ca66489ca2a7910f90062b02b86ebfad014f0eded557003b3"
   }
  },
  "type:Machine.BareMetalHost": {
-  "current": "0.13.0",
+  "current": "0.13.1",
   "path": "registry/classes/resource/compute/machine/bare-metal-host.yaml",
   "versions": {
    "0.11.0": "sha256:74559543232fc83cd38c90ec25e206f788e14bc954ac3e3b7fe3a975d26173de",
    "0.12.0": "sha256:d82a1cbca4ce5de35bb4b651bf473a7fbbed6e42d908d4b519b8c3fb5785e953",
    "0.12.1": "sha256:5bfd04817357c70050ddcda87f91eac9b73f21df71e946fce7254cf24a3b9a9f",
-   "0.13.0": "sha256:1df21ff8d974c758934503a6ac56306c774e8ee1f55cb991bf95cd3226bed84d"
+   "0.13.0": "sha256:1df21ff8d974c758934503a6ac56306c774e8ee1f55cb991bf95cd3226bed84d",
+   "0.13.1": "sha256:9801b04d6add477bf3412c206383d325fb5f0a477df174f13dabce478e347091"
   }
  },
  "type:Machine.LPAR": {
-  "current": "0.1.3",
+  "current": "0.1.4",
   "path": "registry/classes/resource/compute/machine/lpar.yaml",
   "versions": {
    "0.1.0": "sha256:d03991ca69a4774ff99404ce5fba9e945a4830e80b494e78047c41340474a52b",
    "0.1.1": "sha256:d5a13ae00ed6aa507f99d423a0d0f163e30d7aaff22958d9867d9d8fc00a3617",
    "0.1.2": "sha256:236fb8657b8e0225b34755214d286745b0fb128faa65cc95539977499dcd8d22",
-   "0.1.3": "sha256:fe1847c0c76af01d93629d6cff1e7ba6a42360e424b347e46c43b09105edffbc"
+   "0.1.3": "sha256:fe1847c0c76af01d93629d6cff1e7ba6a42360e424b347e46c43b09105edffbc",
+   "0.1.4": "sha256:677b20b2655223005d8c0985e09e1d0bdceda4256fcbf75ba1cfc8f94c25d361"
   }
  },
  "type:Machine.VM": {
-  "current": "2.0.5",
+  "current": "2.0.6",
   "path": "registry/classes/resource/compute/machine/vm.yaml",
   "versions": {
    "2.0.0": "sha256:2a5c4f36fbdf6c2cea6a7f2dc90c4f122b10a04c9b35d77622fc9d2c9092a47e",
@@ -1029,7 +1036,8 @@
    "2.0.2": "sha256:be3c88dffca8c4cefa1924ddb2db53a540c5ca2f6a88e93840ad82b43b51f6bf",
    "2.0.3": "sha256:cd003aeeef28732382829a7a25b0cb0869844e01b7634b0a1e7e94d79593a705",
    "2.0.4": "sha256:2f9ca814978ec383837701ed01ccc902fabfb7f877c5acdd3c9761b6d9740d00",
-   "2.0.5": "sha256:ffdc73a0919ce1d3ff04c3ce8142a1021faecf6844534124a1d7b08e0ed4ace6"
+   "2.0.5": "sha256:ffdc73a0919ce1d3ff04c3ce8142a1021faecf6844534124a1d7b08e0ed4ace6",
+   "2.0.6": "sha256:9e90e906209ab580e4ae65c21473d99b59f9b0f47d71ac2825b68b03b760b725"
   }
  },
  "type:Machine.VM.CExampleCloud": {

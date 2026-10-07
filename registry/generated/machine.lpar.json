@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.LPAR/0.1.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.LPAR/0.1.4",
   "conforms_to": "udlm/0.1",
   "uuid": "6d2f8c1a-3b47-4e9d-a5c0-8f1e2b7d4a63",
   "resource_type": "Machine.LPAR",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Logical Partition",
-    "description": "A logical partition — the third form a Machine takes, beside a VM and a bare-metal host (ADR-068, ADR-069). An LPAR is an OS-bearing slice of a partitioned system (IBM Power via PowerVM and the HMC; IBM Z via PR/SM) that boots an image onto entitled processor capacity, memory and virtual I/O. It honors every Machine Base element: `cpu.count` is the virtual-processor count, `memory` the partition memory, `guest_os` the image, `storage` and `storage_tier` the disk requirement. What it adds is the partitioning vocabulary no VM or bare-metal host has — fractional processor entitlement, capped or uncapped sharing, a shared processor pool, and VIOS-backed virtual adapters. Those are Type-tier elements (conditional, class-tiers §7): Redfish has no partition profile beyond `SystemType`, so the names follow the HMC vocabulary. Dialects (PowerVM, PR/SM) and offerings land at the Provider tier.",
+    "description": "A logical partition — the third form of Machine (CLS-004, by form): an OS-bearing slice of a partitioned system (IBM Power via PowerVM and the HMC; IBM Z via PR/SM) that boots an image onto entitled processor capacity, memory and virtual I/O. It honours every Machine element and adds the partitioning vocabulary no VM or bare-metal host has: fractional processor entitlement, capped or uncapped sharing, a shared processor pool, VIOS-backed virtual adapters. Names follow the HMC vocabulary; dialects (PowerVM, PR/SM) are the Provider tier.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-09-10T00:00:00Z",
     "generated": true,
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.1.3",
+          "version": "2.1.4",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Machine.LPAR",
-          "version": "0.1.3",
+          "version": "0.1.4",
           "uuid": "6d2f8c1a-3b47-4e9d-a5c0-8f1e2b7d4a63"
         }
       ]
@@ -34,7 +34,7 @@
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small | medium | large, ordered and comparable; common-elements §2.2). Sizes the machine in place of explicit cpu and memory; the provider maps the class to concrete resources at realization. A machine may be declared by size class alone."
       },
       "cpu": {
         "type": "object",
@@ -55,7 +55,7 @@
             "description": "Optional topology hint: cores per socket. Provider-support-dependent."
           }
         },
-        "description": "Unifies vcpu (VM) / cpu (BareMetal) / resources.cpu (Container) — the same concept under three names today. The provider naturalizes to its native model (kubevirt domain cpu, vSphere sockets×cores, EC2 vCPUs)."
+        "description": "CPU requirement: `count` is the virtual CPUs the OS sees; sockets and cores per socket are optional topology hints. The provider maps it to its native model (hypervisor sockets×cores, cloud vCPUs)."
       },
       "memory": {
         "type": "object",
@@ -79,11 +79,11 @@
             }
           }
         },
-        "description": "Reconciles the drift the sweep found (VM had {hugepages,size}, BareMetal had {size}): `hugepages` becomes an optional Base element."
+        "description": "Memory requirement: `size` as a quantity (16Gi); `hugepages` optional."
       },
       "storage": {
         "type": "object",
-        "description": "The reference-discipline storage requirements descriptor (PVD-001, Machine Base Class shape) — numeric minima the realizing storage must meet. The requested performance class is the governed `storage_tier` element, not an inline enum here.",
+        "description": "Numeric storage requirements the realizing storage must meet — IOPS, throughput, replication, encryption. The performance class is the governed `storage_tier` element, not a value here.",
         "properties": {
           "min_iops": {
             "type": "integer",
@@ -104,10 +104,10 @@
       },
       "storage_tier": {
         "type": "string",
-        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Machine Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+        "description": "The requested storage performance class — a governed `storage_tier` term (standard | performance | archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036): a tier name resolves to its floor, explicit `storage` requirements win where both are given, and any provider class that clears the floor qualifies. The provider records the native class it chose as a realized output. Profile decides whether a bare term or a data_reference is required. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
       },
       "guest_os": {
-        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-PROV-002); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
+        "description": "The requested operating system. Portable form: a data_reference to an `os_image` term the provider advertises. Inline `{type, version}` is the portability-breaking escape. Optional: a machine may be declared by sizing alone; a profile may require it.",
         "oneOf": [
           {
             "type": "object",
@@ -173,7 +173,7 @@
             "description": "The shared processor pool the partition draws from, as the provider names it."
           }
         },
-        "description": "Processor entitlement for the partition — the HMC partition-profile processor settings. A request states how much physical capacity the partition is entitled to and how it shares; `cpu.count` (inherited) is the number of virtual processors the OS sees."
+        "description": "Processor entitlement for the partition (HMC partition-profile settings): how much physical capacity it is entitled to and how it shares. `cpu.count`, inherited, is the virtual processors the OS sees."
       },
       "virtual_io": {
         "type": "object",
@@ -208,7 +208,7 @@
             }
           }
         },
-        "description": "Virtual I/O the partition is served through — VIOS-backed virtual SCSI, NPIV fibre channel, or virtual/SR-IOV network adapters. A requirement descriptor the provider satisfies from its VIOS pair; never a reference to a registered device."
+        "description": "Virtual I/O the partition is served through: VIOS-backed virtual SCSI, NPIV fibre channel, virtual or SR-IOV network adapters. A requirement the provider satisfies from its VIOS pair, never a reference to a registered device."
       },
       "run_state": {
         "type": "object",
@@ -220,7 +220,7 @@
             ]
           }
         },
-        "description": "Desired partition run state the provider drives to (HMC activate / shut down). Distinct from the four-state lifecycle_state."
+        "description": "Desired partition run state the provider drives to (HMC activate / shut down). Distinct from the four-state lifecycle."
       }
     },
     "examples": [

@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Container/1.0.6",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Container/1.0.7",
   "conforms_to": "udlm/0.1",
   "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49",
   "resource_type": "Container",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Container",
-    "description": "A container workload — image, resources, environment, mounts, and exposed ports — realized and managed by a *resource* provider (a Kubernetes cluster, podman) under the four-state lifecycle (DCM ADR-023). Models the service/workload layer of the estate: MCP servers, the media stack, mail, etc. Secret material is never inline — env/mounts reference a CredentialRef.",
+    "description": "A container workload: an image with its resources, environment, mounts and exposed ports, run by a Kubernetes cluster or a host (podman). A Base by the Base test (CLS-002): the OCI image and the Kubernetes core/v1 Container contract are honoured by every container runtime, so any of them fills an order placed here. Secrets are never inline: env and mounts reference a CredentialRef.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Container",
-          "version": "1.0.6",
+          "version": "1.0.7",
           "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49"
         }
       ]
@@ -28,7 +28,7 @@
     "additionalProperties": false,
     "properties": {
       "image": {
-        "description": "The container image — either the inline OCI reference (first branch) OR a data_reference to a governed container_image reference-data layer. The reference form lets the control plane compute the change-impact blast radius when a base image or embedded library is bumped (UDLM ADR-012; DCM ADR-024) — an inline OCI string cannot be cascaded.",
+        "description": "The container image: either an inline OCI reference (optionally pinned by digest) or a data_reference to a governed `container_image` term. The reference form is what lets change-impact analysis find every container affected when a base image is patched; an inline string cannot be cascaded.",
         "oneOf": [
           {
             "type": "object",
@@ -79,7 +79,7 @@
         "items": {
           "type": "string"
         },
-        "description": "Converted verbatim from the flat Container spec."
+        "description": "Arguments passed to the entrypoint."
       },
       "resources": {
         "type": "object",
@@ -98,7 +98,7 @@
             "pattern": "^[0-9]+(Mi|Gi|MB|GB)$"
           }
         },
-        "description": "Converted verbatim from the flat Container spec."
+        "description": "Resource request: `cpu` as a number of cores (0.5, 2), `memory` as a quantity."
       },
       "process": {
         "type": "object",
@@ -120,7 +120,7 @@
                 },
                 "value_from": {
                   "type": "object",
-                  "description": "Reference to a CredentialRef or config source. Secret material is NEVER inline (DCM ADR-023).",
+                  "description": "Reference to a CredentialRef or a config source; secret material is never inline.",
                   "properties": {
                     "credential_ref": {
                       "type": "string",
@@ -157,7 +157,7 @@
             }
           }
         },
-        "description": "Converted verbatim from the flat Container spec."
+        "description": "Process environment: `env` variables and `mounts`. Anything sensitive points at a CredentialRef."
       },
       "network": {
         "type": "object",
@@ -199,7 +199,7 @@
             }
           }
         },
-        "description": "Converted verbatim from the flat Container spec."
+        "description": "Exposed `ports`."
       },
       "runtime": {
         "type": "object",
@@ -217,7 +217,7 @@
             "minimum": 0
           }
         },
-        "description": "Converted verbatim from the flat Container spec."
+        "description": "Runtime options the provider honours (restart policy, privileges)."
       }
     },
     "required": [

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.6",
   "conforms_to": "udlm/0.1",
   "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
   "resource_type": "Machine.VM",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -12,7 +12,7 @@
     "maintainer": "UDLM maintainers",
     "origination_timestamp": "2026-07-27T21:00:00Z",
     "title": "Machine.VM Type Class",
-    "description": "The VM Type Class — extends the Machine Base Class (cpu/memory/storage/storage_tier/guest_os, inherited) with VM-specific SharedDataElements, under the Liskov invariant (add or refine, never contradict). A provider Class (Machine.VM.OCPVirt, …) extends this further. The generator compiles this class + its ancestors into today's flat Machine.VM resource-type spec.",
+    "description": "A virtual machine, one of the three forms of Machine (CLS-004, by form). Inherits sizing, storage requirements and guest OS from Machine and adds what only a VM has: guest firmware, boot order, a disk layout reference, network attachment intent, placement and a desired run state. The hypervisor is the provider, never the type; a Provider Class beneath this carries provider-specific data (CLS-005).",
     "prompt_version": "class-p0-keystone-2026-07-27",
     "generated": true,
     "compilation_provenance": {
@@ -20,12 +20,12 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.1.3",
+          "version": "2.1.4",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Machine.VM",
-          "version": "2.0.5",
+          "version": "2.0.6",
           "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
         }
       ]
@@ -37,7 +37,7 @@
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small | medium | large, ordered and comparable; common-elements §2.2). Sizes the machine in place of explicit cpu and memory; the provider maps the class to concrete resources at realization. A machine may be declared by size class alone."
       },
       "cpu": {
         "type": "object",
@@ -61,7 +61,7 @@
             "description": "Optional topology hint: cores per socket. Provider-support-dependent."
           }
         },
-        "description": "Redeclared at VM scope to TIGHTEN the base shape (required sub-fields) — tighten at your scope; BareMetalHost keeps the loose base shape verbatim."
+        "description": "As on Machine, with the sub-fields required at this tier."
       },
       "memory": {
         "type": "object",
@@ -88,11 +88,11 @@
             }
           }
         },
-        "description": "Redeclared at VM scope to TIGHTEN the base shape (required sub-fields) — tighten at your scope; BareMetalHost keeps the loose base shape verbatim."
+        "description": "As on Machine, with the sub-fields required at this tier."
       },
       "storage": {
         "type": "object",
-        "description": "The reference-discipline storage requirements descriptor (PVD-001, Machine Base Class shape) — numeric minima the realizing storage must meet. The requested performance class is the governed `storage_tier` element, not an inline enum here.",
+        "description": "Numeric storage requirements the realizing storage must meet — IOPS, throughput, replication, encryption. The performance class is the governed `storage_tier` element, not a value here.",
         "properties": {
           "min_iops": {
             "type": "integer",
@@ -113,10 +113,10 @@
       },
       "storage_tier": {
         "type": "string",
-        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Machine Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+        "description": "The requested storage performance class — a governed `storage_tier` term (standard | performance | archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036): a tier name resolves to its floor, explicit `storage` requirements win where both are given, and any provider class that clears the floor qualifies. The provider records the native class it chose as a realized output. Profile decides whether a bare term or a data_reference is required. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
       },
       "guest_os": {
-        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-PROV-002); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
+        "description": "The requested operating system, as on Machine; redeclared here so the VM tier may tighten it.",
         "oneOf": [
           {
             "type": "object",
@@ -157,7 +157,7 @@
       "firmware": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Guest firmware surface (Redfish Boot.BootSourceOverrideMode, KubeVirt firmware/TPM, cloud UEFI/trusted-launch). Required by modern guests (Win11-class needs uefi + secure_boot + vtpm).",
+        "description": "Guest firmware: `type` is `legacy` or `uefi` (the Redfish Boot.BootSourceOverrideMode spelling Machine.BareMetalHost shares), plus UEFI Secure Boot and a virtual TPM. Modern guests need uefi + secure_boot + vtpm.",
         "properties": {
           "type": {
             "enum": [
@@ -181,15 +181,15 @@
         "items": {
           "type": "string"
         },
-        "description": "Ordered boot device preference (VM-specific; not meaningful for BareMetal or Container)."
+        "description": "Ordered boot device preference."
       },
       "layout_ref": {
-        "description": "The StorageLayout this VM realizes — handle/uuid reference to an existing StorageLayout whose entries describe the VM's disks (per-disk shape, boot designation, storage tier). Common-elements Reference (handle string or {uuid, handle} object), following the location_ref/network_ref precedent. Also carried as a references->StorageLayout relationship (storage_layout).",
+        "description": "Reference to the StorageLayout whose entries describe this VM's disks (per-disk size, role, boot position). Also carried as the `storage_layout` relationship.",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
       "networks": {
         "type": "array",
-        "description": "Network attachment INTENT — name-selectable but requirements-authoritative (ADR-036). Select a network by `network_ref`, or state `zone`/`requires` and let placement converge on one. Neither is required; unstated, policy decides. Explicit requirements are authoritative over a name.",
+        "description": "Network attachment intent, one entry per interface. An entry may select a network by `network_ref`, or state what it needs (`zone`, `requires`) and let placement choose. Neither is required: unstated, policy decides. Explicit requirements are authoritative over a name, so naming a network that does not meet them is a conflict, not an override. The VM references networks; it never defines segments.",
         "items": {
           "type": "object",
           "properties": {
@@ -258,7 +258,7 @@
       },
       "placement": {
         "type": "object",
-        "description": "Placement INTENT expressed as a SELECTION of an existing Location (populated by a platform data layer and/or a Location provider), plus affinity relative to other existing resources. Policy governs which locations a given consumer may select; the VM only references one — it does not define locations itself (DCM ADR-009 §4: guidance, not a gate).",
+        "description": "Placement intent as a selection of an existing Location, plus affinity relative to other resources. Policy governs which locations a consumer may select; the VM references one, it never defines locations.",
         "properties": {
           "location_ref": {
             "type": "string",
@@ -302,7 +302,7 @@
       },
       "run_state": {
         "type": "object",
-        "description": "Desired guest RUN state the provider drives to (e.g. KubeVirt runStrategy). Distinct from the four-state lifecycle_state; snapshot/restore are separate operations, not run states. The discovered counterpart is outputs.observed_run_state.",
+        "description": "Desired run state the provider drives to (running | stopped | …). Distinct from the four-state lifecycle; snapshot and restore are operations, not run states. Observed counterpart: `outputs.observed_run_state`.",
         "properties": {
           "desired_state": {
             "enum": [

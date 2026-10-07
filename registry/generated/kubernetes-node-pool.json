@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesNodePool/1.1.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesNodePool/1.1.2",
   "conforms_to": "udlm/0.1",
   "uuid": "ff7f0b01-d451-4aed-89da-83117923820f",
   "resource_type": "KubernetesNodePool",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Node Pool",
-    "description": "A Kubernetes node pool as one orderable deliverable — a Base Class in its own right (ADR-068, ADR-069; promoted out of the former Platform folder). A homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that is ordered, scaled and upgraded on its own (a cloud node pool, a MachineSet, a Cluster API MachineDeployment). The cluster carries no pools of its own: every pool, including the first, is one of these records contained by the cluster, and a cluster with its pools is a composition (ruling 072). Its contract is the Kubernetes node model: every conformant distribution exposes nodes with labels and taints that placement matches workloads against. Named for the standard, never for a product; distribution-specific pool shapes are the Type tier beneath it.",
+    "description": "A homogeneous slice of a cluster's node capacity — shared hardware traits, labels and taints — ordered, scaled and upgraded on its own (a cloud node pool, a MachineSet, a Cluster API MachineDeployment). A Base by the Base test (CLS-002): every conformant distribution exposes nodes with labels and taints that placement matches workloads against. Every pool, including the first, is one of these records contained by its cluster (row 072); distribution-specific pool shapes are the Type tier.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-17T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "KubernetesNodePool",
-          "version": "1.1.1",
+          "version": "1.1.2",
           "uuid": "ff7f0b01-d451-4aed-89da-83117923820f"
         }
       ]
@@ -29,24 +29,24 @@
     "properties": {
       "name": {
         "type": "string",
-        "description": "The node pool name within the cluster (e.g. 'gpu-large', 'general-purpose', 'infra')."
+        "description": "The pool name, unique within the cluster."
       },
       "cluster_ref": {
-        "description": "Resource reference to a KubernetesCluster (common-elements §2.5, DCM ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
+        "description": "Reference to the KubernetesCluster this pool belongs to.",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
       "node_count": {
         "type": "integer",
         "minimum": 0,
-        "description": "Target number of nodes in this pool."
+        "description": "Target number of nodes."
       },
       "node_resources": {
         "$ref": "../common-elements.schema.json#/$defs/ComputeResources",
-        "description": "Per-node sizing for the pool — the shared compute-sizing shape (common-elements §2.2, ComputeResources) that a VM, a database instance and a node pool all use; size by class (`instance_size`) or by explicit cpu and memory. The provider maps it to a concrete node shape at naturalization (DCM ADR-023). Carried over from the cluster's former inline pool list (ruling 072), which sized nodes as a free-string host shape; the shared shape is comparable across estates and a string is not."
+        "description": "Per-node sizing in the shared compute shape (common-elements §2.2): a size class, or explicit cpu and memory. The provider maps it to a concrete node shape at realization."
       },
       "capabilities": {
         "type": "object",
-        "description": "Queryable capability advertisements — placement policies select pools by capability.",
+        "description": "Capability advertisements placement selects pools by: architecture, memory tier, GPU (available, models, count per node) — structured objects, not booleans.",
         "properties": {
           "gpu": {
             "type": "object",
@@ -81,7 +81,7 @@
         "additionalProperties": {
           "type": "string"
         },
-        "description": "Labels applied to all nodes in this pool (Kubernetes label semantics)."
+        "description": "Labels applied to every node in the pool."
       },
       "taints": {
         "type": "array",
@@ -108,7 +108,7 @@
             }
           }
         },
-        "description": "Taints applied to all nodes — workloads must tolerate these to be scheduled on the pool."
+        "description": "Taints applied to every node; a workload must tolerate them to land here."
       }
     },
     "required": [

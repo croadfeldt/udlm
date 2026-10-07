@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.5
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.6
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Machine.VM
 parent: Machine
-version: 2.0.5
+version: 2.0.6
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -17,472 +17,428 @@ metadata:
   maintainer: UDLM maintainers
   origination_timestamp: '2026-07-27T21:00:00Z'
   title: Machine.VM Type Class
-  description: The VM Type Class — extends the Machine Base Class (cpu/memory/storage/storage_tier/guest_os,
-    inherited) with VM-specific SharedDataElements, under the Liskov invariant (add or refine, never contradict).
-    A provider Class (Machine.VM.OCPVirt, …) extends this further. The generator compiles this class +
-    its ancestors into today's flat Machine.VM resource-type spec.
+  description: 'A virtual machine, one of the three forms of Machine (CLS-004, by form). Inherits sizing, storage
+    requirements and guest OS from Machine and adds what only a VM has: guest firmware, boot order, a disk layout
+    reference, network attachment intent, placement and a desired run state. The hypervisor is the provider, never
+    the type; a Provider Class beneath this carries provider-specific data (CLS-005).'
   prompt_version: class-p0-keystone-2026-07-27
 elements:
-- element: firmware
-  scope: Machine.VM
-  optional: true
-  state: canonical
-  description: 'Guest firmware surface: the firmware interface (`type`), UEFI Secure Boot, and a virtual
-    TPM — portable across every major virtualization stack. `type` uses the Redfish `ComputerSystem`
-    Boot.BootSourceOverrideMode spelling (`legacy` | `uefi`), the same element and the same vocabulary
-    Machine.BareMetalHost carries (ADR-068: guest firmware converges on the Redfish spelling; a MAJOR
-    on this class, `bios` -> `legacy`). The enum is the sole authority — the former governed vocabulary
-    for this field declared no terms (#564) and is withdrawn. Name-selectable but
-    requirements-authoritative (ADR-036).'
-  schema:
-    type: object
-    additionalProperties: false
-    description: Guest firmware surface (Redfish Boot.BootSourceOverrideMode, KubeVirt firmware/TPM, cloud
-      UEFI/trusted-launch). Required by modern guests (Win11-class needs uefi + secure_boot + vtpm).
-    properties:
-      type:
-        enum:
-        - legacy
-        - uefi
-        description: Firmware interface presented to the guest (Redfish spelling; `legacy` is BIOS).
-      secure_boot:
-        type: boolean
-        description: 'UEFI Secure Boot. Only valid with type: uefi (policy-validated).'
-      vtpm:
-        type: boolean
-        description: Virtual TPM 2.0 device presented to the guest.
-- element: boot_order
-  scope: Machine.VM
-  optional: true
-  state: proposed
-  description: Ordered boot device preference (VM-specific; not meaningful for BareMetal or Container).
-  schema:
-    type: array
-    items:
-      type: string
-- element: layout_ref
-  scope: Machine.VM
-  optional: true
-  state: canonical
-  description: The StorageLayout this VM realizes — handle/uuid reference to an existing StorageLayout
-    whose entries describe the VM's disks (per-disk shape, boot designation, storage tier). Common-elements
-    Refere
-  schema:
-    description: The StorageLayout this VM realizes — handle/uuid reference to an existing StorageLayout
-      whose entries describe the VM's disks (per-disk shape, boot designation, storage tier). Common-elements
-      Reference (handle string or {uuid, handle} object), following the location_ref/network_ref precedent.
-      Also carried as a references->StorageLayout relationship (storage_layout).
-    $ref: ../../../../common-elements.schema.json#/$defs/Reference
-- element: networks
-  scope: Machine.VM
-  optional: true
-  state: canonical
-  description: >-
-    Network attachment INTENT — NAME-SELECTABLE BUT REQUIREMENTS-AUTHORITATIVE (ADR-036), the same
-    precedence storage_tier already follows. An entry MAY select a specific network by `network_ref`,
-    or state what it NEEDS (`zone`, `requires`) and let the loop converge on one.
-    NEITHER IS REQUIRED. Unstated, policy decides — the zone is derived or policy-dictated when the
-    consumer does not state it (maintainer ruling 2026-08-10). Where both are given the explicit
-    requirements drive the match and a zone name resolves to the same floor, so naming a network that
-    does not meet the stated requirements is a CONFLICT rather than an override.
-    Requiring `network_ref` was the defect this replaces: it forced a consumer to name a network they
-    had no basis to choose between — "on network A I don't know anything" (engineering review,
-    2026-08-10). The responsible network provider and policy still decide eligibility, and the
-    provider validates and reserves (ADR-011): a stated requirement is a request, never a guarantee.
-    The VM references existing networks; it does not define network segments itself.
-  schema:
-    type: array
-    description: >-
-      Network attachment INTENT — name-selectable but requirements-authoritative (ADR-036). Select a
-      network by `network_ref`, or state `zone`/`requires` and let placement converge on one. Neither
-      is required; unstated, policy decides. Explicit requirements are authoritative over a name.
-    items:
+  - element: firmware
+    scope: Machine.VM
+    optional: true
+    state: canonical
+    description: 'Guest firmware: `type` is `legacy` or `uefi` (the Redfish Boot.BootSourceOverrideMode spelling
+      Machine.BareMetalHost shares), plus UEFI Secure Boot and a virtual TPM. Modern guests need uefi + secure_boot
+      + vtpm.'
+    schema:
       type: object
-      properties:
-        name:
-          type: string
-          description: Local NIC name, e.g. eth0.
-        network_ref:
-          description: The VirtualNetwork this interface attaches to — common-elements Reference
-            (handle string or {uuid, handle} object); resolvable, policy-walkable, never an opaque string.
-          $ref: ../../../../common-elements.schema.json#/$defs/Reference
-        vlan:
-          description: >-
-            REQUIREMENT — WHICH LOGICAL NETWORK, as a reference to a `VLAN`. The VLAN is the
-            identity of a logical network (maintainer ruling 2026-08-10): a segment id under an
-            encapsulation, which is what an operator means by "put it on that network".
-            Stated when the attachment must land on a specific logical network — because it has to
-            reach something already there, or an existing application lives on it. Absent means
-            policy decides.
-            REALIZATION VARIES; THE AXIS DOES NOT. `VLAN.encapsulation` already carries
-            vlan / vxlan / geneve / flat, so the class is a SEGMENT of which 802.1Q is one form. A
-            public cloud exposes no VLAN — there the segment is a VPC subnet, adopted by reference on
-            VLAN rather than given a parallel class: the VPC is the VirtualNetwork
-            and the subnet is the addressed segment within it. A consumer states the segment; which
-            encapsulation realizes it is the provider's.
-            Resolved against the `segment` relationship a VirtualNetwork already declares, so
-            placement narrows to networks on that segment rather than requiring the consumer to know
-            which provider network carries it.
-          $ref: ../../../../common-elements.schema.json#/$defs/Reference
-        subnet:
-          description: >-
-            REQUIREMENT — WHICH IP NETWORK, as a reference to a `Subnet`. Layer 3, and
-            INDEPENDENTLY SELECTABLE from `vlan` (layer 2): a subnet usually sits on a segment, but
-            one segment may carry several subnets and a cloud may expose no segment at all, so the
-            mapping is not concrete (maintainer ruling 2026-08-10). "Put me on 198.51.100.0/24" and "put
-            me on VLAN 3020" are different requests; a consumer may state either, both, or neither.
-          $ref: ../../../../common-elements.schema.json#/$defs/Reference
-        zone:
-          description: >-
-            REQUIREMENT — the network CATEGORY this attachment needs (DMZ, management, internal), as a
-            governed taxonomy term. Independent of `vlan` and `tier`: which logical network, what kind
-            of network, and how good it is are three different questions, and a consumer may state
-            any, all, or none of them.
-            FOR PLACEMENT ONLY. Requiring the management zone does not grant access to it, and
-            nothing critical may hang off the category directly — anything required because of a zone
-            is enforced by a policy reading it (maintainer ruling 2026-08-10). A zero-trust posture
-            derives no trust from network location (NIST SP 800-207).
-          allOf:
-          - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
-          - required:
-            - reference_data_type
-            properties:
-              reference_data_type:
-                const: network_zone
-        tier:
-          description: >-
-            REQUIREMENT — the governed `network_tier` (performance) this attachment needs. Independent
-            of `vlan`: which logical network and how good it is are different questions, and a
-            consumer may state either, both, or neither. Each term denotes a floor, so any network
-            meeting it qualifies — name-selectable but requirements-authoritative (ADR-036).
-          allOf:
-          - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
-          - required:
-            - reference_data_type
-            properties:
-              reference_data_type:
-                const: network_tier
-        mac:
-          type: string
-          description: Optional requested MAC address.
-        ip_address_ref:
-          description: A pre-allocated IPAddress to bind to this interface (optional — omitted
-            means the address service allocates at realization). Common-elements Reference shape.
-          $ref: ../../../../common-elements.schema.json#/$defs/Reference
-- element: placement
-  scope: Machine.VM
-  optional: true
-  state: canonical
-  description: Placement INTENT expressed as a SELECTION of an existing Location (populated by
-    a platform data layer and/or a Location provider), plus affinity relative to other existing
-    resources.
-  schema:
-    type: object
-    description: 'Placement INTENT expressed as a SELECTION of an existing Location (populated
-      by a platform data layer and/or a Location provider), plus affinity relative to other existing
-      resources. Policy governs which locations a given consumer may select; the VM only references one
-      — it does not define locations itself (DCM ADR-009 §4: guidance, not a gate).'
-    properties:
-      location_ref:
-        type: string
-        description: handle/uuid of an existing Location the VM is placed in — chosen from the
-          eligible set (platform-layer + provider-advertised, policy-filtered). Also carried as a references->Location
-          relationship.
-      zone:
-        type: string
-        description: Availability/sovereignty zone constraint, selected from the zones the provider advertises
-          for the chosen location; resolved against that location.
-      affinity:
-        type: array
-        description: Co-location / separation intent relative to OTHER named resources (not nodes). Each
-          target is resolved at reserve, so a pre-known UUID is not required.
-        items:
-          type: object
-          required:
-          - target
-          - rule
-          properties:
-            target:
-              type: string
-              description: Handle OR label-selector of an existing resource to co-locate with / avoid,
-                resolved at reserve (DCM ADR-025/AEP-124) - you do not need its UUID in advance.
-            rule:
-              enum:
-              - affinity
-              - anti_affinity
-            selector:
-              type: object
-              description: 'Alternative to a handle: match target(s) by labels (key/value).'
-              additionalProperties:
-                type: string
-- element: run_state
-  scope: Machine.VM
-  optional: true
-  state: canonical
-  description: Desired guest RUN state the provider drives to (e.g. KubeVirt runStrategy). Distinct from
-    the four-state lifecycle_state; snapshot/restore are separate operations, not run states. The discovered
-    count
-  schema:
-    type: object
-    description: Desired guest RUN state the provider drives to (e.g. KubeVirt runStrategy). Distinct
-      from the four-state lifecycle_state; snapshot/restore are separate operations, not run states. The
-      discovered counterpart is outputs.observed_run_state.
-    properties:
-      desired_state:
-        enum:
-        - running
-        - stopped
-        - suspended
-        description: Target guest run state.
-- element: guest_os
-  scope: Machine.VM
-  optional: true
-  state: canonical
-  description: 'The requested operating system. Flat-spec shape adopted (2026-07-29 reconciliation, A4
-    — the flat VM''s guest_os won over the earlier {family, version} draft): portable form is a data_reference
-    to an os_image reference-data vocabulary (DCM ADR-012) the target provider advertises via capability discovery
-    (ADR-PROV-002); inline {type, version} is the portability_breaking escape. Proposed pending the OS-standardization
-    catalog work (task #30). Redeclared at VM scope (identical refinement) so the VM tier may freeze guest_os.type
-    — tighten at your scope, never above.'
-  schema:
-    description: 'Guest operating system. Portable form is a reference to an os_image reference-data vocabulary
-      (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-PROV-002); policy
-      validates membership at request. Inline is the portability_breaking escape. Optional at the data
-      layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require
-      it.'
-    oneOf:
-    - type: object
-      required:
-      - type
       additionalProperties: false
+      description: 'Guest firmware: `type` is `legacy` or `uefi` (the Redfish Boot.BootSourceOverrideMode spelling
+        Machine.BareMetalHost shares), plus UEFI Secure Boot and a virtual TPM. Modern guests need uefi + secure_boot
+        + vtpm.'
       properties:
         type:
-          type: string
-          description: 'Inline OS identifier (e.g. linux-server-9). portability_breaking: a value with
-            no os_image vocabulary entry — a review finding.'
-        version:
-          type: string
-          description: Inline OS version (e.g. 9.4).
-    - allOf:
-      - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
-      - required:
-        - reference_data_type
-        properties:
-          reference_data_type:
-            const: os_image
-- element: cpu
-  scope: Machine.VM
-  optional: true
-  state: canonical
-  description: Redeclared at VM scope to TIGHTEN the base shape (required sub-fields) — tighten at your
-    scope; BareMetalHost keeps the loose base shape verbatim.
-  schema:
-    type: object
-    required:
-    - count
-    properties:
-      count:
-        type: integer
-        minimum: 1
-        description: Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt
-          domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (DCM ADR-023).
-      sockets:
-        type: integer
-        minimum: 1
-        description: 'Optional topology hint: sockets. Provider-support-dependent; ignored where not applicable.'
-      cores_per_socket:
-        type: integer
-        minimum: 1
-        description: 'Optional topology hint: cores per socket. Provider-support-dependent.'
-- element: memory
-  scope: Machine.VM
-  optional: true
-  state: canonical
-  description: Redeclared at VM scope to TIGHTEN the base shape (required sub-fields) — tighten at your
-    scope; BareMetalHost keeps the loose base shape verbatim.
-  schema:
-    type: object
-    required:
-    - size
-    properties:
-      size:
+          enum:
+            - legacy
+            - uefi
+          description: Firmware interface presented to the guest (Redfish spelling; `legacy` is BIOS).
+        secure_boot:
+          type: boolean
+          description: 'UEFI Secure Boot. Only valid with type: uefi (policy-validated).'
+        vtpm:
+          type: boolean
+          description: Virtual TPM 2.0 device presented to the guest.
+  - element: boot_order
+    scope: Machine.VM
+    optional: true
+    state: proposed
+    description: Ordered boot device preference.
+    schema:
+      type: array
+      items:
         type: string
-        pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
-        description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Machine Base
-          Class `memory.size`).
-      hugepages:
+      description: Ordered boot device preference.
+  - element: layout_ref
+    scope: Machine.VM
+    optional: true
+    state: canonical
+    description: Reference to the StorageLayout whose entries describe this VM's disks (per-disk size, role, boot
+      position). Also carried as the `storage_layout` relationship.
+    schema:
+      description: Reference to the StorageLayout whose entries describe this VM's disks (per-disk size, role, boot
+        position). Also carried as the `storage_layout` relationship.
+      $ref: ../../../../common-elements.schema.json#/$defs/Reference
+  - element: networks
+    scope: Machine.VM
+    optional: true
+    state: canonical
+    description: 'Network attachment intent, one entry per interface. An entry may select a network by `network_ref`,
+      or state what it needs (`zone`, `requires`) and let placement choose. Neither is required: unstated, policy
+      decides. Explicit requirements are authoritative over a name, so naming a network that does not meet them
+      is a conflict, not an override. The VM references networks; it never defines segments.'
+    schema:
+      type: array
+      description: 'Network attachment intent, one entry per interface. An entry may select a network by `network_ref`,
+        or state what it needs (`zone`, `requires`) and let placement choose. Neither is required: unstated, policy
+        decides. Explicit requirements are authoritative over a name, so naming a network that does not meet them
+        is a conflict, not an override. The VM references networks; it never defines segments.'
+      items:
         type: object
-        description: Optional huge-page backing (provider-support-dependent; validated against provider
-          capability).
         properties:
-          enabled:
-            type: boolean
-          page_size:
+          name:
             type: string
-            description: e.g. 2Mi, 1Gi.
+            description: Local NIC name, e.g. eth0.
+          network_ref:
+            description: The VirtualNetwork this interface attaches to — common-elements Reference (handle string
+              or {uuid, handle} object); resolvable, policy-walkable, never an opaque string.
+            $ref: ../../../../common-elements.schema.json#/$defs/Reference
+          vlan:
+            description: 'REQUIREMENT — WHICH LOGICAL NETWORK, as a reference to a `VLAN`. The VLAN is the identity
+              of a logical network (maintainer ruling 2026-08-10): a segment id under an encapsulation, which is
+              what an operator means by "put it on that network". Stated when the attachment must land on a specific
+              logical network — because it has to reach something already there, or an existing application lives
+              on it. Absent means policy decides. REALIZATION VARIES; THE AXIS DOES NOT. `VLAN.encapsulation` already
+              carries vlan / vxlan / geneve / flat, so the class is a SEGMENT of which 802.1Q is one form. A public
+              cloud exposes no VLAN — there the segment is a VPC subnet, adopted by reference on VLAN rather than
+              given a parallel class: the VPC is the VirtualNetwork and the subnet is the addressed segment within
+              it. A consumer states the segment; which encapsulation realizes it is the provider''s. Resolved against
+              the `segment` relationship a VirtualNetwork already declares, so placement narrows to networks on
+              that segment rather than requiring the consumer to know which provider network carries it.'
+            $ref: ../../../../common-elements.schema.json#/$defs/Reference
+          subnet:
+            description: 'REQUIREMENT — WHICH IP NETWORK, as a reference to a `Subnet`. Layer 3, and INDEPENDENTLY
+              SELECTABLE from `vlan` (layer 2): a subnet usually sits on a segment, but one segment may carry several
+              subnets and a cloud may expose no segment at all, so the mapping is not concrete (maintainer ruling
+              2026-08-10). "Put me on 198.51.100.0/24" and "put me on VLAN 3020" are different requests; a consumer
+              may state either, both, or neither.'
+            $ref: ../../../../common-elements.schema.json#/$defs/Reference
+          zone:
+            description: 'REQUIREMENT — the network CATEGORY this attachment needs (DMZ, management, internal),
+              as a governed taxonomy term. Independent of `vlan` and `tier`: which logical network, what kind of
+              network, and how good it is are three different questions, and a consumer may state any, all, or none
+              of them. FOR PLACEMENT ONLY. Requiring the management zone does not grant access to it, and nothing
+              critical may hang off the category directly — anything required because of a zone is enforced by a
+              policy reading it (maintainer ruling 2026-08-10). A zero-trust posture derives no trust from network
+              location (NIST SP 800-207).'
+            allOf:
+              - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
+              - required:
+                  - reference_data_type
+                properties:
+                  reference_data_type:
+                    const: network_zone
+          tier:
+            description: 'REQUIREMENT — the governed `network_tier` (performance) this attachment needs. Independent
+              of `vlan`: which logical network and how good it is are different questions, and a consumer may state
+              either, both, or neither. Each term denotes a floor, so any network meeting it qualifies — name-selectable
+              but requirements-authoritative (ADR-036).'
+            allOf:
+              - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
+              - required:
+                  - reference_data_type
+                properties:
+                  reference_data_type:
+                    const: network_tier
+          mac:
+            type: string
+            description: Optional requested MAC address.
+          ip_address_ref:
+            description: A pre-allocated IPAddress to bind to this interface (optional — omitted means the address
+              service allocates at realization). Common-elements Reference shape.
+            $ref: ../../../../common-elements.schema.json#/$defs/Reference
+  - element: placement
+    scope: Machine.VM
+    optional: true
+    state: canonical
+    description: Placement intent as a selection of an existing Location, plus affinity relative to other resources.
+      Policy governs which locations a consumer may select; the VM references one, it never defines locations.
+    schema:
+      type: object
+      description: Placement intent as a selection of an existing Location, plus affinity relative to other resources.
+        Policy governs which locations a consumer may select; the VM references one, it never defines locations.
+      properties:
+        location_ref:
+          type: string
+          description: handle/uuid of an existing Location the VM is placed in — chosen from the eligible set (platform-layer
+            + provider-advertised, policy-filtered). Also carried as a references->Location relationship.
+        zone:
+          type: string
+          description: Availability/sovereignty zone constraint, selected from the zones the provider advertises
+            for the chosen location; resolved against that location.
+        affinity:
+          type: array
+          description: Co-location / separation intent relative to OTHER named resources (not nodes). Each target
+            is resolved at reserve, so a pre-known UUID is not required.
+          items:
+            type: object
+            required:
+              - target
+              - rule
+            properties:
+              target:
+                type: string
+                description: Handle OR label-selector of an existing resource to co-locate with / avoid, resolved
+                  at reserve (DCM ADR-025/AEP-124) - you do not need its UUID in advance.
+              rule:
+                enum:
+                  - affinity
+                  - anti_affinity
+              selector:
+                type: object
+                description: 'Alternative to a handle: match target(s) by labels (key/value).'
+                additionalProperties:
+                  type: string
+  - element: run_state
+    scope: Machine.VM
+    optional: true
+    state: canonical
+    description: 'Desired run state the provider drives to (running | stopped | …). Distinct from the four-state
+      lifecycle; snapshot and restore are operations, not run states. Observed counterpart: `outputs.observed_run_state`.'
+    schema:
+      type: object
+      description: 'Desired run state the provider drives to (running | stopped | …). Distinct from the four-state
+        lifecycle; snapshot and restore are operations, not run states. Observed counterpart: `outputs.observed_run_state`.'
+      properties:
+        desired_state:
+          enum:
+            - running
+            - stopped
+            - suspended
+          description: Target guest run state.
+  - element: guest_os
+    scope: Machine.VM
+    optional: true
+    state: canonical
+    description: The requested operating system, as on Machine; redeclared here so the VM tier may tighten it.
+    schema:
+      description: The requested operating system, as on Machine; redeclared here so the VM tier may tighten it.
+      oneOf:
+        - type: object
+          required:
+            - type
+          additionalProperties: false
+          properties:
+            type:
+              type: string
+              description: 'Inline OS identifier (e.g. linux-server-9). portability_breaking: a value with no os_image
+                vocabulary entry — a review finding.'
+            version:
+              type: string
+              description: Inline OS version (e.g. 9.4).
+        - allOf:
+            - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
+            - required:
+                - reference_data_type
+              properties:
+                reference_data_type:
+                  const: os_image
+  - element: cpu
+    scope: Machine.VM
+    optional: true
+    state: canonical
+    description: As on Machine, with the sub-fields required at this tier.
+    schema:
+      type: object
+      required:
+        - count
+      properties:
+        count:
+          type: integer
+          minimum: 1
+          description: Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt domain
+            cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (DCM ADR-023).
+        sockets:
+          type: integer
+          minimum: 1
+          description: 'Optional topology hint: sockets. Provider-support-dependent; ignored where not applicable.'
+        cores_per_socket:
+          type: integer
+          minimum: 1
+          description: 'Optional topology hint: cores per socket. Provider-support-dependent.'
+      description: As on Machine, with the sub-fields required at this tier.
+  - element: memory
+    scope: Machine.VM
+    optional: true
+    state: canonical
+    description: As on Machine, with the sub-fields required at this tier.
+    schema:
+      type: object
+      required:
+        - size
+      properties:
+        size:
+          type: string
+          pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
+          description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Machine Base Class
+            `memory.size`).
+        hugepages:
+          type: object
+          description: Optional huge-page backing (provider-support-dependent; validated against provider capability).
+          properties:
+            enabled:
+              type: boolean
+            page_size:
+              type: string
+              description: e.g. 2Mi, 1Gi.
+      description: As on Machine, with the sub-fields required at this tier.
 coverage:
   use_cases:
-  - scoped-class/compile-type-to-flat-spec
-  - scoped-class/portability-derived-from-scope
-  - scoped-class/liskov-refine-accepted
+    - scoped-class/compile-type-to-flat-spec
+    - scoped-class/portability-derived-from-scope
+    - scoped-class/liskov-refine-accepted
   flows:
-  - docs/flows/scoped-class-lifecycle.md
+    - docs/flows/scoped-class-lifecycle.md
 immutable:
-- guest_os.type
+  - guest_os.type
 outputs:
   ip_addresses:
     type: array
-    description: Assigned guest IP addresses (all interfaces), IPv4-first ordering. The canonical binding
-      surface for LB backend pools, DNS records, and monitoring targets.
+    description: Assigned guest IP addresses (all interfaces), IPv4-first ordering. The canonical binding surface
+      for LB backend pools, DNS records, and monitoring targets.
   primary_ip:
     type: string
-    description: The primary/management address — first of ip_addresses; the single-address convenience
-      most bindings want.
+    description: The primary/management address — first of ip_addresses; the single-address convenience most bindings
+      want.
   hostname:
     type: string
     description: Realized guest hostname (FQDN where the realm provides one).
   mac_addresses:
     type: array
-    description: Realized MAC per interface, ordered as spec.networks[]. Binding surface for DHCP reservation
-      and switch-port records.
+    description: Realized MAC per interface, ordered as spec.networks[]. Binding surface for DHCP reservation and
+      switch-port records.
   provider_handle:
     type: string
-    description: The provider-native identifier of the realized VM (opaque; correlation/ops use only —
-      never a portable reference).
+    description: The provider-native identifier of the realized VM (opaque; correlation/ops use only — never a portable
+      reference).
   observed_run_state:
     type: string
-    description: Observed run state at last reconciliation (running|stopped|suspended) — the discovered
-      counterpart of spec.run_state.desired_state. Renamed from `run_state` (0.7.0) so desired (spec)
-      and observed (outputs) never share a name.
+    description: Observed run state at last reconciliation (running|stopped|suspended) — the discovered counterpart
+      of spec.run_state.desired_state. Renamed from `run_state` (0.7.0) so desired (spec) and observed (outputs)
+      never share a name.
   target_segment:
     type: string
-    description: 'Realize-time placement fact (ADR-011 two-phase reserve): a reference to the VLAN
-      segment the reserved/realized placement can reach (adopt-not-absorb — the segment id/encapsulation
-      live on the VLAN). This is the declarable binding source for a fulfillment:provider dependency
-      whose criteria are simply the target segment — e.g. a IPAddress allocated on the reachable
-      segment (DCM ADR-009 §3 worked example: bind target_segment -> the IP request''s segment_ref). It is
-      a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider''s own internal
-      facts, never cross-provider criteria).'
+    description: 'Realize-time placement fact (ADR-011 two-phase reserve): a reference to the VLAN segment the reserved/realized
+      placement can reach (adopt-not-absorb — the segment id/encapsulation live on the VLAN). This is the declarable
+      binding source for a fulfillment:provider dependency whose criteria are simply the target segment — e.g. a
+      IPAddress allocated on the reachable segment (DCM ADR-009 §3 worked example: bind target_segment -> the IP
+      request''s segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM
+      provider''s own internal facts, never cross-provider criteria).'
 relationships:
-- edge_type: depends_on
-  target: IPAddress
-  target_field: address
-  cardinality: 0..n
-  description: May consume zero or more pre-allocated IPAddress addresses (optional dependency).
-- edge_type: references
-  target: Location
-  name: placement
-  cardinality: 0..1
-  description: Placed in an existing Location (selected, policy-governed) — see spec.placement.location_ref.
-- edge_type: references
-  target: VirtualNetwork
-  name: network_attachment
-  cardinality: 0..n
-  description: Attaches to existing VirtualNetwork(s) — see spec.networks[].network_ref.
-- edge_type: references
-  target: StorageLayout
-  name: storage_layout
-  cardinality: 0..1
-  description: The StorageLayout this VM realizes — see spec.layout_ref; the layout's entries describe
-    the VM's disks.
-- edge_type: depends_on
-  target: Volume
-  name: disk
-  cardinality: 0..n
-  description: Consumes existing/allocated Volume(s) — the consumable volumes realizing its StorageLayout
-    entries.
+  - edge_type: depends_on
+    target: IPAddress
+    target_field: address
+    cardinality: 0..n
+    description: May consume zero or more pre-allocated IPAddress addresses (optional dependency).
+  - edge_type: references
+    target: Location
+    name: placement
+    cardinality: 0..1
+    description: Placed in an existing Location (selected, policy-governed) — see spec.placement.location_ref.
+  - edge_type: references
+    target: VirtualNetwork
+    name: network_attachment
+    cardinality: 0..n
+    description: Attaches to existing VirtualNetwork(s) — see spec.networks[].network_ref.
+  - edge_type: references
+    target: StorageLayout
+    name: storage_layout
+    cardinality: 0..1
+    description: The StorageLayout this VM realizes — see spec.layout_ref; the layout's entries describe the VM's
+      disks.
+  - edge_type: depends_on
+    target: Volume
+    name: disk
+    cardinality: 0..n
+    description: Consumes existing/allocated Volume(s) — the consumable volumes realizing its StorageLayout entries.
 adopts:
-- standard: Redfish
-  version: '2024.4'
-  standard_name: ComputerSystem
-  role: 'Vendor-neutral compute-system representation spanning physical AND virtual (Redfish ComputerSystem
-    SystemType: Physical | Virtual | Composed | Partitioned) - the single representative standard for
-    the Machine.* family (shared with Machine.BareMetalHost). Provider-NATIVE realizations (KubeVirt,
-    a hypervisor platform, a public cloud, ...) are declared on the provider support matrix, not on the
-    substrate type.'
-  source: https://www.dmtf.org/standards/redfish
-  license: DMTF
-  license_compatibility: compatible-reference
-  disposition: tier1_value
-- standard: KubeVirt
-  version: '>=1.2'
-  standard_name: VirtualMachine / VirtualMachineInstance
-  role: k8s-native VM realization vocabulary (domain cpu/memory, interfaces->networks, volumes, runStrategy/power)
-    — the parallel to Metal3 for bare metal
-  source: https://kubevirt.io/
-  license: Apache-2.0
-  license_compatibility: compatible-reference
-  disposition: tier1_value
+  - standard: Redfish
+    version: '2024.4'
+    standard_name: ComputerSystem
+    role: 'Vendor-neutral compute-system representation spanning physical AND virtual (Redfish ComputerSystem SystemType:
+      Physical | Virtual | Composed | Partitioned) - the single representative standard for the Machine.* family
+      (shared with Machine.BareMetalHost). Provider-NATIVE realizations (KubeVirt, a hypervisor platform, a public
+      cloud, ...) are declared on the provider support matrix, not on the substrate type.'
+    source: https://www.dmtf.org/standards/redfish
+    license: DMTF
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+  - standard: KubeVirt
+    version: '>=1.2'
+    standard_name: VirtualMachine / VirtualMachineInstance
+    role: k8s-native VM realization vocabulary (domain cpu/memory, interfaces->networks, volumes, runStrategy/power)
+      — the parallel to Metal3 for bare metal
+    source: https://kubevirt.io/
+    license: Apache-2.0
+    license_compatibility: compatible-reference
+    disposition: tier1_value
 context:
-  purpose: Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement
-    — as portable intent any virtualization provider can realize.
-  plain_description: 'The request for one VM: how big — a named size class (`instance_size`), or explicit
-    `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed
-    `storage_tier`), which StorageLayout describes its disks (`layout_ref`), and which existing networks
-    its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an
-    existing location, not an invention. Once the provider builds it, the record carries realized facts
-    back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider
-    detail, never part of the type.'
+  purpose: Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement —
+    as portable intent any virtualization provider can realize.
+  plain_description: 'The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu`
+    and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`),
+    which StorageLayout describes its disks (`layout_ref`), and which existing networks its NICs attach to (`networks`,
+    each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once
+    the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The
+    hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.'
   use_when:
-  - You need to request a VM with declared size, OS, storage requirements, and network attachments, portable
-    across hypervisors.
-  - You need VM records in the dependency graph so ordering (host before VM, VM before its services) is
-    derivable.
-  - You need a VM's disk shape and addresses to reference existing StorageLayout / IPAddress
-    records rather than duplicate them.
+    - You need to request a VM with declared size, OS, storage requirements, and network attachments, portable across
+      hypervisors.
+    - You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.
+    - You need a VM's disk shape and addresses to reference existing StorageLayout / IPAddress records rather than
+      duplicate them.
   not_for:
-  - The physical machine it runs on — Machine.BareMetalHost.
-  - A containerized workload — Container; the VM carries a full guest OS.
-  - The per-disk shape (sizes, boot designation) — StorageLayout; the VM references one via layout_ref.
-  - The vNIC as a device record — that is NetworkInterface with a virtual device_class; the VM's
-    networks list declares attachment intent, not device inventory.
+    - The physical machine it runs on — Machine.BareMetalHost.
+    - A containerized workload — Container; the VM carries a full guest OS.
+    - The per-disk shape (sizes, boot designation) — StorageLayout; the VM references one via layout_ref.
+    - The vNIC as a device record — that is NetworkInterface with a virtual device_class; the VM's networks list
+      declares attachment intent, not device inventory.
   works_with:
-  - StorageLayout — the disk layout the VM realizes (per-disk shape, boot designation).
-  - VirtualNetwork — the networks the VM's NICs attach to.
-  - Volume — the consumable volumes realizing its layout entries.
-  - Location — where the VM is placed (selected from existing places, policy-governed).
-  - IPAddress — pre-allocated addresses the VM consumes.
+    - StorageLayout — the disk layout the VM realizes (per-disk shape, boot designation).
+    - VirtualNetwork — the networks the VM's NICs attach to.
+    - Volume — the consumable volumes realizing its layout entries.
+    - Location — where the VM is placed (selected from existing places, policy-governed).
+    - IPAddress — pre-allocated addresses the VM consumes.
 spec_examples:
-- cpu:
-    count: 4
-    sockets: 2
-    cores_per_socket: 2
-  memory:
-    size: 16GB
-  guest_os:
-    type: linux-server-9
-    version: '9.4'
-  layout_ref: web-01-layout
-  storage:
-    min_iops: 5000
-    min_replication: 2
-    encryption: true
-  storage_tier: performance
-  placement:
-    location_ref: dc-west-rack-3
-    zone: zone-a
-    affinity:
-    - target: web-tier
-      rule: anti_affinity
-  networks:
-  - name: eth0
-    network_ref: app-net
-    mac: 00:11:22:33:44:55
-    ip_address_ref: vm-mgmt-ip
-  run_state:
-    desired_state: running
-  firmware:
-    type: uefi
-    secure_boot: true
-    vtpm: true
+  - cpu:
+      count: 4
+      sockets: 2
+      cores_per_socket: 2
+    memory:
+      size: 16GB
+    guest_os:
+      type: linux-server-9
+      version: '9.4'
+    layout_ref: web-01-layout
+    storage:
+      min_iops: 5000
+      min_replication: 2
+      encryption: true
+    storage_tier: performance
+    placement:
+      location_ref: dc-west-rack-3
+      zone: zone-a
+      affinity:
+        - target: web-tier
+          rule: anti_affinity
+    networks:
+      - name: eth0
+        network_ref: app-net
+        mac: 00:11:22:33:44:55
+        ip_address_ref: vm-mgmt-ip
+    run_state:
+      desired_state: running
+    firmware:
+      type: uefi
+      secure_boot: true
+      vtpm: true
 spec_constraints:
-  description: 'Deliberate exclusions: GPU/PCI passthrough and SR-IOV are Provider-Class SharedDataElements
-    (ADR-038) — provider-variable capability, not portable base surface. Day-0 guest personalization (cloud-init/user-data)
-    is an open design decision (process concern vs VM field) — tracked on the type, not silently absent.
-    Per-disk shape (sizes, boot designation) lives on StorageLayout, referenced via layout_ref.'
+  description: 'Deliberate exclusions: GPU/PCI passthrough and SR-IOV are Provider-Class SharedDataElements (ADR-038)
+    — provider-variable capability, not portable base surface. Day-0 guest personalization (cloud-init/user-data)
+    is an open design decision (process concern vs VM field) — tracked on the type, not silently absent. Per-disk
+    shape (sizes, boot designation) lives on StorageLayout, referenced via layout_ref.'
   oneOf:
-  - required:
-    - instance_size
-  - required:
-    - cpu
-    - memory
+    - required:
+        - instance_size
+    - required:
+        - cpu
+        - memory
