@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StorageDevice/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StorageDevice/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b",
   "resource_type": "StorageDevice",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Storage Device",
-    "description": "A storage device (disk / SSD / NVMe) component. device_class distinguishes a physical drive (wwn/serial/bay) from a virtual disk presented to a guest (which binds_to its backing Storage resource). Mirrors Redfish Drive (+ SNIA Swordfish at the system level). A Base by the Base test (CLS-002): Redfish Drive abstracts over every drive — HDD, SSD, NVMe, a guest's virtual disk — so a drive of a given capacity and media is one deliverable any host or hypervisor provider can inventory or present; form Types (NVMe, SATA) may follow.",
+    "description": "A storage device: a physical drive (HDD, SSD, NVMe), a whole-drive passthrough, a partition carved from a drive (an NVMe namespace, a LUN), or a virtual disk presented to a guest. A Base by the Base test (CLS-002): Redfish Drive abstracts over all of them, so a drive of a given capacity and media is one deliverable any host or hypervisor provider inventories or presents; form Types (NVMe, SATA) may follow when they carry elements. A virtual disk binds to the volume that backs it.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StorageDevice",
-          "version": "0.7.0",
+          "version": "0.7.1",
           "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b"
         }
       ]
@@ -29,15 +29,15 @@
     "properties": {
       "device_class": {
         "$ref": "../common-elements.schema.json#/$defs/device_class_unit",
-        "description": "Device realization (common-elements.md §7). virtual = a guest virtual disk (binds_to its backing volume); passthrough = whole physical disk to a guest."
+        "description": "Device realization (common-elements.md §7): `physical`, `passthrough` (whole drive to a guest), `partition` (set `parent_device`), or `virtual` (a guest disk that `binds_to` its backing volume)."
       },
       "partition_mechanism": {
         "$ref": "../common-elements.schema.json#/$defs/partition_mechanism",
-        "description": "Only when device_class=partition: e.g. namespace (NVMe) / lun carved from a parent."
+        "description": "How a partition is carved, when `device_class` is partition: `namespace` (NVMe) or `lun`."
       },
       "identity": {
         "type": "object",
-        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
+        "description": "Instance discriminators: WWN, serial, bay.",
         "properties": {
           "location": {
             "type": "string",
@@ -70,20 +70,20 @@
       "capacity": {
         "type": "string",
         "pattern": "^[0-9]+(MB|GB|TB|PB|MiB|GiB|TiB|PiB)$",
-        "description": "Usable capacity, e.g. 1TB (Redfish CapacityBytes)."
+        "description": "Usable capacity as a quantity (1TB; Redfish CapacityBytes)."
       },
       "media_type": {
         "$ref": "../common-elements.schema.json#/$defs/media_type",
-        "description": "Media, e.g. hdd, ssd, nvme (Redfish MediaType)."
+        "description": "Media: `hdd`, `ssd`, `nvme`, … (Redfish MediaType)."
       },
       "protocol": {
         "$ref": "../common-elements.schema.json#/$defs/storage_transport",
-        "description": "Bus/transport, e.g. sas, sata, nvme (Redfish Protocol)."
+        "description": "Bus or transport: `sata`, `sas`, `nvme`, … (Redfish Protocol)."
       },
       "rotation_speed_rpm": {
         "type": "integer",
         "minimum": 0,
-        "description": "Spindle speed for rotational media; 0 / omitted for SSD/NVMe."
+        "description": "Spindle speed for rotational media; omitted for solid state."
       }
     },
     "required": [

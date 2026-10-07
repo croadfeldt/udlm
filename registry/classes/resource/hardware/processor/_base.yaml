@@ -1,22 +1,21 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Processor/0.7.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Processor/0.7.1
 conforms_to: udlm/0.1
 uuid: 418c9acb-3cd8-4e73-817d-8be2bdf13442
 record_type: class
 class: base
 resource_type: Processor
-version: 0.7.0
+version: 0.7.1
 family: Resource
 status: active
 filed_under:
   - hardware
 metadata:
   display_name: Processor
-  description: 'A CPU component. First-class entity form of the §26 component model — a parent carries the cpu rollup
-    and MAY also contain Processor entities. device_class distinguishes a physical socket from a virtual CPU presented
-    to a guest. outputs-exempt: opaque inventory component — its attributes are Discovered-state facts on the containing
-    host; it publishes no realize-time binding surface (rule 36(b) documented exclusion). A Base by the Base test
-    (CLS-002): Redfish Processor (ProcessorType CPU) abstracts over a socket and a vCPU, so cores of a given architecture
-    are one deliverable any host or hypervisor provider can present.'
+  description: 'A CPU: a physical socket, or a virtual CPU presented to a guest. A Base by the Base test (CLS-002):
+    Redfish Processor (ProcessorType CPU) abstracts over both, so cores of a given architecture are one deliverable
+    any host or hypervisor provider presents. An inventory component: the host carries the cpu rollup and may also
+    contain Processor records; outputs-exempt: it publishes no realize-time binding surface (rule 36(b) documented
+    exclusion).'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:11:51Z'
 elements:
@@ -24,26 +23,28 @@ elements:
     scope: Processor
     optional: true
     state: canonical
-    description: Device realization (common-elements.md §7). physical = a socket/package; virtual = vCPU.
+    description: 'Device realization (common-elements.md §7): `physical` (a socket), `virtual` (a vCPU), or `partition`
+      (a pinned set carved from a parent).'
     schema:
       $ref: ../../../../common-elements.schema.json#/$defs/device_class_unit
-      description: Device realization (common-elements.md §7). physical = a socket/package; virtual = vCPU.
+      description: 'Device realization (common-elements.md §7): `physical` (a socket), `virtual` (a vCPU), or `partition`
+        (a pinned set carved from a parent).'
   - element: partition_mechanism
     scope: Processor
     optional: true
     state: canonical
-    description: 'Only when device_class=partition: e.g. cpu-pinning / cpu-set carved from a parent.'
+    description: 'How a partition is carved, when `device_class` is partition: `cpu-pinning` or `cpu-set`.'
     schema:
       $ref: ../../../../common-elements.schema.json#/$defs/partition_mechanism
-      description: 'Only when device_class=partition: e.g. cpu-pinning / cpu-set carved from a parent.'
+      description: 'How a partition is carved, when `device_class` is partition: `cpu-pinning` or `cpu-set`.'
   - element: identity
     scope: Processor
     optional: true
     state: canonical
-    description: Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).
+    description: 'Instance discriminators: socket, model, serial.'
     schema:
       type: object
-      description: Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).
+      description: 'Instance discriminators: socket, model, serial.'
       properties:
         location:
           type: string
@@ -81,19 +82,19 @@ elements:
     scope: Processor
     optional: true
     state: canonical
-    description: ISA, e.g. x86-64, aarch64 (Redfish ProcessorArchitecture).
+    description: Instruction-set architecture (x86_64, aarch64).
     schema:
       $ref: ../../../../common-elements.schema.json#/$defs/isa
-      description: ISA, e.g. x86-64, aarch64 (Redfish ProcessorArchitecture).
+      description: Instruction-set architecture (x86_64, aarch64).
   - element: max_speed_mhz
     scope: Processor
     optional: true
     state: canonical
-    description: Max clock in MHz (Redfish MaxSpeedMHz).
+    description: Maximum clock in MHz (Redfish MaxSpeedMHz).
     schema:
       type: integer
       minimum: 1
-      description: Max clock in MHz (Redfish MaxSpeedMHz).
+      description: Maximum clock in MHz (Redfish MaxSpeedMHz).
 spec_examples:
   - device_class: physical
     identity:

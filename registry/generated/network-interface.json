@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkInterface/0.16.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkInterface/0.16.1",
   "conforms_to": "udlm/0.1",
   "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23",
   "resource_type": "NetworkInterface",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Network Interface",
-    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1→N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device → the physical NIC), and — added 0.2.0 — a composite BUILT FROM multiple interfaces (N→1): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces — is one traversable device tree in a single type (common-elements §7). Added 0.3.0: the same type also serves SWITCH PORTS (contained_by NetworkSwitch), and a physical interface carries a connects_to adjacency (renamed from connected_to, common-elements §9) to its LLDP-discovered peer termination point (host NIC ↔ switch port) — the cross-device edge that makes the estate graph traversable host → NIC → port → switch (common-elements §7a). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if) + RFC 8345 links + IEEE 802.1AB LLDP. A Base by the Base test (CLS-002): Redfish NetworkAdapter/NetworkPort and the RFC 8343 interface model abstract over a physical port, a VF, a bond, a bridge and a VLAN sub-interface alike, so an interface is one deliverable every host, hypervisor and switch provider can realize; device_class says which form.",
+    "description": "A network interface in any of its forms: a physical port, a virtual interface, a passthrough, a partition derived from a physical NIC (an SR-IOV VF, a VLAN or macvlan sub-interface), or a composite built from member interfaces (a bond, a bridge). A Base by the Base test (CLS-002): Redfish NetworkAdapter/NetworkPort and the RFC 8343 interface model abstract over all of them, so an interface is one deliverable every host, hypervisor and switch provider realizes; `device_class` says which form. One type therefore carries the whole host interface stack as a traversable tree (physical NICs → bond → bridge → sub-interfaces), serves switch ports too (contained by a NetworkSwitch), and links host NIC to switch port through the LLDP-discovered `connects_to` adjacency.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "NetworkInterface",
-          "version": "0.16.0",
+          "version": "0.16.1",
           "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23"
         }
       ]
@@ -29,15 +29,15 @@
     "properties": {
       "device_class": {
         "$ref": "../common-elements.schema.json#/$defs/device_class",
-        "description": "Device realization (common-elements.md §7): a physical port (PF), a virtual interface (virtio, veth), a whole-NIC passthrough, a partition derived from a physical NIC (SR-IOV VF, VLAN/macvlan sub-interface — set parent_device), a bond (aggregate) or a bridge."
+        "description": "Device realization (common-elements.md §7): `physical` (a port), `virtual` (virtio, veth), `passthrough`, `partition` (an SR-IOV VF or a VLAN/macvlan sub-interface; set `parent_device`), `aggregate` (a bond) or `bridge`; the last two name their members in `lower_layer`."
       },
       "partition_mechanism": {
         "$ref": "../common-elements.schema.json#/$defs/partition_mechanism",
-        "description": "Only when device_class=partition: e.g. sr-iov, vlan, macvlan, ipvlan."
+        "description": "How a partition is carved, when `device_class` is partition: `sr-iov`, `vlan`, `macvlan`, `ipvlan`."
       },
       "aggregation": {
         "type": "object",
-        "description": "Only when device_class=aggregate — bond / link-aggregation parameters (IEEE 802.1AX). The member interfaces are the lower_layer references.",
+        "description": "Bond parameters (IEEE 802.1AX), when `device_class` is aggregate; the members are the `lower_layer` references.",
         "properties": {
           "mode": {
             "type": "string",
@@ -78,7 +78,7 @@
       },
       "bridge": {
         "type": "object",
-        "description": "Only when device_class=bridge — software L2 bridge parameters (IEEE 802.1Q). The bridged ports are the lower_layer references.",
+        "description": "Software L2 bridge parameters (IEEE 802.1Q), when `device_class` is bridge; the bridged ports are the `lower_layer` references.",
         "properties": {
           "stp": {
             "type": "boolean",
@@ -92,7 +92,7 @@
       },
       "identity": {
         "type": "object",
-        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
+        "description": "Instance discriminators: MAC, PCI address, port name.",
         "properties": {
           "location": {
             "type": "string",
@@ -124,22 +124,22 @@
       "speed": {
         "type": "string",
         "pattern": "^[0-9]+(Mbps|Gbps|Tbps)$",
-        "description": "Link speed, e.g. 25Gbps (Redfish LinkSpeedMbps)."
+        "description": "Link speed (25Gbps; Redfish LinkSpeedMbps)."
       },
       "mtu": {
         "type": "integer",
         "minimum": 68,
-        "description": "MTU in bytes (Redfish MTUSize)."
+        "description": "MTU in bytes."
       },
       "vlan_id": {
         "type": "integer",
         "minimum": 1,
         "maximum": 4094,
-        "description": "Optional — an OBSERVED/discovered VLAN tag, a discovery convenience only. NOT authoritative: the authoritative membership is `vlan_memberships` (references to VLAN). Discovery may record a raw tag here; resolution promotes it into a vlan_memberships entry."
+        "description": "An observed VLAN tag recorded by discovery; a convenience, not authoritative. Membership is `vlan_memberships`, and resolution promotes a raw tag into it."
       },
       "vlan_memberships": {
         "type": "array",
-        "description": "The port's VLAN membership set (802.1Q). Each entry REFERENCES an existing VLAN (the shared segment object — the id/encapsulation is pulled from there, adopt-not-absorb) and declares its mode. A trunk carries many (one native/untagged + N tagged); an access port one. Each membership is also a references->VLAN edge.",
+        "description": "The port's VLAN membership set (802.1Q): each entry references an existing VLAN and declares its mode. A trunk carries one native plus N tagged; an access port one. Each membership is also a `references` edge to the VLAN.",
         "items": {
           "type": "object",
           "required": [

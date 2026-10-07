@@ -1,23 +1,21 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/BMC/0.7.1
+$id: https://udlm.dev/registry/udlm/0.1/class/BMC/0.7.2
 conforms_to: udlm/0.1
 uuid: ea6715e2-30d1-4a34-9611-00c85208e20a
 record_type: class
 class: base
 resource_type: BMC
-version: 0.7.1
+version: 0.7.2
 family: Resource
 status: active
 filed_under:
   - hardware
 metadata:
   display_name: BMC
-  description: 'A host''s baseboard management controller — its management address, protocol, and the power/reset
-    control surface — modeled so power actions have a first-class target. Every board vendor ships its own BMC family;
-    this record is vendor-neutral. Credentials are never inline (reference a CredentialRef). `manages`
-    points at the host it powers; power operations are Redfish (or a vendor tool like ipmitool where a board''s
-    Redfish is incomplete) — the mechanism is Policy (the control plane), not data. A Base by the Base test (CLS-002):
-    Redfish Manager abstracts over every vendor''s controller, so a management surface with an address and a protocol
-    is one deliverable any host provider can realize.'
+  description: 'A host''s baseboard management controller: its management address and protocol, and the power and
+    reset surface those actions target. A Base by the Base test (CLS-002): Redfish Manager abstracts over every
+    vendor''s controller, so a management surface with an address and a protocol is one deliverable any host provider
+    realizes. It manages exactly one host; credentials are referenced, never inline; how a power action is carried
+    out is policy, not data.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-12T00:00:00Z'
 elements:
@@ -35,38 +33,38 @@ elements:
     scope: BMC
     optional: false
     state: canonical
-    description: BMC management IP (e.g. 192.0.2.10).
+    description: Management IP address.
     schema:
       type: string
-      description: BMC management IP (e.g. 192.0.2.10).
+      description: Management IP address.
   - element: protocol
     scope: BMC
     optional: true
     state: canonical
-    description: Out-of-band protocol(s) the BMC answers. redfish for power/reset; ipmi as legacy fallback.
+    description: 'Out-of-band protocols the BMC answers: `redfish` for power and reset, `ipmi` as the legacy fallback.'
     schema:
       type: string
       enum:
         - redfish
         - ipmi
         - redfish+ipmi
-      description: Out-of-band protocol(s) the BMC answers. redfish for power/reset; ipmi as legacy fallback.
+      description: 'Out-of-band protocols the BMC answers: `redfish` for power and reset, `ipmi` as the legacy fallback.'
   - element: vendor
     scope: BMC
     optional: true
     state: canonical
-    description: BMC/board vendor — the observed vendor string (e.g. `<vendor>`).
+    description: Board or BMC vendor, as observed.
     schema:
       type: string
-      description: BMC/board vendor — the observed vendor string (e.g. `<vendor>`).
+      description: Board or BMC vendor, as observed.
   - element: dns_name
     scope: BMC
     optional: true
     state: canonical
-    description: Management DNS name (e.g. ipmi-host01.example.com).
+    description: Management DNS name.
     schema:
       type: string
-      description: Management DNS name (e.g. ipmi-host01.example.com).
+      description: Management DNS name.
 spec_examples:
   - management_address: 192.0.2.20
     protocol: redfish+ipmi
