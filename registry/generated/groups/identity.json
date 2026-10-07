@@ -11,7 +11,7 @@
     },
     {
       "class": "Identity",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "instantiable": true,
       "path": "registry/classes/access/identity/identity/_base.yaml",
       "types": [
@@ -21,14 +21,14 @@
     },
     {
       "class": "IdentityEscrow",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "instantiable": true,
       "path": "registry/classes/access/identity/identity-escrow/_base.yaml",
       "types": []
     },
     {
       "class": "IdentityGroup",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "instantiable": true,
       "path": "registry/classes/access/identity/identity-group/_base.yaml",
       "types": []

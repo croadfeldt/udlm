@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.2.7",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.2.8",
   "conforms_to": "udlm/0.1",
   "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242",
   "resource_type": "Job",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "family": "Process",
   "status": "active",
   "metadata": {
@@ -11,14 +11,14 @@
     "display_name": "Job — the execution record",
     "maintainer": "UDLM maintainers",
     "origination_timestamp": "2026-08-04T00:00:00Z",
-    "description": "ONE class for every execution (maintainer ruling 2026-08-04): a Job is the tracked, inspectable record of running something — the receipt of consuming a definition. Jobs are how an execution is started (submit intent for a Job) and stopped (a change request against it); a run's lifecycle rides the D7 execution_state axis, one Job per run (concurrency honest). No per-domain subtypes: the bound definition carries the schemas (its inputs_schema validates parameters, its outputs_schema validates results), so domain filtering is a DERIVED facet of the reference, queried not typed (job.running?family=automation — the ADR-038 §10 filtering surface). Instantiable base (\"Base Classes are instantiable\" — portability at its highest level); types appear later only if a genuinely job-shaped variant earns one. Every state transition seals with its pathway_ref; current state + results live on the record (act-now), history in the ledger (ADR-059 claims discipline). This is the udlm#330 start/stop model — an operation is a governed Job, not a bespoke verb surface.",
+    "description": "One class for every execution: a Job is the tracked, inspectable record of running something, the receipt of consuming a definition. An execution is started by submitting intent for a Job and stopped by a change request against it; one Job per run, its lifecycle on the execution-state axis. No per-domain subtypes: the bound definition carries the schemas that validate parameters and results, so domain is a derived facet of the reference, queried not typed. An instantiable Base; a Type appears only if a genuinely job-shaped variant earns one. Every state transition seals with its pathway; current state and results live on the record, history in the ledger.",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
           "class": "Job",
-          "version": "1.2.7",
+          "version": "1.2.8",
           "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242"
         }
       ]
@@ -29,25 +29,25 @@
     "additionalProperties": false,
     "properties": {
       "definition_ref": {
-        "description": "The versioned definition artifact this job executes — the playbook, workflow, pipeline, or script the engine runs. Always a typed reference, never an inline body or a provider-native id: either a resource Reference (common-elements §2.5) to the entity carrying the definition, or a data_reference (DCM ADR-012) pinning an immutable automation_definition reference-data layer version — the pin that lets each promotion stage run exactly the definition version it verified, and lets rehydration replay the intent together with its payload. Optional: a job discovered on a brownfield engine may not yet cite its definition. Either form of URF reference is legal: a resource reference (estate/<handle>) to the entity carrying the definition, or a data reference (uuid/<v4>?reference_data_type==<kind>) pinning an immutable reference-data revision — the URL says which, and check_data_references enforces the kind on the data-reference form.",
+        "description": "The versioned definition this job executes — the playbook, workflow, pipeline or script — as a typed reference: a resource Reference to the entity carrying the definition, or a data_reference to a governed definition. Never an inline body or a provider-native id.",
         "type": "string",
         "format": "udlm-ref-url"
       },
       "parameters": {
         "type": "object",
-        "description": "Parameters the definition is invoked with — the org-authored automation intent (a patch policy, a reboot policy, maintenance windows) that must survive an engine migration byte-identical. Keys are defined by the referenced definition; the substrate carries them opaquely and the provider validates them against the pinned definition at naturalization (T9 — the substrate never translates them into a provider-native spec)."
+        "description": "Parameters the definition is invoked with: the org-authored intent (a patch policy, a reboot policy, maintenance windows) that must survive an engine migration byte for byte. Keys are the definition's; the substrate carries them opaquely and the provider validates them against the definition's inputs schema."
       },
       "targets": {
         "type": "array",
         "items": {
           "$ref": "../common-elements.schema.json#/$defs/Reference"
         },
-        "description": "The resources this job operates on — typed resource references — URF strings (identifier-scheme §9), never inventory strings. Each is authored by handle (DCM ADR-025 §2 — a uuid is never hand-authored; the control plane resolves it to the uuid form at reserve). Part of the portable automation intent: the target set is engine-neutral and unchanged by an engine migration. Distinct from the informational affected_entities edge: targets is authored intent (what the job is FOR); affected_entities records what a run actually touched."
+        "description": "The resources the job operates on, as URF references authored by handle; the control plane resolves them to uuid form at reserve. Part of the portable intent."
       },
       "max_execution_time": {
         "type": "string",
         "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$",
-        "description": "ISO 8601 duration (e.g. PT30M). MANDATORY per ENT-004; enforced by the substrate Lifecycle Constraint Enforcer."
+        "description": "Maximum run duration (ISO 8601, PT30M). Mandatory (ENT-002); enforced by the substrate."
       },
       "on_max_exceeded": {
         "type": "string",
@@ -57,7 +57,7 @@
           "escalate"
         ],
         "x-extensible-enum": true,
-        "description": "Action when max_execution_time is exceeded. Default is profile-governed (ENT-004)."
+        "description": "What happens when the maximum is exceeded: terminate, alert, continue. Default is profile-governed."
       },
       "trigger": {
         "type": "string",
@@ -67,7 +67,7 @@
           "schedule"
         ],
         "x-extensible-enum": true,
-        "description": "What initiates the job (e.g. a NUT on-battery event, a cron schedule, an operator)."
+        "description": "What initiates the job: `schedule`, `event` (a NUT on-battery event), `operator`, `dependency`."
       },
       "schedule": {
         "type": "object",
@@ -75,7 +75,7 @@
         "required": [
           "expression"
         ],
-        "description": "Scheduled-execution intent — meaningful only when trigger is 'schedule'. Carries the data the trigger enum value alone cannot: when the job runs, what happens when a run would overlap a still-running predecessor, and what happens to a missed window.",
+        "description": "Scheduled-execution intent, meaningful when `trigger` is schedule: when the job runs, what happens when a run would overlap a still-running predecessor, and what happens to a missed run.",
         "properties": {
           "expression": {
             "type": "string",

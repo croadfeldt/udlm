@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/VexStatement/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/VexStatement/0.1.1",
   "conforms_to": "udlm/0.1",
   "uuid": "7d1f4e9a-2c5b-4a8e-b3d6-0f9e8c7b6a51",
   "resource_type": "VexStatement",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
     "display_name": "VEX Statement",
-    "description": "One exploitability claim about one vulnerability in one software package version, as a Knowledge-family fact: the status, its justification, and the TestEvidence it rests on, all by reference. Knowledge, not a Resource: it is drafted by an analysis (a harness, a scanner, a person) and curated by Product Security; the intent record is the draft, the realized record is the confirmed statement. One vulnerability affects many packages, so VEX lives here, never on the Vulnerability record. ADOPT by reference (T5): OpenVEX 0.2.0 is the interchange shape and the source of the status codelist; the document is pointed at, not restated.",
+    "description": "One exploitability claim about one vulnerability in one package version: the status, its justification and the TestEvidence it rests on, all by reference. A Knowledge class: drafted by an analysis (a harness, a scanner, a person) and curated by product security; the intent record is the draft, the realized record the confirmed statement. VEX lives here and never on the Vulnerability, because one vulnerability affects many packages. OpenVEX is adopted by reference: the interchange shape and the status codelist.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-09-13T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "VexStatement",
-          "version": "0.1.0",
+          "version": "0.1.1",
           "uuid": "7d1f4e9a-2c5b-4a8e-b3d6-0f9e8c7b6a51"
         }
       ]
@@ -43,7 +43,7 @@
           "fixed",
           "under_investigation"
         ],
-        "description": "OpenVEX status, carried as published by the standard."
+        "description": "The OpenVEX status, adopted by reference: not_affected, affected, fixed, under_investigation."
       },
       "justification": {
         "type": "string",
@@ -54,22 +54,22 @@
           "vulnerable_code_cannot_be_controlled_by_adversary",
           "inline_mitigations_already_exist"
         ],
-        "description": "OpenVEX justification label."
+        "description": "The OpenVEX justification label for a `not_affected` status."
       },
       "status_notes": {
         "type": "string",
-        "description": "The basis for the status in plain words."
+        "description": "The basis for the status in plain words, for the reviewer."
       },
       "evidence_refs": {
         "type": "array",
         "items": {
           "$ref": "../common-elements.schema.json#/$defs/Reference"
         },
-        "description": "The TestEvidence records this status rests on."
+        "description": "The TestEvidence records the status rests on. A `fixed` or `affected` status with none is a claim, and says so by being empty here."
       },
       "document_url": {
         "type": "string",
-        "description": "Where the OpenVEX document is published."
+        "description": "Where the OpenVEX document carrying this statement is published."
       }
     },
     "required": [

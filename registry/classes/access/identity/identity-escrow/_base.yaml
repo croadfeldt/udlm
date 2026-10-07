@@ -1,26 +1,21 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/IdentityEscrow/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/IdentityEscrow/0.5.1
 conforms_to: udlm/0.1
 uuid: ead1ea4f-d7db-4b90-887a-2bc67edf4b9b
 record_type: class
 class: base
 resource_type: IdentityEscrow
-version: 0.5.0
+version: 0.5.1
 family: Access
 status: active
 filed_under:
   - identity
 metadata:
   display_name: Identity Escrow
-  description: 'The contract for identity state that must SURVIVE its host entity''s re-realization: which items
-    are captured before a host is wiped or rebuilt, and restored — as a convergence gate — when it is re-realized.
-    Each item wraps a CredentialRef (custody stays with the escrow store as issuer; the value never enters the model);
-    the escrow binds to the host''s entity UUID (which re-provisioning preserves), never to a realization generation.
-    The escrowed_items list is the exhaustive survival allowlist: anything not listed does not survive the wipe
-    default. Normative rules: ESC-* (docs/spec/foundations/identity-escrow.md). Demand case: a field-device fleet
-    adopter whose devices are re-imaged on a fixed cadence but must keep their remote-access and application identities.
-    A Base of its own (CLS-002): the escrow contract is UDLM''s — which items are captured before a host is wiped
-    and restored as a convergence gate when it is re-realized — and every host and credential provider honours it
-    the same way; nothing wider abstracts it, so it stands alone, filed under `identity` (row 089).'
+  description: 'The contract for identity state that must survive its host''s re-realization: which items are captured
+    before a host is wiped or rebuilt, and restored, as a convergence gate, when it is re-realized. A Base of its
+    own (CLS-002): the contract is UDLM''s and every host and credential provider honours it the same way. Each
+    item wraps a CredentialRef, so the value never enters the model; the escrow binds to the host''s entity uuid,
+    which re-provisioning preserves. Rules: ESC-* in identity-escrow.md.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-25T00:00:00Z'
 elements:
@@ -28,13 +23,13 @@ elements:
     scope: IdentityEscrow
     optional: false
     state: canonical
-    description: 'The exhaustive survival allowlist (ESC-005): every piece of identity state that survives the host''s
-      re-realization, one item each. Anything not listed here does not survive — the wipe default is deletion.'
+    description: 'The exhaustive survival allowlist (ESC-005): one item per piece of identity state that survives
+      re-realization, each wrapping a CredentialRef. Anything not listed is deleted with the wipe.'
     schema:
       type: array
       minItems: 1
-      description: 'The exhaustive survival allowlist (ESC-005): every piece of identity state that survives the
-        host''s re-realization, one item each. Anything not listed here does not survive — the wipe default is deletion.'
+      description: 'The exhaustive survival allowlist (ESC-005): one item per piece of identity state that survives
+        re-realization, each wrapping a CredentialRef. Anything not listed is deleted with the wipe.'
       items:
         type: object
         additionalProperties: false

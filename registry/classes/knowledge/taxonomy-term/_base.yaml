@@ -1,146 +1,129 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/TaxonomyTerm/0.4.1
+$id: https://udlm.dev/registry/udlm/0.1/class/TaxonomyTerm/0.4.2
 conforms_to: udlm/0.1
 uuid: 0874c1b7-94c4-4682-a7a9-a29270c1ba17
 record_type: class
 class: base
 resource_type: TaxonomyTerm
-version: 0.4.1
+version: 0.4.2
 family: Knowledge
 status: active
 metadata:
   display_name: Taxonomy Term
-  description: 'A canonical vocabulary term — the normalization authority a catalog normalizes onto (the
-    ''spec'' half of the spec/reality pair; Capability is ''reality''). Formalizes docs/spec/foundations/knowledge-family.md
-    §4.2. A Knowledge-family entity: its lifecycle is curation (proposed -> under-review -> canonical
-    -> deprecated), never realized by a provider. Cross-cutting foundational machinery — SHARED by multiple
-    vocabularies that occupy DISJOINT subtrees under distinct roots (parent chains never cross roots):
-    e.g. ''architecture-capability'' (holds Capability [Knowledge], DAV''s architecture-capability sense)
-    and ''provider-capability'' (the substrate provider-operation vocabulary; ADR-PROV-002). The `parent`
-    chain up to a root is what keeps those vocabularies disjoint under one type.'
+  description: 'A canonical vocabulary term: the normalization authority a catalog normalizes onto. A Knowledge
+    class: its lifecycle is curation, never provisioning. One class serves many vocabularies, each a disjoint subtree
+    under its own root (`architecture-capability`, `provider-capability`, `usage-group`, …); the `parent` chain
+    up to a root keeps them disjoint.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-11T00:00:00Z'
 entity_type: TaxonomyTerm
 elements:
-- element: term
-  scope: TaxonomyTerm
-  optional: false
-  state: canonical
-  description: Canonical term (single normalized handle) that items normalize onto. Unique within its
-    root subtree.
-  schema:
-    type: string
-    description: Canonical term (single normalized handle) that items normalize onto. Unique within its
-      root subtree.
-- element: definition
-  scope: TaxonomyTerm
-  optional: false
-  state: canonical
-  description: What the term means — the authoritative definition items are normalized against.
-  schema:
-    type: string
-    description: What the term means — the authoritative definition items are normalized against.
-- element: pillar
-  scope: TaxonomyTerm
-  optional: true
-  state: canonical
-  description: Top-level grouping the term rolls up to (e.g. a maturity-framework pillar).
-  schema:
-    type: string
-    description: Top-level grouping the term rolls up to (e.g. a maturity-framework pillar).
-- element: domain
-  scope: TaxonomyTerm
-  optional: true
-  state: canonical
-  description: Term domain (prefix + name). For a provider-capability term this is the resource-type domain
-    the capability operates over (the Category segment of a resource-type $id, e.g. Storage, Machine,
-    Network); ADR-PROV-002.
-  schema:
-    type: string
-    description: Term domain (prefix + name). For a provider-capability term this is the resource-type
-      domain the capability operates over (the Category segment of a resource-type $id, e.g. Storage,
-      Machine, Network); ADR-PROV-002.
-- element: root
-  scope: TaxonomyTerm
-  optional: true
-  state: canonical
-  description: The vocabulary root this term belongs to (e.g. 'architecture-capability', 'provider-capability').
-    Distinct roots are disjoint subtrees sharing this one type. Derivable by walking `parent` to the top;
-    recorded for query convenience.
-  schema:
-    type: string
-    description: The vocabulary root this term belongs to (e.g. 'architecture-capability', 'provider-capability').
-      Distinct roots are disjoint subtrees sharing this one type. Derivable by walking `parent` to the
-      top; recorded for query convenience.
-- element: normalization_rules
-  scope: TaxonomyTerm
-  optional: true
-  state: canonical
-  description: How to normalize items for this subject matter onto the term.
-  schema:
-    type: string
-    description: How to normalize items for this subject matter onto the term.
-- element: category
-  scope: TaxonomyTerm
-  optional: true
-  state: canonical
-  description: Source grouping the term was drawn from (provenance of the term itself).
-  schema:
-    type: string
-    description: Source grouping the term was drawn from (provenance of the term itself).
-- element: curation_state
-  scope: TaxonomyTerm
-  optional: true
-  state: canonical
-  description: Position in the curation lifecycle — the Knowledge-family interpretation of the four states.
-    Seeded `canonical` from an authoritative taxonomy; `proposed` for a back-fill candidate a catalog
-    surfaced. Promotion is a curation act applied by Policy, not by a provider.
-  schema:
-    $ref: ../../../common-elements.schema.json#/$defs/curation_state
-    description: Position in the curation lifecycle — the Knowledge-family interpretation of the four
-      states. Seeded `canonical` from an authoritative taxonomy; `proposed` for a back-fill candidate
-      a catalog surfaced. Promotion is a curation act applied by Policy, not by a provider.
+  - element: term
+    scope: TaxonomyTerm
+    optional: false
+    state: canonical
+    description: The canonical handle items normalize onto, unique within its root.
+    schema:
+      type: string
+      description: The canonical handle items normalize onto, unique within its root.
+  - element: definition
+    scope: TaxonomyTerm
+    optional: false
+    state: canonical
+    description: What the term means; the definition items are normalized against.
+    schema:
+      type: string
+      description: What the term means; the definition items are normalized against.
+  - element: pillar
+    scope: TaxonomyTerm
+    optional: true
+    state: canonical
+    description: Top-level grouping the term rolls up to.
+    schema:
+      type: string
+      description: Top-level grouping the term rolls up to.
+  - element: domain
+    scope: TaxonomyTerm
+    optional: true
+    state: canonical
+    description: The term's domain. For a provider-capability term, the class, family or usage group the capability
+      operates over (TRI-003).
+    schema:
+      type: string
+      description: The term's domain. For a provider-capability term, the class, family or usage group the capability
+        operates over (TRI-003).
+  - element: root
+    scope: TaxonomyTerm
+    optional: true
+    state: canonical
+    description: The vocabulary root this term belongs to. Derivable by walking `parent`; recorded for query convenience.
+    schema:
+      type: string
+      description: The vocabulary root this term belongs to. Derivable by walking `parent`; recorded for query convenience.
+  - element: normalization_rules
+    scope: TaxonomyTerm
+    optional: true
+    state: canonical
+    description: How items are normalized onto the term (match patterns).
+    schema:
+      type: string
+      description: How items are normalized onto the term (match patterns).
+  - element: category
+    scope: TaxonomyTerm
+    optional: true
+    state: canonical
+    description: The source grouping the term was drawn from, as provenance.
+    schema:
+      type: string
+      description: The source grouping the term was drawn from, as provenance.
+  - element: curation_state
+    scope: TaxonomyTerm
+    optional: true
+    state: canonical
+    description: 'Position in the curation lifecycle: `canonical` when seeded from an authority or adopted, `proposed`
+      for a candidate a catalog surfaced. Promotion is a curation act applied by policy.'
+    schema:
+      $ref: ../../../common-elements.schema.json#/$defs/curation_state
+      description: 'Position in the curation lifecycle: `canonical` when seeded from an authority or adopted, `proposed`
+        for a candidate a catalog surfaced. Promotion is a curation act applied by policy.'
 spec_examples:
-- term: workload-placement
-  definition: The capability to schedule a workload onto a suitable host or node according to declared
-    placement constraints.
-  pillar: Operate
-  domain: Machine
-  root: architecture-capability
-  normalization_rules: Map free-text mentions of scheduling, bin-packing, affinity/anti-affinity, and
-    node selection onto this term.
-  category: dcm-capability-taxonomy
-  curation_state: canonical
+  - term: workload-placement
+    definition: The capability to schedule a workload onto a suitable host or node according to declared placement
+      constraints.
+    pillar: Operate
+    domain: Machine
+    root: architecture-capability
+    normalization_rules: Map free-text mentions of scheduling, bin-packing, affinity/anti-affinity, and node selection
+      onto this term.
+    category: dcm-capability-taxonomy
+    curation_state: canonical
 outputs:
   term_handle:
     type: string
-    description: The canonical handle a term resolves to once curated to `canonical`. Other Knowledge
-      entities (Capability.normalized_to, Alias.resolves_to) and — for provider-capability terms — provider
-      capability declarations and Governance-Matrix policy targets bind to this via typed references rather
-      than free-text.
+    description: The canonical handle a term resolves to once curated to `canonical`. Other Knowledge entities (Capability.normalized_to,
+      Alias.resolves_to) and — for provider-capability terms — provider capability declarations and Governance-Matrix
+      policy targets bind to this via typed references rather than free-text.
 relationships:
-- edge_type: references
-  target: TaxonomyTerm
-  target_field: term_handle
-  cardinality: 0..1
-  description: parent — this term's parent in the hierarchy. The parent chain terminates at a vocabulary
-    root and never crosses into another root's subtree (keeps shared-machinery vocabularies disjoint).
+  - edge_type: references
+    target: TaxonomyTerm
+    target_field: term_handle
+    cardinality: 0..1
+    description: parent — this term's parent in the hierarchy. The parent chain terminates at a vocabulary root
+      and never crosses into another root's subtree (keeps shared-machinery vocabularies disjoint).
 context:
-  purpose: Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized
-    onto.
-  plain_description: 'A term with an authoritative definition, living in a named vocabulary tree (its
-    root), with a parent chain that never crosses into another vocabulary. Several vocabularies share
-    this one type while staying disjoint — e.g. an architecture-capability taxonomy and a provider-operation
-    vocabulary are separate roots. Terms are curated — the `curation_state` property: `proposed`, `under-review`,
-    `canonical`, `deprecated`; once canonical, the term''s handle is what other records bind to instead
-    of restating names.'
+  purpose: Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.
+  plain_description: 'A term with an authoritative definition, living in a named vocabulary tree (its root), with
+    a parent chain that never crosses into another vocabulary. Several vocabularies share this one type while staying
+    disjoint — e.g. an architecture-capability taxonomy and a provider-operation vocabulary are separate roots.
+    Terms are curated — the `curation_state` property: `proposed`, `under-review`, `canonical`, `deprecated`; once
+    canonical, the term''s handle is what other records bind to instead of restating names.'
   use_when:
-  - You need an authoritative vocabulary that observed, free-text items normalize onto.
-  - You need several disjoint controlled vocabularies without minting a new type per vocabulary.
+    - You need an authoritative vocabulary that observed, free-text items normalize onto.
+    - You need several disjoint controlled vocabularies without minting a new type per vocabulary.
   not_for:
-  - The observed thing being normalized — Capability records normalize onto terms; the term is the authority,
-    not the observation.
-  - Ad-hoc classification of resources — labels on resource records cover that; TaxonomyTerm is for governed
-    vocabularies with curation.
+    - The observed thing being normalized — Capability records normalize onto terms; the term is the authority,
+      not the observation.
+    - Ad-hoc classification of resources — labels on resource records cover that; TaxonomyTerm is for governed vocabularies
+      with curation.
   works_with:
-  - Capability — capabilities normalize onto terms (normalized_to).
-  - TaxonomyTerm — the parent term; chains stay inside one vocabulary root.
+    - Capability — capabilities normalize onto terms (normalized_to).
+    - TaxonomyTerm — the parent term; chains stay inside one vocabulary root.

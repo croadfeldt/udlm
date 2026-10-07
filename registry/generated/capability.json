@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Capability/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Capability/0.4.1",
   "conforms_to": "udlm/0.1",
   "uuid": "1d8e581f-71a1-4023-aaba-2d581a02da0e",
   "resource_type": "Capability",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
     "display_name": "Capability",
-    "description": "A discrete platform capability — the unit of architectural capability tracked, normalized, and gap-analysed by DAV. A Knowledge-family entity: its lifecycle is curation (proposed -> under-review -> canonical -> deprecated), not provisioning, and it is never realized by a provider. The family tag disambiguates the collision-prone bare word 'Capability' from any Resource type.",
+    "description": "A discrete platform capability: the unit an architecture gap analysis tracks and normalizes. A Knowledge class: its lifecycle is curation (proposed, under review, canonical, deprecated), never provisioning. The family disambiguates the bare word from any Resource class.",
     "maintainer": "dav",
     "origination_timestamp": "2026-06-18T00:58:56Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Capability",
-          "version": "0.4.0",
+          "version": "0.4.1",
           "uuid": "1d8e581f-71a1-4023-aaba-2d581a02da0e"
         }
       ]
@@ -29,7 +29,7 @@
     "properties": {
       "name": {
         "type": "string",
-        "description": "Canonical capability name (single normalized handle). The curation lifecycle converges aliases onto this."
+        "description": "Canonical name, the single handle aliases converge onto."
       },
       "description": {
         "type": "string",
@@ -37,15 +37,15 @@
       },
       "pillar": {
         "type": "string",
-        "description": "Top-level grouping the capability rolls up to (e.g. a maturity-framework pillar)."
+        "description": "Top-level grouping it rolls up to (a maturity-framework pillar)."
       },
       "domain": {
         "type": "string",
-        "description": "Capability domain (e.g. one of control-plane capability domains) this capability belongs to."
+        "description": "The capability domain it belongs to."
       },
       "curation_state": {
         "$ref": "../common-elements.schema.json#/$defs/curation_state",
-        "description": "Position in the curation lifecycle — the Knowledge-family interpretation of the four states (provenance-first; promotion to canonical is a curation act, applied by Policy, not by a provider)."
+        "description": "Position in the curation lifecycle, the Knowledge reading of the four states. Promotion to canonical is a curation act applied by policy, not by a provider."
       }
     },
     "required": [

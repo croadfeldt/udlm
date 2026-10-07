@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.6.6",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.6.7",
   "conforms_to": "udlm/0.1",
   "uuid": "679b14ef-f169-441e-968d-dacafffe1966",
   "resource_type": "Identity.Person",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "family": "Access",
   "status": "active",
   "metadata": {
     "display_name": "Person",
-    "description": "A human identity/account — an ACTOR that the control plane authenticates and authorizes (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix). Fills the named-but-unbuilt Identity.* slot (naming-conventions §2; resource-type-hierarchy §Identity). Holds NO secret material — credentials are referenced (CredentialRef). Backs the built-in auth provider's local users and, when federated, references the external IdP subject (PIP). Its actor_type is `human`, from the one closed actor-type vocabulary (universal-audit).",
+    "description": "A human identity, one of the two forms of Identity. Holds no secret material; credentials are referenced. When federated, it references the external IdP subject.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z",
     "generated": true,
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Identity",
-          "version": "1.2.0",
+          "version": "1.2.1",
           "uuid": "db886a00-0e24-4ff7-992a-c6d546a34eb6"
         },
         {
           "class": "Identity.Person",
-          "version": "0.6.6",
+          "version": "0.6.7",
           "uuid": "679b14ef-f169-441e-968d-dacafffe1966"
         }
       ]
@@ -34,25 +34,25 @@
     "properties": {
       "handle": {
         "type": "string",
-        "description": "Login handle / username, unique within the implementation."
+        "description": "Login handle, unique within the implementation."
       },
       "display_name": {
         "type": "string",
-        "description": "Converted verbatim from the flat Identity.Person spec."
+        "description": "Human-readable name."
       },
       "actor_type": {
         "type": "string",
         "enum": [
           "human"
         ],
-        "description": "From the closed actor-type vocabulary (universal-audit); a Person is always `human`."
+        "description": "Always `human`."
       },
       "authenticated_by": {
         "type": "string",
-        "description": "handle/uuid of the Auth Provider (auth capability) or DirectoryService that authenticates this person. Default: the built-in provider (no external IdP required)."
+        "description": "The auth provider or DirectoryService that authenticates this identity; default is the built-in provider."
       },
       "credential_ref": {
-        "description": "Reference to CredentialRef — the credential record for this person. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
+        "description": "Reference to the CredentialRef that proves this identity; custody stays with the store.",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
       "status": {
@@ -61,15 +61,15 @@
           "suspended",
           "disabled"
         ],
-        "description": "Converted verbatim from the flat Identity.Person spec."
+        "description": "`active`, `suspended` or `disabled`."
       },
       "email": {
         "type": "string",
-        "description": "Converted verbatim from the flat Identity.Person spec."
+        "description": "Contact address."
       },
       "external_subject": {
         "type": "string",
-        "description": "The external IdP subject id when federated (a PIP reference, resolved not stored)."
+        "description": "The external IdP subject id when federated; a reference, resolved not stored."
       }
     },
     "required": [

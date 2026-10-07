@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.4.2",
   "conforms_to": "udlm/0.1",
   "uuid": "0874c1b7-94c4-4682-a7a9-a29270c1ba17",
   "resource_type": "TaxonomyTerm",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
     "display_name": "Taxonomy Term",
-    "description": "A canonical vocabulary term — the normalization authority a catalog normalizes onto (the 'spec' half of the spec/reality pair; Capability is 'reality'). Formalizes docs/spec/foundations/knowledge-family.md §4.2. A Knowledge-family entity: its lifecycle is curation (proposed -> under-review -> canonical -> deprecated), never realized by a provider. Cross-cutting foundational machinery — SHARED by multiple vocabularies that occupy DISJOINT subtrees under distinct roots (parent chains never cross roots): e.g. 'architecture-capability' (holds Capability [Knowledge], DAV's architecture-capability sense) and 'provider-capability' (the substrate provider-operation vocabulary; ADR-PROV-002). The `parent` chain up to a root is what keeps those vocabularies disjoint under one type.",
+    "description": "A canonical vocabulary term: the normalization authority a catalog normalizes onto. A Knowledge class: its lifecycle is curation, never provisioning. One class serves many vocabularies, each a disjoint subtree under its own root (`architecture-capability`, `provider-capability`, `usage-group`, …); the `parent` chain up to a root keeps them disjoint.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "TaxonomyTerm",
-          "version": "0.4.1",
+          "version": "0.4.2",
           "uuid": "0874c1b7-94c4-4682-a7a9-a29270c1ba17"
         }
       ]
@@ -29,35 +29,35 @@
     "properties": {
       "term": {
         "type": "string",
-        "description": "Canonical term (single normalized handle) that items normalize onto. Unique within its root subtree."
+        "description": "The canonical handle items normalize onto, unique within its root."
       },
       "definition": {
         "type": "string",
-        "description": "What the term means — the authoritative definition items are normalized against."
+        "description": "What the term means; the definition items are normalized against."
       },
       "pillar": {
         "type": "string",
-        "description": "Top-level grouping the term rolls up to (e.g. a maturity-framework pillar)."
+        "description": "Top-level grouping the term rolls up to."
       },
       "domain": {
         "type": "string",
-        "description": "Term domain (prefix + name). For a provider-capability term this is the resource-type domain the capability operates over (the Category segment of a resource-type $id, e.g. Storage, Machine, Network); ADR-PROV-002."
+        "description": "The term's domain. For a provider-capability term, the class, family or usage group the capability operates over (TRI-003)."
       },
       "root": {
         "type": "string",
-        "description": "The vocabulary root this term belongs to (e.g. 'architecture-capability', 'provider-capability'). Distinct roots are disjoint subtrees sharing this one type. Derivable by walking `parent` to the top; recorded for query convenience."
+        "description": "The vocabulary root this term belongs to. Derivable by walking `parent`; recorded for query convenience."
       },
       "normalization_rules": {
         "type": "string",
-        "description": "How to normalize items for this subject matter onto the term."
+        "description": "How items are normalized onto the term (match patterns)."
       },
       "category": {
         "type": "string",
-        "description": "Source grouping the term was drawn from (provenance of the term itself)."
+        "description": "The source grouping the term was drawn from, as provenance."
       },
       "curation_state": {
         "$ref": "../common-elements.schema.json#/$defs/curation_state",
-        "description": "Position in the curation lifecycle — the Knowledge-family interpretation of the four states. Seeded `canonical` from an authoritative taxonomy; `proposed` for a back-fill candidate a catalog surfaced. Promotion is a curation act applied by Policy, not by a provider."
+        "description": "Position in the curation lifecycle: `canonical` when seeded from an authority or adopted, `proposed` for a candidate a catalog surfaced. Promotion is a curation act applied by policy."
       }
     },
     "required": [

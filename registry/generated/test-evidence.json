@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/TestEvidence/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/TestEvidence/0.3.1",
   "conforms_to": "udlm/0.1",
   "uuid": "3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63",
   "resource_type": "TestEvidence",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
     "display_name": "Test Evidence",
-    "description": "One test and its outcome about one subject, as a Knowledge-family fact any test suite can produce: a CI run of unit tests, a role tested with Molecule, a conformance suite against a cluster, a burn-in against a host, or a generated test against a dependency. It says what the test is, what it is about (a reference to any entity), what kind of test it is, what happened (the result, in an adopted test-report format), and which run produced it (a Job, by reference). Knowledge, not a Resource: it is observed by running the test and curated by a reviewer. Lifecycle is the family's curation reading of the four states (knowledge-family.md §2): a proposed test is an intent record, one under review is a requested record, an accepted test is a realized record with `scope`, a retired one is deprecated with its reason. ADOPT by reference (T5): the result body is CTRF (preferred) or JUnit XML, pointed at and summarized, never restated; the signed projection of a realized record is an in-toto Statement with the test-result/v0.1 predicate whose subject is this record's integrity head. The join runs one way, statement to record. Types narrow the subject and the purpose; a Provider Class carries what only one producer knows.",
+    "description": "One test and its outcome about one subject, as a fact any test suite can produce: a unit-test run, a role tested with Molecule, a conformance suite against a cluster, a burn-in against a host, a generated test against a dependency. It says what the test is, what it is about (any entity, by reference), what kind it is, what happened (in an adopted report format, by reference) and which Job ran it. A Knowledge class: observed by running the test, curated by a reviewer; a proposed test is an intent record, one under review a requested record, an accepted one a realized record with `scope`. The result body is CTRF or JUnit XML, pointed at and summarized, never restated; the signed projection of a realized record is an in-toto Statement with the test-result predicate over this record's integrity head. Types narrow the subject and purpose; a Provider Class carries what only one producer knows.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-09-13T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "TestEvidence",
-          "version": "0.3.0",
+          "version": "0.3.1",
           "uuid": "3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63"
         }
       ]
@@ -29,11 +29,11 @@
     "properties": {
       "test_id": {
         "type": "string",
-        "description": "Stable identifier of the test across edits."
+        "description": "Stable identifier of the test across edits, as the producing suite names it."
       },
       "subject_ref": {
         "$ref": "../common-elements.schema.json#/$defs/Reference",
-        "description": "What the test is about, as a reference to any entity — a software package, a service, a class record, a host, a cluster."
+        "description": "What the test is about: a reference to any entity (a package, a service, a class record, a host, a cluster)."
       },
       "category": {
         "type": "string",
@@ -47,7 +47,7 @@
           "performance",
           "security"
         ],
-        "description": "The kind of test."
+        "description": "The kind of test, from a closed set of generic kinds. What a test is for (a vulnerability check, a benchmark) is a Type, not a category."
       },
       "result": {
         "type": "object",
@@ -89,20 +89,20 @@
             "description": "Digest of the full report, sha256 with the same prefix the integrity block uses."
           }
         },
-        "description": "What happened."
+        "description": "What happened: `outcome`, `duration_ms`, `format` (CTRF or JUnit XML) and the `report_ref` and `report_digest` of the full report."
       },
       "job_ref": {
         "$ref": "../common-elements.schema.json#/$defs/Reference",
-        "description": "The Job (Process family) that ran the test. Its realized record carries the runner, its versions, and where it ran; none of that is restated here."
+        "description": "The Job that ran the test. Its realized record carries the runner, versions and location; none of that is restated here."
       },
       "file_path": {
         "type": "string",
-        "description": "Path of the test's source within its suite."
+        "description": "Path of the test's source within its suite, when the test is a file."
       },
       "file_digest": {
         "type": "string",
         "pattern": "^sha256:[0-9a-f]{64}$",
-        "description": "Digest of the test's source file."
+        "description": "sha256 digest of that file, with the integrity block's prefix."
       },
       "scope": {
         "type": "string",
@@ -110,7 +110,7 @@
           "overlay",
           "standard"
         ],
-        "description": "overlay or standard."
+        "description": "On the realized record only. Where an accepted test lives: `overlay` (a suite kept beside a subject that cannot carry it; one reviewer) or `standard` (the product-wide suite; two reviewers)."
       }
     },
     "required": [

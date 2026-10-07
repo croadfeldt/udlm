@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.2",
   "conforms_to": "udlm/0.1",
   "uuid": "e44193cc-a41f-4bf6-bfcf-aa70029dc10e",
   "resource_type": "SovereigntyZone",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
     "display_name": "Sovereignty Zone",
-    "description": "A named sovereignty zone declared in ISO 3166 terms — what a coined label like `eu-west` actually means jurisdictionally. Entities cite the zone by handle; accreditations state their scope in the same vocabulary; the residency-subsumption match is then computable rather than assumed. Carries no physical location by design.",
+    "description": "A named sovereignty zone in ISO 3166 terms: what a coined label like `eu-west` means jurisdictionally. Entities cite the zone by handle and accreditations state their scope in the same vocabulary, so the residency match is computable rather than assumed. Carries no physical location by design.",
     "maintainer": "UDLM project",
     "origination_timestamp": "2026-08-09T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SovereigntyZone",
-          "version": "0.1.1",
+          "version": "0.1.2",
           "uuid": "e44193cc-a41f-4bf6-bfcf-aa70029dc10e"
         }
       ]
@@ -36,7 +36,7 @@
           "pattern": "^[A-Z]{2}(-[A-Z0-9]{1,3})?$",
           "description": "ISO 3166-1 alpha-2, optionally with a 3166-2 subdivision (`DE`, `US-MN`)."
         },
-        "description": "The jurisdictions this zone spans, as ISO 3166 codes — 3166-1 for a country (`DE`), 3166-2 for a subdivision (`US-MN`). Required, and required to be non-empty: a zone whose jurisdictions are unknown cannot be matched against any accreditation, so declaring it without them records a name and answers nothing. More than one is normal — a zone that spans DE and NL states both, and an accreditation must cover all of them to cover the zone."
+        "description": "The jurisdictions the zone spans, as ISO 3166 codes: 3166-1 for a country (`DE`), 3166-2 for a subdivision (`US-MN`). Required and non-empty: a zone without them cannot be matched against any accreditation. More than one is normal, and an accreditation must cover all of them to cover the zone."
       },
       "regimes": {
         "type": "array",
@@ -45,11 +45,11 @@
           "type": "string",
           "pattern": "^[A-Z][A-Z0-9-]{1,15}$"
         },
-        "description": "Supranational regimes the zone sits under (`EU`). Separate from `jurisdictions` because a regime is not a country and does not subsume the same way: an accreditation scoped `EU` is not an accreditation scoped `DE`, and §3.8 matches a distinct sovereignty regime EXACTLY rather than by containment. Absent means no supranational regime applies."
+        "description": "Supranational regimes the zone sits under (`EU`). Separate from `jurisdictions` because a regime does not subsume the way a country does: an accreditation scoped `EU` is not one scoped `DE`, and §3.8 matches a regime exactly. Absent means none applies."
       },
       "description": {
         "type": "string",
-        "description": "What this zone is for, in the operator's own words — the sentence that makes a coined name legible to someone who did not coin it."
+        "description": "What the zone is for, in the operator's words: the sentence that makes a coined name legible to someone who did not coin it."
       }
     },
     "required": [

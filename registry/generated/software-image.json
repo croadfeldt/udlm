@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwareImage/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwareImage/0.3.1",
   "conforms_to": "udlm/0.1",
   "uuid": "d9635416-81f7-431f-b3b7-dca3919a1f16",
   "resource_type": "SoftwareImage",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
     "display_name": "Software Image",
-    "description": "A container image as a Knowledge-family fact about the estate — the digest-identified artifact a Container runs, and the anchor for its bill-of-materials. Knowledge, not a Resource: it is discovered (a scanner sweep), never provider-realized; its lifecycle is curation/discovered. ADOPT (not absorb) the OCI image-spec by reference (T5): identity join (digest) + a version-pinned pointer, the standard's schema is not restated. Referenced by Container via runs_image; contains SoftwarePackage (the SBOM).",
+    "description": "A container image as a fact about the estate: the digest-identified artifact a Container runs and the anchor for its bill of materials. A Knowledge class: discovered by a scanner sweep, never provider-realized. The OCI image spec is adopted by reference — the digest is the identity, a pinned pointer names the version, and the standard's schema is not restated. Referenced by Container; contains SoftwarePackage.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-22T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SoftwareImage",
-          "version": "0.3.0",
+          "version": "0.3.1",
           "uuid": "d9635416-81f7-431f-b3b7-dca3919a1f16"
         }
       ]
@@ -29,19 +29,19 @@
     "properties": {
       "digest": {
         "type": "string",
-        "description": "The image content digest (e.g. sha256:...) — the immutable correlation id (OCI image manifest digest). Dedup key: one record per digest."
+        "description": "The image manifest digest (sha256:…), the immutable correlation id. One record per digest."
       },
       "repository": {
         "type": "string",
-        "description": "Repository path (registry/namespace/name), e.g. registry.example.com/org/app."
+        "description": "Repository path (registry.example.com/org/app)."
       },
       "tag": {
         "type": "string",
-        "description": "A human tag observed pointing at this digest (advisory; tags are mutable, the digest is not)."
+        "description": "A tag observed pointing at this digest; advisory, since tags move and digests do not."
       },
       "registry": {
         "type": "string",
-        "description": "The registry host serving the image (e.g. registry.example.com)."
+        "description": "The registry host serving the image."
       },
       "os": {
         "$ref": "../common-elements.schema.json#/$defs/oci_os",

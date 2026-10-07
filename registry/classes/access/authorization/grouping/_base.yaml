@@ -4,7 +4,7 @@ resource_type: Grouping
 class: base
 family: Access
 entity_type: Grouping
-version: 0.3.1
+version: 0.3.2
 conforms_to: udlm/0.1
 status: active
 filed_under:
@@ -32,22 +32,24 @@ elements:
               parsed or evaluated by UDLM.
           note:
             type: string
-    description: 'The RBAC bridge: external subject-expressions whose holders this grouping is FOR. Opaque by design
-      — parsing or evaluating one would re-import the permission engine the model excludes.
-
-      '
+      description: 'External subject expressions whose holders this grouping is for: the RBAC bridge. Opaque by
+        design; parsing or evaluating one would re-import the permission engine the model excludes.'
+    description: 'External subject expressions whose holders this grouping is for: the RBAC bridge. Opaque by design;
+      parsing or evaluating one would re-import the permission engine the model excludes.'
     state: canonical
   - element: membership_criterion
     scope: Grouping
     schema:
       type: string
       format: udlm-filter-url
-    description: 'The RULE that derives the member set — a stored URF filter (identifier-scheme 9; declared fields
-      only, URF-005), never the set itself. Idioms: tenancy "estate?tenant_uuid=={self}" (exclusivity is structural
-      — the field is scalar); ownership "estate?owned_by=={self}"; labels "estate?labels.concern==payments"; explicit
-      set "estate?uuid=in=(a,b)" — the marked exception, prefer any derivable form; exclusion "estate?tenant_uuid==abc;member_of!=access/groupings/hold".
-
-      '
+      description: 'The rule that derives the member set: a stored URF filter over declared fields (URF-005), never
+        the set itself. Idioms: tenancy `estate?tenant_uuid=={self}`, ownership `estate?owned_by=={self}`, labels
+        `estate?labels.concern==payments`, exclusion `estate?tenant_uuid==abc;member_of!=access/groupings/hold`;
+        an explicit set `estate?uuid=in=(a,b)` is the marked exception.'
+    description: 'The rule that derives the member set: a stored URF filter over declared fields (URF-005), never
+      the set itself. Idioms: tenancy `estate?tenant_uuid=={self}`, ownership `estate?owned_by=={self}`, labels
+      `estate?labels.concern==payments`, exclusion `estate?tenant_uuid==abc;member_of!=access/groupings/hold`; an
+      explicit set `estate?uuid=in=(a,b)` is the marked exception.'
     state: canonical
   - element: obligations
     scope: Grouping
@@ -62,18 +64,19 @@ elements:
             - none
             - logical
             - physical
-    description: 'Unit-level requirements the engine enforces over the derived set — physical: stores and placement
-      partition by this grouping''s uuid (IdP group -> binding -> this anchor -> tenant_uuid -> partitioned stores;
-      every hop on existing machinery).
-
-      '
+      description: 'Unit-level requirements the engine enforces over the derived set, such as isolation: stores
+        and placement partition by this grouping''s uuid.'
+    description: 'Unit-level requirements the engine enforces over the derived set, such as isolation: stores and
+      placement partition by this grouping''s uuid.'
     state: canonical
 metadata:
   display_name: Grouping
-  description: 'The native grouping anchor: RBAC bridge + derived-membership criterion + unit obligations.'
+  description: 'The native grouping anchor: who a grouping is for (subject bindings), which resources are in it
+    (a stored criterion that derives the member set), and what the engine must enforce over that set (obligations).
+    A grouping earns a record only when it is referenced by identity or carries bindings or obligations (row 063).'
   maintainer: UDLM project
   origination_timestamp: '2026-08-05T00:00:00Z'
-$id: https://udlm.dev/registry/udlm/0.1/class/Grouping/0.3.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Grouping/0.3.2
 context:
   purpose: 'Declares a grouping — the native anchor other things bind to: a membership criterion, the obligations
     members inherit, and the opaque subject bindings an authorization engine evaluates.'

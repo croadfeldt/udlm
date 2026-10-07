@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.3.1",
   "conforms_to": "udlm/0.1",
   "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366",
   "resource_type": "SoftwarePackage",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
     "display_name": "Software Package",
-    "description": "A software package / library as a Knowledge-family fact — one record per purl, shared by every SoftwareImage that contains it (one entity, many referrers). Knowledge, not a Resource: discovered by a scanner sweep, never provider-realized. ADOPT (not absorb) the Package-URL (purl) spec and SPDX/CycloneDX component identity by reference (T5): purl is the portable correlation id; the component schema is not restated. Contained by SoftwareImage (contains); references Vulnerability (affected_by).",
+    "description": "A software package or library as a fact: one record per purl, shared by every SoftwareImage that contains it. A Knowledge class: discovered by a scanner sweep, never provider-realized. Package URL and SPDX/CycloneDX component identity are adopted by reference; the purl is the portable correlation id. Contained by SoftwareImage; references Vulnerability.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-22T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SoftwarePackage",
-          "version": "0.3.0",
+          "version": "0.3.1",
           "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366"
         }
       ]
@@ -29,23 +29,23 @@
     "properties": {
       "purl": {
         "type": "string",
-        "description": "Package URL (purl) — the portable identity and dedup key, e.g. pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1. One record per purl."
+        "description": "Package URL, the portable identity and dedup key (pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1). One record per purl."
       },
       "name": {
         "type": "string",
-        "description": "Package name (as parsed from the purl / SBOM component)."
+        "description": "Package name, as parsed from the purl or SBOM."
       },
       "version": {
         "type": "string",
-        "description": "Package version (as parsed from the purl / SBOM component)."
+        "description": "Package version, as parsed."
       },
       "type": {
         "$ref": "../common-elements.schema.json#/$defs/purl_type",
-        "description": "Package ecosystem / purl type (e.g. rpm, maven, npm, pypi, golang, deb)."
+        "description": "Package ecosystem, the purl type (rpm, deb, npm, pypi, …)."
       },
       "license": {
         "type": "string",
-        "description": "Declared license as an SPDX license identifier (e.g. Apache-2.0), where the SBOM reports one."
+        "description": "Declared license as an SPDX identifier (Apache-2.0), where the SBOM reports one."
       }
     },
     "required": [

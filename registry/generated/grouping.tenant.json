@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.1.1",
   "conforms_to": "udlm/0.1",
   "uuid": "6b2f0a71-7d3e-4c58-9a14-2e8b5c03f4d7",
   "resource_type": "Grouping.Tenant",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "family": "Access",
   "status": "active",
   "metadata": {
     "display_name": "Tenant",
-    "description": "The ownership and isolation border. Every record carries a tenant_uuid resolving to one of these, and it is the referent ownership, cost attribution, audit scope, drift accountability, and policy scope all agree on. A member belongs to exactly one at a time — a structural lock, not a convention — and tenants may nest, the child keeping its resources and its isolation while the parent holds governance overlay and rollup.",
+    "description": "The ownership and isolation border. Every record's `tenant_uuid` resolves to one of these, and it is the referent that ownership, cost attribution, audit scope, drift accountability and policy scope all agree on. A member belongs to exactly one tenant at a time, structurally. Tenants nest: the child keeps its resources and its isolation, the parent holds governance overlay and rollup.",
     "maintainer": "UDLM project",
     "origination_timestamp": "2026-08-08T00:00:00Z",
     "generated": true,
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Grouping",
-          "version": "0.3.1",
+          "version": "0.3.2",
           "uuid": "2c8b6270-2eae-4ac4-8faa-3375dde3da3e"
         },
         {
           "class": "Grouping.Tenant",
-          "version": "0.1.0",
+          "version": "0.1.1",
           "uuid": "6b2f0a71-7d3e-4c58-9a14-2e8b5c03f4d7"
         }
       ]
@@ -56,12 +56,12 @@
             }
           }
         },
-        "description": "The RBAC bridge: external subject-expressions whose holders this grouping is FOR. Opaque by design — parsing or evaluating one would re-import the permission engine the model excludes.\n"
+        "description": "External subject expressions whose holders this grouping is for: the RBAC bridge. Opaque by design; parsing or evaluating one would re-import the permission engine the model excludes."
       },
       "membership_criterion": {
         "type": "string",
         "format": "udlm-filter-url",
-        "description": "The RULE that derives the member set — a stored URF filter (identifier-scheme 9; declared fields only, URF-005), never the set itself. Idioms: tenancy \"estate?tenant_uuid=={self}\" (exclusivity is structural — the field is scalar); ownership \"estate?owned_by=={self}\"; labels \"estate?labels.concern==payments\"; explicit set \"estate?uuid=in=(a,b)\" — the marked exception, prefer any derivable form; exclusion \"estate?tenant_uuid==abc;member_of!=access/groupings/hold\".\n"
+        "description": "The rule that derives the member set: a stored URF filter over declared fields (URF-005), never the set itself. Idioms: tenancy `estate?tenant_uuid=={self}`, ownership `estate?owned_by=={self}`, labels `estate?labels.concern==payments`, exclusion `estate?tenant_uuid==abc;member_of!=access/groupings/hold`; an explicit set `estate?uuid=in=(a,b)` is the marked exception."
       },
       "obligations": {
         "type": "object",
@@ -79,12 +79,12 @@
             ]
           }
         },
-        "description": "REQUIRED here, where the base leaves it optional. A tenant IS an isolation border, so how strongly it isolates is not something to leave unsaid: `none` is a deliberate declaration, not an omission. The mechanism that delivers a level (row-level security, separate stores, separate hardware) is the implementation's choice and is not modelled here."
+        "description": "Required here where the Base leaves it optional: a tenant IS an isolation border, so its isolation level is declared, and `none` is a deliberate statement. How a level is delivered (row-level security, separate stores, separate hardware) is the implementation's choice."
       },
       "parent_group_uuid": {
         "type": "string",
         "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-        "description": "The parent tenant this one nests inside (§4). A child tenant keeps complete isolation — its resources belong to it and never to the parent (GRP-INV-004) — while the parent holds governance overlay, cost rollup, and audit aggregation. Absent means a root tenant. Destroying a parent requires explicit resolution of every child first; there is no silent cascade (GRP-INV-003)."
+        "description": "The parent tenant this one nests inside; absent means a root tenant. A child keeps complete isolation — its resources never belong to the parent (GRP-INV-004) — while the parent holds governance overlay, cost rollup and audit aggregation. Destroying a parent requires resolving every child first; there is no cascade (GRP-INV-003)."
       }
     },
     "required": [
