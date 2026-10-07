@@ -281,7 +281,7 @@ The identity directory as a running server: which `protocols` it serves — requ
 
 ## FileShare
 
-### FileShare (0.7.1)
+### FileShare (0.7.2)
 
 **Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
 
@@ -916,7 +916,7 @@ What a zone name actually means. `eu-west` is Germany and the Netherlands, under
 
 ## StorageClass
 
-### StorageClass (0.10.0)
+### StorageClass (0.10.1)
 
 **Purpose:** Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.
 
@@ -938,7 +938,7 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 
 ## StorageCluster
 
-### StorageCluster (0.7.0)
+### StorageCluster (0.7.1)
 
 **Purpose:** Models a distributed storage system serving block, file, and/or object storage — the platform volumes are provisioned from.
 
@@ -981,7 +981,7 @@ One storage device as a record: its required `capacity` — a whole-number quant
 
 ## StorageLayout
 
-### StorageLayout (0.6.0)
+### StorageLayout (0.6.1)
 
 **Purpose:** Declares the per-disk shape of a compute consumer — named, sized entries with boot designation — as its own record, so disk layout is authored once and referenced, never duplicated inside each consumer.
 
@@ -1006,7 +1006,7 @@ The list of disks a machine should have: each entry names a disk (`name`, the st
 
 ## StoragePool
 
-### StoragePool (0.5.2)
+### StoragePool (0.5.3)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
@@ -1245,7 +1245,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Volume
 
-### Volume (0.12.2)
+### Volume (0.12.3)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1267,7 +1267,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - Machine.VM — the consumer(s) it attaches to.
 - Database — databases whose data directory it backs.
 
-### Volume.ZFS (0.6.0)
+### Volume.ZFS (0.6.1)
 
 **Purpose:** Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host workloads use.
 

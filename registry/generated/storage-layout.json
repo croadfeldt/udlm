@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StorageLayout/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StorageLayout/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89",
   "resource_type": "StorageLayout",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Storage Layout",
-    "description": "The declared DISK LAYOUT of a compute consumer (born from the 2026-07-29 Compute reconciliation: per-disk shape left Machine.VM — one hand-authored source per concept). An ordered set of named entries — each a disk-shaped unit with a size, an optional storage tier, an optional role, and an optional boot position. The entry `name` is the stable identity consumers join on; consumption is declared consumer-side (a consumer names its layout and the records realizing its entries declare the realization), never here. A layout record belongs to ONE consumer — reuse of a shape across consumers is the Template tier (ADR-033), so the per-entry realization map stays unambiguous. A Base by the Base test (CLS-002): a disk layout is pure declared shape (named, sized entries), realized by whichever volume provider the entries resolve to.",
+    "description": "The declared disk layout of one compute consumer: an ordered set of named entries, each a disk with a size and, optionally, a storage tier, a role and a boot position. A Base by the Base test (CLS-002): a layout is pure declared shape, realized by whichever volume provider its entries resolve to. The entry `name` is the stable identity everything joins on; consumption is declared by the consumer and by the volumes that realize entries, never here. One layout belongs to one consumer; a shape reused across consumers is a Template (ADR-033).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-29T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StorageLayout",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89"
         }
       ]
@@ -30,7 +30,7 @@
       "entries": {
         "type": "array",
         "minItems": 1,
-        "description": "The declared disks, in declaration order. Entry names MUST be unique within the layout — the name is the stable identity that reconvergence joins on (a realized volume binds to an entry by name, surviving reorder and resize).",
+        "description": "The declared disks, in order. Entry names MUST be unique within the layout: the name is the join key a realized volume binds to, surviving reorder and resize. Each entry: `name`, `size`, optional `storage_tier` (governed), `role` (boot | data | log) and `boot_order`.",
         "items": {
           "type": "object",
           "additionalProperties": false,

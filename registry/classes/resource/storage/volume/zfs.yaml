@@ -1,21 +1,20 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Volume.ZFS/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Volume.ZFS/0.6.1
 conforms_to: udlm/0.1
 uuid: 90eb6692-1b70-4dc1-b43b-bfedf44c317f
 record_type: class
 class: type
 resource_type: Volume.ZFS
 parent: Volume
-version: 0.6.0
+version: 0.6.1
 family: Resource
 status: active
 metadata:
   display_name: ZFS Volume
-  description: 'A ZFS dataset or zvol, as a dialect of Volume: what a consumer orders is a volume (capacity, access
-    mode, filesystem or block) and ZFS is how one host-local provider realizes it — a mounted dataset when volume_mode
-    is filesystem, a zvol when block. Carved from a StoragePool, it cannot outlive its pool; datasets nest. Inherits
-    capacity (the quota or volsize), access_mode and volume_mode from Volume; adds the ZFS-native mountpoint, reported
-    usage and passthrough properties. Snapshot and replication policy is Policy (the control plane), not stored
-    here. Grounded in OpenZFS (dataset).'
+  description: 'A ZFS dataset or zvol, a dialect of Volume (CLS-004): the consumer orders a volume and ZFS is how
+    one host-local provider realizes it — a mounted dataset when `volume_mode` is filesystem, a zvol when block.
+    Inherits capacity (the quota or volsize), access mode and volume mode; adds the ZFS-native mountpoint, reported
+    usage and passthrough properties. Carved from a StoragePool, it cannot outlive its pool; datasets nest. Snapshot
+    and replication policy belongs to the control plane, not here.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-13T00:00:00Z'
 elements:
@@ -23,29 +22,29 @@ elements:
     scope: Volume.ZFS
     optional: true
     state: canonical
-    description: Filesystem mountpoint when volume_mode is filesystem (e.g. /export/gitlab); "none"/"-" if unmounted.
+    description: Filesystem mountpoint when `volume_mode` is filesystem (/export/gitlab); `none` or `-` if unmounted.
     schema:
       type: string
-      description: Filesystem mountpoint when volume_mode is filesystem (e.g. /export/gitlab); "none"/"-" if unmounted.
+      description: Filesystem mountpoint when `volume_mode` is filesystem (/export/gitlab); `none` or `-` if unmounted.
   - element: used
     scope: Volume.ZFS
     optional: true
     state: canonical
-    description: Space consumed as the provider reports it.
+    description: Space consumed, as the provider reports it.
     schema:
       type: string
       pattern: ^[0-9]+(\.[0-9]+)?(K|M|G|T|P|KB|MB|GB|TB|PB|KiB|MiB|GiB|TiB|PiB)$
-      description: Space consumed as the provider reports it.
+      description: Space consumed, as the provider reports it.
   - element: properties
     scope: Volume.ZFS
     optional: true
     state: canonical
-    description: Provider-passthrough dataset properties (compression, recordsize, mountpoint inheritance, etc.).
+    description: Provider passthrough dataset properties (compression, recordsize, mountpoint inheritance).
     schema:
       type: object
       additionalProperties:
         type: string
-      description: Provider-passthrough dataset properties (compression, recordsize, mountpoint inheritance, etc.).
+      description: Provider passthrough dataset properties (compression, recordsize, mountpoint inheritance).
 spec_examples:
   - capacity: 200Gi
     access_mode: read_write_once

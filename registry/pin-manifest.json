@@ -701,11 +701,12 @@
   }
  },
  "type:FileShare": {
-  "current": "0.7.1",
+  "current": "0.7.2",
   "path": "registry/classes/resource/storage/file-share/_base.yaml",
   "versions": {
    "0.7.0": "sha256:3c890ac0dfe19886fd9de69d9d04b0a815fb2d575bb5edb990f471185a8d700d",
-   "0.7.1": "sha256:6b7cf59420424e4410883bb90e705cd2fe1f6dbc6bedebceebf55bffeeacecee"
+   "0.7.1": "sha256:6b7cf59420424e4410883bb90e705cd2fe1f6dbc6bedebceebf55bffeeacecee",
+   "0.7.2": "sha256:c6c8f0057d30a06aaafe0a0bbae4355e6f26473a1df7862535ca9e70693ce238"
   }
  },
  "type:GPU": {
@@ -1601,18 +1602,20 @@
   }
  },
  "type:StorageClass": {
-  "current": "0.10.0",
+  "current": "0.10.1",
   "path": "registry/classes/resource/storage/storage-class/_base.yaml",
   "versions": {
    "0.10.0": "sha256:5683d68252993d9c775412580359aedbd5380c3f1a43e7ce39f7e74c0dae0f15",
+   "0.10.1": "sha256:18b2fb5d53d57f8856967a7adb49c70235c0bd349d443c54973ee3d944a32767",
    "0.9.0": "sha256:f04833cbf3e8feeb1f2ad415e43fcb24e0e73a51c70e6a8c29b74863636cddb6"
   }
  },
  "type:StorageCluster": {
-  "current": "0.7.0",
+  "current": "0.7.1",
   "path": "registry/classes/resource/storage/storage-cluster/_base.yaml",
   "versions": {
-   "0.7.0": "sha256:300a0d39d8434c6e23114dc78bbf32cafdb67c256276038f5ad8e5d6fbf98080"
+   "0.7.0": "sha256:300a0d39d8434c6e23114dc78bbf32cafdb67c256276038f5ad8e5d6fbf98080",
+   "0.7.1": "sha256:be0b53f1b96e55996602ed6b32b44e72aa8994b9fc4971932a66107d04572ece"
   }
  },
  "type:StorageDevice": {
@@ -1624,19 +1627,21 @@
   }
  },
  "type:StorageLayout": {
-  "current": "0.6.0",
+  "current": "0.6.1",
   "path": "registry/classes/resource/storage/storage-layout/_base.yaml",
   "versions": {
-   "0.6.0": "sha256:566f23ed32b8f7464528a9c5640a54f261c518e3bad05b9efe34bf2157a5ebef"
+   "0.6.0": "sha256:566f23ed32b8f7464528a9c5640a54f261c518e3bad05b9efe34bf2157a5ebef",
+   "0.6.1": "sha256:6f4538ac191453147ea5b666e80146e9c2f96807b305825c0d09b1e37d6e95c3"
   }
  },
  "type:StoragePool": {
-  "current": "0.5.2",
+  "current": "0.5.3",
   "path": "registry/classes/resource/storage/storage-pool/_base.yaml",
   "versions": {
    "0.5.0": "sha256:6bf5de09cfcba3a74e4df13fe0ccb5c199cb060e75530a18bab777392c5fb88c",
    "0.5.1": "sha256:be947abdb257792961dbca3a076801de18fb9dbb4c74455299f434bf564b9e0a",
-   "0.5.2": "sha256:4139c90a79c9e5de75c1842d9853faf101e86bac63c05e2963bdee433c5ac091"
+   "0.5.2": "sha256:4139c90a79c9e5de75c1842d9853faf101e86bac63c05e2963bdee433c5ac091",
+   "0.5.3": "sha256:d15fd92343d44fc2c4ac53dbb81d27bde9e09a75f0a4e8c1a386142b7026915f"
   }
  },
  "type:Subnet": {
@@ -1755,19 +1760,21 @@
   }
  },
  "type:Volume": {
-  "current": "0.12.2",
+  "current": "0.12.3",
   "path": "registry/classes/resource/storage/volume/_base.yaml",
   "versions": {
    "0.12.0": "sha256:3e5b1467f4a935805834d1d916acdabdd32886a4e411038ff3067fe2767971a5",
    "0.12.1": "sha256:f1e75502af1075b34c18914cb0cb4c1a95e43da44a1f8e9c223bde177db36c3c",
-   "0.12.2": "sha256:cbaebd3dae3bc993bedd6968bc8fff39ec3fb17ffb66eb5f8aa20b00df008c06"
+   "0.12.2": "sha256:cbaebd3dae3bc993bedd6968bc8fff39ec3fb17ffb66eb5f8aa20b00df008c06",
+   "0.12.3": "sha256:65a76546f3d614e7c0d58c009c686f9a34ca7851e6227d50c1435e151341416e"
   }
  },
  "type:Volume.ZFS": {
-  "current": "0.6.0",
+  "current": "0.6.1",
   "path": "registry/classes/resource/storage/volume/zfs.yaml",
   "versions": {
-   "0.6.0": "sha256:57a6f528b74a7ae69b5757a16f6420270964d8aedbd5f7ea8cf488c542f33f03"
+   "0.6.0": "sha256:57a6f528b74a7ae69b5757a16f6420270964d8aedbd5f7ea8cf488c542f33f03",
+   "0.6.1": "sha256:b70071f0fb36bdafc012ce0e23d032a75a67ac75d4f8e6c8a3edbe92d95faf46"
   }
  },
  "type:Vulnerability": {
