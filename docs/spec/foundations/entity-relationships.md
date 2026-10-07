@@ -2,16 +2,8 @@
 
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Class Tiers](class-tiers.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md) | [Resource Grouping](resource-grouping.md) | [Information Providers](../contracts/information-providers.md)
 
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM data model.
-> The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](foundations.md).
-> more of those three abstractions.
->
-> **This document maps to: DATA + POLICY**
->
-> Data: relationship records. Policy: Lifecycle Policy output schema
+> **Maps to: Data + Policy.** Data: the edges on records. Policy: lifecycle policy and cross-tenant
+> authorization. The three abstractions are defined in [foundations.md](foundations.md).
 
 ---
 
@@ -29,7 +21,7 @@ notification traversal, and the graph itself (`ERL-*`, `REL-005+`).
 
 **Why relationships exist at all.** Relationships are not bookkeeping — they are what lets the control plane act on a system instead of a pile of independent resources. From the graph the control plane **auto-resolves dependencies** (a VM that `requires` a network triggers the network's provisioning), **orders lifecycle operations** (build, suspend, destroy, and rehydrate in dependency order), computes **blast radius** (what is affected if this entity changes state), and rolls up cost and ownership. Without the relationship the platform cannot sequence or reason about impact; the relationship is the price of that automation.
 
-**Users should rarely hand-write relationships.** The common case is **inferred**, not authored. A catalog item or resource type declares its standard relationships once (the structural ceiling, §10.1); when a consumer requests it, the control plane expands those automatically (§11). A consumer only writes an explicit relationship for the **exception** — a non-standard cross-link the catalog could not know about.
+**Users should rarely hand-write relationships.** The common case is **inferred**, not authored. A class declares its standard relationships once as templates (§10.1); when a consumer requests it, the control plane derives the edges from them (§11). A consumer only writes an explicit relationship for the **exception** — a non-standard cross-link the catalog could not know about.
 
 ---
 
@@ -82,7 +74,7 @@ declaration when the graph is traversed.
 Every edge carries two tiers, one authoritative field each (data-model-core §4, common-elements §9):
 
 - **`edge_type`** — closed, universal: `depends_on` (`strength: hard|soft`), `contained_by`, `binds_to` (`target_field`), `references`. Ordering, traversal, and lifecycle projection consume ONLY `edge_type` + `strength`. Aligned with OASIS TOSCA root relationship types and ECMA-424 CycloneDX `dependsOn`.
-- **`relation`** — domain tier: a name DECLARED by the pinned Resource Type (`relationships[].name`), adopted from a standard where one names the concept (RFC 8343/8345, TOSCA). A relation **refines** its edge_type and never overrides the edge_type's ordering semantics (REL-003); a consumer that does not understand a relation falls back to edge_type behaviour — the dependency graph is always a strict projection of the data.
+- **`relation`** — domain tier: a name DECLARED by the pinned class (`relationships[].name`), adopted from a standard where one names the concept (RFC 8343/8345, TOSCA). A relation **refines** its edge_type and never overrides the edge_type's ordering semantics (REL-003); a consumer that does not understand a relation falls back to edge_type behaviour — the dependency graph is always a strict projection of the data.
 
 **The inverse is derived** (§2): one edge, declared on the depending side; the inbound reading is computed at traversal. There is no separate inverse *type*.
 
@@ -222,6 +214,9 @@ The relationship type is `depends_on` + `operational` — the allocated entity d
 
 The owning Tenant pre-defines allocations on the parent resource:
 
+> **No schema surface yet.** The blocks in §7.2 and §7.3 illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
+
+
 ```yaml
 parent_resource_entity:
   uuid: <uuid>
@@ -256,7 +251,7 @@ When a consuming Tenant claims an available allocation, the control plane create
 allocated_entity:
   uuid: <uuid — consuming Tenant's own entity>
   family: Resource  # ownership_model: allocation (ADR-027); shape derived — Atomic (no constituents)
-  resource_type_uuid: <uuid of the allocated resource type>
+  resource_type: <the allocated class>
   tenant_uuid: <Tenant A uuid>  # Belongs to the consuming Tenant
 
   allocation_spec:
@@ -347,6 +342,8 @@ Infrastructure Tenant owner notified of new claim
 
 ## 8. Lifecycle Policies
 
+> **No schema surface yet.** The `lifecycle_policy` fields in §8 and §13.2 illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
+
 Lifecycle policies declare what happens to an entity when its related entity changes state. They apply to `constituent` and `operational` relationships only — `informational` relationships have no lifecycle implications.
 
 ### 8.1 Policy Actions
@@ -412,13 +409,13 @@ The record's shape is the control plane's implementation; the content above is t
 Lifecycle policies follow the same three-tier authority model as override control:
 
 ```
-Resource Type Specification default (lowest — portable default)
+Class default (lowest — portable default)
   │
   ▼
-Provider Catalog Item default (provider preference)
+Provider Class default (provider preference)
   │
   ▼
-Consumer declaration (at request time — within Resource Type bounds)
+Consumer declaration (at request time — within the class's bounds)
   │
   ▼
 System Policy (non-overridable — sovereignty and compliance mandates)
@@ -440,12 +437,15 @@ This is the same-tenant counterpart to the cross-tenant Allocated Resource model
 
 ### 9.2 The `sharing_model` Declaration
 
-The Resource Type Specification declares whether instances of a type can be shared. Individual entities carry the runtime sharing state:
+A class declares whether its instances can be shared (`ownership_model: shareable`; `publicly_stakeable`
+for cross-tenant stakes without a per-grant authorization). Individual entities carry the runtime sharing state:
+
+> **No schema surface yet.** The `shareability` and `sharing_model` blocks below illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
+
 
 ```yaml
-# On the Resource Type Specification
-resource_type_spec:
-  fully_qualified_name: Volume
+# On the class
+class: Volume
   shareability:
     allowed: true
     default_sharing_scope: tenant    # tenant | cross_tenant
@@ -464,7 +464,7 @@ entity:
     # notify:  notify owner, entity enters PENDING_DECISION
 ```
 
-**`shareability.allowed: false`** on a Resource Type (e.g., `Volume`) means the Policy Engine rejects any attempt to create a second active constituent or operational relationship to an instance. Boot disks, primary network interfaces, and similar exclusively-owned resources are non-shareable by type definition (REL-017).
+**`shareability.allowed: false`** on a class means the Policy Engine rejects any attempt to create a second active constituent or operational relationship to an instance. Boot disks, primary network interfaces, and similar exclusively-owned resources are non-shareable by type definition (REL-017).
 
 ### 9.3 Reference Count Lifecycle
 
@@ -532,88 +532,53 @@ The same-tenant sharing model and the cross-tenant allocated resource model are 
 
 ## 10. Relationship Declarations — Where They Live
 
-Relationship declarations exist at multiple levels, each building on the previous:
+Relationships are declared at three levels, each building on the one before.
 
-### 10.1 Resource Type Specification (structural ceiling)
+### 10.1 The class (templates)
 
-Declares what relationships are **possible** for a resource type. Sets the ceiling — lower levels can only declare relationships within these bounds.
+A class declares the relationships its instances typically have, as **templates** in `relationships[]`
+(`registry/class.schema.json`; the compiled flat spec carries the union down the class chain). A
+template names an `edge_type`, a `target` class, and optionally a relation `name`, a `cardinality`, a
+`target_field` for a binding, and the standard it was `adopted_from`.
+
+Templates are advisory by default: `enforcement: example` is guidance and a placement hint that a
+provider may satisfy or not, and an instance may carry edges no template lists (ADR-009 §4). A template
+marked `enforcement: structural` is an invariant: its cardinality is enforced on instances (`REL-002`).
+An instance edge's `relation`, when present, must be a `name` some template in the chain declares
+(`REL-001`).
 
 ```yaml
-resource_type: Machine.VM
+# Machine.VM (registry/classes/resource/compute/machine/vm.yaml)
 relationships:
-  - name: disk
-    edge_type: depends_on
-    strength: hard
-    permitted_related_types:
-      - Volume
-      - FileShare
-    default_lifecycle_policy:
-      on_related_destroy: destroy
-      on_related_suspend: suspend
-    binding_types_permitted: [owned, referenced]
-    consumer_declarable: true
-    # Consumer can declare binding_type and lifecycle_policy override
-
-  - name: network_attachment
-    edge_type: depends_on
-    strength: hard
-    permitted_related_types:
-      - IPAddress
-    default_lifecycle_policy:
-      on_related_destroy: destroy
-    consumer_declarable: false
-    # the control plane manages this automatically — consumer cannot override
+  - edge_type: depends_on
+    target: IPAddress
+    target_field: address
+    cardinality: 0..n
+  - edge_type: references
+    target: Location
+    name: placement
 ```
 
-### 10.2 Catalog Item (offering-specific)
+### 10.2 The Provider Class (offering-specific)
 
-Declares the **actual relationships** for a specific curated offering. Can only be more restrictive than the Resource Type Specification.
+A Provider Class may add templates or redeclare an inherited one to tighten it (a narrower
+cardinality, structural where the parent was an example). The nearest class wins, and the Liskov gate
+refuses a redeclaration that loosens (`LSK-001`).
 
-```yaml
-catalog_item: Production VM
-relationships:
-  - name: disk
-    edge_type: depends_on
-    strength: hard
-    related_catalog_item_uuid: <uuid of Standard Block Storage catalog item>
-    lifecycle_policy:
-      on_related_destroy: retain
-      # Overrides Resource Type default of destroy
-      # Storage persists even if VM is destroyed — production data protection
-    binding_type: owned
-```
+### 10.3 The request (instance edges)
 
-### 10.3 Request Time (consumer-declared)
+The consumer, or the control plane on its behalf, writes the actual edges into the record's
+`dependencies[]`, by handle, resolved to uuid at reserve (§2). Edges a class template implies are
+derived (§11); a consumer writes an edge only for the exception the class could not know about.
 
-The consumer declares relationships in their request. Bundled declarations (storage fields within a VM request) are automatically expanded into relationship records by the Request Payload Processor.
-
-```yaml
-# Explicit relationship declaration in a request
-request:
-  resource_type: Machine.VM
-  # ... other fields ...
-  relationships:
-    - relation: disk
-      edge_type: depends_on
-      strength: hard
-      binding_type: referenced
-      related_entity_uuid: <uuid of existing Storage Entity>
-      # Consumer referencing existing storage — not creating new
-
-# Bundled declaration — expanded automatically
-request:
-  resource_type: Machine.VM
-  storage:
-    disks:
-      - name: boot
-        capacity: 100GB
-        # Processor expands this into a Storage Entity stub
-        # and a relationship record with binding_type: owned
-```
+> **No schema surface yet.** The `binding_type`, `lifecycle_policy` and `consumer_declarable` fields earlier drafts showed here illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
 
 ### 10.4 External Data Relationships
 
 Relationships to external data entities follow the same structure with `related_entity_type: external`:
+
+> **No schema surface yet.** The external-edge fields below illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
+
 
 ```yaml
 # On a VM Entity — relationship to external Business Unit
@@ -640,23 +605,23 @@ Consumer submits bundled VM request with storage fields
   │
   ▼
 Request Payload Processor
-  │  Reads expansion rules from Resource Type Specification
+  │  Reads expansion rules from the class
   │  For each expandable field:
   │    1. Creates a Resource/Service Entity stub (PENDING state)
   │       with its own UUID, Tenant membership, Resource Type
   │    2. Declares the dependency edge on the parent stub
   │       and the child stub
   │    3. Applies lifecycle policy from:
-  │       consumer declaration → provider default → Resource Type default
+  │       consumer declaration → Provider Class default → class default
   │       → System Policy override
   │    4. Adds the child entity stub to the relationship graph
   ▼
 Policy Engine validates:
-  │  Binding type is permitted by Resource Type Specification
+  │  Binding type is permitted by the class
   │  Consumer has override_matrix permission to declare binding type
   │  Lifecycle policy is not overridden by a System Policy
   ▼
-Service Provider receives:
+The provider receives:
   │  Parent entity request payload
   │  Child entity stub UUIDs embedded in parent payload
   │  Provisions resources natively
@@ -669,9 +634,12 @@ The control plane updates:
   │  Full provenance recorded on all entities and relationships
 ```
 
-### 11.2 Expansion Rules in Resource Type Specification
+### 11.2 Expansion Rules on the Class
 
 The expansion rule declares which fields expand into entities and how:
+
+> **No schema surface yet.** The `expansion` block below illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
+
 
 ```yaml
 field_definition:
@@ -679,8 +647,7 @@ field_definition:
   type: object
   expansion:
     expand_to_entity: true
-    entity_resource_type_uuid: <uuid of Volume>
-    entity_resource_type_name: Volume
+    entity_class: Volume
     default_binding_type: owned
     binding_types_permitted: [owned, referenced]
     default_lifecycle_policy:
@@ -739,8 +706,8 @@ The relationship graph exists across all four states:
 | `ERL-003` | Cycles over the ordering edge_types (`depends_on`, `contained_by`) are invalid and must be rejected; non-ordering `references` cycles (including reflexive self-reference, e.g. the multi-cluster self-managed hub) are legal and outside the ordering sort |
 | `ERL-004` | A constituent or operational relationship must have a lifecycle policy declared somewhere in the authority chain before provider dispatch |
 | `REL-005` | External relationships must reference a registered Information Provider |
-| `REL-006` | `edge_type` must be from the closed set (`depends_on`, `contained_by`, `binds_to`, `references`); a named `relation` must be declared by the pinned type (REL-001/003) |
-| `REL-007` | Consumer-declared binding types must be permitted by the Resource Type Specification |
+| `REL-006` | `edge_type` must be from the closed set (`depends_on`, `contained_by`, `binds_to`, `references`); a named `relation` must be declared by the pinned class (REL-001/003) |
+| `REL-007` | Consumer-declared binding types must be permitted by the class |
 | `REL-008` | A constituent relationship lifecycle policy may not be set to `ignore` for `on_related_destroy` |
 | `REL-009` | Lifecycle policy conflicts between policies are resolved by the standard Policy Engine authority hierarchy — no special case |
 | `REL-011` | Cross-tenant operational relationships require explicit authorization from both the owning Tenant and the consuming Tenant |
@@ -748,7 +715,7 @@ The relationship graph exists across all four states:
 | `REL-014` | An allocated resource claim requires a matching `available` allocation record on the parent entity |
 | `REL-015` | A destructive lifecycle action on a shared resource entity (`ownership_model: shareable` — [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)) is deferred until the derived active-edge count reaches the declared `minimum_relationship_count` |
 | `REL-016` | Informational edges never contribute to the derived active-edge count on shared resource entities |
-| `REL-017` | A Resource Type Specification with `shareability.allowed: false` must reject any attempt to create more than one active constituent or operational relationship to an instance of that type |
+| `REL-017` | A class with `shareability.allowed: false` must reject any attempt to create more than one active constituent or operational relationship to an instance of that type |
 | `REL-018` | When a lifecycle event produces multiple action recommendations on a shared resource, the most conservative action wins per the hierarchy: `retain > notify > suspend > detach > cascade > destroy` (save_overrides_destroy) |
 | `REL-019` | When lifecycle action recommendations conflict, a `lifecycle_conflict_record` is created. Conflicts at `warning` or `critical` severity trigger notifications to the entity owner and affected policy owners |
 
@@ -759,8 +726,8 @@ Lifecycle policy fields on relationships are fields. They carry the same `overri
 **Authority chain for a relationship lifecycle policy field (lowest to highest):**
 
 ```
-Resource Type Specification default
-  → Provider Catalog Item default
+Class default
+  → Provider Class default
     → Consumer declaration at request time
       → Transformation Policy (may set override: constrained)
         → Validation Policy (checks — no modification; compliance-class may set override: immutable)
@@ -802,7 +769,7 @@ lifecycle_policy:
 |--------|------|
 | `ERL-D01` | Cross-tenant constituent dependencies are prohibited — a dependency that would produce a constituent cross-tenant relationship is rejected at dependency graph construction time |
 | `ERL-D02` | Cross-tenant operational dependencies require a valid available allocation record on the target resource — failure returns `CROSS_TENANT_DEPENDENCY_UNAVAILABLE` |
-| `ERL-D03` | A Resource Type Specification may only declare cross-tenant dependencies if explicitly marked `cross_tenant: permitted` — default is `cross_tenant: not_permitted` |
+| `ERL-D03` | A class may only declare cross-tenant dependencies if explicitly marked `cross_tenant: permitted` — default is `cross_tenant: not_permitted` |
 
 ### 13.3 Relationship Versioning and Deprecation
 
