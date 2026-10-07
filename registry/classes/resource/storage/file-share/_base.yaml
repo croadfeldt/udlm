@@ -1,24 +1,21 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/FileShare/0.7.1
+$id: https://udlm.dev/registry/udlm/0.1/class/FileShare/0.7.2
 conforms_to: udlm/0.1
 uuid: 83f66b92-ad66-4415-aa94-01327dec4f27
 record_type: class
 class: base
 resource_type: FileShare
-version: 0.7.1
+version: 0.7.2
 family: Resource
 status: active
 filed_under:
   - storage
 metadata:
   display_name: File Share
-  description: 'A file-sharing service (SMB/CIFS, extensible to NFS) exposing one or more shares over a network.
-    The shares and their access are TYPED config — UDLM owns them and the control plane''s interface manages them
-    (DCM ADR-023 tier (i), the "full" scale). Provider-specific serialization (the smb.conf file, an identity suite''s
-    [global] block) is naturalized by the provider (DCM ADR-023 §1); share knobs not lifted into typed fields ride
-    the `options` passthrough (basic scale, DCM ADR-023 §6). Authentication data lives in the referenced DirectoryService
-    (PDP/PIP, provider-contract §1a.8) — referenced, not stored. A Base by the Base test (CLS-002): SMB and NFS
-    file services share one export vocabulary (share, path, access), so any file-service provider can fill an order
-    placed here.'
+  description: 'A file-sharing service and the shares it exports: which path is reachable over which protocol, and
+    who may reach it. A Base by the Base test (CLS-002): SMB and NFS file services share one export vocabulary (share,
+    path, access), so any file-service provider fills an order placed here. The shares are typed data the control
+    plane owns; the provider serializes them (smb.conf). Who may connect lives in the referenced DirectoryService,
+    never here; knobs the model does not type ride `options`.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-11T00:00:00Z'
 elements:
@@ -26,42 +23,38 @@ elements:
     scope: FileShare
     optional: false
     state: canonical
-    description: File-sharing protocol.
+    description: 'File-sharing protocol: `smb` or `nfs`.'
     schema:
       enum:
         - smb
         - nfs
-      description: File-sharing protocol.
+      description: 'File-sharing protocol: `smb` or `nfs`.'
   - element: workgroup
     scope: FileShare
     optional: true
     state: canonical
-    description: SMB workgroup / domain scope.
+    description: SMB workgroup or domain scope.
     schema:
       type: string
-      description: SMB workgroup / domain scope.
+      description: SMB workgroup or domain scope.
   - element: directory_service_ref
     scope: FileShare
     optional: true
     state: canonical
-    description: Reference to DirectoryService — the directory service providing share authentication.
-      Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable,
-      never an opaque string.
+    description: Reference to the DirectoryService that authenticates the share principals.
     schema:
-      description: Reference to DirectoryService — the directory service providing share authentication.
-        Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable,
-        never an opaque string.
+      description: Reference to the DirectoryService that authenticates the share principals.
       $ref: ../../../../common-elements.schema.json#/$defs/Reference
   - element: shares
     scope: FileShare
     optional: false
     state: canonical
-    description: The exported shares — TYPED config (tier i). The control plane owns these; the provider naturalizes
-      them to smb.conf.
+    description: 'The exported shares: each a `name`, a `path`, read-only and browseable flags, the `valid_principals`
+      resolved through the directory service, and provider passthrough `options`.'
     schema:
       type: array
-      description: The exported shares — TYPED config (tier i). The control plane owns these; the provider naturalizes
-        them to smb.conf.
+      description: 'The exported shares: each a `name`, a `path`, read-only and browseable flags, the `valid_principals`
+        resolved through the directory service, and provider passthrough `options`.'
       items:
         type: object
         required:

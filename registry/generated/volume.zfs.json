@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f",
   "resource_type": "Volume.ZFS",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "ZFS Volume",
-    "description": "A ZFS dataset or zvol, as a dialect of Volume: what a consumer orders is a volume (capacity, access mode, filesystem or block) and ZFS is how one host-local provider realizes it — a mounted dataset when volume_mode is filesystem, a zvol when block. Carved from a StoragePool, it cannot outlive its pool; datasets nest. Inherits capacity (the quota or volsize), access_mode and volume_mode from Volume; adds the ZFS-native mountpoint, reported usage and passthrough properties. Snapshot and replication policy is Policy (the control plane), not stored here. Grounded in OpenZFS (dataset).",
+    "description": "A ZFS dataset or zvol, a dialect of Volume (CLS-004): the consumer orders a volume and ZFS is how one host-local provider realizes it — a mounted dataset when `volume_mode` is filesystem, a zvol when block. Inherits capacity (the quota or volsize), access mode and volume mode; adds the ZFS-native mountpoint, reported usage and passthrough properties. Carved from a StoragePool, it cannot outlive its pool; datasets nest. Snapshot and replication policy belongs to the control plane, not here.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z",
     "generated": true,
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Volume",
-          "version": "0.12.2",
+          "version": "0.12.3",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         },
         {
           "class": "Volume.ZFS",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f"
         }
       ]
@@ -35,7 +35,7 @@
       "capacity": {
         "type": "string",
         "pattern": "^[0-9]+(Ki|Mi|Gi|Ti|Pi|K|M|G|T|P)?B?$",
-        "description": "Requested capacity, Kubernetes quantity form (e.g. 100Gi). SNIA Swordfish CapacityBytes maps here."
+        "description": "Requested capacity as a quantity (100Gi)."
       },
       "access_mode": {
         "type": "string",
@@ -45,7 +45,7 @@
           "read_write_many",
           "read_write_once_pod"
         ],
-        "description": "Attachment concurrency (Kubernetes PVC accessModes: RWO/ROX/RWX/RWOP)."
+        "description": "Attachment concurrency: `read_write_once`, `read_only_many`, `read_write_many`, `read_write_once_pod` (the Kubernetes PVC access modes, snake_case)."
       },
       "volume_mode": {
         "type": "string",
@@ -53,36 +53,36 @@
           "filesystem",
           "block"
         ],
-        "description": "Filesystem-mounted vs raw block device (Kubernetes PVC volumeMode)."
+        "description": "`filesystem` (mounted) or `block` (raw device)."
       },
       "storage_class": {
-        "description": "Resource reference to a StorageClass (common-elements §2.5, DCM ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
+        "description": "Reference to the StorageClass that provisions it; authored by handle, resolved later if the class is not yet defined.",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
       "retain_on_release": {
         "type": "boolean",
-        "description": "Reclaim policy: true = Retain (keep data after the consumer releases it), false = Delete."
+        "description": "true keeps the data after the consumer releases the volume (Retain); false deletes it."
       },
       "layout_entry": {
         "type": "string",
         "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
-        "description": "The StorageLayout entry name this volume realizes — the join key paired with the realizes_layout_entry edge. Instance edges carry no qualifier (the dependencies[] of a record is a closed shape, state-record.schema.json), so the entry binding lives HERE: set exactly when realizes_layout_entry is declared, matching an entry name in the referenced layout. Reconvergence joins on this value to populate the layout's realized_volumes map."
+        "description": "The StorageLayout entry name this volume realizes; set exactly when the `realizes_layout_entry` edge is declared, matching an entry in the referenced layout. Reconvergence joins on it to fill the layout's realized_volumes map."
       },
       "mountpoint": {
         "type": "string",
-        "description": "Filesystem mountpoint when volume_mode is filesystem (e.g. /export/gitlab); \"none\"/\"-\" if unmounted."
+        "description": "Filesystem mountpoint when `volume_mode` is filesystem (/export/gitlab); `none` or `-` if unmounted."
       },
       "used": {
         "type": "string",
         "pattern": "^[0-9]+(\\.[0-9]+)?(K|M|G|T|P|KB|MB|GB|TB|PB|KiB|MiB|GiB|TiB|PiB)$",
-        "description": "Space consumed as the provider reports it."
+        "description": "Space consumed, as the provider reports it."
       },
       "properties": {
         "type": "object",
         "additionalProperties": {
           "type": "string"
         },
-        "description": "Provider-passthrough dataset properties (compression, recordsize, mountpoint inheritance, etc.)."
+        "description": "Provider passthrough dataset properties (compression, recordsize, mountpoint inheritance)."
       }
     },
     "required": [

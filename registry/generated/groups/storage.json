@@ -4,21 +4,21 @@
   "classes": [
     {
       "class": "FileShare",
-      "version": "0.7.1",
+      "version": "0.7.2",
       "instantiable": true,
       "path": "registry/classes/resource/storage/file-share/_base.yaml",
       "types": []
     },
     {
       "class": "StorageClass",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "instantiable": true,
       "path": "registry/classes/resource/storage/storage-class/_base.yaml",
       "types": []
     },
     {
       "class": "StorageCluster",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "instantiable": true,
       "path": "registry/classes/resource/storage/storage-cluster/_base.yaml",
       "types": []
@@ -32,21 +32,21 @@
     },
     {
       "class": "StorageLayout",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "instantiable": true,
       "path": "registry/classes/resource/storage/storage-layout/_base.yaml",
       "types": []
     },
     {
       "class": "StoragePool",
-      "version": "0.5.2",
+      "version": "0.5.3",
       "instantiable": true,
       "path": "registry/classes/resource/storage/storage-pool/_base.yaml",
       "types": []
     },
     {
       "class": "Volume",
-      "version": "0.12.2",
+      "version": "0.12.3",
       "instantiable": true,
       "path": "registry/classes/resource/storage/volume/_base.yaml",
       "types": [

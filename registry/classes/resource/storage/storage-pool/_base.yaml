@@ -1,24 +1,21 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StoragePool/0.5.2
+$id: https://udlm.dev/registry/udlm/0.1/class/StoragePool/0.5.3
 conforms_to: udlm/0.1
 uuid: 643156a0-5c7b-4fa7-bcfb-089c0a06d520
 record_type: class
 class: base
 resource_type: StoragePool
-version: 0.5.2
+version: 0.5.3
 family: Resource
 status: active
 filed_under:
   - storage
 metadata:
   display_name: Storage Pool
-  description: 'A host-local storage pool aggregating physical drives into a redundancy-protected capacity source
-    that datasets/volumes are carved from. The concrete technology (ZFS zpool, mdraid array, hardware-RAID virtual
-    disk, LVM VG, btrfs) is the PROVIDER, declared on the instance and in adopts[] — never in the type name. Owns
-    the vdev/redundancy topology so a derived shutdown honors it: a pool stops after the datasets it backs and before
-    the drives it aggregates. Grounded in OpenZFS (zpool) + SNIA Swordfish StoragePool. A Base by the Base test
-    (CLS-002): SNIA Swordfish StoragePool abstracts over every host-local redundancy group (ZFS, md, LVM, a controller
-    virtual disk), so an order for protected capacity of a given kind is fillable by any of them. Spelled as Swordfish
-    spells it.'
+  description: 'A host-local pool of physical drives aggregated into redundancy-protected capacity that volumes
+    are carved from. A Base by the Base test (CLS-002): SNIA Swordfish StoragePool abstracts over every host-local
+    redundancy group (a ZFS zpool, an md array, an LVM VG, a controller virtual disk), so an order for protected
+    capacity of a given kind is fillable by any of them; the backend is `pool_kind`, never the type name. It owns
+    the vdev topology, so ordering holds: a pool stops after the volumes it backs and before the drives it aggregates.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-13T00:00:00Z'
 elements:
@@ -26,10 +23,9 @@ elements:
     scope: StoragePool
     optional: false
     state: canonical
-    description: 'Pooling backend (provider hint; the provider is authoritative). One generic type for every redundancy
-      implementation: ZFS, mdraid, a hardware RAID controller virtual disk, LVM, btrfs. Hardware-RAID pools MAY
-      be declared as intent contained_by a bare-metal host: the provisioning provider (Metal3/BMC-class) derives
-      its controller configuration FROM the declared pool — the host type carries no RAID fields of its own.'
+    description: 'The pooling backend: `zfs`, `md`, `hardware_raid`, `lvm`, `btrfs` or `other` (a provider hint;
+      the provider is authoritative). A hardware-RAID pool MAY be declared as intent contained by a bare-metal host;
+      the provisioning provider derives the controller configuration from it, so the host carries no RAID fields.'
     schema:
       type: string
       enum:
@@ -39,24 +35,26 @@ elements:
         - lvm
         - btrfs
         - other
-      description: 'Pooling backend (provider hint; the provider is authoritative). One generic type for every redundancy
-        implementation: ZFS, mdraid, a hardware RAID controller virtual disk, LVM, btrfs. Hardware-RAID pools MAY
-        be declared as intent contained_by a bare-metal host: the provisioning provider (Metal3/BMC-class) derives
-        its controller configuration FROM the declared pool — the host type carries no RAID fields of its own.'
+      description: 'The pooling backend: `zfs`, `md`, `hardware_raid`, `lvm`, `btrfs` or `other` (a provider hint;
+        the provider is authoritative). A hardware-RAID pool MAY be declared as intent contained by a bare-metal
+        host; the provisioning provider derives the controller configuration from it, so the host carries no RAID
+        fields.'
       x-extensible-enum: true
   - element: health
     scope: StoragePool
     optional: true
     state: canonical
-    description: Pool health as the provider reports it (ZFS ONLINE/DEGRADED/FAULTED; Swordfish Status).
+    description: Pool health as the provider reports it (ZFS ONLINE/DEGRADED/FAULTED; Swordfish Status). The canonical
+      rollup is the `redundancy_status` output.
     schema:
       type: string
-      description: Pool health as the provider reports it (ZFS ONLINE/DEGRADED/FAULTED; Swordfish Status).
+      description: Pool health as the provider reports it (ZFS ONLINE/DEGRADED/FAULTED; Swordfish Status). The canonical
+        rollup is the `redundancy_status` output.
   - element: capacity
     scope: StoragePool
     optional: true
     state: canonical
-    description: Converted verbatim from the flat StoragePool spec.
+    description: 'Pool capacity: `size`, `allocated`, `free`, as quantities.'
     schema:
       type: object
       properties:
@@ -70,38 +68,37 @@ elements:
         free:
           type: string
           pattern: ^[0-9]+(\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$
+      description: 'Pool capacity: `size`, `allocated`, `free`, as quantities.'
   - element: vdevs
     scope: StoragePool
     optional: true
     state: canonical
-    description: 'The redundancy topology, as a tree: each top-level entry is a vdev whose members are drives or
-      child vdevs. The recursion is backend-agnostic; HOW the backend aggregates its top-level vdevs into the pool''s
-      one capacity source is the BACKEND''S semantic — zfs dynamic-stripes across them ([mirror, mirror] IS raid10),
-      lvm allocates across them per VG policy, and a hardware controller does not aggregate independent virtual
-      disks at all: two independent VDs are two Pools (one capacity source each), so a hardware_raid pool normally
-      carries ONE top-level vdev tree (the explicit stripe-of-mirrors).'
+    description: 'The redundancy topology as a tree: each top-level entry is a vdev whose `members` are drives (References
+      to StorageDevice) or child vdevs, with the backend''s native protection `type` (mirror, raidz2, stripe, …)
+      and the Swordfish `raid_type` it maps to. How the backend combines top-level vdevs is the backend''s semantic:
+      zfs stripes across them, lvm allocates per VG policy, a hardware controller does not combine independent virtual
+      disks (two VDs are two pools). A `spare` group at the top level is pool-wide; nested inside a vdev it is dedicated
+      to it.'
     schema:
       type: array
-      description: 'The redundancy topology, as a tree: each top-level entry is a vdev whose members are drives
-        or child vdevs. The recursion is backend-agnostic; HOW the backend aggregates its top-level vdevs into the
-        pool''s one capacity source is the BACKEND''S semantic — zfs dynamic-stripes across them ([mirror, mirror]
-        IS raid10), lvm allocates across them per VG policy, and a hardware controller does not aggregate independent
-        virtual disks at all: two independent VDs are two Pools (one capacity source each), so a hardware_raid pool
-        normally carries ONE top-level vdev tree (the explicit stripe-of-mirrors).'
+      description: 'The redundancy topology as a tree: each top-level entry is a vdev whose `members` are drives
+        (References to StorageDevice) or child vdevs, with the backend''s native protection `type` (mirror, raidz2,
+        stripe, …) and the Swordfish `raid_type` it maps to. How the backend combines top-level vdevs is the backend''s
+        semantic: zfs stripes across them, lvm allocates per VG policy, a hardware controller does not combine independent
+        virtual disks (two VDs are two pools). A `spare` group at the top level is pool-wide; nested inside a vdev
+        it is dedicated to it.'
       items:
         $ref: '#/$defs/vdev'
   - element: properties
     scope: StoragePool
     optional: true
     state: canonical
-    description: Provider-passthrough pool properties not lifted into typed fields (e.g. compression, recordsize,
-      ashift).
+    description: Provider passthrough properties not lifted into typed fields (compression, recordsize, ashift).
     schema:
       type: object
       additionalProperties:
         type: string
-      description: Provider-passthrough pool properties not lifted into typed fields (e.g. compression, recordsize,
-        ashift).
+      description: Provider passthrough properties not lifted into typed fields (compression, recordsize, ashift).
 spec_constraints:
   $defs:
     vdev:
@@ -157,14 +154,14 @@ spec_constraints:
         members:
           type: array
           minItems: 1
-          description: 'The members of this group: physical drives (References to StorageDevice) and/or
-            CHILD VDEVS (nested groups) — mixing is legal where the backend allows it.'
+          description: 'The members of this group: physical drives (References to StorageDevice) and/or CHILD VDEVS
+            (nested groups) — mixing is legal where the backend allows it.'
           items:
             oneOf:
               - type: string
-                description: 'A member drive of this vdev — a common-elements Reference to StorageDevice
-                  (handle string or {uuid, handle} object). Members as references make disk-failure blast radius
-                  a graph walk: a dead drive''s inbound edges ARE the affected pools.'
+                description: 'A member drive of this vdev — a common-elements Reference to StorageDevice (handle
+                  string or {uuid, handle} object). Members as references make disk-failure blast radius a graph
+                  walk: a dead drive''s inbound edges ARE the affected pools.'
               - $ref: '#/$defs/vdev'
         distributed_spares:
           type: integer

@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StorageCluster/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StorageCluster/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "b3db807c-91a9-4ad3-bd28-b5a1042f740a",
   "resource_type": "StorageCluster",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Storage Cluster",
-    "description": "A vendor-neutral distributed storage cluster that serves block, file, and/or object storage. The concrete technology (Ceph, etc.) is the PROVIDER, declared on the instance and in adopts[] — never in the type name. Consumers bind to the typed protocol outputs (storage classes / endpoints), not to the implementation. Grounded in SNIA Swordfish (StorageSystem) with Rook CephCluster as a reference implementation. A Base by the Base test (CLS-002): SNIA Swordfish StorageSystem abstracts over every distributed storage system, so an order for a cluster of given protocols, capacity and protection is fillable by any of them; a technology is a dialect Type beneath it (StorageCluster.Ceph), never the Base.",
+    "description": "A distributed storage system serving block, file and/or object storage: the platform volumes are provisioned from. A Base by the Base test (CLS-002): SNIA Swordfish StorageSystem abstracts over every distributed storage system, so an order for a cluster of given protocols, capacity and protection is fillable by any of them. The technology is a dialect Type beneath it (StorageCluster.Ceph), never the Base; consumers bind to the typed outputs (storage-class names, the object endpoint), not to the implementation.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StorageCluster",
-          "version": "0.7.0",
+          "version": "0.7.1",
           "uuid": "b3db807c-91a9-4ad3-bd28-b5a1042f740a"
         }
       ]
@@ -37,11 +37,11 @@
             "object"
           ]
         },
-        "description": "Storage access protocols the cluster serves (Ceph: block=RBD, file=CephFS, object=RGW/S3)."
+        "description": "Access protocols the cluster serves: `block`, `file`, `object`."
       },
       "capacity": {
         "type": "object",
-        "description": "Cluster capacity (Swordfish capacity model).",
+        "description": "Cluster capacity: `total` raw and `usable` after protection overhead, as whole-number quantities (120TiB).",
         "properties": {
           "total": {
             "type": "string",
@@ -57,7 +57,7 @@
       },
       "data_protection": {
         "type": "object",
-        "description": "Redundancy scheme (Swordfish data-protection).",
+        "description": "Redundancy scheme: `replication` with a replica count, or `erasure-coding`.",
         "properties": {
           "scheme": {
             "type": "string",

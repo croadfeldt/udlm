@@ -1,23 +1,21 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StorageClass/0.10.0
+$id: https://udlm.dev/registry/udlm/0.1/class/StorageClass/0.10.1
 conforms_to: udlm/0.1
 uuid: 8bca0919-e6b1-483a-8b46-841cea6e4b6f
 record_type: class
 class: base
 resource_type: StorageClass
-version: 0.10.0
+version: 0.10.1
 family: Resource
 status: active
 filed_under:
   - storage
 metadata:
   display_name: Storage Class
-  description: 'A storage class — the named policy by which a storage provider provisions volumes, and the record
-    that carries the provider''s reported `tier` and `capabilities` (provider-contract: the party that knows is
-    the party that reports). Moved from the former Platform folder to Storage (maintainer ruling 2026-09-11, applying
-    ADR-069): a storage class is published by a storage provider and selected by a volume, never ordered on its
-    own, so it is a Type under the Storage folder rather than a Base; its contract is the Kubernetes StorageClass
-    object every CSI-backed provider exposes. A Base by the Base test (CLS-002): the Kubernetes StorageClass API
-    is the contract every CSI-backed provider exposes, so any of them can publish one.'
+  description: 'A storage provisioning policy a volume requests storage by: the provisioner, what happens on release,
+    when binding happens, and what the class can do. A Base by the Base test (CLS-002): its contract is the Kubernetes
+    StorageClass object every CSI-backed provider exposes, so any of them publishes one. A storage class is published
+    by a provider and selected by a volume, never ordered on its own; it is where the provider reports the `tier`
+    and `capabilities` placement matches against.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-17T00:00:00Z'
 elements:
@@ -25,77 +23,76 @@ elements:
     scope: StorageClass
     optional: false
     state: canonical
-    description: The storage class name (e.g. 'ceph-rbd-fast', 'gp3-encrypted'). Unique within the cluster.
+    description: The storage class name, unique within the cluster.
     schema:
       type: string
-      description: The storage class name (e.g. 'ceph-rbd-fast', 'gp3-encrypted'). Unique within the cluster.
+      description: The storage class name, unique within the cluster.
   - element: provisioner
     scope: StorageClass
     optional: false
     state: canonical
-    description: The storage provisioner that handles volumes of this class (a CSI driver name, e.g. 'block.csi.example.com').
+    description: The provisioner that handles volumes of this class (a CSI driver name).
     schema:
       type: string
-      description: The storage provisioner that handles volumes of this class (a CSI driver name, e.g. 'block.csi.example.com').
+      description: The provisioner that handles volumes of this class (a CSI driver name).
   - element: reclaim_policy
     scope: StorageClass
     optional: true
     state: canonical
-    description: What happens to the underlying storage when a volume is released.
+    description: 'What happens to the underlying storage when a volume is released: Retain, Delete or Recycle.'
     schema:
       type: string
       enum:
         - Retain
         - Delete
         - Recycle
-      description: What happens to the underlying storage when a volume is released.
+      description: 'What happens to the underlying storage when a volume is released: Retain, Delete or Recycle.'
   - element: volume_binding_mode
     scope: StorageClass
     optional: true
     state: canonical
-    description: When volume binding and provisioning occur — immediately at PVC creation or deferred until a consumer
-      is scheduled.
+    description: 'When binding and provisioning happen: `Immediate`, or `WaitForFirstConsumer` to defer until a
+      consumer is scheduled.'
     schema:
       type: string
       enum:
         - Immediate
         - WaitForFirstConsumer
-      description: When volume binding and provisioning occur — immediately at PVC creation or deferred until a
-        consumer is scheduled.
+      description: 'When binding and provisioning happen: `Immediate`, or `WaitForFirstConsumer` to defer until
+        a consumer is scheduled.'
   - element: allow_volume_expansion
     scope: StorageClass
     optional: true
     state: canonical
-    description: Whether volumes of this class can be expanded after creation.
+    description: Whether volumes of this class can grow after creation.
     schema:
       type: boolean
-      description: Whether volumes of this class can be expanded after creation.
+      description: Whether volumes of this class can grow after creation.
   - element: tier
     scope: StorageClass
     optional: true
     state: canonical
-    description: 'The governed `storage_tier` this class satisfies (ADR-038 §2 vocabulary; each term denotes a requirements
-      floor). Maintainer ruling 2026-08-02: a provider MAY expose storage classes, but MUST map each advertised
-      class back to a tier so tier-authored intent (ADR-036: name-selectable, requirements-authoritative) resolves
-      against class-based providers. The class chosen for a request is recorded consumer-side as a realized fact
-      (e.g. a StorageLayout entry''s `storage_backing`), never in portable intent.'
+    description: The governed `storage_tier` this class satisfies. A provider that exposes storage classes MUST
+      map each to a tier, so tier-authored intent (name-selectable, requirements-authoritative; ADR-036) resolves
+      against it. The class chosen for a request is recorded as a realized fact on the consumer side, never in intent.
     schema:
       type: string
-      description: 'The governed `storage_tier` this class satisfies (ADR-038 §2 vocabulary; each term denotes a
-        requirements floor). Maintainer ruling 2026-08-02: a provider MAY expose storage classes, but MUST map each
-        advertised class back to a tier so tier-authored intent (ADR-036: name-selectable, requirements-authoritative)
-        resolves against class-based providers. The class chosen for a request is recorded consumer-side as a realized
-        fact (e.g. a StorageLayout entry''s `storage_backing`), never in portable intent.'
+      description: The governed `storage_tier` this class satisfies. A provider that exposes storage classes MUST
+        map each to a tier, so tier-authored intent (name-selectable, requirements-authoritative; ADR-036) resolves
+        against it. The class chosen for a request is recorded as a realized fact on the consumer side, never in
+        intent.
     values:
       reference_data_type: storage_tier
   - element: capabilities
     scope: StorageClass
     optional: true
     state: canonical
-    description: Queryable capability advertisements for placement policies.
+    description: 'Capability advertisements placement selects by: IOPS, throughput, encryption, replication factor,
+      snapshot support.'
     schema:
       type: object
-      description: Queryable capability advertisements for placement policies.
+      description: 'Capability advertisements placement selects by: IOPS, throughput, encryption, replication factor,
+        snapshot support.'
       properties:
         iops:
           type: integer
@@ -116,14 +113,14 @@ elements:
     scope: StorageClass
     optional: true
     state: canonical
-    description: Provider-specific parameters passed to the provisioner (e.g., pool name, fsType, compression).
-      Opaque to UDLM — the provisioner interprets them.
+    description: Provisioner-specific parameters (pool, fsType, compression). Opaque to the model; the provisioner
+      interprets them.
     schema:
       type: object
       additionalProperties:
         type: string
-      description: Provider-specific parameters passed to the provisioner (e.g., pool name, fsType, compression).
-        Opaque to UDLM — the provisioner interprets them.
+      description: Provisioner-specific parameters (pool, fsType, compression). Opaque to the model; the provisioner
+        interprets them.
 spec_examples:
   - name: block-fast-encrypted
     provisioner: block.csi.local

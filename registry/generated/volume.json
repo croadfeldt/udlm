@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Volume/0.12.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Volume/0.12.3",
   "conforms_to": "udlm/0.1",
   "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270",
   "resource_type": "Volume",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Storage Volume",
-    "description": "A CONSUMABLE persistent storage volume — the block or file volume a workload attaches, as distinct from the StorageCluster that PROVISIONS it (the platform) and the physical device that backs it. Vendor-neutral Tier-1: provisioners (Ceph RBD/CephFS, cloud CSI drivers, NFS) are the provider, never the type. Adopts Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume. A Base by the Base test (CLS-002): Kubernetes PVC/CSI and SNIA Swordfish Volume abstract over every consumable volume, so an order for capacity with an access mode is fillable by any provisioner; a host-local ZFS dataset is a dialect Type beneath it (Volume.ZFS).",
+    "description": "A consumable persistent volume: the block or file storage a workload attaches, as distinct from the StorageCluster that provisions it and the device that backs it. A Base by the Base test (CLS-002): Kubernetes PVC/CSI and SNIA Swordfish Volume abstract over every consumable volume, so an order for capacity with an access mode is fillable by any provisioner. The provisioner is the provider; a host-local ZFS dataset is a dialect Type beneath it (Volume.ZFS).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-07T14:35:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Volume",
-          "version": "0.12.2",
+          "version": "0.12.3",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         }
       ]
@@ -30,7 +30,7 @@
       "capacity": {
         "type": "string",
         "pattern": "^[0-9]+(Ki|Mi|Gi|Ti|Pi|K|M|G|T|P)?B?$",
-        "description": "Requested capacity, Kubernetes quantity form (e.g. 100Gi). SNIA Swordfish CapacityBytes maps here."
+        "description": "Requested capacity as a quantity (100Gi)."
       },
       "access_mode": {
         "type": "string",
@@ -40,7 +40,7 @@
           "read_write_many",
           "read_write_once_pod"
         ],
-        "description": "Attachment concurrency (Kubernetes PVC accessModes: RWO/ROX/RWX/RWOP)."
+        "description": "Attachment concurrency: `read_write_once`, `read_only_many`, `read_write_many`, `read_write_once_pod` (the Kubernetes PVC access modes, snake_case)."
       },
       "volume_mode": {
         "type": "string",
@@ -48,20 +48,20 @@
           "filesystem",
           "block"
         ],
-        "description": "Filesystem-mounted vs raw block device (Kubernetes PVC volumeMode)."
+        "description": "`filesystem` (mounted) or `block` (raw device)."
       },
       "storage_class": {
-        "description": "Resource reference to a StorageClass (common-elements §2.5, DCM ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
+        "description": "Reference to the StorageClass that provisions it; authored by handle, resolved later if the class is not yet defined.",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
       "retain_on_release": {
         "type": "boolean",
-        "description": "Reclaim policy: true = Retain (keep data after the consumer releases it), false = Delete."
+        "description": "true keeps the data after the consumer releases the volume (Retain); false deletes it."
       },
       "layout_entry": {
         "type": "string",
         "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
-        "description": "The StorageLayout entry name this volume realizes — the join key paired with the realizes_layout_entry edge. Instance edges carry no qualifier (the dependencies[] of a record is a closed shape, state-record.schema.json), so the entry binding lives HERE: set exactly when realizes_layout_entry is declared, matching an entry name in the referenced layout. Reconvergence joins on this value to populate the layout's realized_volumes map."
+        "description": "The StorageLayout entry name this volume realizes; set exactly when the `realizes_layout_entry` edge is declared, matching an entry in the referenced layout. Reconvergence joins on it to fill the layout's realized_volumes map."
       }
     },
     "required": [
