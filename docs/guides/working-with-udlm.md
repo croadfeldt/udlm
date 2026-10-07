@@ -6,6 +6,8 @@ types, Classes, policies, and providers, plus the corpus of use cases and flows 
 meant to behave. Whatever your role, the same promise holds: **the gates handle the bookkeeping so people
 can spend their attention on judgment.**
 
+**New to UDLM?** Read **[quickstart.md](quickstart.md)** first: one VM followed through its four records.
+
 ## What are you here to do?
 
 ### ▸ Build something *in* the model — a resource type, Class, process, policy, provider, reference data
