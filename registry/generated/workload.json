@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Workload/0.9.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Workload/0.9.2",
   "conforms_to": "udlm/0.1",
   "uuid": "905fef1c-3384-4a49-9c44-71420d07eedd",
   "resource_type": "Workload",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Workload",
-    "description": "A logical running service composed of one or more constituents (containers and/or native systemd units) that a provider realizes and manages under the four-state lifecycle. Models the application layer of the estate — Kubernetes workloads (web apps, registries, observability, model serving) and host services (CI, mail, DNS/identity daemons) — as first-class nodes so their runtime dependencies carry order. Secret material is never inline; env/mounts reference a CredentialRef. Fine-grained per-container detail, when wanted, hangs off `constituents` as Container references. Named for the thing, not the act: a Service is what a provider renders, a Workload is the running thing it yields (the service-taxonomy ruling of 2026-06-27). A Base by the Base test (CLS-002): the Open Application Model workload, TOSCA's node and Kubernetes workload resources abstract over a running set of constituents with replicas and endpoints, so an order placed here is fillable by a Kubernetes provider, a podman host or a systemd host alike; `service_kind` stays a classification element.",
+    "description": "A running service composed of containers and/or systemd units, with replicas and endpoints, that a provider realizes and manages. A Base by the Base test (CLS-002): the Open Application Model workload, TOSCA's node and Kubernetes workload resources abstract over a running set of constituents, so an order placed here is fillable by a Kubernetes provider, a podman host or a systemd host alike. Named for the thing a provider yields, not the act it renders (a Service is the act). Secrets are never inline; env and mounts reference a CredentialRef.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-12T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Workload",
-          "version": "0.9.1",
+          "version": "0.9.2",
           "uuid": "905fef1c-3384-4a49-9c44-71420d07eedd"
         }
       ]
@@ -39,11 +39,11 @@
           "fleet-manager",
           "other"
         ],
-        "description": "Coarse classification for grouping/ordering (an infrastructure-daemon shuts down after applications; a fleet-manager — the multi-cluster management plane the former Platform.Hub modelled, maintainer ruling 2026-09-11 — shuts down after the clusters it manages, which its spokes express as contained_by / depends_on edges to it per ADR-043)."
+        "description": "Coarse classification for grouping and ordering: `application`, `infrastructure-daemon` (shuts down after applications), `database`, `gateway`, `registry`, `monitoring`, `fleet-manager` (the multi-cluster management plane; shuts down after the clusters it manages), `other`."
       },
       "constituents": {
         "type": "array",
-        "description": "The workloads that make up the service. Container form references a Container; systemd form names host + units.",
+        "description": "The workloads that make up the service: a Container by reference, or a host plus its systemd units.",
         "items": {
           "type": "object",
           "additionalProperties": false,
@@ -78,7 +78,7 @@
       },
       "endpoints": {
         "type": "array",
-        "description": "How the service is reached — a route/URL/host:port. Informational (naturalized from provider).",
+        "description": "How the service is reached (a route, URL or host:port), as the provider reports it.",
         "items": {
           "type": "object",
           "additionalProperties": false,
@@ -97,7 +97,7 @@
       },
       "replicas": {
         "type": "integer",
-        "description": "Desired/observed instance count (0 = intentionally scaled down)."
+        "description": "Desired instance count; 0 means intentionally scaled down."
       }
     },
     "required": [

@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "CredentialRef",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "instantiable": true,
       "path": "registry/classes/resource/security/credential-ref/_base.yaml",
       "types": []

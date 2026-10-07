@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/UPS/0.1.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/UPS/0.1.4",
   "conforms_to": "udlm/0.1",
   "uuid": "db585146-41b2-4cd9-86e6-c90d086df2cf",
   "resource_type": "UPS",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Uninterruptible Power Supply",
-    "description": "An uninterruptible power supply — battery-backed conditioned power that carries a load through an input failure and reports the state a graceful shutdown decides on. A base class of its own (ADR-075, the base test of CLS-002): NUT and Redfish PowerEquipment abstract over every UPS topology — double-conversion, line-interactive, standby (IEC 62040-3) — and every element here is honorable by each; it is not a kind of Facility (a folder), and no API abstracts a UPS together with a PDU or a transfer switch, so it sits under no wider power base. Vendor-neutral by construction: what every UPS declares (identity, rating, battery, low-battery policy) and reports (status, charge, runtime, load, input voltage); the telemetry producer (NUT, a vendor SNMP card, a Redfish power shelf) is a provider, named on the instance and in adopts[], never in the type. The circuit it protects is a PowerFeed that is supplied_by it — hosts keep depending on the feed, so the shutdown walk is unchanged.",
+    "description": "An uninterruptible power supply: battery-backed conditioned power that carries a load through an input failure and reports the state a graceful shutdown decides on. A Base by the Base test (CLS-002; ADR-075): NUT and Redfish PowerEquipment abstract over every topology — double-conversion, line-interactive, standby — so a unit of a given rating and low-battery policy is one deliverable any of them fills; it sits under no wider power Base because nothing abstracts a UPS together with a PDU. What every unit declares (identity, rating, battery, low-battery policy) is here; what it reports (status, charge, runtime, load) is outputs; the telemetry producer is the provider. The circuit it protects is a PowerFeed `supplied_by` it.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-09-27T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "UPS",
-          "version": "0.1.3",
+          "version": "0.1.4",
           "uuid": "db585146-41b2-4cd9-86e6-c90d086df2cf"
         }
       ]
@@ -29,7 +29,7 @@
     "properties": {
       "identity": {
         "type": "object",
-        "description": "Unit identity (SPEC-DESIGN-REQUIREMENTS §27) — the same shape every Hardware/Machine type carries.",
+        "description": "Unit identity: vendor, model, serial.",
         "properties": {
           "manufacturer": {
             "type": "string",
@@ -56,11 +56,11 @@
           "line-interactive",
           "standby"
         ],
-        "description": "UPS topology per IEC 62040-3 performance classification: double-conversion (VFI), line-interactive (VI), standby (VFD)."
+        "description": "IEC 62040-3 class: `double-conversion` (VFI), `line-interactive` (VI), `standby` (VFD). An element, not a Type axis: it does not change the definition structure."
       },
       "rated_capacity": {
         "type": "object",
-        "description": "Nameplate rating (NUT ups.power.nominal / ups.realpower.nominal; Redfish PowerSupply/PowerShelf ratings).",
+        "description": "Nameplate rating in VA and W (NUT ups.power.nominal / ups.realpower.nominal).",
         "properties": {
           "va": {
             "type": "integer",
@@ -89,7 +89,7 @@
       },
       "battery": {
         "type": "object",
-        "description": "The battery set — what wears and what gets replaced. Runtime and charge are outputs, not declared here.",
+        "description": "The battery set: what wears and what gets replaced. Runtime and charge are outputs.",
         "properties": {
           "chemistry": {
             "type": "string",
@@ -115,11 +115,11 @@
       "outlets": {
         "type": "integer",
         "minimum": 1,
-        "description": "Number of output receptacles (NUT outlet.count; Redfish Outlet collection size)."
+        "description": "Number of output receptacles. Switched-outlet detail is provider data."
       },
       "low_battery_policy": {
         "type": "object",
-        "description": "When the unit MUST raise low-battery — by remaining charge and/or remaining runtime.",
+        "description": "When the unit MUST raise low-battery, the shutdown trigger: by remaining charge and/or remaining runtime. Pushed to the unit where writable; where the unit fixes it, the realized record reports the unit's value and the difference stands as drift.",
         "properties": {
           "charge_percent": {
             "type": "integer",
@@ -136,7 +136,7 @@
       },
       "management_interfaces": {
         "type": "array",
-        "description": "How the unit can be observed and controlled — the surfaces present, not which one a provider uses.",
+        "description": "The observation and control surfaces present (USB, SNMP card, network), not which one a provider uses.",
         "items": {
           "type": "string",
           "enum": [

@@ -1,22 +1,20 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Database/0.8.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Database/0.8.2
 conforms_to: udlm/0.1
 uuid: c199bb49-3ed4-4ed5-a902-2ebccd0a8337
 record_type: class
 class: base
 resource_type: Database
-version: 0.8.1
+version: 0.8.2
 family: Resource
 status: active
 filed_under:
   - data
 metadata:
   display_name: Database
-  description: 'A managed relational database instance. Publishes connection outputs other resources bind to. Reconciled
-    2026-07-07 with the dcm-project catalog DatabaseSpec (#271): resources now required (matching their DatabaseSpec),
-    and the storage/host relationships added so a database''s data volume and placement are first-class edges. A
-    Base by the Base test (CLS-002): a managed database is ordered as an engine, a version and resources, which
-    every database operator and cloud data service fills the same way; the engine is an element, and becomes a dialect
-    Type only when a dialect carries elements of its own.'
+  description: 'A managed relational database instance that publishes connection outputs other resources bind to.
+    A Base by the Base test (CLS-002): a database is ordered as an engine, a version and resources, which every
+    database operator and cloud data service fills the same way. The engine is an element; it becomes a dialect
+    Type only when a dialect carries elements of its own. Its data volume and its host are first-class edges.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-17T18:31:11Z'
 elements:
@@ -24,38 +22,33 @@ elements:
     scope: Database
     optional: false
     state: canonical
-    description: Database engine.
+    description: Database engine (postgresql, mysql, …).
     schema:
       type: string
       enum:
         - postgres
         - mysql
-      description: Database engine.
+      description: Database engine (postgresql, mysql, …).
   - element: version
     scope: Database
     optional: true
     state: canonical
-    description: 'Engine version. Concrete (e.g. `16`, engine-dependent — see registry conditional-constraints,
-      E3) OR an abstract channel the PROVIDER resolves (`latest`, `lts`). Optional: when omitted it defaults to
-      `latest`. Because the value may be abstract, two provider obligations apply (ADR-014; provider-contract §8.1a):
-      (1) the provider DECLARES its channel→version resolution so an abstract request stays comparable/conformable/validatable
-      against a pinned requirement and across compatible providers (declared, not live-queried); (2) the concrete
-      version provisioned is recorded in outputs.applied_version for audit. Intent carries the abstract; realized
-      carries the concrete.'
+    description: 'Engine version: concrete (`16`) or an abstract channel the provider resolves (`latest`, `lts`;
+      default `latest`). A provider declares its channel-to-version resolution so an abstract request stays comparable
+      against a pinned one, and records the concrete version provisioned in `outputs.applied_version`. Intent carries
+      the abstract, realized carries the concrete.'
     schema:
       type: string
-      description: 'Engine version. Concrete (e.g. `16`, engine-dependent — see registry conditional-constraints,
-        E3) OR an abstract channel the PROVIDER resolves (`latest`, `lts`). Optional: when omitted it defaults to
-        `latest`. Because the value may be abstract, two provider obligations apply (ADR-014; provider-contract
-        §8.1a): (1) the provider DECLARES its channel→version resolution so an abstract request stays comparable/conformable/validatable
-        against a pinned requirement and across compatible providers (declared, not live-queried); (2) the concrete
-        version provisioned is recorded in outputs.applied_version for audit. Intent carries the abstract; realized
-        carries the concrete.'
+      description: 'Engine version: concrete (`16`) or an abstract channel the provider resolves (`latest`, `lts`;
+        default `latest`). A provider declares its channel-to-version resolution so an abstract request stays comparable
+        against a pinned one, and records the concrete version provisioned in `outputs.applied_version`. Intent
+        carries the abstract, realized carries the concrete.'
   - element: resources
     scope: Database
     optional: false
     state: canonical
-    description: Converted verbatim from the flat Database spec.
+    description: 'Resource request in the shared compute shape: `cpu` as a quantity string (500m, 2), `memory`,
+      `storage`.'
     schema:
       type: object
       properties:
@@ -77,16 +70,19 @@ elements:
         storage:
           type: string
           pattern: ^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$
+      description: 'Resource request in the shared compute shape: `cpu` as a quantity string (500m, 2), `memory`,
+        `storage`.'
   - element: metadata
     scope: Database
     optional: true
     state: canonical
-    description: Converted verbatim from the flat Database spec.
+    description: Free labels for the instance (environment, owner).
     schema:
       type: object
       properties:
         name:
           type: string
+      description: Free labels for the instance (environment, owner).
 spec_examples:
   - engine: postgres
     version: '16'

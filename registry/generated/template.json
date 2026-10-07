@@ -1,23 +1,23 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Template/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Template/0.2.1",
   "conforms_to": "udlm/0.1",
   "uuid": "39584b58-b513-4b3f-9780-b427865c58b7",
   "resource_type": "Template",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Template — the orderable composition",
     "maintainer": "UDLM project",
     "origination_timestamp": "2026-08-10T00:00:00Z",
-    "description": "A consumable composition: an orderable unit assembled from other classes and references, declared once and realized many times. The Base Class carries only the composition MECHANISM — the sovereignty floor the whole must hold, and the non-isolating groupings its realized parts join. It declares no constituents, because a Base Class states what a composition is rather than what any particular composition contains. outputs-exempt: a Template is a definition realized many times; the composite it realizes carries the outputs.",
+    "description": "An orderable composition: a unit assembled from other classes and references, declared once and realized many times. The Base carries only the composition mechanism — the sovereignty floor the whole must hold and the non-isolating groupings its parts join — and declares no constituents, because a Base says what a composition is, not what one contains. outputs-exempt: a Template is a definition realized many times; the composite it realizes carries the outputs.",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
           "class": "Template",
-          "version": "0.2.0",
+          "version": "0.2.1",
           "uuid": "39584b58-b513-4b3f-9780-b427865c58b7"
         }
       ]
@@ -49,7 +49,7 @@
             "description": "same_zone = every constituent must land in ONE zone satisfying the floor, a JOINT constraint over the placement set. per_constituent = each satisfies the floor independently. No default: which one applies is the composition author's decision and UDLM ships no defaults (NDF-001)."
           }
         },
-        "description": "The sovereignty requirement this composition must hold, carried as immutable data and communicated to whoever decides admission (ADR-057 — UDLM codifies, does not vet). Realized onto each constituent's `sovereignty` block at placement. A joint constraint is evaluable only once every placement is known, which is why placement sits inside the convergence loop rather than after it: a cohesion failure must RE-PLACE, and that is another iteration, not a post-placement correction."
+        "description": "The sovereignty requirement the whole composition must hold, realized onto each constituent's `sovereignty` block at placement. A joint constraint is evaluable only once every placement is known, so a cohesion failure re-places rather than corrects after the fact."
       },
       "groupings": {
         "type": "array",
@@ -57,7 +57,7 @@
           "type": "string",
           "format": "udlm-ref-url"
         },
-        "description": "Additional NON-isolating groupings the realized constituents join — cost center, project, business unit. References Grouping records under advisory enforcement, where a member may belong to many. Deliberately NOT the System's own grouping, which derives from the composite's uuid and is never stored (DRV-001), and deliberately NOT a tenant: a tenant boundary is an isolation border carried on the realized entity's `tenant_uuid`, never chosen by a Template."
+        "description": "Additional non-isolating groupings the realized constituents join (cost center, project, business unit). Never the composite's own grouping, which derives from its uuid, and never a tenant, which is an isolation border carried on the realized entity."
       }
     },
     "examples": [

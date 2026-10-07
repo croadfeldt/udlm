@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/DirectoryService/0.8.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/DirectoryService/0.8.3",
   "conforms_to": "udlm/0.1",
   "uuid": "b5a74015-f60e-49ff-9ff8-c704152cb958",
   "resource_type": "DirectoryService",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Directory Service",
-    "description": "An identity directory server providing LDAP and (optionally) Kerberos. Grounded in RFC 4511/4512 (LDAP protocol + information model) and RFC 4120 (Kerberos). This is the directory SERVER (a Security resource); the identity DATA it holds (Person/Group/ServiceAccount) is the Identity information category. An integrated identity suite realizes this PLUS DNSZone and (future) CertificateAuthority. A Base by the Base test (CLS-002): RFC 4511 LDAP and RFC 4120 Kerberos are the contracts every directory speaks, so a directory of given protocols, realm and base DN is one deliverable any directory provider can realize; LDAP and IPA become dialect Types when they carry elements of their own.",
+    "description": "A directory server providing LDAP and, optionally, Kerberos. A Base by the Base test (CLS-002): RFC 4511 LDAP and RFC 4120 Kerberos are the contracts every directory speaks, so a directory with given protocols, realm and base DN is one deliverable any directory provider realizes; LDAP and IPA become dialect Types when they carry elements of their own. This is the server; the identities it holds are Identity and IdentityGroup records. An integrated identity suite realizes this together with a DNSZone.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "DirectoryService",
-          "version": "0.8.2",
+          "version": "0.8.3",
           "uuid": "b5a74015-f60e-49ff-9ff8-c704152cb958"
         }
       ]
@@ -37,15 +37,15 @@
             "kerberos"
           ]
         },
-        "description": "Directory access protocols served (RFC 4511 LDAP; RFC 4120 Kerberos)."
+        "description": "Protocols served: `ldap` (RFC 4511), `kerberos` (RFC 4120)."
       },
       "realm": {
         "type": "string",
-        "description": "Kerberos realm / identity realm, e.g. EXAMPLE.COM."
+        "description": "Kerberos or identity realm (EXAMPLE.COM)."
       },
       "base_dn": {
         "type": "string",
-        "description": "LDAP base DN, e.g. dc=example,dc=com (RFC 4512 naming)."
+        "description": "LDAP base DN (dc=example,dc=com)."
       },
       "replication_role": {
         "type": "string",
@@ -54,7 +54,7 @@
           "replica",
           "standalone"
         ],
-        "description": "Topology role within the directory cluster."
+        "description": "Role within the directory's replication topology: primary, replica."
       }
     },
     "required": [

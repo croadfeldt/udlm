@@ -175,7 +175,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 
 ## CredentialRef
 
-### CredentialRef (0.8.0)
+### CredentialRef (0.8.1)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -237,7 +237,7 @@ One DNS zone — its required `zone_name`, e.g. example.com — with its authori
 
 ## Database
 
-### Database (0.8.1)
+### Database (0.8.2)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -258,7 +258,7 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 
 ## DirectoryService
 
-### DirectoryService (0.8.2)
+### DirectoryService (0.8.3)
 
 **Purpose:** Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.
 
@@ -617,7 +617,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 
 ## Location
 
-### Location (0.5.0)
+### Location (0.5.1)
 
 **Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
 
@@ -638,7 +638,7 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 
 ## LogShipper
 
-### LogShipper (0.7.1)
+### LogShipper (0.7.2)
 
 **Purpose:** Declares the outcome that a host's logs reach the central sink — without saying anything about how.
 
@@ -813,7 +813,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 
 ## PowerFeed
 
-### PowerFeed (0.7.1)
+### PowerFeed (0.7.2)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
@@ -1073,7 +1073,7 @@ A term with an authoritative definition, living in a named vocabulary tree (its 
 
 ## Template
 
-### Template (0.2.0)
+### Template (0.2.1)
 
 **Purpose:** Declares a consumable composition — the mechanism by which an orderable unit is assembled from other classes and references, declared once and realized many times.
 
@@ -1090,7 +1090,7 @@ The thing on a menu that is made of other things. The Base carries only the comp
 - Template.Application — the Type that says what is composed.
 - SovereigntyZone — what the floor names.
 
-### Template.Application (0.2.1)
+### Template.Application (0.2.2)
 
 **Purpose:** Let a consumer order an application as ONE thing — the whole shape, wired, placed and reconciled together — instead of ordering the parts and re-deriving how they connect every time.
 
@@ -1144,7 +1144,7 @@ The vulnerability-check dialect of test evidence: the subject is a package versi
 
 ## Topology
 
-### Topology (0.5.5)
+### Topology (0.5.6)
 
 **Purpose:** Declares the failure and locality domains — region, zone, rack, power, network — that placement, residency, and maintenance gating resolve against.
 
@@ -1166,7 +1166,7 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 
 ## UPS
 
-### UPS (0.1.3)
+### UPS (0.1.4)
 
 **Purpose:** Models the battery-backed unit itself — what it is rated for, what wears, when it must signal low battery, and what it reports — so the feed it protects can be supplied_by a real entity instead of a feed_type string.
 
@@ -1309,7 +1309,7 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 
 ## Workload
 
-### Workload (0.9.1)
+### Workload (0.9.2)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 

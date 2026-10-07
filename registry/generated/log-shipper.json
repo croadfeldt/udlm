@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper/0.7.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper/0.7.2",
   "conforms_to": "udlm/0.1",
   "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922",
   "resource_type": "LogShipper",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Log Shipper",
-    "description": "An OUTCOME: a target host's logs are shipped to a central log sink, tagged with the host's identity. The consumer declares 'I need a LogShipper on host X' — nothing about HOW. A provider realizes it; the automation method (a configuration-management role today, an automation platform's job template tomorrow, a container, a script) is the provider's encapsulated internal mechanism and never appears in this type. Swapping the method is an internal provider change with zero impact on this contract or the consumer — that invisibility is the point. Worked realization: a provider's configuration-management role shipping the host journal to the central log store. See control-plane architecture/integrations/automation-outcome-providers.md. A Base by the Base test (CLS-002): the OpenTelemetry Collector's source-to-sink contract (OTLP, Prometheus exposition) abstracts over every shipper, so a shipper with a given source, sink and labels is one deliverable any telemetry provider can realize.",
+    "description": "An outcome: a host's logs are shipped to a central sink, tagged with the host's identity. A Base by the Base test (CLS-002): the OpenTelemetry Collector's source-to-sink contract (OTLP, Prometheus exposition) abstracts over every shipper, so a shipper with a given source, sink and labels is one deliverable any telemetry provider realizes. The consumer says which host and which sink and nothing about how; the mechanism (a configuration-management role, a job template, a container) is the provider's and swapping it never touches this contract.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-18T13:14:58Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "LogShipper",
-          "version": "0.7.1",
+          "version": "0.7.2",
           "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922"
         }
       ]
@@ -32,7 +32,7 @@
         "required": [
           "host"
         ],
-        "description": "Whose logs. The host the shipper runs on / collects from. (In a fuller model this becomes a typed relationship to a host resource; for now it is a declarative identifier.)",
+        "description": "The host whose logs are shipped; the shipper runs on or collects from it.",
         "properties": {
           "host": {
             "type": "string",
@@ -45,7 +45,7 @@
         "required": [
           "url"
         ],
-        "description": "Where the logs go — the central log store endpoint. Vendor-neutral (e.g. an OTLP push URL); the store itself is another entity.",
+        "description": "Where the logs go: the central store's endpoint (an OTLP push URL). The store itself is another entity.",
         "properties": {
           "url": {
             "type": "string",
@@ -59,14 +59,14 @@
           "journal",
           "files"
         ],
-        "description": "Which logs to ship: the systemd journal (default) or on-disk files. An outcome property — not a method detail."
+        "description": "Which logs: the systemd journal (default) or on-disk files."
       },
       "labels": {
         "type": "object",
         "additionalProperties": {
           "type": "string"
         },
-        "description": "Extra stream labels to attach beyond the inherent host/unit identity (e.g. environment, role). Optional."
+        "description": "Extra stream labels beyond the host and unit identity (environment, role)."
       }
     },
     "required": [

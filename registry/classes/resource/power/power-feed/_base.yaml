@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/PowerFeed/0.7.1
+$id: https://udlm.dev/registry/udlm/0.1/class/PowerFeed/0.7.2
 conforms_to: udlm/0.1
 uuid: e1cdf697-ec3d-4208-8e62-ef1c88ba7a31
 record_type: class
 class: base
 resource_type: PowerFeed
-version: 0.7.1
+version: 0.7.2
 family: Resource
 status: active
 filed_under:
@@ -12,12 +12,11 @@ filed_under:
   - facility
 metadata:
   display_name: Power Feed
-  description: 'A power source feeding equipment — utility circuit, UPS, PDU, or generator. The graph ROOT for an
-    estate: hosts depend_on a PowerFeed, so a reverse-topological shutdown walks everything that transitively draws
-    from it. Grounded in DMTF Redfish DCIM (Circuit / PowerDistribution) for the power-distribution model and NUT
-    (Network UPS Tools) for UPS telemetry (NUT is GPL — referenced by name only). A Base by the Base test (CLS-002),
-    ADR-075''s recorded follow-up: Redfish Circuit abstracts over utility, UPS, PDU and generator feeds, so a feed
-    of a given type, capacity and redundancy is one deliverable any power provider can realize.'
+  description: 'A power source feeding equipment: a utility circuit, a UPS, a PDU or a generator. The root of the
+    estate graph: hosts depend on a feed, so a reverse-topological shutdown walks everything that transitively draws
+    from it. A Base by the Base test (CLS-002): Redfish Circuit abstracts over every feed type, so a feed with a
+    given type, capacity and redundancy is one deliverable any power provider realizes; NUT supplies UPS telemetry
+    by reference.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:38:59Z'
 elements:
@@ -25,8 +24,8 @@ elements:
     scope: PowerFeed
     optional: false
     state: canonical
-    description: Kind of power source. `ups` implies a `supplied_by` edge to the UPS entity (ADR-075); a feed with
-      one and not the other reads as incomplete, not contradictory.
+    description: 'Kind of source: `utility`, `ups`, `pdu`, `generator`. `ups` implies a `supplied_by` edge to the
+      UPS; one without the other reads as incomplete, not contradictory.'
     schema:
       type: string
       enum:
@@ -34,15 +33,16 @@ elements:
         - ups
         - pdu
         - generator
-      description: Kind of power source. `ups` implies a `supplied_by` edge to the UPS entity (ADR-075).
+      description: 'Kind of source: `utility`, `ups`, `pdu`, `generator`. `ups` implies a `supplied_by` edge to
+        the UPS; one without the other reads as incomplete, not contradictory.'
   - element: capacity
     scope: PowerFeed
     optional: true
     state: canonical
-    description: Rated capacity (Redfish Circuit/PowerDistribution ratings).
+    description: Rated capacity (Redfish Circuit ratings).
     schema:
       type: object
-      description: Rated capacity (Redfish Circuit/PowerDistribution ratings).
+      description: Rated capacity (Redfish Circuit ratings).
       properties:
         watts:
           type: integer
@@ -62,14 +62,14 @@ elements:
     scope: PowerFeed
     optional: true
     state: canonical
-    description: Feed redundancy level.
+    description: 'Feed redundancy: none, n+1, 2n.'
     schema:
       type: string
       enum:
         - none
         - n+1
         - 2n
-      description: Feed redundancy level.
+      description: 'Feed redundancy: none, n+1, 2n.'
 spec_examples:
   - feed_type: pdu
     capacity:

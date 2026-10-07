@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.5.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.5.6",
   "conforms_to": "udlm/0.1",
   "uuid": "34b1a133-4377-4bd6-b089-2345e8e80aab",
   "resource_type": "Topology",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Topology",
-    "description": "A declared graph of failure/locality domains (region, zone, rack, host, power, network) that abstract placement, residency, fault-domain gating, and ordering resolve against. A cross-cutting, single-segment type (not domain-owned) so resources across any domain reference it. Failure domains are addressable data WITHIN this type (SPEC-DESIGN-REQUIREMENTS §26/§27), keyed by a stable id, not a separate type. Each domain carries an abstract `kind` (what a constraint targets) and a concrete `id` (what a resource landed in); portable intent references kinds, never concrete ids.",
+    "description": "A declared graph of failure and locality domains — region, zone, rack, host, power, network — that placement, residency, fault-domain gating and ordering resolve against. A Base referenced by resources of every kind. Domains are addressable data within the topology, keyed by a stable id: each carries an abstract `kind` that a constraint targets and a concrete `id` that a resource landed in. Portable intent references kinds, never concrete ids.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T20:29:19Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Topology",
-          "version": "0.5.5",
+          "version": "0.5.6",
           "uuid": "34b1a133-4377-4bd6-b089-2345e8e80aab"
         }
       ]
@@ -35,11 +35,11 @@
           "facility",
           "logical"
         ],
-        "description": "Breadth this topology describes. `facility` is a scope, not the root — a topology MAY span facilities."
+        "description": "The breadth this topology describes. `facility` is a scope, not the root: a topology may span facilities."
       },
       "domains": {
         "type": "array",
-        "description": "Failure/locality domains as addressable data within the topology (SPEC-DESIGN-REQUIREMENTS §26/§27). Each keyed by a stable `id`; placement/locality references point at `id`. The `parent` links form an acyclic hierarchy.",
+        "description": "The failure and locality domains, each keyed by a stable `id` that placement and locality references point at, with a `kind` and a `parent`. The parent links form an acyclic hierarchy.",
         "items": {
           "type": "object",
           "required": [
