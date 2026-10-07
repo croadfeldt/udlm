@@ -4,9 +4,16 @@ UDLM is a wire-compatible substrate for systems that manage data through its
 lifecycle from intent to realization. Any system conformant to UDLM produces
 data that any other conformant system can read, interpret, and exchange.
 
-> **Working with UDLM?** Start at **[`docs/guides/working-with-udlm.md`](docs/guides/working-with-udlm.md)** — it
-> routes you by what you're here to do: author an artifact, review a contribution, build a system that
-> consumes the model, or contribute to the project.
+## Start here
+
+1. **[`docs/guides/quickstart.md`](docs/guides/quickstart.md)** — one VM followed through its four
+   records, from the request to what discovery found. Ten minutes; every step names the file to open.
+2. **[`docs/spec/foundations/class-tiers.md`](docs/spec/foundations/class-tiers.md)** — the class system:
+   Base, Type and Provider Class, and how where an element sits decides how portable it is.
+3. **[`docs/spec/foundations/four-states.md`](docs/spec/foundations/four-states.md)** — the records:
+   intent, requested, realized, discovered.
+4. **[`docs/guides/working-with-udlm.md`](docs/guides/working-with-udlm.md)** — then go by role: author,
+   reviewer, system builder, contributor.
 
 ## Layers
 
