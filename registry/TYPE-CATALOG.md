@@ -152,7 +152,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 
 ## Container
 
-### Container (1.0.6)
+### Container (1.0.7)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -555,7 +555,7 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 
 ## KubernetesCluster
 
-### KubernetesCluster (2.0.3)
+### KubernetesCluster (2.0.4)
 
 **Purpose:** Declares a managed Kubernetes cluster — release and network ranges — as one provisionable intent; its node pools are KubernetesNodePool records contained by it.
 
@@ -574,11 +574,11 @@ The request for a control plane: which release and what internal network ranges 
 - KubernetesNodePool — homogeneous slices of the cluster's node capacity.
 - VirtualNetwork — the network the cluster is realized onto.
 - Container — the workloads scheduled onto the cluster.
-- Workload (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
+- Workload (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned, depends_on (soft) when imported.
 
 ## KubernetesNamespace
 
-### KubernetesNamespace (1.1.4)
+### KubernetesNamespace (1.1.5)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
@@ -597,7 +597,7 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 
 ## KubernetesNodePool
 
-### KubernetesNodePool (1.1.1)
+### KubernetesNodePool (1.1.2)
 
 **Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
 
@@ -658,7 +658,7 @@ A statement of outcome: logs from a target host — the `target` object naming i
 
 ## Machine
 
-### Machine (2.1.3)
+### Machine (2.1.4)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -676,7 +676,7 @@ The most portable way to ask for a machine: how big, what image, what storage ti
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 
-### Machine.BareMetalHost (0.13.0)
+### Machine.BareMetalHost (0.13.1)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -695,11 +695,11 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 
 **Works with:**
 - PowerFeed — the power source the host draws from; roots the shutdown ordering.
-- The host's own `firmware` element — the portable BIOS settings it converges to; vendor attribute sets are Provider Class data (ADR-082).
-- NetworkInterface — the host's NICs, modeled as contained components.
+- The host's own `firmware` element — the portable BIOS settings it converges to; vendor attribute sets are Provider Class data.
+- NetworkInterface, StorageDevice, GPU, BMC — the host's components, as contained records.
 - Machine.VM — the guests the host runs.
 
-### Machine.LPAR (0.1.3)
+### Machine.LPAR (0.1.4)
 
 **Purpose:** Declares a logical partition on a partitioned system as one provisionable Machine.
 
@@ -718,7 +718,7 @@ The request for a slice of a big partitioned server: how much processor capacity
 - Volume — the disks served through virtual I/O.
 - VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.0.5)
+### Machine.VM (2.0.6)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 

@@ -1,59 +1,56 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/2.0.3
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/2.0.4
 conforms_to: udlm/0.1
 uuid: 3909934c-4b06-48ae-9431-a19083e59a6c
 record_type: class
 class: base
 resource_type: KubernetesCluster
 short_name: K8sCluster
-version: 2.0.3
+version: 2.0.4
 family: Resource
 status: active
-filed_under: [compute]
+filed_under:
+  - compute
 metadata:
   display_name: Kubernetes cluster
-  description: 'A Kubernetes cluster as one orderable deliverable — release and network ranges. It carries
-    no node pools: a pool is a KubernetesNodePool record contained by the cluster, ordered, scaled and
-    retired on its own, and a cluster with its pools is a composition (ruling 072, 2026-09-12). A cluster
-    record may therefore have zero worker pools, as a hosted control plane or an EKS cluster does at creation.
-    A Base Class in its own right (ADR-068): its contract is the Kubernetes API, which every
-    conformant distribution honors, so an order placed here can be realized by any provider offering
-    one. Named for the standard, never for a product — distributions (OpenShift, EKS, k3s, …) are the
-    Type tier beneath it and offerings the Provider tier. `pod_cidr`/`service_cidr` are Kubernetes
-    vocabulary, which is why this left `Compute`: a VM or a bare-metal host cannot honor them. Derived
-    from OSAC''s `cluster` fulfillment type (osac-project/fulfillment-service; its inline node sets map to
-    KubernetesNodePool records); target
-    VirtualNetwork is registered; the fleet manager is a Workload of service_kind fleet-manager (ADR-043 relationship semantics).'
+  description: 'A Kubernetes cluster ordered as one deliverable: a release and its network ranges. A Base by the
+    Base test (CLS-002): its contract is the Kubernetes API, which every conformant distribution honours, so any
+    provider offering one fills an order placed here. Named for the standard; distributions (OpenShift, EKS, k3s)
+    are the Type tier, offerings the Provider tier. It carries no node pools: every pool is a KubernetesNodePool
+    record contained by the cluster, so a cluster with its pools is a composition (row 072), and a cluster may have
+    zero pools, as a hosted control plane does at creation.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-17T19:57:00Z'
 elements:
-- element: release
-  scope: KubernetesCluster
-  optional: false
-  state: canonical
-  description: Platform release, e.g. 1.30 (a Kubernetes minor release) or a distribution's release stream.
-  schema:
-    type: string
-    description: Platform release, e.g. 1.30 (a Kubernetes minor release) or a distribution's release
-      stream.
-- element: network
-  scope: KubernetesCluster
-  optional: true
-  state: canonical
-  description: Converted verbatim from the flat cluster spec.
-  schema:
-    type: object
-    properties:
-      pod_cidr:
-        type: string
-        pattern: ^[0-9./]+$
-      service_cidr:
-        type: string
-        pattern: ^[0-9./]+$
+  - element: release
+    scope: KubernetesCluster
+    optional: false
+    state: canonical
+    description: 'Platform release: a Kubernetes minor release (1.30) or a distribution''s release stream.'
+    schema:
+      type: string
+      description: 'Platform release: a Kubernetes minor release (1.30) or a distribution''s release stream.'
+  - element: network
+    scope: KubernetesCluster
+    optional: true
+    state: canonical
+    description: 'Internal network ranges: `pod_cidr`, `service_cidr`, and the network type where the distribution
+      exposes one.'
+    schema:
+      type: object
+      properties:
+        pod_cidr:
+          type: string
+          pattern: ^[0-9./]+$
+        service_cidr:
+          type: string
+          pattern: ^[0-9./]+$
+      description: 'Internal network ranges: `pod_cidr`, `service_cidr`, and the network type where the distribution
+        exposes one.'
 spec_examples:
-- release: '1.30'
-  network:
-    pod_cidr: 198.51.100.0/24
-    service_cidr: 203.0.113.0/24
+  - release: '1.30'
+    network:
+      pod_cidr: 198.51.100.0/24
+      service_cidr: 203.0.113.0/24
 outputs:
   api_url:
     type: string
@@ -69,69 +66,67 @@ outputs:
     type: string
     description: Provider-assigned cluster identifier.
 immutable:
-- network.pod_cidr
-- network.service_cidr
+  - network.pod_cidr
+  - network.service_cidr
 relationships:
-- edge_type: depends_on
-  target: VirtualNetwork
-  cardinality: 0..1
-  description: Realized onto a virtual network.
-- edge_type: contained_by
-  target: Workload
-  cardinality: 0..1
-  description: 'Provisioned and managed by a hub — a Workload of service_kind fleet-manager (hosted control planes): the hub has
-    lifecycle authority — hosted control planes run inside it. For imported clusters use the depends_on
-    (soft) edge instead. Unnamed per ADR-043.'
-- edge_type: depends_on
-  target: Workload
-  cardinality: 0..1
-  description: 'Imported/adopted into a hub''s fleet (OCM ManagedCluster semantics): managed, not contained
-    — strength soft because an imported cluster survives hub loss (degrade-don''t-break). Mutually exclusive
-    with the contained_by hub edge per cluster-hub pair; unnamed per ADR-043 — the typed target is the
-    context.'
+  - edge_type: depends_on
+    target: VirtualNetwork
+    cardinality: 0..1
+    description: Realized onto a virtual network.
+  - edge_type: contained_by
+    target: Workload
+    cardinality: 0..1
+    description: 'Provisioned and managed by a hub — a Workload of service_kind fleet-manager (hosted control planes):
+      the hub has lifecycle authority — hosted control planes run inside it. For imported clusters use the depends_on
+      (soft) edge instead. Unnamed per ADR-043.'
+  - edge_type: depends_on
+    target: Workload
+    cardinality: 0..1
+    description: 'Imported/adopted into a hub''s fleet (OCM ManagedCluster semantics): managed, not contained —
+      strength soft because an imported cluster survives hub loss (degrade-don''t-break). Mutually exclusive with
+      the contained_by hub edge per cluster-hub pair; unnamed per ADR-043 — the typed target is the context.'
 adopts:
-- standard: FOCUS
-  version: '>=1.3 <2.0'
-  role: cost-and-usage data for this cluster
-  identity_join:
-    local_field: uuid
-    standard_column: ResourceId
-  source: https://focus.finops.org/
-  license: CC-BY-4.0
-  license_compatibility: compatible-reference
-  disposition: tier2_record
-- standard: OpenCost
-  version: 1.x
-  role: Kubernetes cost allocation (CPU/memory/idle)
-  identity_join:
-    local_field: uuid
-    standard_column: cluster
-  source: https://opencost.io/
-  license: Apache-2.0
-  license_compatibility: compatible-reference
-  disposition: tier2_record
+  - standard: FOCUS
+    version: '>=1.3 <2.0'
+    role: cost-and-usage data for this cluster
+    identity_join:
+      local_field: uuid
+      standard_column: ResourceId
+    source: https://focus.finops.org/
+    license: CC-BY-4.0
+    license_compatibility: compatible-reference
+    disposition: tier2_record
+  - standard: OpenCost
+    version: 1.x
+    role: Kubernetes cost allocation (CPU/memory/idle)
+    identity_join:
+      local_field: uuid
+      standard_column: cluster
+    source: https://opencost.io/
+    license: Apache-2.0
+    license_compatibility: compatible-reference
+    disposition: tier2_record
 context:
-  purpose: Declares a managed Kubernetes cluster — release and network ranges — as one provisionable intent;
-    its node pools are KubernetesNodePool records contained by it.
-  plain_description: 'The request for a control plane: which release and what internal network ranges it
-    uses. The nodes come as separate KubernetesNodePool orders contained by the cluster, so a cluster with
-    its pools is a composition of records, never one record. A provider (e.g. hosted control planes
-    behind a management hub) turns this into a running cluster and publishes back the API URL, console
-    URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node
-    pools, and workloads all hang off a cluster record.'
+  purpose: Declares a managed Kubernetes cluster — release and network ranges — as one provisionable intent; its
+    node pools are KubernetesNodePool records contained by it.
+  plain_description: 'The request for a control plane: which release and what internal network ranges it uses. The
+    nodes come as separate KubernetesNodePool orders contained by the cluster, so a cluster with its pools is a
+    composition of records, never one record. A provider (e.g. hosted control planes behind a management hub) turns
+    this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed
+    onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.'
   use_when:
-  - You need to request a new Kubernetes cluster with a declared release rather than hand-building one; the
-    pools follow as KubernetesNodePool orders.
-  - You need cluster-scoped resources (namespaces, node pools, storage classes) to have a single parent
-    record they cannot outlive.
+    - You need to request a new Kubernetes cluster with a declared release rather than hand-building one; the pools
+      follow as KubernetesNodePool orders.
+    - You need cluster-scoped resources (namespaces, node pools, storage classes) to have a single parent record
+      they cannot outlive.
   not_for:
-  - A distributed storage cluster (Ceph and kin) — that is StorageCluster; this type is the container-orchestration
-    platform.
-  - A group of nodes — that is KubernetesNodePool, always, whether ordered with the cluster or later (ruling 072).
+    - A distributed storage cluster (Ceph and kin) — that is StorageCluster; this type is the container-orchestration
+      platform.
+    - A group of nodes — that is KubernetesNodePool, always, whether ordered with the cluster or later (ruling 072).
   works_with:
-  - KubernetesNamespace — the isolation boundaries carved inside the cluster.
-  - KubernetesNodePool — homogeneous slices of the cluster's node capacity.
-  - VirtualNetwork — the network the cluster is realized onto.
-  - Container — the workloads scheduled onto the cluster.
-  - 'Workload (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on
-    (soft) when imported; a cluster hosting a hub is just its contained_by target'
+    - KubernetesNamespace — the isolation boundaries carved inside the cluster.
+    - KubernetesNodePool — homogeneous slices of the cluster's node capacity.
+    - VirtualNetwork — the network the cluster is realized onto.
+    - Container — the workloads scheduled onto the cluster.
+    - 'Workload (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned,
+      depends_on (soft) when imported.'

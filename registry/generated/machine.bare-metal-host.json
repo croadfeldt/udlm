@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.13.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.13.1",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Machine.BareMetalHost",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Bare Metal Host",
-    "description": "A physical machine as a managed ASSET (the box itself) — the raw-resource form of compute. It can exist unallocated in inventory (lifecycle_state: available, §28), carries aggregate hardware capacity (cpu/memory/storage/gpu) as host attributes (§26; DCM ADR-013 — components are not separate records), and is the thing that hosts workloads (VMs, containers, OSDs). An ALLOCATION of a host to a consumer is NOT a separate type — it is the Ownership/Allocation model (docs/spec/foundations/ownership-sharing-allocation.md §2.1 whole-allocation); a running 'instance' is a realized entity of this type. Grounded in Redfish ComputerSystem (inventory/system) + Metal3 BareMetalHost (provisioning lifecycle).",
+    "description": "A physical machine as a managed asset — the box itself, one of the three forms of Machine (CLS-004, by form). It may sit unallocated in inventory, carries its aggregate capacity (cpu, memory, storage) as host attributes, and is what VMs, containers and storage daemons ultimately run on. Allocating a host to a consumer is the ownership model, not a separate type; its components (NICs, drives, GPUs, BMC) are their own records contained by it. Grounded in Redfish ComputerSystem for inventory and Metal3 BareMetalHost for provisioning.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:31:44Z",
     "generated": true,
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.1.3",
+          "version": "2.1.4",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Machine.BareMetalHost",
-          "version": "0.13.0",
+          "version": "0.13.1",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]
@@ -34,11 +34,11 @@
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small | medium | large, ordered and comparable; common-elements §2.2). Sizes the machine in place of explicit cpu and memory; the provider maps the class to concrete resources at realization. A machine may be declared by size class alone."
       },
       "cpu": {
         "type": "object",
-        "description": "Reconciled CPU rollup (§26) — aggregate host CPU. Adopts Redfish ProcessorSummary.",
+        "description": "Aggregate host CPU (Redfish ProcessorSummary).",
         "properties": {
           "sockets": {
             "type": "integer",
@@ -59,7 +59,7 @@
       },
       "memory": {
         "type": "object",
-        "description": "Reconciled memory rollup (§26) — aggregate host memory. Adopts Redfish MemorySummary.",
+        "description": "Aggregate host memory (Redfish MemorySummary).",
         "properties": {
           "size": {
             "type": "string",
@@ -70,7 +70,7 @@
       },
       "storage": {
         "type": "object",
-        "description": "Reconciled local-storage rollup (§26) — aggregate host local storage.",
+        "description": "Aggregate host local storage.",
         "properties": {
           "capacity": {
             "type": "string",
@@ -81,10 +81,10 @@
       },
       "storage_tier": {
         "type": "string",
-        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Machine Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+        "description": "The requested storage performance class — a governed `storage_tier` term (standard | performance | archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036): a tier name resolves to its floor, explicit `storage` requirements win where both are given, and any provider class that clears the floor qualifies. The provider records the native class it chose as a realized output. Profile decides whether a bare term or a data_reference is required. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
       },
       "guest_os": {
-        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-PROV-002); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
+        "description": "The requested operating system. Portable form: a data_reference to an `os_image` term the provider advertises. Inline `{type, version}` is the portability-breaking escape. Optional: a machine may be declared by sizing alone; a profile may require it.",
         "oneOf": [
           {
             "type": "object",
@@ -129,7 +129,7 @@
           "allocated",
           "retired"
         ],
-        "description": "Allocation state (common-elements §6, §28). available = inventoried/unallocated raw asset; allocated = adopted into the managed lifecycle. Adopts Metal3 BareMetalHost.status.provisioning.state."
+        "description": "Allocation state: `available` = inventoried and unallocated; `allocated` = adopted into the managed lifecycle (Metal3 provisioning state)."
       },
       "composition_visibility": {
         "type": "string",
@@ -138,11 +138,11 @@
           "transparent",
           "selective"
         ],
-        "description": "Whether the host's kept components (NetworkInterface) are modeled as first-class entities vs a rollup (§26, docs/spec/foundations/service-dependencies.md §11d); memory/CPU/disk/GPU are aggregate host attributes, not component records (DCM ADR-013). opaque = rollup only."
+        "description": "Whether the host's components are modeled as their own records or only as rollups on the host (`opaque`). CPU, memory and local storage stay rollups either way."
       },
       "identity": {
         "type": "object",
-        "description": "Chassis/system identity (SPEC-DESIGN-REQUIREMENTS §27).",
+        "description": "Chassis and system identity: serial, model, asset tag.",
         "properties": {
           "serial_number": {
             "type": "string",
@@ -168,7 +168,7 @@
       },
       "architecture": {
         "$ref": "../common-elements.schema.json#/$defs/isa",
-        "description": "System ISA, e.g. x86-64, aarch64."
+        "description": "System instruction-set architecture."
       },
       "bios_version": {
         "type": "string",
@@ -181,7 +181,7 @@
           "url",
           "checksum"
         ],
-        "description": "The provisioning image for this host (Metal3 image): what gets written to the root device at provision time. A host rebuilt from intent re-provisions from exactly this image.",
+        "description": "The provisioning image written to the root device at provision time (Metal3 image). A host rebuilt from intent re-provisions from exactly this.",
         "properties": {
           "url": {
             "type": "string",
@@ -213,7 +213,7 @@
       "root_device_hints": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Which disk receives the image (Metal3 rootDeviceHints, the portable core) — the §27 Identity discriminators in provisioning form, matched at provision time.",
+        "description": "Which disk receives the image (Metal3 rootDeviceHints), matched at provision time.",
         "properties": {
           "device_name": {
             "type": "string",
@@ -236,16 +236,16 @@
       "boot_mac_address": {
         "type": "string",
         "pattern": "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$",
-        "description": "The NIC MAC the host network-boots from (Metal3 bootMACAddress) — ties provisioning to a concrete port; pairs with that NIC's NetworkInterface record."
+        "description": "The NIC MAC the host network-boots from (Metal3 bootMACAddress); pairs with that NIC's NetworkInterface record."
       },
       "online": {
         "type": "boolean",
-        "description": "Desired power target (Metal3 online): true = powered on and kept on. The intent counterpart of the observed power_state output — the host analogue of the VM's run_state.desired_state."
+        "description": "Desired power target (Metal3 online): true = powered on and kept on. Observed counterpart: `outputs.power_state`."
       },
       "firmware": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Host firmware surface (Redfish Boot.BootSourceOverrideMode; Metal3 bootMode).",
+        "description": "Host firmware: `type` is `legacy` or `uefi` (the Redfish spelling Machine.VM shares) plus UEFI Secure Boot. No vTPM here: a physical TPM is a hardware fact. Not on Machine because an LPAR cannot honour it.",
         "properties": {
           "type": {
             "enum": [
@@ -390,8 +390,8 @@
     ],
     "works_with": [
       "PowerFeed — the power source the host draws from; roots the shutdown ordering.",
-      "The host's own `firmware` element — the portable BIOS settings it converges to; vendor attribute sets are Provider Class data (ADR-082).",
-      "NetworkInterface — the host's NICs, modeled as contained components.",
+      "The host's own `firmware` element — the portable BIOS settings it converges to; vendor attribute sets are Provider Class data.",
+      "NetworkInterface, StorageDevice, GPU, BMC — the host's components, as contained records.",
       "Machine.VM — the guests the host runs."
     ]
   }

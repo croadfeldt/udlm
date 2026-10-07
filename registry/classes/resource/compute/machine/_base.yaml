@@ -1,181 +1,164 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.1.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.1.4
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Machine
-version: 2.1.3
+version: 2.1.4
 family: Resource
 status: active
-filed_under: [compute]
+filed_under:
+  - compute
 metadata:
   authority: canonical
   display_name: Machine Base Class
   maintainer: UDLM maintainers
   origination_timestamp: '2026-07-27T21:00:00Z'
   title: Machine Base Class
-  description: 'The Machine Base Class (renamed from Compute — ADR-068; the Base test is ADR-069, home
-    docs/spec/foundations/class-tiers.md). A Machine is an OS-bearing execution environment ordered as one
-    deliverable: an image booted onto cpu, memory, disk and network. Its members are the forms that
-    deliverable takes — Machine.VM, Machine.BareMetalHost, Machine.LPAR — and any provider offering one
-    of them can realize an order placed here; OpenStack Nova with Ironic, Cluster API''s Machine, and
-    TOSCA''s Compute node type are the industry abstractions that already treat them as one thing.
-    Every element here is a SharedDataElement at `Machine` scope, honorable by every form. Containers
-    and Kubernetes clusters are NOT machines: they left this Base because they cannot honor `guest_os`
-    (Container) or carry Kubernetes-only vocabulary (KubernetesCluster).'
+  description: 'An OS-bearing machine ordered as one deliverable: an image booted onto cpu, memory, disk and network.
+    A Base by the Base test (CLS-002): OpenStack Nova with Ironic, Cluster API''s Machine and TOSCA''s Compute node
+    already treat a VM, a bare-metal host and a logical partition as one thing, so an order placed here is fillable
+    by any provider offering one of the three forms. Every element here is honoured by every form. A container or
+    a Kubernetes cluster is not a machine (rows 068, 069).'
   prompt_version: class-p0-keystone-2026-07-27
 elements:
-- element: instance_size
-  scope: Machine
-  optional: true
-  state: proposed
-  description: 'Provider-neutral size class (ADR-014: small|medium|large, ordered/comparable — common-elements
-    §2.2): size by class IN PLACE OF explicit cpu+memory; the provider maps it to concrete resources at
-    naturalization (DCM ADR-023). Added for parity with the flat Machine.VM spec (2026-07-29 reconciliation,
-    bare-instantiation philosophy): a compute consumer may be declared by size class alone.'
-  schema:
-    type: string
-    description: Provider-neutral size class (small|medium|large, ordered/comparable — common-elements
-      §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources
-      at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw.
-- element: cpu
-  scope: Machine
-  state: canonical
-  description: Unifies vcpu (VM) / cpu (BareMetal) / resources.cpu (Container) — the same concept under
-    three names today. The provider naturalizes to its native model (kubevirt domain cpu, vSphere sockets×cores,
-    EC2 vCPUs).
-  schema:
-    type: object
-    properties:
-      count:
-        type: integer
-        minimum: 1
-        description: Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt
-          domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (DCM ADR-023).
-      sockets:
-        type: integer
-        minimum: 1
-        description: 'Optional topology hint: sockets. Provider-support-dependent; ignored where not applicable.'
-      cores_per_socket:
-        type: integer
-        minimum: 1
-        description: 'Optional topology hint: cores per socket. Provider-support-dependent.'
-  optional: true
-- element: memory
-  scope: Machine
-  state: canonical
-  description: 'Reconciles the drift the sweep found (VM had {hugepages,size}, BareMetal had {size}):
-    `hugepages` becomes an optional Base element.'
-  schema:
-    type: object
-    properties:
-      size:
-        type: string
-        pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
-        description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Machine Base
-          Class `memory.size`).
-      hugepages:
-        type: object
-        description: Optional huge-page backing (provider-support-dependent; validated against provider
-          capability).
-        properties:
-          enabled:
-            type: boolean
-          page_size:
-            type: string
-            description: e.g. 2Mi, 1Gi.
-  optional: true
-- element: storage
-  scope: Machine
-  optional: true
-  state: canonical
-  description: The reference-discipline requirements descriptor (PVD-001) — the numeric storage requirements,
-    unifying VM disks[].storage / BareMetal storage / Container resources. The requested performance class
-    is the governed `storage_tier` element below, not an inline enum here.
-  schema:
-    type: object
-    description: The reference-discipline storage requirements descriptor (PVD-001, Machine Base Class
-      shape) — numeric minima the realizing storage must meet. The requested performance class is the
-      governed `storage_tier` element, not an inline enum here.
-    properties:
-      min_iops:
-        type: integer
-        minimum: 0
-      min_throughput_mbps:
-        type: integer
-        minimum: 0
-      min_replication:
-        type: integer
-        minimum: 1
-      encryption:
-        type: boolean
-- element: storage_tier
-  scope: Machine
-  optional: true
-  state: canonical
-  description: 'The requested storage performance class — the neutral `tier` of ADR-036''s requirements
-    descriptor, as a GOVERNED vocabulary (ADR-038 §2), not an inline enum or a vendor class name. The
-    canonical terms are `storage_tier` reference-data records (standard / performance / archive, curated
-    proposed→canonical), and each term DENOTES A REQUIREMENTS FLOOR — its canonical definition carries
-    the minima it means (e.g. performance → min_iops 20000, min_throughput 500). Selection precedence
-    (ADR-036, ruled 2026-07-27): name-selectable but requirements-authoritative — a resource may be selected
-    by tier name alone, but explicit `storage` requirements, if given, drive the match, and a tier name
-    resolves to the same floor. One provider''s "SSD" and another''s "performance" both qualify iff they
-    meet the floor (portability retained); the provider records its chosen native class as a realized
-    output, never intent. Rigor is profile-driven (ADR-007 + the ADR-039 intake ladder): homelab MAY write
-    a bare string; sovereign MUST resolve to a canonical term by `data_reference`.'
-  schema:
-    type: string
-    description: 'The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical
-      terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a
-      requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare
-      string vs data_reference (ADR-007/ADR-039). Mirrors the Machine Base Class `storage_tier` element.
-      Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative
-      (ADR-036). Profile decides bare-vs-reference.'
-  values:
-    reference_data_type: storage_tier
-- element: guest_os
-  scope: Machine
-  optional: true
-  state: proposed
-  description: 'The requested operating system. Flat-spec shape adopted (2026-07-29 reconciliation, A4
-    — the flat VM''s guest_os won over the earlier {family, version} draft): portable form is a data_reference
-    to an os_image reference-data vocabulary (DCM ADR-012) the target provider advertises via capability discovery
-    (ADR-PROV-002); inline {type, version} is the portability_breaking escape. Proposed pending the OS-standardization
-    catalog work (task #30).'
-  schema:
-    description: 'Guest operating system. Portable form is a reference to an os_image reference-data vocabulary
-      (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-PROV-002); policy
-      validates membership at request. Inline is the portability_breaking escape. Optional at the data
-      layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require
-      it.'
-    oneOf:
-    - type: object
-      required:
-      - type
-      additionalProperties: false
+  - element: instance_size
+    scope: Machine
+    optional: true
+    state: proposed
+    description: Provider-neutral size class (small | medium | large, ordered and comparable; common-elements §2.2).
+      Sizes the machine in place of explicit cpu and memory; the provider maps the class to concrete resources at
+      realization. A machine may be declared by size class alone.
+    schema:
+      type: string
+      description: Provider-neutral size class (small | medium | large, ordered and comparable; common-elements
+        §2.2). Sizes the machine in place of explicit cpu and memory; the provider maps the class to concrete resources
+        at realization. A machine may be declared by size class alone.
+  - element: cpu
+    scope: Machine
+    state: canonical
+    description: 'CPU requirement: `count` is the virtual CPUs the OS sees; sockets and cores per socket are optional
+      topology hints. The provider maps it to its native model (hypervisor sockets×cores, cloud vCPUs).'
+    schema:
+      type: object
       properties:
-        type:
+        count:
+          type: integer
+          minimum: 1
+          description: Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt domain
+            cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (DCM ADR-023).
+        sockets:
+          type: integer
+          minimum: 1
+          description: 'Optional topology hint: sockets. Provider-support-dependent; ignored where not applicable.'
+        cores_per_socket:
+          type: integer
+          minimum: 1
+          description: 'Optional topology hint: cores per socket. Provider-support-dependent.'
+      description: 'CPU requirement: `count` is the virtual CPUs the OS sees; sockets and cores per socket are optional
+        topology hints. The provider maps it to its native model (hypervisor sockets×cores, cloud vCPUs).'
+    optional: true
+  - element: memory
+    scope: Machine
+    state: canonical
+    description: 'Memory requirement: `size` as a quantity (16Gi); `hugepages` optional.'
+    schema:
+      type: object
+      properties:
+        size:
           type: string
-          description: 'Inline OS identifier (e.g. linux-server-9). portability_breaking: a value with
-            no os_image vocabulary entry — a review finding.'
-        version:
-          type: string
-          description: Inline OS version (e.g. 9.4).
-    - allOf:
-      - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
-      - required:
-        - reference_data_type
-        properties:
-          reference_data_type:
-            const: os_image
+          pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
+          description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Machine Base Class
+            `memory.size`).
+        hugepages:
+          type: object
+          description: Optional huge-page backing (provider-support-dependent; validated against provider capability).
+          properties:
+            enabled:
+              type: boolean
+            page_size:
+              type: string
+              description: e.g. 2Mi, 1Gi.
+      description: 'Memory requirement: `size` as a quantity (16Gi); `hugepages` optional.'
+    optional: true
+  - element: storage
+    scope: Machine
+    optional: true
+    state: canonical
+    description: Numeric storage requirements the realizing storage must meet — IOPS, throughput, replication, encryption.
+      The performance class is the governed `storage_tier` element, not a value here.
+    schema:
+      type: object
+      description: Numeric storage requirements the realizing storage must meet — IOPS, throughput, replication,
+        encryption. The performance class is the governed `storage_tier` element, not a value here.
+      properties:
+        min_iops:
+          type: integer
+          minimum: 0
+        min_throughput_mbps:
+          type: integer
+          minimum: 0
+        min_replication:
+          type: integer
+          minimum: 1
+        encryption:
+          type: boolean
+  - element: storage_tier
+    scope: Machine
+    optional: true
+    state: canonical
+    description: 'The requested storage performance class — a governed `storage_tier` term (standard | performance
+      | archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036):
+      a tier name resolves to its floor, explicit `storage` requirements win where both are given, and any provider
+      class that clears the floor qualifies. The provider records the native class it chose as a realized output.
+      Profile decides whether a bare term or a data_reference is required.'
+    schema:
+      type: string
+      description: 'The requested storage performance class — a governed `storage_tier` term (standard | performance
+        | archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036):
+        a tier name resolves to its floor, explicit `storage` requirements win where both are given, and any provider
+        class that clears the floor qualifies. The provider records the native class it chose as a realized output.
+        Profile decides whether a bare term or a data_reference is required.'
+    values:
+      reference_data_type: storage_tier
+  - element: guest_os
+    scope: Machine
+    optional: true
+    state: proposed
+    description: 'The requested operating system. Portable form: a data_reference to an `os_image` term the provider
+      advertises. Inline `{type, version}` is the portability-breaking escape. Optional: a machine may be declared
+      by sizing alone; a profile may require it.'
+    schema:
+      description: 'The requested operating system. Portable form: a data_reference to an `os_image` term the provider
+        advertises. Inline `{type, version}` is the portability-breaking escape. Optional: a machine may be declared
+        by sizing alone; a profile may require it.'
+      oneOf:
+        - type: object
+          required:
+            - type
+          additionalProperties: false
+          properties:
+            type:
+              type: string
+              description: 'Inline OS identifier (e.g. linux-server-9). portability_breaking: a value with no os_image
+                vocabulary entry — a review finding.'
+            version:
+              type: string
+              description: Inline OS version (e.g. 9.4).
+        - allOf:
+            - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
+            - required:
+                - reference_data_type
+              properties:
+                reference_data_type:
+                  const: os_image
 coverage:
   use_cases:
-  - scoped-class/author-scoped-class
-  - scoped-class/compile-type-to-flat-spec
-  - scoped-class/portability-derived-from-scope
+    - scoped-class/author-scoped-class
+    - scoped-class/compile-type-to-flat-spec
+    - scoped-class/portability-derived-from-scope
   flows:
-  - docs/flows/scoped-class-lifecycle.md
+    - docs/flows/scoped-class-lifecycle.md
 outputs:
   provider_handle:
     type: string
@@ -195,34 +178,34 @@ context:
     decides the form (VM, bare metal, LPAR) and the provider; policy fills what the form needs. A producer bound
     at any of the three forms must accept this order (class-tiers CLS-002 (c)).'
   use_when:
-  - You need a host and do not care whether it is virtual or physical.
-  - A rebuild after loss where the original form is not worth preserving.
+    - You need a host and do not care whether it is virtual or physical.
+    - A rebuild after loss where the original form is not worth preserving.
   not_for:
-  - A container (Container) or a Kubernetes cluster (KubernetesCluster) — neither can honor `guest_os`.
-  - When the form matters — order Machine.VM, Machine.BareMetalHost or Machine.LPAR.
+    - A container (Container) or a Kubernetes cluster (KubernetesCluster) — neither can honor `guest_os`.
+    - When the form matters — order Machine.VM, Machine.BareMetalHost or Machine.LPAR.
   works_with:
-  - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
-  - Volume and VirtualNetwork — what the realized machine attaches to.
+    - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
+    - Volume and VirtualNetwork — what the realized machine attaches to.
 spec_examples:
-- cpu:
-    count: 4
-  memory:
-    size: 16Gi
-  guest_os:
-    type: linux-server-9
-    version: '9.6'
-  storage_tier: performance
+  - cpu:
+      count: 4
+    memory:
+      size: 16Gi
+    guest_os:
+      type: linux-server-9
+      version: '9.6'
+    storage_tier: performance
 adopts:
-- standard: Redfish
-  version: '2024.4'
-  standard_name: ComputerSystem
-  role: 'Vendor-neutral compute-system representation spanning physical, virtual and partitioned (Redfish ComputerSystem
-    SystemType: Physical | Virtual | Composed | PhysicallyPartitioned | VirtuallyPartitioned) — the one representative
-    standard for the Machine family, shared by Machine.VM, Machine.BareMetalHost and Machine.LPAR and declared once
-    here. Nova with Ironic, Cluster API''s Machine and TOSCA''s Compute are the industry abstractions that treat
-    the three forms as one thing (CLS-002 (a)); Redfish is the wire representation adopted. Provider-native realizations
-    are declared on the provider support matrix, not on the substrate type.'
-  source: https://www.dmtf.org/standards/redfish
-  license: DMTF
-  license_compatibility: compatible-reference
-  disposition: tier1_value
+  - standard: Redfish
+    version: '2024.4'
+    standard_name: ComputerSystem
+    role: 'Vendor-neutral compute-system representation spanning physical, virtual and partitioned (Redfish ComputerSystem
+      SystemType: Physical | Virtual | Composed | PhysicallyPartitioned | VirtuallyPartitioned) — the one representative
+      standard for the Machine family, shared by Machine.VM, Machine.BareMetalHost and Machine.LPAR and declared
+      once here. Nova with Ironic, Cluster API''s Machine and TOSCA''s Compute are the industry abstractions that
+      treat the three forms as one thing (CLS-002 (a)); Redfish is the wire representation adopted. Provider-native
+      realizations are declared on the provider support matrix, not on the substrate type.'
+    source: https://www.dmtf.org/standards/redfish
+    license: DMTF
+    license_compatibility: compatible-reference
+    disposition: tier1_value
