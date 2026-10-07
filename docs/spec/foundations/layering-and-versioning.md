@@ -649,7 +649,7 @@ as part of their catalog item registration. They add provider-specific fields to
 assembled payload for their offering only. They cannot override platform or tenant layers.
 They carry the same portability implications as inline `provider_specific_extensions` in
 the catalog item declaration — any request using them is non-portable and must be
-explicitly marked. See [Resource Type Hierarchy](resource-type-hierarchy.md) Section 6.2
+explicitly marked. See [class-tiers.md §5.1](class-tiers.md) (the offer on the Provider Class)
 for the catalog item `provider_extension_layer_handles` declaration. A `tenant` layer cannot override a `platform` layer. This is enforced at ingestion — the conflict detection pipeline checks domain authority before allowing a merge.
 
 **Domain mirrors policy authority:** Just as system-domain policies have highest authority in the Policy Engine, system-domain layers have highest authority in the assembly process. The same mental model applies to both.

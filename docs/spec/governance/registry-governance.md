@@ -1,7 +1,7 @@
 # UDLM — Registry Governance
 
 **Background — read first** (skip if you have it):
-[resource-type-hierarchy.md](../foundations/resource-type-hierarchy.md) — the four levels and
+[class-tiers.md](../foundations/class-tiers.md) — the three tiers and
 categories the registry catalogs · [federated-contribution-model.md](federated-contribution-model.md)
 — the contributor/review model registry submissions specialize ·
 [auth-providers.md](auth-providers.md) — who an approving actor is.
@@ -186,6 +186,11 @@ resource_type_version_constraint:
 ### 5.1 The Default Deprecation Policy
 
 The base `active → deprecated → retired` lifecycle is the universal deprecation model ([`docs/spec/foundations/layering-and-versioning.md`](../foundations/layering-and-versioning.md)); this section adds only the **registry-specific** timing and sunset policy (`REG-DP-*`). Those are governed by **default substrate policies** — not hard-coded values. These defaults can be overridden using the standard policy priority mechanism. Higher-priority organizational policies can shorten, extend, or lock any of these values.
+
+Deprecation never cascades implicitly. Deprecating a Base does not deprecate its Types or Provider
+Classes, and deprecating one provider's class does not touch another's; each is deprecated on its own
+with its own migration guidance. Retiring a class version requires every provider bound to that
+version to re-bind to a current one.
 
 ```yaml
 # Default deprecation lifecycle policies (platform domain — overridable)
@@ -518,7 +523,7 @@ registry gates emit, so that the recording story is uniform rather than per-gate
 
 ## 8. Related Concepts
 
-- **Resource Type Hierarchy** ([../foundations/resource-type-hierarchy.md](../foundations/resource-type-hierarchy.md)) — the structure of Resource Type Specifications
+- **Class tiers** ([../foundations/class-tiers.md](../foundations/class-tiers.md)) — the Base / Type / Provider Class model, the offer on the Provider Class (§5.1) and portability read off the tree (§7).
 - **Auth Providers** ([auth-providers.md](auth-providers.md)) — authentication for registry access
 - **Universal Audit Model** ([../observability/universal-audit.md](../contracts/universal-audit.md)) — all registry operations produce audit records
 - **Federated Contribution Model** ([federated-contribution-model.md](federated-contribution-model.md)) — broader contribution pipeline for all artifact types

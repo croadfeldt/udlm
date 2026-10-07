@@ -1,6 +1,6 @@
 # UDLM — Information Providers
 
-**Related Documents:** [Resource Type Hierarchy](../foundations/resource-type-hierarchy.md) | [Resource/Service Entities](../foundations/resource-service-entities.md) | [Entity Relationships](../foundations/entity-relationships.md)
+**Related Documents:** [Class Tiers](../foundations/class-tiers.md) | [Resource/Service Entities](../foundations/resource-service-entities.md) | [Entity Relationships](../foundations/entity-relationships.md)
 
 >
 > The three foundational abstractions — Data, Provider, and Policy — are defined in

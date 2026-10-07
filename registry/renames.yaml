@@ -286,6 +286,12 @@ renames:
   # 2026-09-29 — the worked-example class mirror follows the hosting group (ADR-082, row 090).
   registry/examples/classes/resource/machine/vm/cexample-cloud.yaml: registry/examples/classes/resource/compute/machine/vm/cexample-cloud.yaml
 
+  # 2026-10-06 — resource-type-hierarchy.md is retired (row 092): its live content is folded into
+  # class-tiers.md (§5.1 the offer, §7 portability classification), portable-values.md (the three
+  # shapes per element) and registry-governance.md §5 (no implicit deprecation cascade); the rest
+  # restated the class system in pre-ADR-038 terms.
+  docs/spec/foundations/resource-type-hierarchy.md: docs/spec/foundations/class-tiers.md
+
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
   # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),

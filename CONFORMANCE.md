@@ -240,7 +240,7 @@ them disqualifies the implementation from any conformance level.
 ### 5.4 Entity and lifecycle contracts (required and excludable)
 
 - `docs/spec/foundations/resource-service-entities.md` — required (not excludable)
-- `docs/spec/foundations/resource-type-hierarchy.md` — required (not excludable)
+- `docs/spec/foundations/class-tiers.md` — required (not excludable)
 - `docs/spec/foundations/entity-relationships.md` — required (not excludable)
 - `docs/spec/lifecycle/operational-models.md` — required (not excludable)
 - `docs/spec/foundations/template-composition-model.md` — **excludable (must declare)**

@@ -1,6 +1,6 @@
 # UDLM — Service Dependencies
 
-**Related Documents:** [Entity Relationships](entity-relationships.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Resource/Service Entities](resource-service-entities.md)
+**Related Documents:** [Entity Relationships](entity-relationships.md) | [Class Tiers](class-tiers.md) | [Resource/Service Entities](resource-service-entities.md)
 
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
 > [foundations.md](foundations.md).

@@ -66,7 +66,7 @@ When a provider brokers a dependency it does **not** own (a VM provider needs a 
 Accommodation is the **rarer** case: a broker must convey **genuinely provider-specific realize-time state the base type does not model** (e.g. a vendor-specific offload or QoS class). A provider that **owns** a resource type therefore **MUST** make that type accommodate such fields in one of two sanctioned ways, and a **brokering** provider **MUST** use whichever the target offers when — and only when — a shared reference does not suffice:
 
 - **(a) Base-type extension surface** — the target type carries an open extension block (a provider-extension layer, `domain: provider`, `layering-and-versioning.md`) into which the broker's fields are written, namespaced to the contributing provider; the base type stays vendor-neutral.
-- **(b) Custom resource type layered on the base** — a derived type (`docs/spec/foundations/resource-type-hierarchy.md`) that extends the base and adds the broker's fields as first-class.
+- **(b) Custom resource type layered on the base** — a Type or Provider Class (`docs/spec/foundations/class-tiers.md`) that extends the base and adds the broker's fields as first-class.
 
 A type that supports **neither** — where a genuinely-bespoke field is required — is **non-conformant for brokered fulfillment**. *Note:* `IPAddress` is **not** such a case: it needs only the shared segment reference above, so it requires no extension and no derived type. Accommodation applies only where the base type cannot carry provider-specific realize-time state at all. See UDLM ADR-009 for the end-to-end flow.
 

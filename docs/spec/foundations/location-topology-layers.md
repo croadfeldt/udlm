@@ -1,6 +1,6 @@
 # UDLM — Layered Topology Contract
 
-**Related Documents:** [Data Layers and Assembly](layering-and-versioning.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Governance Matrix](../governance/governance-matrix.md) | [Registry Governance](../governance/registry-governance.md)
+**Related Documents:** [Data Layers and Assembly](layering-and-versioning.md) | [Class Tiers](class-tiers.md) | [Governance Matrix](../governance/governance-matrix.md) | [Registry Governance](../governance/registry-governance.md)
 
 ---
 

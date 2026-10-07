@@ -125,7 +125,7 @@
     },
     "portability": {
       "$ref": "state-record.schema.json#/$defs/portability",
-      "description": "INSTANCE portability: the realized entity's actual portability, DEGRADED from the type's declared classification when the entity carries provider-specific data (Provider-Class `SharedDataElement`s — ADR-038; schema realization #199; the retired `provider_extensions` carrier is removed per #202). Base-type-declared, instance-degraded — never silently presented as fully portable. When degraded, the consumer MUST be notified before/at realization (resource-type-hierarchy Transparency principle); a portability-degradation event is emitted."
+      "description": "INSTANCE portability: the realized entity's actual portability, DEGRADED from the type's declared classification when the entity carries provider-specific data (Provider-Class `SharedDataElement`s — ADR-038; schema realization #199; the retired `provider_extensions` carrier is removed per #202). Base-type-declared, instance-degraded — never silently presented as fully portable. When degraded, the consumer MUST be notified before/at realization (class-tiers.md §7 Transparency principle); a portability-degradation event is emitted."
     },
     "handle": {
       "$ref": "state-record.schema.json#/$defs/handle",
