@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/VirtualNetwork/0.9.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/VirtualNetwork/0.9.1",
   "conforms_to": "udlm/0.1",
   "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e",
   "resource_type": "VirtualNetwork",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Virtual Network",
-    "description": "A host- or cluster-scoped virtual network that workloads (VMs, pods) attach to — the attachment POINT between guest vNICs and the host L2 stack. Realized by e.g. a libvirt network (forward mode=bridge/nat/routed/isolated), a Kubernetes NetworkAttachmentDefinition (Multus/CNI), or an OVN logical switch — the vendor mechanism is the provider, never the type. Completes graph traversal guest → VirtualNetwork → (references) underlying bridge/uplink NetworkInterface → bond → NIC → switch. Consumers declare attachment by binds_to on the consumer side (a VM binds_to its VirtualNetwork), which implies depends_on: the network exists before the guest starts; guests stop before it tears down. A Base by the Base test (CLS-002): a Kubernetes NetworkAttachmentDefinition and a libvirt network are one forwarding contract — how guests reach a segment — so a virtual network is fillable by any host or cluster provider; host and overlay dialects (OVN, libvirt, bridge) are Types when they carry elements of their own. A VLAN is not a Type here: it is a fabric segment, a Base of its own.",
+    "description": "A host- or cluster-scoped virtual network that guests attach to: the attachment point between a vNIC and the host's L2 stack. A Base by the Base test (CLS-002): a libvirt network and a Kubernetes NetworkAttachmentDefinition are one forwarding contract — how guests reach a segment — so a virtual network is fillable by any host or cluster provider; host and overlay dialects (OVN, libvirt, bridge) are Types when they carry elements. A VLAN is not a Type here: it is a fabric segment, a Base of its own. A guest `binds_to` its virtual network, which implies ordering: the network exists before the guest starts and outlives it.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-05T02:10:32Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "VirtualNetwork",
-          "version": "0.9.0",
+          "version": "0.9.1",
           "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e"
         }
       ]
@@ -44,15 +44,15 @@
           "isolated"
         ],
         "x-extensible-enum": true,
-        "description": "How traffic leaves the virtual network (libvirt forward-mode vocabulary). bridge = transparent onto an underlying host bridge; nat/routed = via the host stack; isolated = no egress."
+        "description": "How traffic leaves the network (libvirt vocabulary): `bridge` (transparent onto a host bridge), `nat`, `routed` (via the host stack), `isolated` (no egress)."
       },
       "autostart": {
         "type": "boolean",
-        "description": "Network is activated with the host."
+        "description": "Activated with the host."
       },
       "identity": {
         "type": "object",
-        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
+        "description": "Instance discriminators: name, UUID on the host or cluster.",
         "properties": {
           "location": {
             "type": "string",

@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/IPAddress/0.11.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/IPAddress/0.11.1",
   "conforms_to": "udlm/0.1",
   "uuid": "6b7a4336-da9c-4b42-883d-44c96940f45a",
   "resource_type": "IPAddress",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "IP Address",
-    "description": "A single IP address as its own record (RFC 8344 / NMstate form) — `address` + `allocation` origin — bound to the interface it is configured on. A static DHCP reservation is just `allocation: static` on this record (DCM ADR-023). A Base by the Base test (CLS-002): TOSCA, RFC 8344 and NMstate abstract over every address allocation — static, DHCP-reserved or dynamic — so an address attached to an interface is one deliverable any provider can allocate.",
+    "description": "A single IP address as its own record, bound to the interface it is configured on: the address and how it was allocated. A Base by the Base test (CLS-002): TOSCA, RFC 8344 and NMstate abstract over every address allocation — static, DHCP-leased, SLAAC — so an address attached to an interface is one deliverable any provider allocates. A static DHCP reservation is `allocation: static` on this record, nothing more.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "IPAddress",
-          "version": "0.11.0",
+          "version": "0.11.1",
           "uuid": "6b7a4336-da9c-4b42-883d-44c96940f45a"
         }
       ]
@@ -37,11 +37,11 @@
       },
       "address": {
         "$ref": "../common-elements.schema.json#/$defs/cidr",
-        "description": "The address with prefix as CIDR (RFC 8344/NMstate), e.g. 192.0.2.10/24. Intent for a static reservation; populated at Realized for a dhcp/auto address."
+        "description": "The address with prefix length, in CIDR (192.0.2.10/24). Intent for a static reservation; filled at Realized for a leased or auto-configured address."
       },
       "ip_family": {
         "$ref": "../common-elements.schema.json#/$defs/ip_family",
-        "description": "Address family (canonical `ip_family` — renamed from `family`, common-elements §2.4)."
+        "description": "Address family."
       },
       "allocation": {
         "type": "string",
@@ -51,7 +51,7 @@
           "link-layer",
           "random"
         ],
-        "description": "Origin discriminator (RFC 8344 `origin` = NMstate). `static` = a fixed reservation bound to the interface (== a static DHCP reservation); `dhcp` = leased; `link-layer`/`random` = SLAAC/privacy."
+        "description": "Origin (RFC 8344 / NMstate): `static` (a fixed reservation bound to the interface), `dhcp` (leased), `link-layer` or `random` (SLAAC, privacy)."
       }
     },
     "examples": [

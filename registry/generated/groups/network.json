@@ -4,49 +4,49 @@
   "classes": [
     {
       "class": "AddressService",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/address-service/_base.yaml",
       "types": []
     },
     {
       "class": "ConnectionProfile",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/connection-profile/_base.yaml",
       "types": []
     },
     {
       "class": "DHCPScope",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/dhcpscope/_base.yaml",
       "types": []
     },
     {
       "class": "DNSZone",
-      "version": "0.6.1",
+      "version": "0.6.2",
       "instantiable": true,
       "path": "registry/classes/resource/network/dnszone/_base.yaml",
       "types": []
     },
     {
       "class": "IPAddress",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/ipaddress/_base.yaml",
       "types": []
     },
     {
       "class": "IPAddressPool",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/ipaddress-pool/_base.yaml",
       "types": []
     },
     {
       "class": "NetworkGateway",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/network-gateway/_base.yaml",
       "types": []
@@ -60,28 +60,28 @@
     },
     {
       "class": "NetworkSwitch",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "instantiable": true,
       "path": "registry/classes/resource/network/network-switch/_base.yaml",
       "types": []
     },
     {
       "class": "Subnet",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/subnet/_base.yaml",
       "types": []
     },
     {
       "class": "VLAN",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/vlan/_base.yaml",
       "types": []
     },
     {
       "class": "VirtualNetwork",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/virtual-network/_base.yaml",
       "types": []

@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/DHCPScope/0.9.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/DHCPScope/0.9.1",
   "conforms_to": "udlm/0.1",
   "uuid": "c71a7ad9-23ea-40fe-a07d-ee088a20cf42",
   "resource_type": "DHCPScope",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "DHCP Scope",
-    "description": "A DHCP address scope — a subnet's dynamic pool(s), options, and reservations. Grounded in the DHCP protocol concepts (RFC 2131 / RFC 8415). The concrete pool/option/lease model is provider config (any DHCP provider — Kea, dnsmasq, ISC DHCP, a cloud DHCP), projected not dictated; UDLM carries the neutral subnet + the graph edges. UDLM does not prescribe DHCP as the way to serve addresses — an address's origin is a field on IPAddress (static/dhcp/link-layer/random). A Base by the Base test (CLS-002): RFC 2131 defines a scope — a subnet, its pools, options and lease time — the same way for every DHCP server, so any of them can serve one; it is served data, distinct from the AddressService that serves it.",
+    "description": "A DHCP scope: a subnet's dynamic pools, options and lease time. A Base by the Base test (CLS-002): RFC 2131 defines a scope the same way for every DHCP server, so any of them serves one. It is served data, distinct from the AddressService that serves it; the concrete pool and lease model is provider configuration projected from this record. UDLM does not prescribe DHCP as the way to assign addresses: an address's origin is `allocation` on its IPAddress record.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "DHCPScope",
-          "version": "0.9.0",
+          "version": "0.9.1",
           "uuid": "c71a7ad9-23ea-40fe-a07d-ee088a20cf42"
         }
       ]
@@ -37,7 +37,7 @@
       },
       "subnet": {
         "type": "string",
-        "description": "Scope subnet in CIDR (common-elements: cidr), e.g. 192.0.2.0/24."
+        "description": "The scope's subnet in CIDR."
       },
       "ip_family": {
         "type": "string",
@@ -45,11 +45,11 @@
           "ipv4",
           "ipv6"
         ],
-        "description": "Address family (common-elements: ip_family)."
+        "description": "Address family."
       },
       "pools": {
         "type": "array",
-        "description": "Dynamic allocation ranges within the subnet (DHCP).",
+        "description": "Dynamic allocation ranges within the subnet.",
         "items": {
           "type": "object",
           "required": [
@@ -70,7 +70,7 @@
       },
       "options": {
         "type": "object",
-        "description": "Common DHCP options (RFC 2132).",
+        "description": "DHCP options (RFC 2132): routers, DNS servers, domain.",
         "properties": {
           "router": {
             "type": "string",

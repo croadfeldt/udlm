@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkSwitch/0.8.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkSwitch/0.8.2",
   "conforms_to": "udlm/0.1",
   "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac",
   "resource_type": "NetworkSwitch",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Network Switch",
-    "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Machine.BareMetalHost. Its ports are NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connects_to` adjacency (renamed from connected_to, common-elements §9; LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics are the provider/extension, never the type. A Base by the Base test (CLS-002): Redfish Switch, IEEE 802.1AB and RFC 8345 abstract over every fabric switch, so a switch with given ports and a management VLAN is one deliverable any fabric provider can inventory or realize.",
+    "description": "A physical L2/L3 switch as a managed asset, the fabric peer of Machine.BareMetalHost. A Base by the Base test (CLS-002): Redfish Switch, IEEE 802.1AB and RFC 8345 abstract over every fabric switch, so a switch with given ports and a management VLAN is one deliverable any fabric provider inventories or realizes. Its ports are NetworkInterface records contained by it, and the LLDP-discovered `connects_to` adjacency between a host NIC and a switch port is what makes the estate graph traversable host → NIC → port → switch → power. It may sit unallocated and enter as Discovered.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-04T20:12:42Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "NetworkSwitch",
-          "version": "0.8.1",
+          "version": "0.8.2",
           "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac"
         }
       ]
@@ -42,7 +42,7 @@
           "allocated",
           "retired"
         ],
-        "description": "Allocation state (common-elements §6, §28). available = inventoried/unallocated; allocated = adopted into the managed lifecycle."
+        "description": "Allocation state: `available` (inventoried, unallocated) or `allocated` (adopted into the managed lifecycle)."
       },
       "composition_visibility": {
         "type": "string",
@@ -51,11 +51,11 @@
           "transparent",
           "selective"
         ],
-        "description": "Whether ports are modeled as first-class NetworkInterface entities (§26). opaque = the `ports` rollup only; transparent/selective = ports addressable individually (required for connects_to link records)."
+        "description": "Whether ports are modeled as their own NetworkInterface records (`transparent`, `selective`; required for `connects_to` links) or only as the `ports` rollup (`opaque`)."
       },
       "identity": {
         "type": "object",
-        "description": "Chassis identity (SPEC-DESIGN-REQUIREMENTS §27).",
+        "description": "Chassis identity: vendor, model, serial.",
         "properties": {
           "chassis_id": {
             "type": "string",
@@ -82,7 +82,7 @@
       },
       "ports": {
         "type": "object",
-        "description": "Reconciled port rollup (§26) — aggregate of contained NetworkInterface when modeled.",
+        "description": "Port rollup: the aggregate of the contained NetworkInterface records when they are modeled.",
         "properties": {
           "count": {
             "type": "integer",
@@ -97,7 +97,7 @@
         }
       },
       "management_vlan_ref": {
-        "description": "Reference to VLAN — the switch's management VLAN. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
+        "description": "Reference to the VLAN the switch is managed over.",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       }
     },
