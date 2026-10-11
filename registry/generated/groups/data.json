@@ -8,6 +8,13 @@
       "instantiable": true,
       "path": "registry/classes/resource/data/database/_base.yaml",
       "types": []
+    },
+    {
+      "class": "LogStore",
+      "version": "0.1.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/data/log-store/_base.yaml",
+      "types": []
     }
   ]
 }

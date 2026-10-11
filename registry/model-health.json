@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 63,
+    "types": 66,
     "by_family": {
       "Access": 9,
       "Knowledge": 9,
       "Process": 3,
-      "Resource": 42
+      "Resource": 45
     }
   },
   "discrimination": {
-    "mutations_attempted": 5474,
-    "mutations_rejected": 5474,
+    "mutations_attempted": 5641,
+    "mutations_rejected": 5641,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -136,8 +136,20 @@
         "rejected": 30
       },
       "LogShipper": {
-        "attempted": 52,
-        "rejected": 52
+        "attempted": 32,
+        "rejected": 32
+      },
+      "LogShipper.OTLP": {
+        "attempted": 49,
+        "rejected": 49
+      },
+      "LogShipper.Syslog": {
+        "attempted": 73,
+        "rejected": 73
+      },
+      "LogStore": {
+        "attempted": 65,
+        "rejected": 65
       },
       "Machine": {
         "attempted": 112,
@@ -270,8 +282,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 63,
-    "total": 63
+    "strict_specs": 66,
+    "total": 66
   },
   "outputs": {
     "per_type": {
@@ -306,6 +318,9 @@
       "KubernetesNodePool": 2,
       "Location": 1,
       "LogShipper": 3,
+      "LogShipper.OTLP": 3,
+      "LogShipper.Syslog": 3,
+      "LogStore": 2,
       "Machine": 3,
       "Machine.BareMetalHost": 8,
       "Machine.LPAR": 5,
@@ -383,13 +398,13 @@
     ]
   },
   "context": {
-    "with_context": 63,
-    "total": 63,
+    "with_context": 66,
+    "total": 66,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 48,
-    "total": 63,
+    "with_relationships": 52,
+    "total": 66,
     "missing": [
       "Access.Grouping",
       "Automation",
@@ -398,7 +413,6 @@
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Identity",
-      "LogShipper",
       "Machine",
       "SovereigntyZone",
       "StorageLayout",
@@ -409,7 +423,7 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 165,
+    "files_scanned": 166,
     "covered": [
       "AddressService",
       "Automation",
@@ -434,6 +448,7 @@
       "KubernetesNamespace",
       "KubernetesNodePool",
       "LogShipper",
+      "LogStore",
       "Machine",
       "Machine.BareMetalHost",
       "Machine.VM",
@@ -460,6 +475,8 @@
       "Identity.ServiceAccount",
       "IdentityGroup",
       "Location",
+      "LogShipper.OTLP",
+      "LogShipper.Syslog",
       "Machine.LPAR",
       "NetworkInterface",
       "NetworkSwitch",
@@ -532,6 +549,9 @@
       "KubernetesNodePool",
       "Location",
       "LogShipper",
+      "LogShipper.OTLP",
+      "LogShipper.Syslog",
+      "LogStore",
       "Machine",
       "Machine.BareMetalHost",
       "Machine.LPAR",
@@ -563,7 +583,7 @@
       "Vulnerability",
       "Workload"
     ],
-    "consumed_by_at_least_one": 63
+    "consumed_by_at_least_one": 66
   },
   "expressibility_coverage": {
     "value": null,

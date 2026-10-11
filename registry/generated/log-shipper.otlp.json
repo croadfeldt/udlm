@@ -1,16 +1,16 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper/0.8.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper.OTLP/0.1.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922",
-  "resource_type": "LogShipper",
-  "version": "0.8.0",
+  "uuid": "f70bb63b-913f-4927-addc-ab34443013b0",
+  "resource_type": "LogShipper.OTLP",
+  "version": "0.1.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
-    "display_name": "Log Shipper",
-    "description": "An outcome: one resource's logs reach a log store, filtered and tagged with the resource's identity. A Base by the Base test (CLS-002): RFC 9742 (the IETF syslog management model), Redfish EventDestination and the OpenTelemetry Collector each treat \"send this system's logs to a collector, filtered\" as one deliverable, and a host agent, a BMC, a switch or a cluster forwarder can all fill it. The wire protocol is the Type tier (LogShipper.Syslog, LogShipper.OTLP). The mechanism (a configuration-management role, a device setting, a cluster forwarder) is the provider's; swapping it never touches this contract.",
+    "display_name": "LogShipper.OTLP Type Class",
+    "description": "The OpenTelemetry dialect of log shipping: logs sent as OTLP, the OpenTelemetry Protocol every OpenTelemetry Collector and SDK exporter speaks. Adds the OTLP encoding and compression, named as the OTLP exporter configuration names them. Named for the protocol, which is a standard, never for a sender.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-18T13:14:58Z",
+    "origination_timestamp": "2026-10-10T00:00:00Z",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -19,6 +19,11 @@
           "class": "LogShipper",
           "version": "0.8.0",
           "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922"
+        },
+        {
+          "class": "LogShipper.OTLP",
+          "version": "0.1.0",
+          "uuid": "f70bb63b-913f-4927-addc-ab34443013b0"
         }
       ]
     }
@@ -58,15 +63,34 @@
           "type": "string"
         },
         "description": "Extra resource attributes stamped on every message, named per the OpenTelemetry semantic conventions (`deployment.environment`, `service.name`). The provider always stamps the target's `host.name` and `udlm.handle` itself, so a log line can be followed back to its record."
+      },
+      "protocol": {
+        "type": "string",
+        "enum": [
+          "grpc",
+          "http/protobuf",
+          "http/json"
+        ],
+        "description": "The OTLP encoding, with the values the OTLP exporter configuration uses (`OTEL_EXPORTER_OTLP_PROTOCOL`)."
+      },
+      "compression": {
+        "type": "string",
+        "enum": [
+          "gzip",
+          "none"
+        ],
+        "description": "Payload compression (`OTEL_EXPORTER_OTLP_COMPRESSION`). Absent means none."
       }
     },
+    "required": [
+      "protocol"
+    ],
     "examples": [
       {
-        "source": "journal",
+        "source": "containers",
         "min_severity": "informational",
-        "labels": {
-          "deployment.environment": "production"
-        }
+        "protocol": "http/protobuf",
+        "compression": "gzip"
       }
     ]
   },
@@ -158,25 +182,32 @@
       "license": "Apache-2.0",
       "license_compatibility": "compatible-reference",
       "disposition": "tier1_value"
+    },
+    {
+      "standard": "OpenTelemetry",
+      "version": ">=1.0",
+      "standard_name": "OTLP exporter configuration",
+      "role": "the `protocol` and `compression` values",
+      "source": "https://opentelemetry.io/docs/specs/otel/protocol/exporter/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     }
   ],
   "filed_under": [
     "observability"
   ],
   "context": {
-    "purpose": "Declares the outcome that a resource's logs reach a log store, without saying anything about how.",
-    "plain_description": "A statement of outcome: logs from one resource (a machine, a BMC, a switch, a gateway or a cluster, named by a `contained_by` edge) reach a log store (the `sink` edge), filtered by `source` and `min_severity`, and tagged with the resource's identity. The protocol is chosen by the Type: Syslog or OTLP. The consumer never sees the mechanism; whether a provider satisfies it with an automation-managed agent, a device setting or a cluster forwarder is the provider's business, and swapping mechanisms changes nothing in this record. Realized state reports whether shipping is healthy and when the store last heard from the target, which drives staleness detection.",
+    "purpose": "Ships a resource's logs over OTLP.",
+    "plain_description": "A LogShipper that speaks OTLP: which encoding and whether to compress. The endpoint is not here; it comes from the LogStore's published OTLP intake.",
     "use_when": [
-      "You need logs-from-resource-X-land-in-the-store as a declared, checkable fact per resource.",
-      "You need shipping health and last-delivery time surfaced for drift and staleness detection."
+      "The sender is an OpenTelemetry Collector or SDK exporter."
     ],
     "not_for": [
-      "The log store itself — that is LogStore; this class binds to it.",
-      "Metrics or trace collection — not covered; this class is logs."
+      "Senders that speak syslog — LogShipper.Syslog."
     ],
     "works_with": [
-      "Machine / BMC / NetworkSwitch / NetworkGateway / KubernetesCluster — the resource whose logs are shipped.",
-      "LogStore — where the logs go; its published intake is what the shipper binds."
+      "LogStore — whose `intake` must offer `otlp`."
     ]
   }
 }

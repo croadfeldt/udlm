@@ -4,20 +4,20 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **63 types** (Access 9, Knowledge 9, Process 3, Resource 42). Every spec is strict (`additionalProperties: false`, 63/63 (100%)) and the instance-fuzz harness rejected 5474 of 5474 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 39/63 (61%) of types appear in at least one use case; 24 appear in none. 5 types are named by a specific consumer manifest; the other 58 are carried only by the 4 envelope-level (all-types) consumers. 16 types declare no outputs and 22 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **66 types** (Access 9, Knowledge 9, Process 3, Resource 45). Every spec is strict (`additionalProperties: false`, 66/66 (100%)) and the instance-fuzz harness rejected 5641 of 5641 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 40/66 (60%) of types appear in at least one use case; 26 appear in none. 5 types are named by a specific consumer manifest; the other 61 are carried only by the 4 envelope-level (all-types) consumers. 16 types declare no outputs and 22 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
 | Metric | Value | Reading |
 |---|---|---|
-| Types (by family) | 63 (Access 9, Knowledge 9, Process 3, Resource 42) | — |
-| Discrimination density | 5474/5474 = 100.00% | mutations rejected / attempted; 0 finding(s) |
-| Strictness coverage | 63/63 (100%) | asserted — a non-strict spec fails this tool |
+| Types (by family) | 66 (Access 9, Knowledge 9, Process 3, Resource 45) | — |
+| Discrimination density | 5641/5641 = 100.00% | mutations rejected / attempted; 0 finding(s) |
+| Strictness coverage | 66/66 (100%) | asserted — a non-strict spec fails this tool |
 | Outputs adequacy | 16 zero-output, 22 one-output | declared Realized binding surface |
-| Context coverage | 63/63 (100%) | plain-English `context` blocks |
-| Relationships coverage | 48/63 (76%) | types declaring `relationships[]` |
-| UC coverage | 39/63 (61%) | types appearing in >=1 use case (165 UC files scanned) |
-| Consumer coverage | 63/63 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
+| Context coverage | 66/66 (100%) | plain-English `context` blocks |
+| Relationships coverage | 52/66 (78%) | types declaring `relationships[]` |
+| UC coverage | 40/66 (60%) | types appearing in >=1 use case (166 UC files scanned) |
+| Consumer coverage | 66/66 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
 
 ## Outputs adequacy
 
@@ -30,7 +30,7 @@ downstream consumer can bind on.
 
 ## UC coverage gaps
 
-Types appearing in no use case (24) — each is either ahead of its
+Types appearing in no use case (26) — each is either ahead of its
 scenarios or untested by any story (textual scan; a dotted handle is unambiguous,
 single-word handles could in principle match prose):
 
@@ -42,6 +42,8 @@ single-word handles could in principle match prose):
 - `Identity.ServiceAccount`
 - `IdentityGroup`
 - `Location`
+- `LogShipper.OTLP`
+- `LogShipper.Syslog`
 - `Machine.LPAR`
 - `NetworkInterface`
 - `NetworkSwitch`
@@ -74,7 +76,7 @@ All-types (envelope-level) consumers: `dav`, `graph-explorer`, `records-ci`, `re
 ## Coverage detail
 
 - Context blocks missing (0): none
-- `relationships[]` missing (15): `Access.Grouping`, `Automation`, `Automation.OSPatch`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Identity`, `LogShipper`, `Machine`, `SovereigntyZone`, `StorageLayout`, `Template`, `Template.Application`, `Topology`, `Vulnerability`
+- `relationships[]` missing (14): `Access.Grouping`, `Automation`, `Automation.OSPatch`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Identity`, `Machine`, `SovereigntyZone`, `StorageLayout`, `Template`, `Template.Application`, `Topology`, `Vulnerability`
 
 ## Pending metrics (owned elsewhere, shape reserved)
 

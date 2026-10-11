@@ -1013,12 +1013,34 @@
   }
  },
  "type:LogShipper": {
-  "current": "0.7.2",
+  "current": "0.8.0",
   "path": "registry/classes/resource/observability/log-shipper/_base.yaml",
   "versions": {
    "0.7.0": "sha256:14c67154892c84d9a86f930e113c51451a34ed1dc4b337af56ee47819d1103f2",
    "0.7.1": "sha256:45099c3d1fe8958cbd9d1d7e380f1735efaf06219179c6f0b6220a92d5d9714c",
-   "0.7.2": "sha256:69f17c6fb6872f391630965288f8a0f4b01c3a79fcccfb35fe5ce86a2089c384"
+   "0.7.2": "sha256:69f17c6fb6872f391630965288f8a0f4b01c3a79fcccfb35fe5ce86a2089c384",
+   "0.8.0": "sha256:51058c9743af21bdc39521a0a23835d280a9383009eec764a8dbb90bf5bb2fb3"
+  }
+ },
+ "type:LogShipper.OTLP": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/observability/log-shipper/otlp.yaml",
+  "versions": {
+   "0.1.0": "sha256:17587849ca2989743e9174752bb6ab49107be129ec8a7f51b9a8a6c652084d30"
+  }
+ },
+ "type:LogShipper.Syslog": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/observability/log-shipper/syslog.yaml",
+  "versions": {
+   "0.1.0": "sha256:83427f2938b9fd0fc0e5e028ff67d77f76552cf3dd128c6ce5d8547e71309727"
+  }
+ },
+ "type:LogStore": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/data/log-store/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:19fff25b1c171008a83357119cd666faadd6a9855e1af7112b41f2657f418382"
   }
  },
  "type:Machine": {
