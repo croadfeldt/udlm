@@ -85,7 +85,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Hardware & platform
 
 ### DMTF Redfish — CANONICAL
-**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Machine/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (PowerFeed); Bios (the Machine `firmware` element; vendor attribute sets are Provider Class data); Manager + ComputerSystem.Reset (BMC); Location/Placement (Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — DCM ADR-013; the host carries their rollup.)
+**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Machine/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (PowerFeed); Bios (the Machine `firmware` element; vendor attribute sets are Provider Class data); Manager + ComputerSystem.Reset (BMC); EventDestination with `SyslogFilters` (LogShipper.Syslog — how a BMC ships its log, and the `tcp`/`relp` transports); Location/Placement (Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — DCM ADR-013; the host carries their rollup.)
 **Why:** the vendor-neutral hardware-as-asset vocabulary, and the one the estate's producers actually speak (Redfish-capable BMCs; used for bare-metal provisioning). *Alternatives:* IPMI (no data model), DMTF CIM (superseded by Redfish for REST-era use — PRIOR-ART). **License:** DMTF — compatible-reference.
 
 ### IEEE 802.1AX / 802.1Q / 802.1AB — CANONICAL
@@ -202,6 +202,16 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ### libvirt — CANONICAL
 **Covers:** `libvirt virtual network` · **Since:** 2026-07-05T02:10:32Z · **Where:** VirtualNetwork (forward-mode vocabulary).
 **Why:** the host-bridge attachment producer on all four virt hosts. **License:** LGPL — reference-only.
+
+## Observability
+
+### Syslog — RFC 9742 (ietf-syslog) with RFC 5424 / 5425 / 5426 / 6587 — CANONICAL
+**Covers:** `RFC-9742` `RFC-5424` `RFC-5425` `RFC-5426` `RFC-6587` · **Body:** IETF · **Since:** 2026-10-10T00:00:00Z · **Where:** LogShipper (`min_severity`), LogShipper.Syslog (`transport`, `format`, `facilities`), LogStore (`syslog` intake).
+**Why:** RFC 9742 is the IETF's data model for configuring a syslog sender: a remote destination, its transport and a facility/severity filter, the exact surface a log shipper declares. RFC 5424 is the message format and severity names; 5425 (TLS), 5426 (UDP) and 6587 (TCP framing) are the transports. *Alternatives:* OpenConfig system-logging (same shape, network-vendor scoped — PRIOR-ART); a tool's own config (rsyslog, syslog-ng — mechanism, not contract). **License:** IETF Trust — compatible-reference.
+
+### OpenTelemetry — OTLP, semantic conventions, Logs Data Model — CANONICAL
+**Covers:** `OpenTelemetry` · **Body:** CNCF · **Since:** 2026-10-10T00:00:00Z · **Where:** LogShipper (`labels`, the stamped `host.name`), LogShipper.OTLP (`protocol`, `compression`), LogStore (`otlp` intake).
+**Why:** the vendor-neutral telemetry protocol and attribute vocabulary; its Logs Data Model maps syslog severities onto its own, so one severity filter holds on both protocols. *Alternatives:* inventing label names (rejected on principle); Loki stream labels (one product's). **License:** Apache-2.0 — compatible-reference.
 
 ## Container
 

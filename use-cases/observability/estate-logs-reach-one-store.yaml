@@ -1,0 +1,65 @@
+uuid: uc-2d6f0c41-8a7e-4b39-9e15-3c4a7b0d92f8
+handle: docs/spec/contracts/estate-logs-reach-one-store
+version: 1.0.0
+scenario:
+  description: 'A platform engineer gathers the logs of a mixed estate into one store: a few machines whose agents
+    read the systemd journal, a BMC and a switch that send their own syslog, and a Kubernetes cluster whose
+    forwarder ships container and audit logs. One LogStore is requested with 90-day retention, syslog over TLS and
+    OTLP over HTTP as intake, and one reader group. Each source gets a LogShipper bound to that store: Syslog for
+    the machines, the BMC and the switch; OTLP for the cluster. Different providers realize the shippers (a
+    configuration-management role, a Redfish EventDestination, a cluster log forwarder), yet every shipper reads
+    the same way from its record. This stresses three things: the senders carry no typed-in address (they bind the
+    store''s published intake, so moving the store changes one record); each shipper''s protocol is checked against
+    the store''s intake before anything is configured; and every log line carries the source''s identity, so a line
+    in the store leads back to its record and through its edges to what depends on it.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - sre
+    - platform-operator
+    - security-officer
+  intent: Gather the logs of machines, devices and a cluster into one store, each source declared by its own
+    shipper bound to the store's published intake
+  success_criteria:
+  - One LogStore realizes and publishes an endpoint for each declared intake (syslog over TLS, OTLP over HTTP)
+  - Every LogShipper binds the store through its sink edge and carries no address of its own
+  - Each shipper's protocol and transport are matched against the store's intake before its sender is configured
+  - Machines, a BMC, a switch and a cluster realize through different providers, and every shipper's record has
+    the same shape
+  - Every stored line carries the source's host.name and udlm.handle, so it resolves back to its record
+  - Each shipper's last_shipped_at is readable, so a source that goes quiet shows as stale
+  - Moving the store's intake to a new address changes the store's record only; the shippers follow on rebind
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: composite_service
+    policy_complexity: single_validation
+    provider_landscape: multiple_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the store's intake and each shipper's sink edge and Type are the complete record of where logs go
+      and how
+  - domain: policy
+    interaction: each shipper's protocol and transport are checked against the store's declared intake before
+      dispatch
+  - domain: provider
+    interaction: several providers configure their own senders from the same record shape and bind the store's
+      published endpoints
+  - domain: audit
+    interaction: each realization and each shipper's last delivery are recorded against its record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: observability-2026-10-10
+  timestamp: '2026-10-10T00:00:00.000000+00:00'
+tags:
+- observability-logshipper
+- observability-logstore
+- source-to-sink
+- composite
+- portability
+- binding

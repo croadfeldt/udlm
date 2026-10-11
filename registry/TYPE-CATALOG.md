@@ -638,23 +638,73 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 
 ## LogShipper
 
-### LogShipper (0.7.2)
+### LogShipper (0.8.0)
 
-**Purpose:** Declares the outcome that a host's logs reach the central sink — without saying anything about how.
+**Purpose:** Declares the outcome that a resource's logs reach a log store, without saying anything about how.
 
-A statement of outcome: logs from a target host — the `target` object naming its `host` — shipped to a named sink URL — the `sink` object carrying its `url`; both are objects, not flat strings — tagged with the host's identity. The consumer never sees the mechanism — whether a provider satisfies it with an automation-managed agent, a container, or something else is the provider's private business, and swapping mechanisms changes nothing in this record. Realized state reports whether shipping is healthy and when the last successful delivery happened, which drives staleness detection.
+A statement of outcome: logs from one resource (a machine, a BMC, a switch, a gateway or a cluster, named by a `contained_by` edge) reach a log store (the `sink` edge), filtered by `source` and `min_severity`, and tagged with the resource's identity. The protocol is chosen by the Type: Syslog or OTLP. The consumer never sees the mechanism; whether a provider satisfies it with an automation-managed agent, a device setting or a cluster forwarder is the provider's business, and swapping mechanisms changes nothing in this record. Realized state reports whether shipping is healthy and when the store last heard from the target, which drives staleness detection.
 
 **Use when:**
-- You need logs-from-host-X-land-in-the-central-store as a declared, checkable fact per host.
+- You need logs-from-resource-X-land-in-the-store as a declared, checkable fact per resource.
 - You need shipping health and last-delivery time surfaced for drift and staleness detection.
 
 **Not for:**
-- The log store itself — that is its own resource (e.g. a Workload running the sink); this type is the per-host shipping outcome.
-- Metrics or trace collection — not covered; this type is logs.
+- The log store itself — that is LogStore; this class binds to it.
+- Metrics or trace collection — not covered; this class is logs.
 
 **Works with:**
-- Machine.BareMetalHost / Machine.VM — the target host whose logs are shipped.
-- Workload — the central log store the sink URL points at.
+- Machine / BMC / NetworkSwitch / NetworkGateway / KubernetesCluster — the resource whose logs are shipped.
+- LogStore — where the logs go; its published intake is what the shipper binds.
+
+### LogShipper.OTLP (0.1.0)
+
+**Purpose:** Ships a resource's logs over OTLP.
+
+A LogShipper that speaks OTLP: which encoding and whether to compress. The endpoint is not here; it comes from the LogStore's published OTLP intake.
+
+**Use when:**
+- The sender is an OpenTelemetry Collector or SDK exporter.
+
+**Not for:**
+- Senders that speak syslog — LogShipper.Syslog.
+
+**Works with:**
+- LogStore — whose `intake` must offer `otlp`.
+
+### LogShipper.Syslog (0.1.0)
+
+**Purpose:** Ships a resource's logs over syslog.
+
+A LogShipper that speaks syslog: which transport (TLS preferred), which message format, and which facilities to send. These are the settings RFC 9742 defines for a remote syslog destination, so a host agent, a BMC and a switch all read the same record the same way. The destination address is not here; it comes from the LogStore's published syslog intake.
+
+**Use when:**
+- The sender speaks syslog — a host agent, an appliance, a BMC or a switch.
+
+**Not for:**
+- Senders that speak OTLP — LogShipper.OTLP.
+
+**Works with:**
+- LogStore — whose `intake` must offer `syslog` over the same transport.
+
+## LogStore
+
+### LogStore (0.1.0)
+
+**Purpose:** Declares a log store by what it accepts, how long it keeps it, and who may read it.
+
+The request for a log store: how many days to keep messages, which intake to offer (syslog over TLS, OTLP over HTTP, and so on), and which groups may read. Once realized, it publishes the address and port of each intake, and LogShipper records bind those. Which product stores the logs, and where its data lives, is the provider's business.
+
+**Use when:**
+- You need a central log store whose retention, intake and readers are declared and checkable.
+
+**Not for:**
+- Getting logs into it — that is LogShipper, one per source.
+- Querying — not standardized across stores, so not modelled here.
+
+**Works with:**
+- LogShipper — its senders, bound to its published intake.
+- Grouping — who may read.
+- KubernetesCluster / Machine — where it runs.
 
 ## Machine
 
@@ -1332,4 +1382,4 @@ The application layer: the mail service, the registry, model serving — a named
 - CredentialRef — the service's secrets, by reference.
 
 ---
-*63 types; 63 with context, 0 pending.*
+*66 types; 66 with context, 0 pending.*

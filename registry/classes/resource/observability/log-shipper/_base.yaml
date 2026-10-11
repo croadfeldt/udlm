@@ -1,113 +1,174 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/LogShipper/0.7.2
+$id: https://udlm.dev/registry/udlm/0.1/class/LogShipper/0.8.0
 conforms_to: udlm/0.1
 uuid: 1f2eadd3-1144-4962-9342-dfb7fbb1f922
 record_type: class
 class: base
 resource_type: LogShipper
-version: 0.7.2
+version: 0.8.0
 family: Resource
 status: active
 filed_under:
   - observability
 metadata:
   display_name: Log Shipper
-  description: 'An outcome: a host''s logs are shipped to a central sink, tagged with the host''s identity. A Base
-    by the Base test (CLS-002): the OpenTelemetry Collector''s source-to-sink contract (OTLP, Prometheus exposition)
-    abstracts over every shipper, so a shipper with a given source, sink and labels is one deliverable any telemetry
-    provider realizes. The consumer says which host and which sink and nothing about how; the mechanism (a configuration-management
-    role, a job template, a container) is the provider''s and swapping it never touches this contract.'
+  description: 'An outcome: one resource''s logs reach a log store, filtered and tagged with the resource''s identity.
+    A Base by the Base test (CLS-002): RFC 9742 (the IETF syslog management model), Redfish EventDestination and
+    the OpenTelemetry Collector each treat "send this system''s logs to a collector, filtered" as one deliverable,
+    and a host agent, a BMC, a switch or a cluster forwarder can all fill it. The wire protocol is the Type tier
+    (LogShipper.Syslog, LogShipper.OTLP). The mechanism (a configuration-management role, a device setting, a
+    cluster forwarder) is the provider''s; swapping it never touches this contract.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-18T13:14:58Z'
 elements:
-  - element: target
-    scope: LogShipper
-    optional: false
-    state: canonical
-    description: The host whose logs are shipped; the shipper runs on or collects from it.
-    schema:
-      type: object
-      required:
-        - host
-      description: The host whose logs are shipped; the shipper runs on or collects from it.
-      properties:
-        host:
-          type: string
-          description: Host identifier (FQDN or inventory name).
-  - element: sink
-    scope: LogShipper
-    optional: false
-    state: canonical
-    description: 'Where the logs go: the central store''s endpoint (an OTLP push URL). The store itself is another
-      entity.'
-    schema:
-      type: object
-      required:
-        - url
-      description: 'Where the logs go: the central store''s endpoint (an OTLP push URL). The store itself is another
-        entity.'
-      properties:
-        url:
-          type: string
-          description: Log-store push endpoint (e.g. an OTLP push URL).
   - element: source
     scope: LogShipper
     optional: true
     state: canonical
-    description: 'Which logs: the systemd journal (default) or on-disk files.'
+    description: 'Which logs: the systemd journal (default), on-disk files, the device''s own log (`native`, for
+      appliances, BMCs and switches that send their own syslog), container logs, or audit logs.'
     schema:
       type: string
       enum:
         - journal
         - files
-      description: 'Which logs: the systemd journal (default) or on-disk files.'
+        - native
+        - containers
+        - audit
+      description: 'Which logs: the systemd journal (default), on-disk files, the device''s own log (`native`, for
+        appliances, BMCs and switches that send their own syslog), container logs, or audit logs.'
+  - element: min_severity
+    scope: LogShipper
+    optional: true
+    state: canonical
+    description: 'Ship messages at this severity and above, named as in RFC 5424 and compared as in RFC 9742
+      ("equals-or-higher"). OpenTelemetry maps the same names onto its severity numbers, so the filter means the
+      same thing on either protocol. Absent ships everything.'
+    schema:
+      type: string
+      enum:
+        - emergency
+        - alert
+        - critical
+        - error
+        - warning
+        - notice
+        - informational
+        - debug
+      description: 'Ship messages at this severity and above, named as in RFC 5424 and compared as in RFC 9742
+        ("equals-or-higher"). OpenTelemetry maps the same names onto its severity numbers, so the filter means
+        the same thing on either protocol. Absent ships everything.'
   - element: labels
     scope: LogShipper
     optional: true
     state: canonical
-    description: Extra stream labels beyond the host and unit identity (environment, role).
+    description: 'Extra resource attributes stamped on every message, named per the OpenTelemetry semantic
+      conventions (`deployment.environment`, `service.name`). The provider always stamps the target''s `host.name`
+      and `udlm.handle` itself, so a log line can be followed back to its record.'
     schema:
       type: object
       additionalProperties:
         type: string
-      description: Extra stream labels beyond the host and unit identity (environment, role).
+      description: 'Extra resource attributes stamped on every message, named per the OpenTelemetry semantic
+        conventions (`deployment.environment`, `service.name`). The provider always stamps the target''s
+        `host.name` and `udlm.handle` itself, so a log line can be followed back to its record.'
 spec_examples:
-  - target:
-      host: app-01.corp.internal
-    sink:
-      url: https://logs.corp.internal:4318/v1/logs
-    source: journal
+  - source: journal
+    min_severity: informational
     labels:
-      environment: production
-      role: application
+      deployment.environment: production
 outputs:
   status:
     type: string
     description: Realized health of the shipper (e.g. running / degraded), as reported by discovery.
   shipping_to:
     type: string
-    description: The sink URL the shipper is delivering to (echo of realized config).
+    description: The intake endpoint the shipper is delivering to, resolved from the store's published intake
+      (echo of realized config).
   last_shipped_at:
     type: string
     description: OBSERVED — a provider-watched liveness fact, not derivable from model records (no shipment-instance
-      records exist; this is heartbeat, not history). Timestamp of the most recent successful delivery (RFC 3339)
-      — drives drift / staleness detection.
-immutable:
-  - target.host
+      records exist; this is heartbeat, not history). Timestamp of the most recent message the store received
+      from this target (RFC 3339) — drives staleness detection.
+relationships:
+  - edge_type: binds_to
+    name: sink
+    target: LogStore
+    cardinality: 1..1
+    description: The log store the logs go to. The shipper binds the store's published `intake_endpoints` output
+      that matches its protocol, so moving the store's receiver changes one record, not every shipper.
+  - edge_type: contained_by
+    name: host
+    target: Machine
+    cardinality: 0..1
+    description: The machine whose logs are shipped (a VM or a bare-metal host). Exactly one of host, bmc, switch,
+      gateway or cluster is set.
+  - edge_type: contained_by
+    name: bmc
+    target: BMC
+    cardinality: 0..1
+    description: The baseboard management controller whose own log is shipped (`source` native).
+  - edge_type: contained_by
+    name: switch
+    target: NetworkSwitch
+    cardinality: 0..1
+    description: The switch whose own log is shipped (`source` native).
+  - edge_type: contained_by
+    name: gateway
+    target: NetworkGateway
+    cardinality: 0..1
+    description: The gateway whose own log is shipped (`source` native).
+  - edge_type: contained_by
+    name: cluster
+    target: KubernetesCluster
+    cardinality: 0..1
+    description: The cluster whose container, node or audit logs are shipped by a cluster-level forwarder.
+adopts:
+  - standard: RFC-5424
+    version: '2009'
+    standard_name: Syslog severity
+    role: the severity names `min_severity` uses
+    source: https://www.rfc-editor.org/rfc/rfc5424
+    license: IETF Trust
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+  - standard: RFC-9742
+    version: '2025'
+    standard_name: ietf-syslog severity filter
+    role: the equals-or-higher comparison `min_severity` applies
+    source: https://www.rfc-editor.org/rfc/rfc9742
+    license: IETF Trust
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+  - standard: OpenTelemetry
+    version: '>=1.0'
+    standard_name: Semantic conventions (resource attributes) and Logs Data Model
+    role: the attribute names in `labels` and the identity the provider stamps (`host.name`)
+    source: https://opentelemetry.io/docs/specs/semconv/
+    license: Apache-2.0
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+coverage:
+  use_cases:
+    - observability/deploy-log-shipper
+    - observability/log-shipper-sink-unreachable-refused
+    - observability/estate-logs-reach-one-store
+  flows:
+    - docs/flows/log-shipping-lifecycle.md
 context:
-  purpose: Declares the outcome that a host's logs reach the central sink — without saying anything about how.
-  plain_description: 'A statement of outcome: logs from a target host — the `target` object naming its `host` —
-    shipped to a named sink URL — the `sink` object carrying its `url`; both are objects, not flat strings — tagged
-    with the host''s identity. The consumer never sees the mechanism — whether a provider satisfies it with an automation-managed
-    agent, a container, or something else is the provider''s private business, and swapping mechanisms changes nothing
-    in this record. Realized state reports whether shipping is healthy and when the last successful delivery happened,
-    which drives staleness detection.'
+  purpose: Declares the outcome that a resource's logs reach a log store, without saying anything about how.
+  plain_description: 'A statement of outcome: logs from one resource (a machine, a BMC, a switch, a gateway or a
+    cluster, named by a `contained_by` edge) reach a log store (the `sink` edge), filtered by `source` and
+    `min_severity`, and tagged with the resource''s identity. The protocol is chosen by the Type: Syslog or OTLP.
+    The consumer never sees the mechanism; whether a provider satisfies it with an automation-managed agent, a
+    device setting or a cluster forwarder is the provider''s business, and swapping mechanisms changes nothing in
+    this record. Realized state reports whether shipping is healthy and when the store last heard from the
+    target, which drives staleness detection.'
   use_when:
-    - You need logs-from-host-X-land-in-the-central-store as a declared, checkable fact per host.
+    - You need logs-from-resource-X-land-in-the-store as a declared, checkable fact per resource.
     - You need shipping health and last-delivery time surfaced for drift and staleness detection.
   not_for:
-    - The log store itself — that is its own resource (e.g. a Workload running the sink); this type is the per-host
-      shipping outcome.
-    - Metrics or trace collection — not covered; this type is logs.
+    - The log store itself — that is LogStore; this class binds to it.
+    - Metrics or trace collection — not covered; this class is logs.
   works_with:
-    - Machine.BareMetalHost / Machine.VM — the target host whose logs are shipped.
-    - Workload — the central log store the sink URL points at.
+    - Machine / BMC / NetworkSwitch / NetworkGateway / KubernetesCluster — the resource whose logs are shipped.
+    - LogStore — where the logs go; its published intake is what the shipper binds.

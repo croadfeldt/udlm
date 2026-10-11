@@ -1,0 +1,65 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/LogShipper.OTLP/0.1.0
+conforms_to: udlm/0.1
+uuid: f70bb63b-913f-4927-addc-ab34443013b0
+record_type: class
+class: type
+resource_type: LogShipper.OTLP
+parent: LogShipper
+version: 0.1.0
+family: Resource
+status: active
+metadata:
+  display_name: LogShipper.OTLP Type Class
+  description: 'The OpenTelemetry dialect of log shipping: logs sent as OTLP, the OpenTelemetry Protocol every
+    OpenTelemetry Collector and SDK exporter speaks. Adds the OTLP encoding and compression, named as the OTLP
+    exporter configuration names them. Named for the protocol, which is a standard, never for a sender.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-10-10T00:00:00Z'
+elements:
+  - element: protocol
+    scope: LogShipper.OTLP
+    optional: false
+    state: canonical
+    description: The OTLP encoding, with the values the OTLP exporter configuration uses (`OTEL_EXPORTER_OTLP_PROTOCOL`).
+    schema:
+      type: string
+      enum:
+        - grpc
+        - http/protobuf
+        - http/json
+      description: The OTLP encoding, with the values the OTLP exporter configuration uses (`OTEL_EXPORTER_OTLP_PROTOCOL`).
+  - element: compression
+    scope: LogShipper.OTLP
+    optional: true
+    state: canonical
+    description: Payload compression (`OTEL_EXPORTER_OTLP_COMPRESSION`). Absent means none.
+    schema:
+      type: string
+      enum:
+        - gzip
+        - none
+      description: Payload compression (`OTEL_EXPORTER_OTLP_COMPRESSION`). Absent means none.
+spec_examples:
+  - source: containers
+    min_severity: informational
+    protocol: http/protobuf
+    compression: gzip
+adopts:
+  - standard: OpenTelemetry
+    version: '>=1.0'
+    standard_name: OTLP exporter configuration
+    role: the `protocol` and `compression` values
+    source: https://opentelemetry.io/docs/specs/otel/protocol/exporter/
+    license: Apache-2.0
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+context:
+  purpose: Ships a resource's logs over OTLP.
+  plain_description: 'A LogShipper that speaks OTLP: which encoding and whether to compress. The endpoint is not
+    here; it comes from the LogStore''s published OTLP intake.'
+  use_when:
+    - The sender is an OpenTelemetry Collector or SDK exporter.
+  not_for:
+    - Senders that speak syslog — LogShipper.Syslog.
+  works_with:
+    - LogStore — whose `intake` must offer `otlp`.
