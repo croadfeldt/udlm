@@ -1,0 +1,165 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/LogStore/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "89fb33fa-ebf2-4b38-bf74-2e163ea8033b",
+  "resource_type": "LogStore",
+  "version": "0.1.0",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "Log Store",
+    "description": "A place logs are accepted and kept: it offers intake over standard protocols, keeps what it receives for a declared number of days, and lets declared groups read it. A Base by the Base test (CLS-002): intake is standardized — syslog (RFC 5424, received over RFC 5425/5426/6587 transports) and OTLP — and every log store accepts one or both, so any of them can fill the order. Querying is not standardized (each store has its own query language), so this class says nothing about it. Its senders are LogShipper records, which bind its published intake.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-10-10T00:00:00Z",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "LogStore",
+          "version": "0.1.0",
+          "uuid": "89fb33fa-ebf2-4b38-bf74-2e163ea8033b"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "retention_days": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "How many days a message is kept before it may be deleted."
+      },
+      "intake": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "object",
+          "required": [
+            "protocol",
+            "transport"
+          ],
+          "properties": {
+            "protocol": {
+              "type": "string",
+              "enum": [
+                "syslog",
+                "otlp"
+              ],
+              "description": "The intake protocol."
+            },
+            "transport": {
+              "type": "string",
+              "enum": [
+                "tls",
+                "udp",
+                "tcp",
+                "relp",
+                "grpc",
+                "http"
+              ],
+              "description": "The transport for that protocol — `tls`, `udp`, `tcp` or `relp` for syslog; `grpc` or `http` for OTLP."
+            }
+          }
+        },
+        "description": "The intake the store must offer: each entry a protocol and a transport. A LogShipper can only bind a store that offers its protocol over its transport."
+      }
+    },
+    "required": [
+      "intake",
+      "retention_days"
+    ],
+    "examples": [
+      {
+        "retention_days": 90,
+        "intake": [
+          {
+            "protocol": "syslog",
+            "transport": "tls"
+          },
+          {
+            "protocol": "otlp",
+            "transport": "http"
+          }
+        ]
+      }
+    ]
+  },
+  "outputs": {
+    "status": {
+      "type": "string",
+      "description": "Realized health of the store (e.g. ready / degraded), as reported by discovery."
+    },
+    "intake_endpoints": {
+      "type": "array",
+      "description": "The realized intake: one entry per `intake` element, each { protocol, transport, address, port }. This is what a LogShipper's `sink` edge binds."
+    }
+  },
+  "relationships": [
+    {
+      "edge_type": "references",
+      "name": "readers",
+      "target": "Grouping",
+      "cardinality": "0..n",
+      "description": "The groups allowed to read the stored logs. Access to the logs follows the same groupings that scope every other resource, so no store-local user list exists."
+    },
+    {
+      "edge_type": "contained_by",
+      "name": "cluster",
+      "target": "KubernetesCluster",
+      "cardinality": "0..1",
+      "description": "The cluster the store runs on, when it runs on one."
+    },
+    {
+      "edge_type": "contained_by",
+      "name": "host",
+      "target": "Machine",
+      "cardinality": "0..1",
+      "description": "The machine the store runs on, when it runs on one directly."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "RFC-5424",
+      "version": "2009",
+      "standard_name": "The Syslog Protocol",
+      "role": "the `syslog` intake protocol",
+      "source": "https://www.rfc-editor.org/rfc/rfc5424",
+      "license": "IETF Trust",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "OpenTelemetry",
+      "version": ">=1.0",
+      "standard_name": "OTLP",
+      "role": "the `otlp` intake protocol",
+      "source": "https://opentelemetry.io/docs/specs/otlp/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ],
+  "filed_under": [
+    "data"
+  ],
+  "context": {
+    "purpose": "Declares a log store by what it accepts, how long it keeps it, and who may read it.",
+    "plain_description": "The request for a log store: how many days to keep messages, which intake to offer (syslog over TLS, OTLP over HTTP, and so on), and which groups may read. Once realized, it publishes the address and port of each intake, and LogShipper records bind those. Which product stores the logs, and where its data lives, is the provider's business.",
+    "use_when": [
+      "You need a central log store whose retention, intake and readers are declared and checkable."
+    ],
+    "not_for": [
+      "Getting logs into it — that is LogShipper, one per source.",
+      "Querying — not standardized across stores, so not modelled here."
+    ],
+    "works_with": [
+      "LogShipper — its senders, bound to its published intake.",
+      "Grouping — who may read.",
+      "KubernetesCluster / Machine — where it runs."
+    ]
+  }
+}

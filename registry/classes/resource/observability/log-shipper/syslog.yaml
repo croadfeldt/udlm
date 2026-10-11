@@ -1,0 +1,133 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/LogShipper.Syslog/0.1.0
+conforms_to: udlm/0.1
+uuid: 08b6eafd-abae-4c69-ac70-aff7d87778a8
+record_type: class
+class: type
+resource_type: LogShipper.Syslog
+parent: LogShipper
+version: 0.1.0
+family: Resource
+status: active
+metadata:
+  display_name: LogShipper.Syslog Type Class
+  description: 'The syslog dialect of log shipping: the elements RFC 9742 (the IETF syslog management model) gives
+    a remote destination, which every syslog sender already speaks — rsyslog and syslog-ng on hosts, Redfish
+    EventDestination on BMCs, OpenConfig system-logging on switches. Adds transport, message format and the
+    facility filter. Named for the protocol, which is a standard, never for a sender.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-10-10T00:00:00Z'
+elements:
+  - element: transport
+    scope: LogShipper.Syslog
+    optional: false
+    state: canonical
+    description: 'How messages travel. `udp` (RFC 5426) and `tls` (RFC 5425) are the two RFC 9742 names; `tcp`
+      (RFC 6587 framing) and `relp` are the further values Redfish EventDestination offers. Prefer `tls`: it is
+      the only one that is both reliable and private.'
+    schema:
+      type: string
+      enum:
+        - tls
+        - udp
+        - tcp
+        - relp
+      description: 'How messages travel. `udp` (RFC 5426) and `tls` (RFC 5425) are the two RFC 9742 names; `tcp`
+        (RFC 6587 framing) and `relp` are the further values Redfish EventDestination offers. Prefer `tls`: it is
+        the only one that is both reliable and private.'
+  - element: format
+    scope: LogShipper.Syslog
+    optional: true
+    state: canonical
+    description: Message format. `rfc5424` (default) carries structured data and a full timestamp; `rfc3164` is
+      the legacy BSD format some devices still send.
+    schema:
+      type: string
+      enum:
+        - rfc5424
+        - rfc3164
+      description: Message format. `rfc5424` (default) carries structured data and a full timestamp; `rfc3164` is
+        the legacy BSD format some devices still send.
+  - element: facilities
+    scope: LogShipper.Syslog
+    optional: true
+    state: canonical
+    description: Ship only these facilities, named as the RFC 9742 facility identities. Absent ships every
+      facility. Combined with `min_severity`, this is the RFC 9742 selector.
+    schema:
+      type: array
+      uniqueItems: true
+      items:
+        type: string
+        enum:
+          - kern
+          - user
+          - mail
+          - daemon
+          - auth
+          - syslog
+          - lpr
+          - news
+          - uucp
+          - cron
+          - authpriv
+          - ftp
+          - ntp
+          - audit
+          - console
+          - cron2
+          - local0
+          - local1
+          - local2
+          - local3
+          - local4
+          - local5
+          - local6
+          - local7
+      description: Ship only these facilities, named as the RFC 9742 facility identities. Absent ships every
+        facility. Combined with `min_severity`, this is the RFC 9742 selector.
+spec_examples:
+  - source: native
+    min_severity: warning
+    transport: tls
+    format: rfc5424
+    facilities:
+      - kern
+      - daemon
+      - auth
+adopts:
+  - standard: RFC-9742
+    version: '2025'
+    standard_name: ietf-syslog remote action (destination, transport, facility filter)
+    role: the shape and names of `transport` and `facilities`
+    source: https://www.rfc-editor.org/rfc/rfc9742
+    license: IETF Trust
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+  - standard: RFC-5424
+    version: '2009'
+    standard_name: The Syslog Protocol
+    role: the `rfc5424` message format
+    source: https://www.rfc-editor.org/rfc/rfc5424
+    license: IETF Trust
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+  - standard: Redfish
+    version: '2024.4'
+    standard_name: EventDestination (SubscriptionType Syslog, SyslogFilters)
+    role: the `tcp` and `relp` transport values, and how a BMC fills this Type
+    source: https://www.dmtf.org/standards/redfish
+    license: DMTF
+    license_compatibility: compatible-reference
+    disposition: tier1_value
+context:
+  purpose: Ships a resource's logs over syslog.
+  plain_description: 'A LogShipper that speaks syslog: which transport (TLS preferred), which message format, and
+    which facilities to send. These are the settings RFC 9742 defines for a remote syslog destination, so a host
+    agent, a BMC and a switch all read the same record the same way. The destination address is not here; it
+    comes from the LogStore''s published syslog intake.'
+  use_when:
+    - The sender speaks syslog — a host agent, an appliance, a BMC or a switch.
+  not_for:
+    - Senders that speak OTLP — LogShipper.OTLP.
+  works_with:
+    - LogStore — whose `intake` must offer `syslog` over the same transport.
