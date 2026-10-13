@@ -89,6 +89,7 @@ leaves a derived surface saying the old thing. The review sweep checks both dire
 | ID | Rule |
 |---|---|
 | `DOC-002` | **The spec is the source of truth; every other surface is derived from it and kept in step.** A normative change lands in `docs/spec/` first, with a rule ID in its registered home, and the same PR brings every derived surface into line: schema, gate, generated artifact, example, tool, read model, consumer manifest, and explanatory document. A derived surface may not state a rule the spec does not, nor contradict one it does. Maintainer ruling 2026-09-27 (register row 077). |
+| `DOC-003` | **A spec example says what it is.** Every YAML example under `docs/spec/` begins with `# schema: <file>[#pointer]` — it is an instance of that schema and may use only fields the schema allows (values are not checked, so placeholders are fine) — or `# illustrative` — it shows a payload or shape no schema governs. An example that shows fields no schema carries teaches readers to write records CI rejects. Gate: `tests/check_doc_examples.py`; the examples present when it landed are baselined by content hash and the baseline only shrinks. |
 
 ## Terminology discipline (TERM-001)
 

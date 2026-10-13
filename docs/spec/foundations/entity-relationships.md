@@ -40,6 +40,7 @@ authoring time the target may not be realized, so the edge names it by `target_h
 substrate resolves `target_uuid` at reserve. The uuid never has to be known in advance.
 
 ```yaml
+# schema: state-record.schema.json
 # Authored — a VM's intent, by handle (no uuids yet). Three edge_types at work:
 dependencies:
   - target_handle: "storage/primary"     # its boot disk
@@ -548,6 +549,7 @@ An instance edge's `relation`, when present, must be a `name` some template in t
 (`REL-001`).
 
 ```yaml
+# schema: class.schema.json
 # Machine.VM (registry/classes/resource/compute/machine/vm.yaml)
 relationships:
   - edge_type: depends_on
