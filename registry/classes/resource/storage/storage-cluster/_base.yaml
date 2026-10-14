@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StorageCluster/0.7.1
+$id: https://udlm.dev/registry/udlm/0.1/class/StorageCluster/0.8.0
 conforms_to: udlm/0.1
 uuid: b3db807c-91a9-4ad3-bd28-b5a1042f740a
 record_type: class
 class: base
 resource_type: StorageCluster
-version: 0.7.1
+version: 0.8.0
 family: Resource
 status: active
 filed_under:
@@ -45,12 +45,10 @@ elements:
         (120TiB).'
       properties:
         total:
-          type: string
-          pattern: ^[0-9]+(GB|TB|PB|GiB|TiB|PiB)$
+          $ref: ../../../../common-elements.schema.json#/$defs/quantity
           description: Total raw capacity.
         usable:
-          type: string
-          pattern: ^[0-9]+(GB|TB|PB|GiB|TiB|PiB)$
+          $ref: ../../../../common-elements.schema.json#/$defs/quantity
           description: Usable capacity after data-protection overhead.
   - element: data_protection
     scope: StorageCluster

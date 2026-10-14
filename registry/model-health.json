@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5708,
-    "mutations_rejected": 5708,
+    "mutations_attempted": 5694,
+    "mutations_rejected": 5694,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -44,8 +44,8 @@
         "rejected": 35
       },
       "Container": {
-        "attempted": 235,
-        "rejected": 235
+        "attempted": 230,
+        "rejected": 230
       },
       "CredentialRef": {
         "attempted": 71,
@@ -60,8 +60,8 @@
         "rejected": 152
       },
       "Database": {
-        "attempted": 70,
-        "rejected": 70
+        "attempted": 65,
+        "rejected": 65
       },
       "DirectoryService": {
         "attempted": 56,
@@ -208,8 +208,8 @@
         "rejected": 72
       },
       "StorageDevice": {
-        "attempted": 93,
-        "rejected": 93
+        "attempted": 92,
+        "rejected": 92
       },
       "StorageLayout": {
         "attempted": 89,
@@ -264,12 +264,12 @@
         "rejected": 48
       },
       "Volume": {
-        "attempted": 53,
-        "rejected": 53
+        "attempted": 52,
+        "rejected": 52
       },
       "Volume.ZFS": {
-        "attempted": 72,
-        "rejected": 72
+        "attempted": 70,
+        "rejected": 70
       },
       "Vulnerability": {
         "attempted": 67,

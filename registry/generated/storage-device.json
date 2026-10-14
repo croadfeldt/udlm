@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StorageDevice/0.7.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StorageDevice/0.8.0",
   "conforms_to": "udlm/0.1",
   "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b",
   "resource_type": "StorageDevice",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StorageDevice",
-          "version": "0.7.1",
+          "version": "0.8.0",
           "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b"
         }
       ]
@@ -68,8 +68,7 @@
         }
       },
       "capacity": {
-        "type": "string",
-        "pattern": "^[0-9]+(MB|GB|TB|PB|MiB|GiB|TiB|PiB)$",
+        "$ref": "../common-elements.schema.json#/$defs/quantity",
         "description": "Usable capacity as a quantity (1TB; Redfish CapacityBytes)."
       },
       "media_type": {

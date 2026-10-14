@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Database/0.8.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Database/0.9.0
 conforms_to: udlm/0.1
 uuid: c199bb49-3ed4-4ed5-a902-2ebccd0a8337
 record_type: class
 class: base
 resource_type: Database
-version: 0.8.2
+version: 0.9.0
 family: Resource
 status: active
 filed_under:
@@ -60,16 +60,13 @@ elements:
             boundary); the substrate and its control plane does NOT define the mapping. A shared sizing option available
             to any resource type (common-elements §sizing).
         cpu:
-          type: string
-          pattern: ^([0-9]+m|[0-9]+(\.[0-9]+)?)$
+          $ref: ../../../../common-elements.schema.json#/$defs/cpu_quantity
           description: CPU allocation, as a millicore string (`500m`) or whole/fractional cores (`2`, `1.5`) — Kubernetes-aligned
             quantity convention (#40 review). The provider reconciles to its concrete units at naturalization.
         memory:
-          type: string
-          pattern: ^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$
+          $ref: ../../../../common-elements.schema.json#/$defs/quantity
         storage:
-          type: string
-          pattern: ^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$
+          $ref: ../../../../common-elements.schema.json#/$defs/quantity
       description: 'Resource request in the shared compute shape: `cpu` as a quantity string (500m, 2), `memory`,
         `storage`.'
   - element: metadata

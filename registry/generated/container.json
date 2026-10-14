@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Container/1.0.7",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Container/1.1.0",
   "conforms_to": "udlm/0.1",
   "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49",
   "resource_type": "Container",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Container",
-          "version": "1.0.7",
+          "version": "1.1.0",
           "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49"
         }
       ]
@@ -89,13 +89,11 @@
             "description": "Provider-neutral size class (small|medium|large) — size by class in place of cpu/memory; the provider maps it at naturalization (common-elements §2.2, ADR-014)."
           },
           "cpu": {
-            "type": "number",
-            "minimum": 0.1,
+            "$ref": "../common-elements.schema.json#/$defs/cpu_quantity",
             "description": "vCPU request in cores."
           },
           "memory": {
-            "type": "string",
-            "pattern": "^[0-9]+(Mi|Gi|MB|GB)$"
+            "$ref": "../common-elements.schema.json#/$defs/quantity"
           }
         },
         "description": "Resource request: `cpu` as a number of cores (0.5, 2), `memory` as a quantity."
