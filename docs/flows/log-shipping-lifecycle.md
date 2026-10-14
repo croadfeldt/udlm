@@ -42,6 +42,9 @@ flowchart TD
   not listen.
 - **Liveness after realization.** `last_shipped_at` is an observed fact: the time the store last heard from the
   target. A realized shipper whose logs stop arriving is stale, which is the failure that matters for logs.
+- **One filter language on both ends.** A shipper's `filter` and a store's `rules` are both criteria over
+  the log record (identifier-scheme §9.7). The shipper decides what leaves the source; the store decides how
+  long each kind is kept and who reads it (authentication logs a year for security, debug lines a week).
 - **Identity on every line.** The provider stamps the target's `host.name` and `udlm.handle`, so a log line in
   the store can be followed back to the record and through its edges.
 

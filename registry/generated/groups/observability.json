@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "LogShipper",
-      "version": "0.8.0",
+      "version": "0.9.0",
       "instantiable": true,
       "path": "registry/classes/resource/observability/log-shipper/_base.yaml",
       "types": [

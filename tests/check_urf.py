@@ -9,8 +9,10 @@ registry content for URF-typed fields and validates each.
     URF-005 operational terms refused in stored forms; stripped at dereference
     URF-006 criterion cycles refused (member_of graph)
     URF-012 `=match=` takes a quoted I-Regexp (RFC 9485) pattern; anything looser is refused
+    URF-013 a filter expression carries the query axis alone: no path, operational term or virtual field
   SCAN — every string under a schema field declared `format: udlm-ref-url` or
-    `udlm-filter-url` in registry classes/instances parses as a STORED form.
+    `udlm-filter-url` in registry classes/instances parses as a STORED form; one declared
+    `udlm-filter-expr` parses as an expression alone (URF-013).
 
 Exit non-zero on any self-test failure or scan violation.
 """
@@ -177,6 +179,25 @@ def main():
             fails.append(f"URF-012/§9.5: a pattern encodes like any value, braces included: {pat!r}")
         if U.canonicalize(pat) != pat:
             fails.append(f"pattern canonicalization not idempotent: {pat!r}")
+    # --- URF-013: a filter expression is the query axis alone, over a subject that is not a record ---
+    for expr, want_ok, why in [
+        ("severity_number=ge=13;resource.host.name==db-*", True, "comparators and a glob"),
+        ("body==*timeout*,body==*refused*", True, "OR of two globs"),
+        ("attributes.syslog.facility=in=(kern,auth)", True, "a set over a nested attribute"),
+        ("estate?severity_number=ge=13", False, "a path — there is no collection to name"),
+        ("member_of==access/groupings/ops", False, "a virtual field reads the estate graph"),
+        ("via(host)==x", False, "a traversal reads the estate graph"),
+        ("page_size=50", False, "an operational term"),
+        ("severity_number=ge=13#body", False, "a fragment"),
+    ]:
+        try:
+            U.parse_expression(expr); got = True
+        except U.URFError:
+            got = False
+        if got != want_ok:
+            fails.append(f"URF-013 {'accepted' if got else 'refused'} {expr!r} — expected the "
+                         f"opposite ({why})")
+
     # --- URF-006 cycle refusal (criterion graph walk over member_of) ---
     criteria = {
         "access/groupings/g1": "estate?member_of==access/groupings/g2",
@@ -202,38 +223,57 @@ def main():
     ok("acyclic criteria", lambda: cycle_check({"g1": "estate?member_of==g2", "g2": "estate?tenant_uuid==x"}))
 
     # --- scan registry content for declared URF fields ---
+    # A URF field can sit anywhere in an element's schema — nested in objects and lists, or behind a
+    # `$ref` to a shared definition — so the scan walks the schema to every declared format and then
+    # follows the same path through each example.
     scanned = 0
     if yaml:
+        import json
+        common = json.load(open(ROOT / "registry" / "common-elements.schema.json")).get("$defs", {})
+        parsers = {"udlm-ref-url": U.parse, "udlm-filter-url": U.parse,
+                   "udlm-filter-expr": U.parse_expression}
+
+        def formats(sch, path=()):
+            if not isinstance(sch, dict):
+                return
+            ref = sch.get("$ref", "")
+            if "common-elements.schema.json#/$defs/" in ref:
+                sch = {**common.get(ref.rsplit("/", 1)[-1], {}), **{k: v for k, v in sch.items() if k != "$ref"}}
+            if sch.get("format") in parsers:
+                yield path, sch["format"]
+            for prop, ps in (sch.get("properties") or {}).items():
+                yield from formats(ps, path + (prop,))
+            if isinstance(sch.get("items"), dict):
+                yield from formats(sch["items"], path + ("[]",))
+
+        def values(node, path):
+            if not path:
+                if isinstance(node, str):
+                    yield node
+                return
+            head, rest = path[0], path[1:]
+            if head == "[]":
+                for item in node if isinstance(node, list) else []:
+                    yield from values(item, rest)
+            elif isinstance(node, dict) and head in node:
+                yield from values(node[head], rest)
+
         for f in glob.glob(str(ROOT / "registry" / "classes" / "**" / "*.yaml"), recursive=True):
             doc = yaml.safe_load(open(f))
             if not isinstance(doc, dict):
                 continue
-            urf_fields = set()
+            fields = []
             for el in doc.get("elements") or []:
-                sch = el.get("schema") or {}
-                if sch.get("format") in ("udlm-ref-url", "udlm-filter-url"):
-                    urf_fields.add(el.get("element"))
-                items = sch.get("items") or {}
-                for prop, ps in (items.get("properties") or {}).items():
-                    if isinstance(ps, dict) and ps.get("format") in ("udlm-ref-url", "udlm-filter-url"):
-                        urf_fields.add((el.get("element"), prop))
+                for path, fmt in formats(el.get("schema") or {}):
+                    fields.append(((el.get("element"),) + path, fmt))
             for ex in doc.get("spec_examples") or []:
-                for name in urf_fields:
-                    if isinstance(name, str) and isinstance(ex.get(name), str):
+                for path, fmt in fields:
+                    for v in values(ex, path):
                         scanned += 1
                         try:
-                            U.parse(ex[name])
+                            parsers[fmt](v)
                         except U.URFError as e:
-                            fails.append(f"{f}: spec_example {name}: {e}")
-                    elif isinstance(name, tuple):
-                        el, prop = name
-                        for item in ex.get(el) or []:
-                            if isinstance(item, dict) and isinstance(item.get(prop), str):
-                                scanned += 1
-                                try:
-                                    U.parse(item[prop])
-                                except U.URFError as e:
-                                    fails.append(f"{f}: spec_example {el}[].{prop}: {e}")
+                            fails.append(f"{f}: spec_example {'.'.join(path)}: {e}")
 
     print(f"urf: self-test complete; {scanned} stored URF value(s) scanned in registry content")
     if fails:

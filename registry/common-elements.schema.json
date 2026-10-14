@@ -114,6 +114,16 @@
         "uuid/4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44@sha256:0000000000000000000000000000000000000000000000000000000000000000"
       ]
     },
+    "LogRecordCriterion": {
+      "$comment": "identifier-scheme.md §9.7 (a criterion over something that is not a record, URF-013); used by LogShipper and LogStore",
+      "type": "string",
+      "format": "udlm-filter-expr",
+      "description": "A filter over log records, written as a URF expression alone (identifier-scheme §9.2 and §9.7): every comparator, glob and connective, no path and no virtual field. Selectors are the fields of the OpenTelemetry Logs Data Model: `severity_number` (1-24; 9 = info, 13 = warn, 17 = error), `severity_text`, `body`, `event_name`, `resource.<key>` (the provider always stamps `resource.host.name` and `resource.udlm.handle`) and `attributes.<key>`. Syslog fields arrive as attributes under OpenTelemetry's RFC 5424 mapping (`attributes.syslog.facility`, `attributes.syslog.msgid`), so one criterion means the same thing whether a line came in as syslog or OTLP. A pattern goes after `=match=` (URF-012). Example: `severity_number=ge=13;resource.host.name==db-*;body=match='.*(timeout|refused).*'`.",
+      "examples": [
+        "severity_number=ge=13;resource.host.name==db-*",
+        "attributes.syslog.facility=in=(auth,authpriv)"
+      ]
+    },
     "Condition": {
       "$comment": "common-elements.md §2.6 (adopts the OSAC/Kubernetes condition envelope)",
       "type": "object",

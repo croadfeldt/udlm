@@ -12,6 +12,7 @@ Public surface:
   canonicalize(url)     -> canonical string (parse + emit; operational terms stripped)
   from_block(dict)      -> canonical string (block form -> join -> parse -> emit)
   to_block(url)         -> dict (the inverse projection)
+  parse_expression(e)   -> canonical expression for a `udlm-filter-expr` field (URF-013)
 """
 import re
 from urllib.parse import quote, unquote
@@ -501,6 +502,36 @@ def parse(url, allow_operational=False):
         if operational and not allow_operational:
             raise URFError(f"operational terms {sorted(operational)} are illegal in a stored URF (URF-005)")
     return URF(authority, path, pin, terms, operational, frag)
+
+
+def parse_expression(expr):
+    """A `udlm-filter-expr` value: §9.2's expression alone, over a subject that is not a record (URF-013).
+
+    No path, pin or fragment (there is no collection to name), no operational term, and no virtual
+    field: `member_of`, `filed_under` and `via` read the estate graph, which the subject (a log line,
+    say) is not part of. Returns the canonical expression.
+    """
+    if not isinstance(expr, str) or not expr:
+        raise URFError("empty criterion (URF-013)")
+    if _split_outside_quotes(expr, "?")[1] is not None or _split_outside_quotes(expr, "#")[1] is not None:
+        raise URFError(f"a filter expression has no path, query mark or fragment: {expr!r} (URF-013)")
+    ast = _parse_expr(expr)
+    terms, operational = _strip_operational(ast)
+    if operational:
+        raise URFError(f"operational terms {sorted(operational)} are illegal in a filter expression (URF-013)")
+
+    def walk(node):
+        kind = node[0]
+        if kind in ("and", "or"):
+            for n in node[1]:
+                walk(n)
+        elif kind == "group":
+            walk(node[1])
+        elif node[1] in VIRTUAL_FIELDS or node[1].startswith("via("):
+            raise URFError(f"virtual field {node[1]!r} reads the estate graph; a filter expression's "
+                           f"subject is not in it (URF-013)")
+    walk(terms)
+    return _emit(terms)
 
 
 def _strip_operational(ast):

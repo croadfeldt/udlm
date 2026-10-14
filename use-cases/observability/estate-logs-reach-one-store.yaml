@@ -30,6 +30,11 @@ scenario:
   - Every stored line carries the source's host.name and udlm.handle, so it resolves back to its record
   - Each shipper's last_shipped_at is readable, so a source that goes quiet shows as stale
   - Moving the store's intake to a new address changes the store's record only; the shippers follow on rebind
+  - Each shipper's filter is a criterion over the log record, and a device that can only filter by facility and
+    severity is either given a criterion it can evaluate or filtered before the store; nothing outside the filter
+    is stored
+  - The store keeps authentication logs for a year, readable only by the security group, and debug lines for a
+    week, by rules over the same record fields; everything else gets the default retention and readers
   dimensions:
     lifecycle_phase: provisioning
     resource_complexity: composite_service

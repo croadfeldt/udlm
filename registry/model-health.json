@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5641,
-    "mutations_rejected": 5641,
+    "mutations_attempted": 5708,
+    "mutations_rejected": 5708,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -136,20 +136,20 @@
         "rejected": 30
       },
       "LogShipper": {
-        "attempted": 32,
-        "rejected": 32
+        "attempted": 41,
+        "rejected": 41
       },
       "LogShipper.OTLP": {
-        "attempted": 49,
-        "rejected": 49
+        "attempted": 58,
+        "rejected": 58
       },
       "LogShipper.Syslog": {
-        "attempted": 73,
-        "rejected": 73
+        "attempted": 58,
+        "rejected": 58
       },
       "LogStore": {
-        "attempted": 65,
-        "rejected": 65
+        "attempted": 129,
+        "rejected": 129
       },
       "Machine": {
         "attempted": 112,

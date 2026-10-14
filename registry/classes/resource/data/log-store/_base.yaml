@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/LogStore/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/LogStore/0.2.0
 conforms_to: udlm/0.1
 uuid: 89fb33fa-ebf2-4b38-bf74-2e163ea8033b
 record_type: class
 class: base
 resource_type: LogStore
-version: 0.1.0
+version: 0.2.0
 family: Resource
 status: active
 filed_under:
@@ -15,8 +15,9 @@ metadata:
     for a declared number of days, and lets declared groups read it. A Base by the Base test (CLS-002): intake is
     standardized — syslog (RFC 5424, received over RFC 5425/5426/6587 transports) and OTLP — and every log store
     accepts one or both, so any of them can fill the order. Querying is not standardized (each store has its own
-    query language), so this class says nothing about it. Its senders are LogShipper records, which bind its
-    published intake.'
+    query language), so this class says nothing about it. Retention and read access can differ by kind of record:
+    a rule picks records by a criterion over their fields, the same kind a LogShipper filters with. Its senders are
+    LogShipper records, which bind its published intake.'
   maintainer: udlm-registry
   origination_timestamp: '2026-10-10T00:00:00Z'
 elements:
@@ -24,11 +25,11 @@ elements:
     scope: LogStore
     optional: false
     state: canonical
-    description: How many days a message is kept before it may be deleted.
+    description: The default retention, in days, for a record no rule in `rules` matches.
     schema:
       type: integer
       minimum: 1
-      description: How many days a message is kept before it may be deleted.
+      description: The default retention, in days, for a record no rule in `rules` matches.
   - element: intake
     scope: LogStore
     optional: false
@@ -50,6 +51,7 @@ elements:
             enum:
               - syslog
               - otlp
+            x-extensible-enum: true
             description: The intake protocol.
           transport:
             type: string
@@ -60,12 +62,55 @@ elements:
               - relp
               - grpc
               - http
+            x-extensible-enum: true
             description: The transport for that protocol — `tls`, `udp`, `tcp` or `relp` for syslog; `grpc` or
               `http` for OTLP.
       description: 'The intake the store must offer: each entry a protocol and a transport. A LogShipper can only
         bind a store that offers its protocol over its transport.'
+  - element: rules
+    scope: LogStore
+    optional: true
+    state: canonical
+    description: 'Retention and read access by kind of record. Each rule picks records with `match`, a criterion over
+      the log record (identifier-scheme §9.7), and sets `retention_days`, `readers`, or both, for what it picks. Rules
+      are read in order and the first match wins; a record no rule matches gets the store''s `retention_days` and
+      its `readers` edges. A rule that sets neither gives what it picks those defaults, exempting it from the rules
+      after it.'
+    schema:
+      type: array
+      items:
+        type: object
+        required:
+          - match
+        additionalProperties: false
+        properties:
+          match:
+            $ref: ../../../../common-elements.schema.json#/$defs/LogRecordCriterion
+          retention_days:
+            type: integer
+            minimum: 1
+            description: Days to keep a record this rule picks. Absent keeps the store's default.
+          readers:
+            type: array
+            minItems: 1
+            items:
+              $ref: ../../../../common-elements.schema.json#/$defs/Reference
+            description: The Groupings that may read what this rule picks, in place of the store's `readers`. Absent
+              keeps the store's readers.
+      description: 'Retention and read access by kind of record. Each rule picks records with `match`, a criterion
+        over the log record (identifier-scheme §9.7), and sets `retention_days`, `readers`, or both, for what it
+        picks. Rules are read in order and the first match wins; a record no rule matches gets the store''s
+        `retention_days` and its `readers` edges. A rule that sets neither gives what it picks those defaults,
+        exempting it from the rules after it.'
 spec_examples:
   - retention_days: 90
+    rules:
+      - match: attributes.syslog.facility=in=(auth,authpriv)
+        retention_days: 365
+        readers:
+          - access/groupings/security
+      - match: severity_number=le=8
+        retention_days: 7
     intake:
       - protocol: syslog
         transport: tls
@@ -84,8 +129,8 @@ relationships:
     name: readers
     target: Grouping
     cardinality: 0..n
-    description: The groups allowed to read the stored logs. Access to the logs follows the same groupings that
-      scope every other resource, so no store-local user list exists.
+    description: The groups allowed to read the stored logs, unless a rule in `rules` says otherwise for what it
+      picks. Access follows the same groupings that scope every other resource, so no store-local user list exists.
   - edge_type: contained_by
     name: cluster
     target: KubernetesCluster
@@ -120,10 +165,11 @@ coverage:
     - docs/flows/log-shipping-lifecycle.md
 context:
   purpose: Declares a log store by what it accepts, how long it keeps it, and who may read it.
-  plain_description: 'The request for a log store: how many days to keep messages, which intake to offer (syslog
-    over TLS, OTLP over HTTP, and so on), and which groups may read. Once realized, it publishes the address and
-    port of each intake, and LogShipper records bind those. Which product stores the logs, and where its data
-    lives, is the provider''s business.'
+  plain_description: 'The request for a log store: how many days to keep messages by default, rules that keep some
+    kinds longer or shorter or limit who reads them (authentication logs for a year, readable by security; debug
+    lines for a week), which intake to offer (syslog over TLS, OTLP over HTTP, and so on), and which groups may
+    read. Once realized, it publishes the address and port of each intake, and LogShipper records bind those.
+    Which product stores the logs, and where its data lives, is the provider''s business.'
   use_when:
     - You need a central log store whose retention, intake and readers are declared and checkable.
   not_for:
