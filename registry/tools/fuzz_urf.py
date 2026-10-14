@@ -40,6 +40,15 @@ FRAGMENTS   = ["", "#cpu", "#cpu.count"]
 # ---- the accepted RSQL subset (§9.2) ------------------------------------------------
 SCALAR_OPS  = ["==", "!=", "=gt=", "=ge=", "=lt=", "=le="]
 SET_OPS     = ["=in=", "=out="]
+PATTERN_OP  = "=match="
+PATTERNS    = [                 # I-Regexp (RFC 9485), always quoted (URF-012)
+    "'db-[0-9]+'",            # class + quantifier
+    "'.*(timeout|refused).*'",  # alternation, contains
+    "'a{2,3}b?'",             # range quantifier
+    "'[^;,()=]+'",            # RSQL delimiters as data inside the quotes
+    "'\\p{L}+ \\p{N}*'",      # Unicode categories + a space (forces encoding)
+    "'\\^x[$]'",              # the literal ^ and $
+]
 SELECTORS   = ["tenant_uuid", "resource_type", "labels.concern", "spec.cpu.count"]
 VALUES      = [
     "abc",                    # bare unreserved
@@ -100,6 +109,9 @@ def gen_operators():
         if "*" in val and op not in ("==", "!="):
             continue
         _check_form(f"estate?{sel}{op}{val}", f"op {op}")
+        n += 1
+    for sel, pat in itertools.product(SELECTORS, PATTERNS):
+        _check_form(f"estate?{sel}{PATTERN_OP}{pat}", f"op {PATTERN_OP}")
         n += 1
     for sel, op in itertools.product(SELECTORS, SET_OPS):
         for members in ("(a)", "(a,b)", "(a,b,c)", "('x y',b)"):
@@ -181,6 +193,9 @@ NEGATIVE = {
     "URF-005": ["estate?page_size=50", "estate?zone=b", "estate?unknown_op=1"],
     "URF-008": ["estate?name==^vm", "estate?name==vm$", "estate?name=='[0-9]'",
                 "estate?name=='a|b'", "estate?name=='a\\b'", "estate?name=='{4}'"],
+    "URF-012": ["estate?n=match=db.*", "estate?n=match='^db'", "estate?n=match='db$'",
+                "estate?n=match='(?=a)b'", "estate?n=match='(a)\\1'", "estate?n=match='\\d'",
+                "estate?n=match='[a'", "estate?n=match='x{3,2}'", "estate?n=match='*'"],
     "pin":     ["Machine/VM@latest", "Machine/VM@1.2", "Machine/VM@sha256:short"],
     "set-op":  ["estate?z=in=(Machine.*,X)", "estate?z=in=a", "estate?z=in=()"],
     "fragment": ["Machine/VM#Cpu.Count", "Machine/VM#-bad"],
