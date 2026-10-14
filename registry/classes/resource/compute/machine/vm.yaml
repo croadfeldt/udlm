@@ -1,15 +1,13 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.6
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.1.0
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Machine.VM
 parent: Machine
-version: 2.0.6
+version: 2.1.0
 family: Resource
 status: active
-# OWN-007 — a type-level invariant, not settable per entity.
-# ownership-sharing-allocation §2.1 names VM: each request yields an entity the requesting Tenant owns outright.
 ownership_model: whole_allocation
 metadata:
   authority: canonical
@@ -267,8 +265,7 @@ elements:
         - size
       properties:
         size:
-          type: string
-          pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
+          $ref: ../../../../common-elements.schema.json#/$defs/quantity
           description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Machine Base Class
             `memory.size`).
         hugepages:

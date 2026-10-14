@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.1.4",
+          "version": "2.2.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
@@ -61,8 +61,7 @@
         "type": "object",
         "properties": {
           "size": {
-            "type": "string",
-            "pattern": "^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$",
+            "$ref": "../common-elements.schema.json#/$defs/quantity",
             "description": "Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Machine Base Class `memory.size`)."
           },
           "hugepages": {

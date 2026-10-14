@@ -11,7 +11,7 @@
     },
     {
       "class": "GPU",
-      "version": "0.7.1",
+      "version": "0.8.0",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/gpu/_base.yaml",
       "types": []
@@ -39,7 +39,7 @@
     },
     {
       "class": "StorageDevice",
-      "version": "0.7.1",
+      "version": "0.8.0",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/storage-device/_base.yaml",
       "types": []

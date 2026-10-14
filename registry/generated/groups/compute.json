@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "Container",
-      "version": "1.0.7",
+      "version": "1.1.0",
       "instantiable": true,
       "path": "registry/classes/resource/compute/container/_base.yaml",
       "types": []
@@ -32,7 +32,7 @@
     },
     {
       "class": "Machine",
-      "version": "2.1.4",
+      "version": "2.2.0",
       "instantiable": true,
       "path": "registry/classes/resource/compute/machine/_base.yaml",
       "types": [

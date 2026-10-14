@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StorageLayout/0.6.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StorageLayout/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89",
   "resource_type": "StorageLayout",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StorageLayout",
-          "version": "0.6.1",
+          "version": "0.7.0",
           "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89"
         }
       ]
@@ -45,8 +45,7 @@
               "description": "Stable entry identity, unique within the layout — the join key reconvergence uses to bind a realized Volume back to this declared disk. Lowercase DNS-label shape."
             },
             "size": {
-              "type": "string",
-              "pattern": "^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$",
+              "$ref": "../common-elements.schema.json#/$defs/quantity",
               "description": "Requested disk size, quantity form (e.g. 100Gi, 500GB) — the class-aligned size pattern shared with Machine memory sizing."
             },
             "storage_tier": {

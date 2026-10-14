@@ -152,7 +152,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 
 ## Container
 
-### Container (1.0.7)
+### Container (1.1.0)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -237,7 +237,7 @@ One DNS zone — its required `zone_name`, e.g. example.com — with its authori
 
 ## Database
 
-### Database (0.8.2)
+### Database (0.9.0)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -303,7 +303,7 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 
 ## GPU
 
-### GPU (0.7.1)
+### GPU (0.8.0)
 
 **Purpose:** Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.
 
@@ -708,7 +708,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.1.4)
+### Machine (2.2.0)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -726,7 +726,7 @@ The most portable way to ask for a machine: how big, what image, what storage ti
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 
-### Machine.BareMetalHost (0.13.1)
+### Machine.BareMetalHost (0.14.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -768,7 +768,7 @@ The request for a slice of a big partitioned server: how much processor capacity
 - Volume — the disks served through virtual I/O.
 - VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.0.6)
+### Machine.VM (2.1.0)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -988,7 +988,7 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 
 ## StorageCluster
 
-### StorageCluster (0.7.1)
+### StorageCluster (0.8.0)
 
 **Purpose:** Models a distributed storage system serving block, file, and/or object storage — the platform volumes are provisioned from.
 
@@ -1010,7 +1010,7 @@ A multi-node storage system — Ceph is the reference implementation, but the te
 
 ## StorageDevice
 
-### StorageDevice (0.7.1)
+### StorageDevice (0.8.0)
 
 **Purpose:** Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.
 
@@ -1031,7 +1031,7 @@ One storage device as a record: its required `capacity` — a whole-number quant
 
 ## StorageLayout
 
-### StorageLayout (0.6.1)
+### StorageLayout (0.7.0)
 
 **Purpose:** Declares the per-disk shape of a compute consumer — named, sized entries with boot designation — as its own record, so disk layout is authored once and referenced, never duplicated inside each consumer.
 
@@ -1056,7 +1056,7 @@ The list of disks a machine should have: each entry names a disk (`name`, the st
 
 ## StoragePool
 
-### StoragePool (0.5.3)
+### StoragePool (0.6.0)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
@@ -1295,7 +1295,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Volume
 
-### Volume (0.12.3)
+### Volume (0.13.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1317,7 +1317,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - Machine.VM — the consumer(s) it attaches to.
 - Database — databases whose data directory it backs.
 
-### Volume.ZFS (0.6.1)
+### Volume.ZFS (0.7.0)
 
 **Purpose:** Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host workloads use.
 

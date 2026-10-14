@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.6.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f",
   "resource_type": "Volume.ZFS",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Volume",
-          "version": "0.12.3",
+          "version": "0.13.0",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         },
         {
           "class": "Volume.ZFS",
-          "version": "0.6.1",
+          "version": "0.7.0",
           "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f"
         }
       ]
@@ -33,8 +33,7 @@
     "additionalProperties": false,
     "properties": {
       "capacity": {
-        "type": "string",
-        "pattern": "^[0-9]+(Ki|Mi|Gi|Ti|Pi|K|M|G|T|P)?B?$",
+        "$ref": "../common-elements.schema.json#/$defs/quantity",
         "description": "Requested capacity as a quantity (100Gi)."
       },
       "access_mode": {
@@ -73,8 +72,7 @@
         "description": "Filesystem mountpoint when `volume_mode` is filesystem (/export/gitlab); `none` or `-` if unmounted."
       },
       "used": {
-        "type": "string",
-        "pattern": "^[0-9]+(\\.[0-9]+)?(K|M|G|T|P|KB|MB|GB|TB|PB|KiB|MiB|GiB|TiB|PiB)$",
+        "$ref": "../common-elements.schema.json#/$defs/quantity",
         "description": "Space consumed, as the provider reports it."
       },
       "properties": {

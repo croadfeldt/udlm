@@ -616,6 +616,26 @@
       ],
       "x-extensible-enum": true,
       "description": "GPU generation as vendors name it, lower-cased; extensible because a new generation arrives before this list does."
+    },
+    "quantity": {
+      "title": "Quantity",
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+)?([kKMGTPE]i?)?B?$",
+      "description": "A size: a number with an optional decimal part and an optional unit — SI (k, M, G, T, P, E: powers of 1000) or binary (Ki, Mi, Gi, Ti, Pi, Ei: powers of 1024), with or without a trailing B (16Gi, 1TB, 84.2G, 500GiB). No unit means bytes. The Kubernetes resource.Quantity spellings plus the B-suffixed forms Redfish and storage tooling report. One home for every size in the model (#638)."
+    },
+    "cpu_quantity": {
+      "title": "CPU quantity",
+      "anyOf": [
+        {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        {
+          "type": "string",
+          "pattern": "^([0-9]+m|[0-9]+(\\.[0-9]+)?)$"
+        }
+      ],
+      "description": "A CPU amount in cores: a number (0.5, 2) or a Kubernetes quantity string (500m for half a core, \"2\"). One home for every CPU request (#638)."
     }
   }
 }

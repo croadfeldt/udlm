@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.13.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.14.0",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Machine.BareMetalHost",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.1.4",
+          "version": "2.2.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Machine.BareMetalHost",
-          "version": "0.13.1",
+          "version": "0.14.0",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]
@@ -62,8 +62,7 @@
         "description": "Aggregate host memory (Redfish MemorySummary).",
         "properties": {
           "size": {
-            "type": "string",
-            "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$",
+            "$ref": "../common-elements.schema.json#/$defs/quantity",
             "description": "Total system memory, e.g. 64GB (Redfish MemorySummary.TotalSystemMemoryGiB)."
           }
         }
@@ -73,8 +72,7 @@
         "description": "Aggregate host local storage.",
         "properties": {
           "capacity": {
-            "type": "string",
-            "pattern": "^[0-9]+(MB|GB|TB|PB|MiB|GiB|TiB|PiB)$",
+            "$ref": "../common-elements.schema.json#/$defs/quantity",
             "description": "Total raw local capacity."
           }
         }

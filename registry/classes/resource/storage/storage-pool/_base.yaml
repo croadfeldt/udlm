@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StoragePool/0.5.3
+$id: https://udlm.dev/registry/udlm/0.1/class/StoragePool/0.6.0
 conforms_to: udlm/0.1
 uuid: 643156a0-5c7b-4fa7-bcfb-089c0a06d520
 record_type: class
 class: base
 resource_type: StoragePool
-version: 0.5.3
+version: 0.6.0
 family: Resource
 status: active
 filed_under:
@@ -59,15 +59,12 @@ elements:
       type: object
       properties:
         size:
-          type: string
-          pattern: ^[0-9]+(\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$
+          $ref: ../../../../common-elements.schema.json#/$defs/quantity
           description: Total pool size.
         allocated:
-          type: string
-          pattern: ^[0-9]+(\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$
+          $ref: ../../../../common-elements.schema.json#/$defs/quantity
         free:
-          type: string
-          pattern: ^[0-9]+(\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$
+          $ref: ../../../../common-elements.schema.json#/$defs/quantity
       description: 'Pool capacity: `size`, `allocated`, `free`, as quantities.'
   - element: vdevs
     scope: StoragePool
