@@ -210,11 +210,11 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Observability
 
 ### Syslog — RFC 9742 (ietf-syslog) with RFC 5424 / 5425 / 5426 / 6587 — CANONICAL
-**Covers:** `RFC-9742` `RFC-5424` `RFC-5425` `RFC-5426` `RFC-6587` · **Body:** IETF · **Since:** 2026-10-10T00:00:00Z · **Where:** LogShipper (`min_severity`), LogShipper.Syslog (`transport`, `format`, `facilities`), LogStore (`syslog` intake).
+**Covers:** `RFC-9742` `RFC-5424` `RFC-5425` `RFC-5426` `RFC-6587` · **Body:** IETF · **Since:** 2026-10-10T00:00:00Z · **Where:** LogShipper.Syslog (`transport`, `format`; the facility-and-severity selector a provider renders from a `filter` criterion), LogStore (`syslog` intake).
 **Why:** RFC 9742 is the IETF's data model for configuring a syslog sender: a remote destination, its transport and a facility/severity filter, the exact surface a log shipper declares. RFC 5424 is the message format and severity names; 5425 (TLS), 5426 (UDP) and 6587 (TCP framing) are the transports. *Alternatives:* OpenConfig system-logging (same shape, network-vendor scoped — PRIOR-ART); a tool's own config (rsyslog, syslog-ng — mechanism, not contract). **License:** IETF Trust — compatible-reference.
 
 ### OpenTelemetry — OTLP, semantic conventions, Logs Data Model — CANONICAL
-**Covers:** `OpenTelemetry` · **Body:** CNCF · **Since:** 2026-10-10T00:00:00Z · **Where:** LogShipper (`labels`, the stamped `host.name`), LogShipper.OTLP (`protocol`, `compression`), LogStore (`otlp` intake).
+**Covers:** `OpenTelemetry` · **Body:** CNCF · **Since:** 2026-10-10T00:00:00Z · **Where:** LogShipper (`labels`, the stamped `host.name`), LogShipper.OTLP (`protocol`, `compression`), LogStore (`otlp` intake), and the record fields every log criterion addresses (`LogRecordCriterion`, with syslog fields under the Logs Data Model's RFC 5424 mapping).
 **Why:** the vendor-neutral telemetry protocol and attribute vocabulary; its Logs Data Model maps syslog severities onto its own, so one severity filter holds on both protocols. *Alternatives:* inventing label names (rejected on principle); Loki stream labels (one product's). **License:** Apache-2.0 — compatible-reference.
 
 ## Container

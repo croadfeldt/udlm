@@ -1,6 +1,6 @@
 # UDLM ADR-083: A log shipper binds a log store, in the terms the syslog and OpenTelemetry standards already use
 
-**Status:** Accepted (croadfeldt upstream) — requires engineering ratification; maintainer decision 2026-10-10
+**Status:** Accepted (croadfeldt upstream) — requires engineering ratification; maintainer decision 2026-10-10. **Amended by row 096** (filtering and retention by criterion: `min_severity` and `facilities` give way to a `filter` criterion; `LogStore` gains `rules`)
 **Realized by:** `registry/classes/resource/observability/log-shipper/_base.yaml` (0.8.0) · `registry/classes/resource/observability/log-shipper/syslog.yaml` · `registry/classes/resource/observability/log-shipper/otlp.yaml` · `registry/classes/resource/data/log-store/_base.yaml` · `registry/generated/log-store.json` · `registry/standards-adoption-register.md` § Observability
 **Date:** 2026-10-10
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)

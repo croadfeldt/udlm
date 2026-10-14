@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper.Syslog/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper.Syslog/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "08b6eafd-abae-4c69-ac70-aff7d87778a8",
   "resource_type": "LogShipper.Syslog",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "LogShipper.Syslog Type Class",
-    "description": "The syslog dialect of log shipping: the elements RFC 9742 (the IETF syslog management model) gives a remote destination, which every syslog sender already speaks — rsyslog and syslog-ng on hosts, Redfish EventDestination on BMCs, OpenConfig system-logging on switches. Adds transport, message format and the facility filter. Named for the protocol, which is a standard, never for a sender.",
+    "description": "The syslog dialect of log shipping: the elements RFC 9742 (the IETF syslog management model) gives a remote destination, which every syslog sender already speaks — rsyslog and syslog-ng on hosts, Redfish EventDestination on BMCs, OpenConfig system-logging on switches. Adds transport and message format. Filtering is the Base's `filter` criterion: an RFC 9742 facility-and-severity selector is the criterion `attributes.syslog.facility=in=(…);severity_number=ge=…`, which a provider translates to the device's own setting. Named for the protocol, which is a standard, never for a sender.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-10-10T00:00:00Z",
     "generated": true,
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "LogShipper",
-          "version": "0.8.0",
+          "version": "0.9.0",
           "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922"
         },
         {
           "class": "LogShipper.Syslog",
-          "version": "0.1.0",
+          "version": "0.2.0",
           "uuid": "08b6eafd-abae-4c69-ac70-aff7d87778a8"
         }
       ]
@@ -41,21 +41,21 @@
           "containers",
           "audit"
         ],
+        "x-extensible-enum": true,
         "description": "Which logs: the systemd journal (default), on-disk files, the device's own log (`native`, for appliances, BMCs and switches that send their own syslog), container logs, or audit logs."
       },
-      "min_severity": {
-        "type": "string",
-        "enum": [
-          "emergency",
-          "alert",
-          "critical",
-          "error",
-          "warning",
-          "notice",
-          "informational",
-          "debug"
-        ],
-        "description": "Ship messages at this severity and above, named as in RFC 5424 and compared as in RFC 9742 (\"equals-or-higher\"). OpenTelemetry maps the same names onto its severity numbers, so the filter means the same thing on either protocol. Absent ships everything."
+      "filter": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "include": {
+            "$ref": "../common-elements.schema.json#/$defs/LogRecordCriterion"
+          },
+          "exclude": {
+            "$ref": "../common-elements.schema.json#/$defs/LogRecordCriterion"
+          }
+        },
+        "description": "Which lines to ship, as two criteria over the log record (identifier-scheme §9.7): `include` (absent: every line) and `exclude` (absent: none). A line ships when it matches `include` and not `exclude`. The outcome is what is promised: lines outside the filter never reach the store. A provider whose sender cannot evaluate a criterion (a BMC filters by facility and severity only) filters before the store or refuses at placement; it never stores more than was asked for."
       },
       "labels": {
         "type": "object",
@@ -72,6 +72,7 @@
           "tcp",
           "relp"
         ],
+        "x-extensible-enum": true,
         "description": "How messages travel. `udp` (RFC 5426) and `tls` (RFC 5425) are the two RFC 9742 names; `tcp` (RFC 6587 framing) and `relp` are the further values Redfish EventDestination offers. Prefer `tls`: it is the only one that is both reliable and private."
       },
       "format": {
@@ -81,40 +82,6 @@
           "rfc3164"
         ],
         "description": "Message format. `rfc5424` (default) carries structured data and a full timestamp; `rfc3164` is the legacy BSD format some devices still send."
-      },
-      "facilities": {
-        "type": "array",
-        "uniqueItems": true,
-        "items": {
-          "type": "string",
-          "enum": [
-            "kern",
-            "user",
-            "mail",
-            "daemon",
-            "auth",
-            "syslog",
-            "lpr",
-            "news",
-            "uucp",
-            "cron",
-            "authpriv",
-            "ftp",
-            "ntp",
-            "audit",
-            "console",
-            "cron2",
-            "local0",
-            "local1",
-            "local2",
-            "local3",
-            "local4",
-            "local5",
-            "local6",
-            "local7"
-          ]
-        },
-        "description": "Ship only these facilities, named as the RFC 9742 facility identities. Absent ships every facility. Combined with `min_severity`, this is the RFC 9742 selector."
       }
     },
     "required": [
@@ -123,14 +90,11 @@
     "examples": [
       {
         "source": "native",
-        "min_severity": "warning",
+        "filter": {
+          "include": "attributes.syslog.facility=in=(kern,daemon,auth);severity_number=ge=13"
+        },
         "transport": "tls",
-        "format": "rfc5424",
-        "facilities": [
-          "kern",
-          "daemon",
-          "auth"
-        ]
+        "format": "rfc5424"
       }
     ]
   },
@@ -194,30 +158,10 @@
   ],
   "adopts": [
     {
-      "standard": "RFC-5424",
-      "version": "2009",
-      "standard_name": "Syslog severity",
-      "role": "the severity names `min_severity` uses",
-      "source": "https://www.rfc-editor.org/rfc/rfc5424",
-      "license": "IETF Trust",
-      "license_compatibility": "compatible-reference",
-      "disposition": "tier1_value"
-    },
-    {
-      "standard": "RFC-9742",
-      "version": "2025",
-      "standard_name": "ietf-syslog severity filter",
-      "role": "the equals-or-higher comparison `min_severity` applies",
-      "source": "https://www.rfc-editor.org/rfc/rfc9742",
-      "license": "IETF Trust",
-      "license_compatibility": "compatible-reference",
-      "disposition": "tier1_value"
-    },
-    {
       "standard": "OpenTelemetry",
       "version": ">=1.0",
       "standard_name": "Semantic conventions (resource attributes) and Logs Data Model",
-      "role": "the attribute names in `labels` and the identity the provider stamps (`host.name`)",
+      "role": "the attribute names in `labels`, the identity the provider stamps (`host.name`), and the log record fields a `filter` criterion addresses",
       "source": "https://opentelemetry.io/docs/specs/semconv/",
       "license": "Apache-2.0",
       "license_compatibility": "compatible-reference",
@@ -226,8 +170,8 @@
     {
       "standard": "RFC-9742",
       "version": "2025",
-      "standard_name": "ietf-syslog remote action (destination, transport, facility filter)",
-      "role": "the shape and names of `transport` and `facilities`",
+      "standard_name": "ietf-syslog remote action (destination, transport, selector)",
+      "role": "the names of `transport`, and the facility-and-severity selector a provider renders from a `filter` criterion",
       "source": "https://www.rfc-editor.org/rfc/rfc9742",
       "license": "IETF Trust",
       "license_compatibility": "compatible-reference",
@@ -259,7 +203,7 @@
   ],
   "context": {
     "purpose": "Ships a resource's logs over syslog.",
-    "plain_description": "A LogShipper that speaks syslog: which transport (TLS preferred), which message format, and which facilities to send. These are the settings RFC 9742 defines for a remote syslog destination, so a host agent, a BMC and a switch all read the same record the same way. The destination address is not here; it comes from the LogStore's published syslog intake.",
+    "plain_description": "A LogShipper that speaks syslog: which transport (TLS preferred) and which message format. What to send is the Base's `filter`. These are the settings RFC 9742 defines for a remote syslog destination, so a host agent, a BMC and a switch all read the same record the same way. The destination address is not here; it comes from the LogStore's published syslog intake.",
     "use_when": [
       "The sender speaks syslog — a host agent, an appliance, a BMC or a switch."
     ],

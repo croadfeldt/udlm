@@ -404,6 +404,15 @@ filters **declared fields only** — identity-stable data (`tenant_uuid`, owners
 type). Operational state (`run_state`, drift, staleness) composes at query time and never
 appears inside a stored criterion.
 
+**A criterion over something that is not a record.** Some fields filter things the estate does not
+hold as records — the lines a log shipper sends, the messages a log store keeps. Such a field carries
+the query axis alone (`format: udlm-filter-expr`): §9.2's expression with no path, pin or fragment,
+because there is no collection to name. The class declaring the field names the subject and the
+selectors it offers (a log criterion addresses the OpenTelemetry Logs Data Model:
+`severity_number`, `body`, `resource.host.name`, `attributes.<key>`). Every comparator and connective
+of §9.2 applies. The virtual fields do not: `member_of`, `filed_under` and `via` read the estate
+graph, and the subject is not in it (URF-013).
+
 ### 9.8 What URF deliberately does not replace
 
 **Graph diagnostics** — blast radius, reachability. Edge traversal is never in the filter
@@ -433,3 +442,4 @@ not a policy predicate grammar and does not become one.
 | `URF-011` | A stored `resource_type` criterion spelled under a dissolved folder Base (`Hardware.*`, `VLAN`) is refused once the folder is gone; its replacement is `filed_under==<group>` or the renamed class (`registry/renames.yaml`). While the folder still exists the gate warns. |
 | `URF-008` | Regex metacharacters (`^ $ [ ] { } \| \`) MUST NOT appear in the value of any comparator except `=match=`; those comparators match with `*` glob, so a regex there compares as a literal and silently never matches. Refused at validation. `{self}` (§9.2) is the one exception. A pattern belongs after `=match=` (URF-012). |
 | `URF-012` | An `=match=` value MUST be a single-quoted I-Regexp (RFC 9485) pattern, matched against the whole field value. A pattern outside I-Regexp (a backreference, a lookaround, a flag) or an unquoted one is refused at validation, never passed to an engine to interpret its own way. An unescaped `^` or `$` outside a character class is refused too: matching is already whole-value, and I-Regexp reads them as literal characters, so a pattern written with anchors would silently never match. The literal is spelled `\^` or `[$]`. The pattern is literal: no placeholder is substituted inside it. Gate: `tests/check_urf.py`. |
+| `URF-013` | A `udlm-filter-expr` field carries §9.2's expression alone and MUST parse as one; a path, pin, fragment, operational term or virtual field in it is refused at validation. Its selectors are the ones the declaring class names for its subject. Gate: `tests/check_urf.py`. |
