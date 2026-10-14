@@ -241,6 +241,15 @@ The query is **one RSQL expression**. The accepted subset — exactly this, neve
 name alone:
 
 - Comparators: `==` `!=` `=gt=` `=ge=` `=lt=` `=le=` `=in=` `=out=`
+- Pattern match: `=match=` — the value is a regular expression in **I-Regexp** (RFC 9485, the
+  interoperable subset every major engine agrees on), matched against the **whole** field value
+  (the semantics of RFC 9535's `match()`). The comparator declares the value's language: a glob
+  after `==`, a pattern after `=match=`, a literal everywhere else. The pattern is always
+  single-quoted (`host_name=match='db-[0-9]+'`), so it may contain `;` `,` `(` `)` and `=`; it may
+  not contain `'`, which ends the quote (match an apostrophe with `.`). It is literal: `{self}`
+  is not substituted inside it. There are no anchors: `^` and `$` must be escaped (URF-012).
+- Comparators outside this list fail to parse (URF-001). A peer whose spec version predates a
+  comparator refuses a criterion that uses it; it never reads it as something else.
 - AND: `;` (canonical) — `&` accepted on input, canonicalized to `;`
 - OR: `,` · Grouping: `( )`
 - Selectors: dot-path field addresses (`cpu.count`, `labels.concern`, `status.state`)
@@ -361,7 +370,8 @@ criterion:                                                          # SAME value
 Identity, comparison, and digests are computed **only over the assembled canonical
 string**. Canonicalization: RFC 3986 syntax normalization · `&` → `;` · operands of the
 same operator sorted bytewise, recursively (`b;a` ≡ `a;b`) · operational terms stripped ·
-minimal percent-encoding, uppercase hex · single-quote quoting · `{self}` literal ·
+minimal percent-encoding, uppercase hex (an `=match=` pattern encodes the same way, `{` `}`
+included) · single-quote quoting · `{self}` literal outside patterns ·
 dotted-name path input rewritten to slash form. The characters `@ ? #` are **reserved** —
 illegal in handles and name segments (naming-conventions §6).
 
@@ -421,4 +431,5 @@ not a policy predicate grammar and does not become one.
 | `URF-009` | `via(<relation>)#<field>` traverses ONE declared relationship (`relationships[].name`, REL-001) and projects a field off a cardinality-1 resolution. An undeclared relation name is refused at validation, never resolved; a relation resolving to more than one record refuses `ambiguous` (URF-004); `via` MUST NOT be chained. The traversal is a dereference — the governance matrix evaluates the read and the projection crosses the policy information firewall (§9.6, ADR-041) — so an unauthorized target is refused, never rendered absent. |
 | `URF-010` | A stored `filed_under` value MUST be a canonical term of the usage-group taxonomy; a retired or renamed term is refused at validation. Gate: `tests/check_urf_conformance.py`. |
 | `URF-011` | A stored `resource_type` criterion spelled under a dissolved folder Base (`Hardware.*`, `VLAN`) is refused once the folder is gone; its replacement is `filed_under==<group>` or the renamed class (`registry/renames.yaml`). While the folder still exists the gate warns. |
-| `URF-008` | Regex metacharacters (`^ $ [ ] { } \| \`) MUST NOT appear in a URF value; the accepted subset matches with `*` glob and has no regex operator, so a regex compares as a literal and silently never matches. Refused at validation. `{self}` (§9.2) is the one exception. |
+| `URF-008` | Regex metacharacters (`^ $ [ ] { } \| \`) MUST NOT appear in the value of any comparator except `=match=`; those comparators match with `*` glob, so a regex there compares as a literal and silently never matches. Refused at validation. `{self}` (§9.2) is the one exception. A pattern belongs after `=match=` (URF-012). |
+| `URF-012` | An `=match=` value MUST be a single-quoted I-Regexp (RFC 9485) pattern, matched against the whole field value. A pattern outside I-Regexp (a backreference, a lookaround, a flag) or an unquoted one is refused at validation, never passed to an engine to interpret its own way. An unescaped `^` or `$` outside a character class is refused too: matching is already whole-value, and I-Regexp reads them as literal characters, so a pattern written with anchors would silently never match. The literal is spelled `\^` or `[$]`. The pattern is literal: no placeholder is substituted inside it. Gate: `tests/check_urf.py`. |

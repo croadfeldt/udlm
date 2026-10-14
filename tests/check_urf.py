@@ -8,6 +8,7 @@ registry content for URF-typed fields and validates each.
     URF-003 reserved characters in segments
     URF-005 operational terms refused in stored forms; stripped at dereference
     URF-006 criterion cycles refused (member_of graph)
+    URF-012 `=match=` takes a quoted I-Regexp (RFC 9485) pattern; anything looser is refused
   SCAN — every string under a schema field declared `format: udlm-ref-url` or
     `udlm-filter-url` in registry classes/instances parses as a STORED form.
 
@@ -139,6 +140,43 @@ def main():
             fails.append(f"URF-009 {'accepted' if got else 'refused'} {expr!r} — expected the "
                          f"opposite ({why})")
 
+    # --- URF-012: `=match=` takes a single-quoted I-Regexp pattern (RFC 9485) ---
+    # The comparator declares the value's language, so a pattern is legal after `=match=` and still
+    # refused after `==` (URF-008 above). The refusals that matter are the engine-specific features
+    # (lookaround, backreferences, \d) and anchors: I-Regexp reads `^`/`$` as literal characters,
+    # and matching is already whole-value, so an anchored pattern would silently never match.
+    for expr, want_ok, why in [
+        ("estate?host_name=match='db-[0-9]+'", True, "a class and a quantifier"),
+        ("estate?body=match='.*(timeout|refused).*'", True, "alternation inside a group"),
+        ("estate?body=match='a==b=gt=c;d'", True, "comparator text and `;` inside the quotes are data"),
+        ("estate?host_name=match='x{2,}'", True, "an open range quantifier"),
+        ("estate?name=match='\\p{Lu}[\\p{Ll}-]*'", True, "Unicode categories, `-` last in a class"),
+        ("estate?name=match='\\^lit[$]'", True, "the literal `^` and `$`, spelled as I-Regexp allows"),
+        ("estate?name==db-*;host_name=match='db-[0-9]+'", True, "a glob and a pattern in one criterion"),
+        ("estate?host_name=match=db-.*", False, "an unquoted pattern"),
+        ("estate?host_name=match='^db-.*'", False, "an anchor (a literal in I-Regexp: never matches)"),
+        ("estate?host_name=match='db-.*$'", False, "an anchor at the end"),
+        ("estate?body=match='(?=x)y'", False, "lookahead"),
+        ("estate?body=match='(a)\\1'", False, "a backreference"),
+        ("estate?body=match='\\d+'", False, "\\d is not I-Regexp; write [0-9]"),
+        ("estate?body=match='x{3,2}'", False, "a range quantifier upside down"),
+        ("estate?body=match='[a'", False, "an unterminated class"),
+        ("estate?body=match='*a'", False, "a quantifier with nothing to repeat"),
+        ("estate?body=foo='a'", False, "an unknown comparator is refused (URF-001), never guessed at"),
+    ]:
+        try:
+            U.canonicalize(expr); got = True
+        except U.URFError:
+            got = False
+        if got != want_ok:
+            fails.append(f"URF-012 {'accepted' if got else 'refused'} {expr!r} — expected the "
+                         f"opposite ({why})")
+    pat = ok("pattern canonical form", lambda: U.canonicalize("estate?body=match='a{2}(b|c)'"))
+    if pat:
+        if pat != "estate?body=match='a%7B2%7D(b%7Cc)'":
+            fails.append(f"URF-012/§9.5: a pattern encodes like any value, braces included: {pat!r}")
+        if U.canonicalize(pat) != pat:
+            fails.append(f"pattern canonicalization not idempotent: {pat!r}")
     # --- URF-006 cycle refusal (criterion graph walk over member_of) ---
     criteria = {
         "access/groupings/g1": "estate?member_of==access/groupings/g2",
