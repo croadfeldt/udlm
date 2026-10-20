@@ -114,7 +114,7 @@ How the existing types express shared concepts today, and the drift to normalize
 consistently `snake_case` (`ip_address`/`api_url`/`console_url`/`connection_string`) — good.
 
 **Normalization plan (additive, MINOR bumps; no breaking renames until a MAJOR):**
-1. Define `ComputeResources` + `Quantity` + `ip_family` here (this doc) and as `$defs` the type specs `$ref`. **Quantity is done** (row 097): `common-elements.schema.json#/$defs/quantity` for every size and `#/$defs/cpu_quantity` for every CPU request; no class declares a size pattern of its own, except an offer that narrows one (Template.Application.AcmeThreeTier). **UUIDs are done** (row 098): every uuid field `$ref`s `#/$defs/uuid_v4`, `#/$defs/uuid_v7` or `#/$defs/uuid`, by the version rule in identifier-scheme §2.1.
+1. Define `ComputeResources` + `Quantity` + `ip_family` here (this doc) and as `$defs` the type specs `$ref`. **Quantity is done** (row 097): `common-elements.schema.json#/$defs/quantity` for every size and `#/$defs/cpu_quantity` for every CPU request; no class declares a size pattern of its own, except an offer that narrows one (Template.Application.AcmeThreeTier). **UUIDs are done** (row 098): every uuid field `$ref`s `#/$defs/uuid_v4` or `#/$defs/uuid_v7`, by the version rule in identifier-scheme §2.1.
 2. New types (`Machine.BareMetalHost`, `StorageCluster.Ceph`, …) use the canonical shapes from day one.
 3. Existing types add the canonical shape alongside the legacy field (deprecate the synonym), converging at the next MAJOR.
 

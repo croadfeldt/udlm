@@ -22,7 +22,7 @@
       "const": "commit_log_entry"
     },
     "entry_uuid": {
-      "$ref": "common-elements.schema.json#/$defs/uuid"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v7"
     },
     "sequence": {
       "type": "integer",
@@ -118,7 +118,7 @@
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
     },
     "audit_record_uuid": {
-      "$ref": "common-elements.schema.json#/$defs/uuid"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v7"
     }
   }
 }
