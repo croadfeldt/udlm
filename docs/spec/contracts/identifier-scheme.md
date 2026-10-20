@@ -64,6 +64,9 @@ v6/v7/v8). Every UUID citation in this spec is RFC 9562.
 - **Validation**: peers MUST reject at ingest any malformed UUID and any version outside
   {v4, v7-where-declared} — checking BOTH the version nibble and the variant bits
   (`^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`, version per field).
+  A schema declares the version by `$ref` to one of three `common-elements.schema.json`
+  definitions: `uuid_v4` and `uuid_v7` by the table above, and `uuid` (v4 or v7) only where the
+  version is not yet fixed. No schema declares a uuid pattern inline (`tests/check_uuid_refs.py`).
 - **Uniqueness**: globally unique across all implementations. Collision probability is assumed zero
   for v4; v7 collisions handled by the audit-chain ordering rule.
 

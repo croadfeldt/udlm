@@ -84,6 +84,7 @@ jobs:
       - run: python3 tests/check_class_groups.py
       # A spec example says what it is; a schema example uses only real fields (DOC-003)
       - run: python3 tests/check_doc_examples.py
+      - run: python3 tests/check_uuid_refs.py
       - run: python3 tests/check_status_claims.py
       - run: python3 tests/check_seal_facets.py
       - run: python3 tests/check_adr_realization.py

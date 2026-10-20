@@ -23,13 +23,11 @@
       "description": "Dispatch discriminator (data-model-core §2); registry/tools/validate.py routes on it."
     },
     "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "RFC 9562 v4 identity of this finding, minted by the reporting estate. It is the handle both sides use to talk about the report afterwards. A finding is an immutable record (ADR-051 family rule): a revision is a NEW record that names this one in `supersedes`."
     },
     "supersedes": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "OPTIONAL — the uuid of the finding record this one replaces (ADR-051 family rule; the identity-integrity gate refuses in-place edits of published records). Distinct from resolution.supersedes_finding_uuid, which records the REGISTRY-side judgment that one finding subsumes another."
     },
     "handle": {
@@ -101,8 +99,7 @@
           }
         },
         "regeneration_manifest_uuid": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "$ref": "common-elements.schema.json#/$defs/uuid_v4",
           "description": "OPTIONAL — the regeneration manifest that recorded the change and its classification (regeneration-manifest.schema.json). Present whenever the estate could resolve it; it is the single fastest way for a maintainer to reach the affected set and the gates that passed."
         }
       }
@@ -417,18 +414,15 @@
           "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
         },
         "decision_record_uuid": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "$ref": "common-elements.schema.json#/$defs/uuid_v4",
           "description": "OPTIONAL — the DecisionRecord that carries the reasoning, where the outcome needed one (decision-record.schema.json)."
         },
         "regeneration_manifest_uuid": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "$ref": "common-elements.schema.json#/$defs/uuid_v4",
           "description": "OPTIONAL — the manifest of the corrective change, where the fix was itself a class change. This is the loop closing in the data: a field observation becomes a registry change with its own enumerated blast radius."
         },
         "supersedes_finding_uuid": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "$ref": "common-elements.schema.json#/$defs/uuid_v4",
           "description": "OPTIONAL — the finding this one duplicates or supersedes, required in spirit whenever the outcome is superseded_by_finding or the status is duplicate."
         },
         "note": {

@@ -8,11 +8,11 @@
   "required": ["record_type", "uuid", "conforms_to", "subject_uuid", "subject_type", "accreditation_type", "framework", "accreditor", "issued_at", "scope", "status"],
   "properties": {
     "record_type": { "const": "accreditation", "description": "Dispatch discriminator (data-model-core §2)." },
-    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "RFC 9562 v4 identity of this accreditation." },
+    "uuid": { "$ref": "common-elements.schema.json#/$defs/uuid_v4", "description": "RFC 9562 v4 identity of this accreditation." },
     "handle": { "type": "string", "pattern": "^([a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)*[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$", "description": "Advisory human identity, e.g. accreditations/providers/eu-west-prod-1/fedramp-high. uuid is authoritative." },
     "conforms_to": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
     "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
-    "subject_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The subject this attests — the PROVIDER uuid for a service_provider (axis 1 of the sovereignty 1-1 match, §3.3.1)." },
+    "subject_uuid": { "$ref": "common-elements.schema.json#/$defs/uuid_v4", "description": "The subject this attests — the PROVIDER uuid for a service_provider (axis 1 of the sovereignty 1-1 match, §3.3.1)." },
     "subject_type": { "enum": ["service_provider", "external_policy_evaluation", "credential_provider", "peer_implementation"] },
     "accreditation_type": { "enum": ["self_declared", "first_party", "third_party", "qsa_assessment", "baa", "regulatory_certification", "sovereign_authorization"], "description": "Trust level (§3.2)." },
     "framework": { "type": "string", "description": "fedramp_high | fedramp_moderate | hipaa | pci_dss_v4 | iso_27001 | soc2_type2 | dod_il4 | dod_il5 | dod_il6 | sovereign | classified | <custom> (open string, §3.3)." },
@@ -100,7 +100,7 @@
       "description": "One binding-grain entry (§3.3.1). Exactly one of two shapes: {provider_wide:true} attests EVERY capability the provider declares (survives capability changes, coarsest); or {capability_uuid, version?, category?} attests a specific capability — add `version` for the deterministic grain a version change EXPIRES, and `category` to narrow to one (verb × domain) category within the capability. EXACT-BY-DEFAULT (ADR-051): the reviewed bytes are what attested_digests names; an entry WITHOUT `version` or a {provider_wide:true} entry is the explicit declaration of validity wider than those exact bytes — a deliberate, visible widening, never an implication.",
       "properties": {
         "provider_wide": { "const": true, "description": "Attests every capability the provider declares; survives capability changes." },
-        "capability_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The capability this attests (matches provider `capabilities[].capability_uuid`). Without `version` it attests that capability across versions; with `version` it binds the exact version." },
+        "capability_uuid": { "$ref": "common-elements.schema.json#/$defs/uuid_v4", "description": "The capability this attests (matches provider `capabilities[].capability_uuid`). Without `version` it attests that capability across versions; with `version` it binds the exact version." },
         "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$", "description": "Bind the EXACT capability version — a new version is not covered, so the sovereignty claim reverts to self_asserted until re-attested (the deterministic grain)." },
         "category": { "type": "string", "description": "Optional — narrow the attestation to one (verb × domain) category within the capability (e.g. attest only realize_resources/Machine within a multi-category capability)." },
         "resource_types": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$" } }

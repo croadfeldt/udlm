@@ -745,19 +745,21 @@
   }
  },
  "type:Grouping.Authorization": {
-  "current": "0.1.1",
+  "current": "0.1.2",
   "path": "registry/classes/access/authorization/grouping/authorization.yaml",
   "versions": {
    "0.1.0": "sha256:68c56ef5e605838b3da63f39eab0837216af70fbcf6d4d78f605abe12cc34b8e",
-   "0.1.1": "sha256:1eb17dde5a055f1a67b2a17c47b7025b6723bb30772ddc63eecf1ae469ce483d"
+   "0.1.1": "sha256:1eb17dde5a055f1a67b2a17c47b7025b6723bb30772ddc63eecf1ae469ce483d",
+   "0.1.2": "sha256:4680102635e3584067d8bd1ea5987c0d5ee9dda345c065c4bc0cd3e795359eaf"
   }
  },
  "type:Grouping.Tenant": {
-  "current": "0.1.1",
+  "current": "0.1.2",
   "path": "registry/classes/access/authorization/grouping/tenant.yaml",
   "versions": {
    "0.1.0": "sha256:9c8bf48ff9123117f278ccc21e30d28379eabe66eae7392233ffd55fe3066509",
-   "0.1.1": "sha256:df08d49ca065920eb4db0f22b965763df6618106a403cbb4b1d07655fc95f849"
+   "0.1.1": "sha256:df08d49ca065920eb4db0f22b965763df6618106a403cbb4b1d07655fc95f849",
+   "0.1.2": "sha256:a59784454fe8e07bdb96d6d8fbe0309f84f2d0f53f9f552432c5f45a40b28293"
   }
  },
  "type:Hardware": {

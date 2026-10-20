@@ -636,6 +636,24 @@
         }
       ],
       "description": "A CPU amount in cores: a number (0.5, 2) or a Kubernetes quantity string (500m for half a core, \"2\"). One home for every CPU request (#638)."
+    },
+    "uuid": {
+      "title": "UUID",
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "An RFC 9562 UUID of version 4 or 7, the only versions UDLM permits (identifier-scheme §2.1). Only for a field whose version the spec does not yet fix. Use `uuid_v4` or `uuid_v7` when the role is known (#639)."
+    },
+    "uuid_v4": {
+      "title": "UUID v4",
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "An RFC 9562 version 4 UUID: the identity of an entity, a definition, a tenant, an actor, a provider or a request (identifier-scheme §2.1). Minted once and frozen for the thing's life (ADR-051). Every field that names one of these uses it (#639)."
+    },
+    "uuid_v7": {
+      "title": "UUID v7",
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "An RFC 9562 version 7 UUID: the identity of a time-ordered artifact, such as a state record, an audit-chain leaf or an event, so its stream sorts by identity (identifier-scheme §2.1). Every field that names one of these uses it (#639)."
     }
   }
 }

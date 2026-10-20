@@ -8,13 +8,12 @@
   "required": ["record_type", "uuid", "conforms_to", "title", "rationale", "decision", "action", "abstraction_decomposition", "state"],
   "properties": {
     "record_type": {"const": "decision_record"},
-    "uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+    "uuid": {"$ref": "common-elements.schema.json#/$defs/uuid_v4"},
     "handle": {"type": "string", "description": "e.g. 'DCM ADR-017'-style within an owning scope; advisory. Deliberately NOT held to the entity-handle grammar (WIR-003, identifier-scheme \u00a73): that grammar is lowercase and governs estate handles, and a DecisionRecord is a Knowledge-family record whose identity convention is the ADR number the industry already reads. Patterning it would force adr-066 and buy nothing."},
     "conforms_to": {"type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$"},
     "title": {"type": "string"},
     "tenant_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "Owning tenant. OPTIONAL — a Knowledge artifact (spec-level ADR) is platform/global; a tenant's own decision records carry its tenant_uuid."
     },
     "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
@@ -62,7 +61,7 @@
     },
     "about": {"type": "array", "items": {"type": "string"}, "description": "references — Capability / TaxonomyTerm / spec-element anchor(s) this record justifies (by uuid/handle)."},
     "produces": {"type": "array", "items": {"type": "string"}, "description": "change/proposal artifacts this decision produces (realization-specific)."},
-    "supersedes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"}, "description": "DecisionRecord uuid(s) this one supersedes (ADR 'never edit, supersede')."},
+    "supersedes": {"type": "array", "items": {"$ref": "common-elements.schema.json#/$defs/uuid_v4"}, "description": "DecisionRecord uuid(s) this one supersedes (ADR 'never edit, supersede')."},
     "state": {
       "enum": ["PROPOSED", "UNDER_REVIEW", "CANONICAL", "OBSERVED", "DEPRECATED"],
       "description": "Curation lifecycle = ADR status: PROPOSED → UNDER_REVIEW → CANONICAL (the authoritative WHY) → re-OBSERVED if premises drift; DEPRECATED when superseded."

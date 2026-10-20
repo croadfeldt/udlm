@@ -251,8 +251,7 @@
       "description": "SPEC-axis binding: the UDLM spec major.minor this Class is written against."
     },
     "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "Frozen identity (ADR-051): never changes, never reused; a content change bumps `version`, not this."
     },
     "record_type": {
@@ -312,8 +311,7 @@
           "type": "string"
         },
         "replacement_uuid": {
-          "type": "string",
-          "format": "uuid"
+          "$ref": "common-elements.schema.json#/$defs/uuid_v4"
         },
         "migration_guidance": {
           "type": "string"

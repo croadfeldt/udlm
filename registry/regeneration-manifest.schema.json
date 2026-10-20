@@ -25,13 +25,11 @@
       "description": "Dispatch discriminator (data-model-core §2); registry/tools/validate.py routes on it."
     },
     "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "RFC 9562 v4 identity of this manifest. A manifest is a point-in-time fact about one change set — it is never edited; a correction is a new manifest (its own uuid) that names this one in `supersedes` (the ADR-051 immutable-record family)."
     },
     "supersedes": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "OPTIONAL — the uuid of the manifest this record replaces (ADR-051 family rule: an immutable record changes by publishing a NEW record that names its predecessor; the identity-integrity gate refuses in-place edits). The superseded record's bytes remain in the revision store."
     },
     "handle": {

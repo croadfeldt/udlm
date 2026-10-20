@@ -16,14 +16,11 @@
   ],
   "properties": {
     "uuid": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "Stable RFC 9562 identity of this entity. A Composite Entity has exactly one UUID across all four states (docs/spec/foundations/template-composition-model.md)."
     },
     "tenant_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "REQUIRED owning Tenant — the uuid of an `Grouping` of group class `tenant_boundary` (registry/classes/access/authorization/grouping/_base.yaml; the group-class table is docs/spec/foundations/universal-groups.md §2.2). Every Resource/Service Entity belongs to exactly one Tenant at every lifecycle state (TEN-001/TEN-003, docs/spec/foundations/resource-grouping.md §2.2), schema-enforced per data-model-core §5 [D3]. Existing brownfield stores migrate by minting their tenants and backfilling this field."
     },
     "conforms_to": {
@@ -156,8 +153,7 @@
       "description": "A named provider this request PREFERS — the pin (ADR-050).\n\nIT DECIDES WHICH ELIGIBLE PROVIDER, NEVER WHETHER AN INELIGIBLE ONE IS REACHED. The `effective_capabilities` ceiling applies at the dispatch boundary on every path (`PRV-009`, `PRV-011`), so a pin naming a provider that has not been admitted for what the request needs is refused with `placement.capability_mismatch` BEFORE dispatch, carrying the required-versus-declared comparison.\n\nThe pin is absolute over the CHOICE and not over CAPABILITY. That is what keeps one sentence true everywhere — the ceiling always applies — instead of true-with-an-exception, and an exception is the thing a reader cannot see from the rule.\n\nA DELIBERATE BYPASS IS POLICY'S, NOT THE MODEL'S (ADR-008 peer test). Whether an operator may dispatch outside a declared capability is an operational choice a conformant implementation is entitled to make differently, so UDLM fixes only the invariant such a bypass would be an exception TO. A field here that could waive the ceiling would move that choice into the substrate and make every implementation inherit one estate's risk appetite."
     },
     "entity_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "The same identity as `uuid`, under the name the per-state records use (state-record.schema.json). Present when the view was assembled from records."
     }
   },

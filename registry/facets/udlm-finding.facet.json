@@ -48,8 +48,7 @@
       "description": "The record the finding is about, with the version and chain head at detection — so the evidence stays checkable after the record moves on.",
       "properties": {
         "uuid": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          "$ref": "../common-elements.schema.json#/$defs/uuid_v4"
         },
         "version": {
           "type": "string"

@@ -16,7 +16,7 @@
       "required": ["record_type", "uuid", "conforms_to", "role", "permitted_functions"],
       "properties": {
         "record_type": { "const": "role_capability" },
-        "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+        "uuid": { "$ref": "common-elements.schema.json#/$defs/uuid_v4" },
         "conforms_to": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
         "role": { "type": "string", "description": "access-role TaxonomyTerm handle (e.g. platform_admin)." },
         "permitted_functions": {
@@ -33,12 +33,12 @@
       "required": ["record_type", "uuid", "conforms_to", "subject_type", "subject_ref", "role", "granted_by", "reason"],
       "properties": {
         "record_type": { "const": "role_assignment" },
-        "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+        "uuid": { "$ref": "common-elements.schema.json#/$defs/uuid_v4" },
         "conforms_to": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
         "subject_type": { "enum": ["actor", "access_group"], "description": "actor = an Identity.Person/ServiceAccount; access_group = a DCMGroup with group_class access_grouping (holds actors — the keystone delta)." },
-        "subject_ref": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "actor_uuid or DCMGroup uuid (authoritative — never name alone)." },
+        "subject_ref": { "$ref": "common-elements.schema.json#/$defs/uuid_v4", "description": "actor_uuid or DCMGroup uuid (authoritative — never name alone)." },
         "role": { "type": "string", "description": "access-role TaxonomyTerm handle granted to the subject." },
-        "tenant_scope": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "OPTIONAL — scopes the assignment to one tenant (e.g. tenant_admin over tenant X). Absent = platform-wide." },
+        "tenant_scope": { "$ref": "common-elements.schema.json#/$defs/uuid_v4", "description": "OPTIONAL — scopes the assignment to one tenant (e.g. tenant_admin over tenant X). Absent = platform-wide." },
         "granted_by": { "type": "string", "description": "The platform_admin actor who made the assignment. REQUIRED — assignment is an audited, admin-gated function (access.role.assign); every grant/revoke is an immutable forward audit event." },
         "reason": { "type": "string", "description": "Justification (mirrors the accreditation/capability-admission audited-with-reason pattern)." },
         "granted_at": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$" },

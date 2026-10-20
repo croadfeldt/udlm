@@ -22,8 +22,7 @@
       "description": "Dispatch discriminator (data-model-core §2). The kind is `composition` — what the thing IS. Where it sits in the governed process is `state`, which is a different question: a lifecycle state is not a definition of what something is."
     },
     "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "RFC 9562 v4, minted once at creation and immutable — including across promotion. The class minted from this record is a NEW artifact with its own identity; this uuid is what the class points back to."
     },
     "conforms_to": {
@@ -35,8 +34,7 @@
       "description": "Advisory human identity. Deliberately NOT required to be unique across the estate the way a class name is: a class name enters the shared vocabulary and is expensive to get wrong, while two teams may each have written down their own `three-tier-app` and neither is making a claim about anyone else's."
     },
     "tenant_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "The tenant this composition belongs to — REQUIRED, and it is the field that makes 'not offered to others' meaningful. A class has no tenant because it is portable vocabulary; a composition record is a document owned by somebody, and that ownership is the boundary. Promotion is precisely the act of a composition leaving one tenant's ownership and becoming shared vocabulary."
     },
     "state": {

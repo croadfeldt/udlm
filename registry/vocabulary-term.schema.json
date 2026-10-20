@@ -23,8 +23,7 @@
       "const": "vocabulary_term"
     },
     "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "Frozen identity (ADR-051). A content change bumps `version`; the uuid never moves."
     },
     "handle": {
@@ -48,8 +47,7 @@
       "description": "A published (identity, version) is immutable: change the floor, bump the version. A consumer pinned to a version is pinned to the promise that version made."
     },
     "tenant_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "Owning tenant (TEN-001)."
     },
     "vocabulary_kind": {
@@ -135,8 +133,7 @@
     "supersedes": {
       "type": "array",
       "items": {
-        "type": "string",
-        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        "$ref": "common-elements.schema.json#/$defs/uuid_v4"
       },
       "description": "The term record(s) this one replaces, by uuid — never edit a published term, supersede it (ADR-051)."
     }

@@ -29,9 +29,7 @@
       "description": "SPEC-axis binding: the UDLM spec major.minor this type is written against (its apiVersion). Peers conformant to the same MAJOR are wire-compatible (CONFORMANCE.md §9)."
     },
     "uuid": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "RFC 9562 UUIDv4 identity of this type specification (docs/spec/contracts/identifier-scheme.md §2.1 — the normative UUID standard: v4 identity / v7 time-ordered / others prohibited). Immutable for the life of the type."
     },
     "resource_type": {
@@ -129,8 +127,7 @@
           "type": "string"
         },
         "replacement_uuid": {
-          "type": "string",
-          "format": "uuid"
+          "$ref": "common-elements.schema.json#/$defs/uuid_v4"
         },
         "migration_guidance": {
           "type": "string"
@@ -416,8 +413,7 @@
       ],
       "properties": {
         "information_provider_uuid": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "$ref": "common-elements.schema.json#/$defs/uuid_v4",
           "description": "The registered serve_data:cost provider (the cost engine)."
         },
         "external_model_id": {

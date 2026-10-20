@@ -22,8 +22,7 @@
       "const": "commit_log_entry"
     },
     "entry_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid"
     },
     "sequence": {
       "type": "integer",
@@ -36,8 +35,7 @@
       "description": "Authoritative audit timestamp, RFC 3339 UTC 'Z' (microsecond precision; §8.1)."
     },
     "entity_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4"
     },
     "entity_type": {
       "type": "string"
@@ -94,17 +92,14 @@
       "x-generated-from": "registry/taxonomies/action.yaml"
     },
     "actor_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "Immediate actor only."
     },
     "request_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4"
     },
     "tenant_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4"
     },
     "change_fingerprint": {
       "type": "string",
@@ -123,8 +118,7 @@
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
     },
     "audit_record_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid"
     }
   }
 }

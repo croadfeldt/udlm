@@ -19,8 +19,7 @@
       "const": "promotion_evidence"
     },
     "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4"
     },
     "conforms_to": {
       "type": "string",
@@ -90,8 +89,7 @@
       "description": "Derived, and recorded because the record is the artifact somebody reads later: `promoted` iff the diff is empty or every entry carries an approval; `refused` otherwise. `validate.py` recomputes it rather than trusting it — an outcome that disagrees with its own diff is the one failure this record exists to make impossible."
     },
     "finding_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "The finding-routing record that carried this diff upstream, where one was filed. A non-empty diff contradicts the upstream compatibility claim, and `REG-016` rules that a refusal which cannot yet file the record QUEUES the filing rather than dropping it — so absence here means not-yet-filed, never not-required."
     }
   },

@@ -26,27 +26,27 @@
       "const": "audit_leaf"
     },
     "leaf_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v7"
     },
     "leaf_index": {
       "type": "integer",
       "minimum": 0
     },
     "request_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4"
     },
     "entity_uuid": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "anyOf": [
+        {
+          "$ref": "common-elements.schema.json#/$defs/uuid_v4"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "tenant_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4"
     },
     "stage": {
       "type": "string",
@@ -179,8 +179,7 @@
       }
     },
     "signer_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4"
     },
     "signer_type": {
       "enum": [
