@@ -90,8 +90,7 @@
       "description": "A citation: uuid, version, and the chain head if the cited record carries one. Three parts because two are not enough — uuid says WHICH record, version says which of its published states, and the head proves the bytes were those bytes.",
       "properties": {
         "uuid": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          "$ref": "../common-elements.schema.json#/$defs/uuid_v4"
         },
         "version": {
           "type": "string"
@@ -114,8 +113,7 @@
         "description": "A citation: uuid, version, and the chain head if the cited record carries one. Three parts because two are not enough — uuid says WHICH record, version says which of its published states, and the head proves the bytes were those bytes.",
         "properties": {
           "uuid": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref": "../common-elements.schema.json#/$defs/uuid_v4"
           },
           "version": {
             "type": "string"
@@ -168,8 +166,7 @@
         "description": "A citation: uuid, version, and the chain head if the cited record carries one. Three parts because two are not enough — uuid says WHICH record, version says which of its published states, and the head proves the bytes were those bytes.",
         "properties": {
           "uuid": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref": "../common-elements.schema.json#/$defs/uuid_v4"
           },
           "version": {
             "type": "string"

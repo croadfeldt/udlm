@@ -19,16 +19,14 @@
       "const": "registration_verdict"
     },
     "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4"
     },
     "conforms_to": {
       "type": "string",
       "pattern": "^udlm/[0-9]+\\.[0-9]+$"
     },
     "provider_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "The provider this verdict is about. A separate record rather than a block on the provider's own submission — a verdict living inside the document it judges could be edited by whoever edits that document."
     },
     "trust_posture": {
@@ -84,8 +82,7 @@
             "description": "RFC 3339 UTC. Ordering within this list is by position (append-only), never by comparing these — the wall clock is for correlation and display (`time-and-clock.md` §4)."
           },
           "audit_record_uuid": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "$ref": "common-elements.schema.json#/$defs/uuid_v4",
             "description": "The `capability_admit` audit record for this change. The disposition and its audit entry name the same act in the one action vocabulary, so \"was this admission authorized\" is answered by matching, not by translating."
           }
         }

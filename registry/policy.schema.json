@@ -22,8 +22,7 @@
       "description": "Dispatch discriminator (data-model-core §2). record_type is the authoritative record kind; realized entities use resource_type, groups use group_class."
     },
     "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "RFC 9562 v4 identity (docs/spec/contracts/identifier-scheme.md)."
     },
     "handle": {
@@ -46,8 +45,7 @@
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
     },
     "tenant_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "Owning tenant (TEN-001; data-model-core §5 [D3]). A system-domain policy is owned by the platform tenant."
     },
     "status": {

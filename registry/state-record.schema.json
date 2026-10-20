@@ -33,13 +33,11 @@
       "description": "Which of the four states this record is. One record, one state, one author. Capitalized as the four-state vocabulary is; `record_type` is its lowercase dispatch key."
     },
     "entity_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "The thing this record is about. Stable for the entity's life (RFC 9562 v4, minted at intent); the universal linking key (four-states.md §3); what every dependency edge targets."
     },
     "record_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v7",
       "description": "This record (RFC 9562 v7 — time-ordered, so a state's stream sorts by identity). A new version of a state is a NEW record_uuid naming its predecessor in `supersedes`; records are never edited (ADR-051)."
     },
     "generation": {
@@ -50,14 +48,12 @@
     "supersedes": {
       "type": "array",
       "items": {
-        "type": "string",
-        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        "$ref": "common-elements.schema.json#/$defs/uuid_v7"
       },
       "description": "The record_uuid(s) this record replaces within the same state's stream. Absent or empty on the first record of a state — the supersession chain four-states.md §2.3 asks for."
     },
     "tenant_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "REQUIRED owning Tenant, as on entity-view.schema.json."
     },
     "conforms_to": {
@@ -131,8 +127,7 @@
       "x-data-role": "governance"
     },
     "intent_ref": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v7",
       "description": "Requested only: the intent record this was assembled from (TRN-003). Every field that differs from it is attributed in `provenance` (TRN-001)."
     },
     "intent_ref_head": {
@@ -141,18 +136,15 @@
       "description": "Requested only: the `integrity.head` of the referenced intent record, present exactly when that record is sealed — binds the transition to the bytes it consumed, verifiable with no other record in hand (TRN-002)."
     },
     "root_request_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v7",
       "description": "Requested only: the record_uuid of the requested record at the root of this order. A root names itself; an expanded child names the root's (DEP-015)."
     },
     "caused_by_request": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v7",
       "description": "Requested only, optional: on a request one provider made to another (PRV-012), the consumer's requested record that caused it (DEP-018). Provenance only, never authority. Control-plane data: never in the dispatch payload."
     },
     "requested_ref": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v7",
       "description": "Realized only: the requested record this realizes (four-states.md §2.3, TRN-003). Every field that differs from it, and every output, is attributed in `provenance` (TRN-001)."
     },
     "requested_ref_head": {
@@ -859,8 +851,7 @@
             "$ref": "common-elements.schema.json#/$defs/edge_type"
           },
           "target_uuid": {
-            "type": "string",
-            "format": "uuid",
+            "$ref": "common-elements.schema.json#/$defs/uuid_v4",
             "description": "The target entity. Required on requested and realized records (declared edges name their target by identity). On a discovered record it is present once the control plane has resolved `target_key` to an entity and absent until then (RHY-007)."
           },
           "target_field": {
@@ -1007,8 +998,7 @@
                 "description": "Which enforcement plane this attestation covers (provider-contract §2 enforcement_plane)."
               },
               "accreditation_uuid": {
-                "type": "string",
-                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                "$ref": "common-elements.schema.json#/$defs/uuid_v4",
                 "description": "The accreditation artifact that satisfies the plane requirement — the authorizing evidence the claim binds to."
               },
               "verification_result": {
@@ -1032,8 +1022,7 @@
           "description": "R2 evidence binding — the concrete fault-domain / physical locality this entity was placed in (the per-resource anchor the placement grammar keys on — DCM ADR-019 placement, ADR-010 SharedFaultDomain). Written by the provider/the control plane at realization; the basis for anti-affinity, blast-radius, and per-resource jurisdiction checks.",
           "properties": {
             "topology_ref": {
-              "type": "string",
-              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "$ref": "common-elements.schema.json#/$defs/uuid_v4",
               "description": "Reference to the Topology fault-domain / location resource this entity resolved onto."
             },
             "fault_domain": {
@@ -1123,8 +1112,7 @@
               "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
             },
             "event_uuid": {
-              "type": "string",
-              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "$ref": "common-elements.schema.json#/$defs/uuid_v7",
               "description": "The emitted portability-degradation notification event."
             }
           }
@@ -1207,8 +1195,7 @@
             ],
             "properties": {
               "entity_uuid": {
-                "type": "string",
-                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+                "$ref": "common-elements.schema.json#/$defs/uuid_v4"
               },
               "effect_type": {
                 "enum": [
@@ -1236,8 +1223,7 @@
       ],
       "properties": {
         "information_provider_uuid": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "$ref": "common-elements.schema.json#/$defs/uuid_v4",
           "description": "The registered serve_data:cost provider (the cost engine)."
         },
         "external_model_id": {
@@ -1265,8 +1251,7 @@
             "type": "string"
           },
           "instance_uuid": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "common-elements.schema.json#/$defs/uuid_v4"
           },
           "provided_by": {
             "enum": [
@@ -1463,8 +1448,7 @@
           "description": "Reference to the deterministic migration used (preferably the standard's own published migration)."
         },
         "provider_uuid": {
-          "type": "string",
-          "format": "uuid",
+          "$ref": "common-elements.schema.json#/$defs/uuid_v4",
           "description": "The provider / Information Provider that served the adopted data (lookup-only; not owned here — ADS-007)."
         },
         "resolved_at": {
@@ -1572,8 +1556,7 @@
             ],
             "properties": {
               "layer_uuid": {
-                "type": "string",
-                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+                "$ref": "common-elements.schema.json#/$defs/uuid_v4"
               },
               "reason": {
                 "enum": [

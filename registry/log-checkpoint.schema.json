@@ -20,8 +20,7 @@
       "const": "log_checkpoint"
     },
     "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4"
     },
     "conforms_to": {
       "type": "string",
@@ -91,8 +90,7 @@
     "supersedes": {
       "type": "array",
       "items": {
-        "type": "string",
-        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        "$ref": "common-elements.schema.json#/$defs/uuid_v4"
       },
       "description": "An earlier checkpoint of the same log this one extends. Not a replacement — earlier checkpoints are retained, because a consistency proof needs both endpoints and discarding the earlier one discards the proof."
     }

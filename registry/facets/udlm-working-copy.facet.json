@@ -32,8 +32,7 @@
       "description": "The record's `integrity.head` at seal time. This is the join between the two families: a verifier walks pathway anchor -> seal -> resource chain -> audit log as one mechanical sequence, with no translation step where a mismatch could hide."
     },
     "record_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "$ref": "../common-elements.schema.json#/$defs/uuid_v4"
     },
     "record_version": {
       "type": "string",

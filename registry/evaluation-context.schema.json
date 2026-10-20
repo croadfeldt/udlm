@@ -11,8 +11,7 @@
   ],
   "properties": {
     "request_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "The request evaluation this context belongs to. RFC 9562 v4."
     },
     "pass_number": {
@@ -42,8 +41,7 @@
         ],
         "properties": {
           "constraint_uuid": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "$ref": "common-elements.schema.json#/$defs/uuid_v4",
             "description": "Identity of this constraint within the evaluation. RFC 9562 v4."
           },
           "source_policy": {

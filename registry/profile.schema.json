@@ -19,8 +19,7 @@
       "const": "profile"
     },
     "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "RFC 9562 identity — frozen for the profile's life (ADR-051)."
     },
     "handle": {
@@ -64,8 +63,7 @@
       }
     },
     "tenant_uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "Owning tenant for an organization-authored profile; absent for platform/built-in profiles."
     },
     "composes": {

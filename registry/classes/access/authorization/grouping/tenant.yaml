@@ -6,7 +6,7 @@
 #
 # Rejected: marking it with a boolean or an enum on the base class. Either would be a second answer to
 # a question the type name already settles, and two answers can disagree.
-$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Tenant/0.1.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Tenant/0.1.2
 uuid: 6b2f0a71-7d3e-4c58-9a14-2e8b5c03f4d7
 record_type: class
 resource_type: Grouping.Tenant
@@ -14,7 +14,7 @@ class: type
 parent: Grouping
 family: Access
 entity_type: Grouping
-version: 0.1.1
+version: 0.1.2
 conforms_to: udlm/0.1
 status: active
 context:
@@ -48,8 +48,7 @@ elements:
       rollup and audit aggregation. Destroying a parent requires resolving every child first; there is no cascade
       (GRP-INV-003).
     schema:
-      type: string
-      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      $ref: ../../../../common-elements.schema.json#/$defs/uuid_v4
       description: The parent tenant this one nests inside; absent means a root tenant. A child keeps complete isolation
         — its resources never belong to the parent (GRP-INV-004) — while the parent holds governance overlay, cost
         rollup and audit aggregation. Destroying a parent requires resolving every child first; there is no cascade

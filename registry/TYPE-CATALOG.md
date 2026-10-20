@@ -341,7 +341,7 @@ A named set of things with a rule for what belongs in it. A tenant is a grouping
 - Grouping.Tenant and Grouping.Authorization — the Types that narrow it.
 - Any resource — a member by criterion.
 
-### Grouping.Authorization (0.1.1)
+### Grouping.Authorization (0.1.2)
 
 **Purpose:** One grouping permitting another to use something it holds. The grant is a record with its own identity and lifecycle, so it can be found, audited, time-bounded, and withdrawn.
 
@@ -362,7 +362,7 @@ Permission for the members of one grouping to use resources held by another — 
 - Grouping.Tenant — the usual pair of boundaries a grant spans
 - The required-grant set (CTX-005) — derived from a request's edges and diffed against these
 
-### Grouping.Tenant (0.1.1)
+### Grouping.Tenant (0.1.2)
 
 **Purpose:** The ownership and isolation border. Every record in the model carries a tenant_uuid pointing at one of these, and it is the referent that ownership, cost attribution, audit scope, drift accountability, and policy scope all resolve against.
 

@@ -17,7 +17,7 @@
 # selects WHICH resources are in scope and `authorized_operations` says WHAT may be done with them;
 # resources needing different operations are different grants. Simpler, and it costs nothing a second
 # grant does not buy.
-$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Authorization/0.1.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Authorization/0.1.2
 uuid: 9d41c8e2-05b7-4a36-b8f9-1c7e3a604b52
 record_type: class
 resource_type: Grouping.Authorization
@@ -25,7 +25,7 @@ class: type
 parent: Grouping
 family: Access
 entity_type: Grouping
-version: 0.1.1
+version: 0.1.2
 conforms_to: udlm/0.1
 status: active
 context:
@@ -57,8 +57,7 @@ elements:
       any isolating grouping in general. A grant across a grouping whose `obligations.isolation` is `none` permits
       nothing, because nothing was closed.'
     schema:
-      type: string
-      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      $ref: ../../../../common-elements.schema.json#/$defs/uuid_v4
       description: 'The grouping that holds the resources and gives permission: a Grouping.Tenant in the common
         case, any isolating grouping in general. A grant across a grouping whose `obligations.isolation` is `none`
         permits nothing, because nothing was closed.'
@@ -69,8 +68,7 @@ elements:
     description: 'The grouping whose members receive permission. MUST differ from `granted_by`: a grant to yourself
       crosses no boundary.'
     schema:
-      type: string
-      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      $ref: ../../../../common-elements.schema.json#/$defs/uuid_v4
       description: 'The grouping whose members receive permission. MUST differ from `granted_by`: a grant to yourself
         crosses no boundary.'
   - element: authorized_operations
