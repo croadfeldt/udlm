@@ -2,10 +2,10 @@
 """Every uuid field references one of the shared uuid definitions (row 098).
 
 A uuid field in a registry schema, facet or class `$ref`s `common-elements.schema.json`
-`#/$defs/uuid_v4` (an entity, definition, tenant, actor, provider or request),
-`#/$defs/uuid_v7` (a time-ordered artifact: a state record, an audit-chain leaf, an event) or
-`#/$defs/uuid` (v4 or v7, only where the spec does not yet fix the version). The versions come
-from identifier-scheme §2.1. Before row 098 the same field was declared inline about ninety times
+`#/$defs/uuid_v4` (an entity, definition, tenant, actor, provider or request) or
+`#/$defs/uuid_v7` (a time-ordered artifact: a state record, an audit-chain leaf, an audit
+record, a commit-log entry, an audit session, an event). The versions come from
+identifier-scheme §2.1. Before row 098 the same field was declared inline about ninety times
 in five shapes, so the version a field accepted was accidental.
 
 This gate fails on any inline uuid pattern or bare `format: uuid` outside common-elements.
@@ -65,7 +65,7 @@ def main():
         for path in inline_uuids(load(rel)):
             bad.append(f"{rel}:{path}")
     if bad:
-        print("uuid-refs: inline uuid declarations; $ref common-elements uuid_v4, uuid_v7 or uuid instead:")
+        print("uuid-refs: inline uuid declarations; $ref common-elements uuid_v4 or uuid_v7 instead:")
         for b in bad:
             print("  " + b)
         return 1

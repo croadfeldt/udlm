@@ -19,7 +19,7 @@
       "const": "audit_record"
     },
     "record_uuid": {
-      "$ref": "common-elements.schema.json#/$defs/uuid"
+      "$ref": "common-elements.schema.json#/$defs/uuid_v7"
     },
     "record_timestamp": {
       "type": "string",
@@ -60,7 +60,7 @@
               "type": "string"
             },
             "session_uuid": {
-              "$ref": "common-elements.schema.json#/$defs/uuid"
+              "$ref": "common-elements.schema.json#/$defs/uuid_v7"
             }
           }
         },
@@ -206,7 +206,7 @@
       "description": "Link to the Merkle leaf (audit-leaf.schema.json) binding this record into the tamper-evident tree."
     },
     "commit_log_entry_uuid": {
-      "$ref": "common-elements.schema.json#/$defs/uuid",
+      "$ref": "common-elements.schema.json#/$defs/uuid_v7",
       "description": "Link back to the Stage-1 commit_log_entry this was enriched from."
     },
     "sequence_uuid": {

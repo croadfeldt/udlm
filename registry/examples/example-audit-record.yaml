@@ -3,7 +3,8 @@ record_type: audit_record
 # append-only, so gaining the required `sequence_uuid` below makes this a different record with a
 # different identity — there is no `supersedes` on this type because a fact is never withdrawn and
 # re-issued (tests/check_identity_integrity.py R4a).
-record_uuid: 8b3f0c27-5a41-4d96-b0e8-2f7c14ad9e63
+# Its identity is a v7 UUID, as every audit record's is (row 098), which again made it a new record.
+record_uuid: 019f3cd7-bf40-7e43-af50-6b7c8d9e0f12
 record_timestamp: '2026-07-07T13:50:00Z'
 # The structural order (time-and-clock.md §4.1). UUIDv7: millisecond timestamp + a monotonic
 # counter, so two records appended in the same millisecond still order — without comparing the

@@ -54,7 +54,7 @@ v6/v7/v8). Every UUID citation in this spec is RFC 9562.
   | Version | Status | Use | Why |
   |---|---|---|---|
   | **v4** | **REQUIRED** | entity/artifact IDENTITY (resources, types, policies, providers, requests) | unpredictable (CSPRNG), leaks nothing, collision-safe across independent implementations; the Kubernetes-uid pattern |
-  | **v7** | **REQUIRED** | TIME-ORDERED artifacts only (audit-chain leaves, event ids) — declared in the field schema | millisecond-ordered → index locality + total order for the audit chain |
+  | **v7** | **REQUIRED** | TIME-ORDERED artifacts only (state records, audit-chain leaves, audit records, commit-log entries, audit sessions, event ids) — declared in the field schema | millisecond-ordered → index locality + total order for the audit chain |
   | v1/v6 | PROHIBITED | — | embed MAC/timestamp (information leak); ordering need is served by v7 |
   | v3/v5 | PROHIBITED | — | name-derived/deterministic: two implementations hashing the same name mint the SAME uuid — violates the identity-is-minted-once model and §5 no-reassignment |
   | v8 | PROHIBITED | — | vendor-defined layout: not interoperable across peers |
@@ -64,9 +64,9 @@ v6/v7/v8). Every UUID citation in this spec is RFC 9562.
 - **Validation**: peers MUST reject at ingest any malformed UUID and any version outside
   {v4, v7-where-declared} — checking BOTH the version nibble and the variant bits
   (`^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`, version per field).
-  A schema declares the version by `$ref` to one of three `common-elements.schema.json`
-  definitions: `uuid_v4` and `uuid_v7` by the table above, and `uuid` (v4 or v7) only where the
-  version is not yet fixed. No schema declares a uuid pattern inline (`tests/check_uuid_refs.py`).
+  A schema declares the version by `$ref` to `common-elements.schema.json` `uuid_v4` or
+  `uuid_v7`, by the table above; audit records, commit-log entries and audit sessions are
+  time-ordered, so v7. No schema declares a uuid pattern inline (`tests/check_uuid_refs.py`).
 - **Uniqueness**: globally unique across all implementations. Collision probability is assumed zero
   for v4; v7 collisions handled by the audit-chain ordering rule.
 
