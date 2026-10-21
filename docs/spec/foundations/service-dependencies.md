@@ -423,7 +423,7 @@ catalog_item:
 | `DEP-004` | Dependency payloads must be passed to dependent providers in the control plane unified format | Enforced at dependency satisfaction |
 | `DEP-005` | Every node in a dependency graph must have a UUID | Enforced at graph construction |
 | `DEP-006` | **Dangling-reference semantics (degrade, don't break):** a reference whose target cannot be resolved renders the *referencing* entity nonoperational in the OPERATIONAL projection while remaining intact in the INTENDED projection, until the target appears or the reference is repointed (adopts RFC 8345 leafref semantics). Never hard-fail at runtime; never silently tolerate. | The control plane runtime, at operational-state derivation. Authoring stores (git estates) instead validate-at-write and REJECT dangling references — the authoring gate is hard-fail by design. |
-| `DEP-007` | **Two-phase decommission (tombstone):** an entity with inbound edges MUST NOT be hard-deleted. Transition `lifecycle_state: retired` first (its UUID remains resolvable and is never reused — identifier-scheme §5); referencing entities then repoint or retire; hard removal only once no inbound edges remain. Edges to a `retired` entity are valid-but-flagged (the tombstone window). | Authoring validation (retire-first suggestion on removal) + control-plane decommission workflow. |
+| `DEP-007` | **Two-phase decommission (tombstone):** an entity with inbound edges MUST NOT be hard-deleted. Transition to `lifecycle_state: Decommissioned` first (its UUID remains resolvable and is never reused — identifier-scheme §5); referencing entities then repoint or retire; hard removal only once no inbound edges remain. Edges to a `Decommissioned` entity are valid-but-flagged (the tombstone window). | Authoring validation (retire-first suggestion on removal) + control-plane decommission workflow. |
 | `DEP-008` | **Constrained reference topology:** edge types carry structural constraints and violations are machine-reported with typed codes, never silently accepted (Kubernetes cross-namespace-ownerReference analog). Initial normative set: `connects_to` (common-elements §9) only between `device_class: physical` NetworkInterface instances; `lower_layer` and `parent_device` only between interfaces of the SAME containing device. Types may declare further constraints in `relationships[]`. | Authoring validation + control-plane graph construction. |
 
 > **Division of responsibility (DEP-006..008):** the model defines the states and edges;
@@ -432,8 +432,6 @@ catalog_item:
 > platform service, not a consumer obligation). The spec deliberately defines no controller.
 
 ---
-
-> **Instance-layer vocabulary:** at the instance layer (the entity view) the tombstone state is `lifecycle_state: Decommissioned` — the schema's enum term. "Retired" in this rule's prose names the same phase; records and validators MUST use `Decommissioned`.
 
 ## 11a. Dependency Graph Versioning (Q30)
 

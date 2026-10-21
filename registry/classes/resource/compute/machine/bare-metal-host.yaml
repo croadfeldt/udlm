@@ -1,4 +1,4 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.14.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.15.0
 conforms_to: udlm/0.1
 uuid: 7196d55a-d584-40e5-8b47-5247dad7d421
 record_type: class
@@ -6,7 +6,7 @@ class: type
 resource_type: Machine.BareMetalHost
 short_name: Machine.BMH
 parent: Machine
-version: 0.14.0
+version: 0.15.0
 family: Resource
 status: active
 metadata:
@@ -19,12 +19,12 @@ metadata:
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:31:44Z'
 elements:
-  - element: lifecycle_state
+  - element: allocation_state
     scope: Machine.BareMetalHost
     optional: true
     state: canonical
     description: 'Allocation state: `available` = inventoried and unallocated; `allocated` = adopted into the managed
-      lifecycle (Metal3 provisioning state).'
+      lifecycle (Metal3 provisioning state). Not the four-state `lifecycle_state` of the entity view.'
     schema:
       type: string
       enum:
@@ -230,7 +230,7 @@ elements:
           type: boolean
           description: 'UEFI Secure Boot. Only valid with type: uefi (policy-validated).'
 spec_examples:
-  - lifecycle_state: allocated
+  - allocation_state: allocated
     composition_visibility: selective
     identity:
       serial_number: SN-EXAMPLE-0001
