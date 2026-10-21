@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
   "resource_type": "Machine.VM",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -25,7 +25,7 @@
         },
         {
           "class": "Machine.VM",
-          "version": "2.1.0",
+          "version": "2.2.0",
           "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
         }
       ]
@@ -260,8 +260,8 @@
         "description": "Placement intent as a selection of an existing Location, plus affinity relative to other resources. Policy governs which locations a consumer may select; the VM references one, it never defines locations.",
         "properties": {
           "location_ref": {
-            "type": "string",
-            "description": "handle/uuid of an existing Location the VM is placed in — chosen from the eligible set (platform-layer + provider-advertised, policy-filtered). Also carried as a references->Location relationship."
+            "$ref": "../common-elements.schema.json#/$defs/Reference",
+            "description": "Reference to an existing Location the VM is placed in — chosen from the eligible set (platform-layer + provider-advertised, policy-filtered). Also carried as a references->Location relationship."
           },
           "zone": {
             "type": "string",
@@ -279,7 +279,8 @@
               "properties": {
                 "target": {
                   "type": "string",
-                  "description": "Handle OR label-selector of an existing resource to co-locate with / avoid, resolved at reserve (DCM ADR-025/AEP-124) - you do not need its UUID in advance."
+                  "format": "udlm-filter-url",
+                  "description": "The resources to co-locate with or avoid, as a URF filter (identifier-scheme §9) — a handle such as `cexample/vms/web-01`, or a selector such as `estate?labels.tier==web`. Resolved at reserve (DCM ADR-025/AEP-124), so you do not need a UUID in advance."
                 },
                 "rule": {
                   "enum": [
@@ -350,11 +351,11 @@
         },
         "storage_tier": "performance",
         "placement": {
-          "location_ref": "dc-west-rack-3",
+          "location_ref": "cexample/locations/dc-west-rack-3",
           "zone": "zone-a",
           "affinity": [
             {
-              "target": "web-tier",
+              "target": "estate?labels.tier==web",
               "rule": "anti_affinity"
             }
           ]

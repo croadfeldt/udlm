@@ -7,8 +7,9 @@ fails CI. Shrink the baseline with every fix-wave PR; never grow it.
   G1 outputs-nonempty   realizable type (family Resource|Process) declares >=1 output OR an
                         explicit exclusion note ("outputs-exempt:" token in the spec description)
   G2 target-exists      every relationships[].target resolves to a registered resource_type
-  G3 reference-lint     *_ref spec properties are URF references (format: udlm-ref-url), never
-                        an unconstrained bare string
+  G3 reference-lint     *_ref spec properties, at any depth, are URF references (format:
+                        udlm-ref-url or udlm-filter-url) or a declared location (format: uri or
+                        uri-reference), never an unconstrained bare string (row 101)
   G5 adopts-parity      adoption claims in prose require adopts[] entries (structured half of
                         check_standards_registered). A claim is an adoption token, or the name of
                         any standard some class adopts (row 100). A description that names a
@@ -67,12 +68,28 @@ def walk_props(node, path, hits):
             hits.append((path, k))
 
 
+def bare_refs(node, prefix=""):
+    """Dot paths of *_ref string properties, at any depth, that are not a reference shape."""
+    out = []
+    if not isinstance(node, dict):
+        return out
+    for k, v in (node.get("properties") or {}).items():
+        if not isinstance(v, dict):
+            continue
+        if k.endswith("_ref") and v.get("type") == "string" and not is_reference_shape(v):
+            out.append(prefix + k)
+        out += bare_refs(v, prefix + k + ".")
+        if isinstance(v.get("items"), dict):
+            out += bare_refs(v["items"], prefix + k + "[].")
+    return out
+
+
 def is_reference_shape(prop):
     """A reference is a URF string (common-elements §2.5 / identifier-scheme §9): the property
     either declares `format: udlm-ref-url` directly or $refs a definition that does."""
     if not isinstance(prop, dict):
         return False
-    if prop.get("format") in ("udlm-ref-url", "udlm-filter-url"):
+    if prop.get("format") in ("udlm-ref-url", "udlm-filter-url", "uri", "uri-reference"):
         return True
     blob = json.dumps(prop)
     if "$ref" in blob or "udlm-ref-url" in blob:
@@ -121,10 +138,10 @@ def main():
             if tgt and tgt not in registered and not tgt.endswith("*"):
                 found.append(("G2", rt, tgt, "relationships[].target is not a registered resource_type"))
 
-        # G3
-        for pk, pv in (spec.get("properties") or {}).items():
-            if pk.endswith("_ref") and isinstance(pv, dict) and pv.get("type") == "string" and not is_reference_shape(pv):
-                found.append(("G3", rt, pk, "bare-string *_ref — declare format: udlm-ref-url (identifier-scheme §9)"))
+        # G3 — at any depth: a nested *_ref (placement.location_ref, env[].value_from.credential_ref)
+        # escaped a top-level-only check until row 101
+        for path in bare_refs(spec):
+            found.append(("G3", rt, path, "bare-string *_ref — declare format: udlm-ref-url (identifier-scheme §9)"))
 
         # G8: no absolute $refs — validation must never depend on the network. Relative
         # sibling refs only. Found live twice (ResourceQuota, then the VM's
@@ -132,12 +149,6 @@ def main():
         # reaches).
         for m in re.finditer(r'"\$ref"\s*:\s*"(https?://[^"]+)"', json.dumps(d)):
             found.append(("G8", rt, m.group(1)[:60], "absolute $ref — use a relative sibling ref"))
-            if isinstance(pv, dict):
-                items = pv.get("items")
-                if isinstance(items, dict):
-                    for ik, iv in (items.get("properties") or {}).items():
-                        if ik.endswith("_ref") and isinstance(iv, dict) and iv.get("type") == "string" and not is_reference_shape(iv):
-                            found.append(("G3", rt, f"{pk}[].{ik}", "bare-string *_ref — declare format: udlm-ref-url (identifier-scheme §9)"))
 
         # G5
         meta_desc = (d.get("metadata", {}) or {}).get("description", "") or d.get("description", "") or ""
