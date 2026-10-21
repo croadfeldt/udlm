@@ -219,7 +219,7 @@ Each hard constraint cites the UDLM contract it derives from.
     physically exists but has not been allocated — a freshly racked server, a brownfield import, a spare
     drive on the shelf — MUST be representable for **inventory and tracking** with only its Discovered
     state populated and **no Intent/allocation** (`docs/spec/foundations/four-states.md` §2.4). Such a resource
-    carries an **availability** lifecycle state (canonical `lifecycle_state`, e.g.
+    carries an **availability** state (canonical `allocation_state`, e.g.
     `available|allocated|retired`; adopts Metal3 `provisioning.state: available`) marking it
     unallocated. It is later **adopted** — an Intent is attached (allocation / brownfield ingestion),
     entering the managed lifecycle — and adoption MUST **preserve the entity UUID** (four-states §3),

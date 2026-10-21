@@ -1066,7 +1066,7 @@
   }
  },
  "type:Machine.BareMetalHost": {
-  "current": "0.14.0",
+  "current": "0.15.0",
   "path": "registry/classes/resource/compute/machine/bare-metal-host.yaml",
   "versions": {
    "0.11.0": "sha256:74559543232fc83cd38c90ec25e206f788e14bc954ac3e3b7fe3a975d26173de",
@@ -1074,7 +1074,8 @@
    "0.12.1": "sha256:5bfd04817357c70050ddcda87f91eac9b73f21df71e946fce7254cf24a3b9a9f",
    "0.13.0": "sha256:1df21ff8d974c758934503a6ac56306c774e8ee1f55cb991bf95cd3226bed84d",
    "0.13.1": "sha256:9801b04d6add477bf3412c206383d325fb5f0a477df174f13dabce478e347091",
-   "0.14.0": "sha256:b25e11e645d39279aeddb475deecb2e9413fff0320c642988673c04b7e5ca481"
+   "0.14.0": "sha256:b25e11e645d39279aeddb475deecb2e9413fff0320c642988673c04b7e5ca481",
+   "0.15.0": "sha256:c8e624f4ede577be5327404b979ea75c63e98a874b26b47a71a05c2e83d8b2cf"
   }
  },
  "type:Machine.LPAR": {
@@ -1298,12 +1299,13 @@
   }
  },
  "type:NetworkSwitch": {
-  "current": "0.8.2",
+  "current": "0.9.0",
   "path": "registry/classes/resource/network/network-switch/_base.yaml",
   "versions": {
    "0.8.0": "sha256:ace15ce147815b84de30ef687c851c5e56349705a02ee3b19224d15aa2c3a5af",
    "0.8.1": "sha256:5ba59ccf6a610c11ff646ec0fdeefe323e9fdac5b1a503e6bcb40cc0eed7c760",
-   "0.8.2": "sha256:a265712c43f8f7a7cf6a3857e16722a230f9a13e90f58f1f8a1f803ede31e32f"
+   "0.8.2": "sha256:a265712c43f8f7a7cf6a3857e16722a230f9a13e90f58f1f8a1f803ede31e32f",
+   "0.9.0": "sha256:7c1daed2f567a493f8a313bf87a62c1240dc84edffb0faada0d6ba08aa039204"
   }
  },
  "type:Observability": {
