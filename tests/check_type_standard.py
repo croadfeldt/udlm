@@ -10,7 +10,9 @@ fails CI. Shrink the baseline with every fix-wave PR; never grow it.
   G3 reference-lint     *_ref spec properties are URF references (format: udlm-ref-url), never
                         an unconstrained bare string
   G5 adopts-parity      adoption claims in prose require adopts[] entries (structured half of
-                        check_standards_registered)
+                        check_standards_registered). A claim is an adoption token, or the name of
+                        any standard some class adopts (row 100). A description that names a
+                        standard only as an example says so with an "adopts-exempt:" note.
   G6 property-strict    schema-authoring keys inside spec.properties subtrees come from the JSON
                         Schema keyword allowlist (catches mangled keys that are legal-but-wrong)
 
@@ -84,10 +86,15 @@ def main():
     # Class names of ANY tier are legal relationship targets: an edge to a category base
     # (e.g. Job -> Automation) is POLYMORPHIC — "any member of the category" (the
     # executes_definition case). Bases aren't served specs, but they are addressable targets.
+    standards = set()  # every standard some class adopts: naming one in prose is an adoption claim (G5)
     for cp in glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"), recursive=True):
         cd = yaml.safe_load(open(cp, encoding="utf-8")) or {}
         if cd.get("record_type") == "class":
             registered.add(cd.get("resource_type"))
+            for adoption in cd.get("adopts") or []:
+                if adoption.get("standard"):
+                    standards.add(adoption["standard"])
+    adopted_names = re.compile("|".join(r"\b" + re.escape(n) + r"\b" for n in sorted(standards, key=len, reverse=True)) or r"(?!)")
     baseline = {}
     if os.path.exists(BASELINE):
         baseline = yaml.safe_load(open(BASELINE, encoding="utf-8")) or {}
@@ -134,8 +141,9 @@ def main():
 
         # G5
         meta_desc = (d.get("metadata", {}) or {}).get("description", "") or d.get("description", "") or ""
-        if ADOPT_TOKENS.search(meta_desc) and not (d.get("adopts") or []):
-            found.append(("G5", rt, "adopts[]", "prose claims adoption; adopts[] is empty"))
+        named = ADOPT_TOKENS.search(meta_desc) or adopted_names.search(meta_desc)
+        if named and not (d.get("adopts") or []) and "adopts-exempt:" not in meta_desc:
+            found.append(("G5", rt, "adopts[]", f"prose names {named.group(0)!r}; adopts[] is empty"))
 
         # G7 — plain-English context present (rule 36(l))
         if not d.get("context"):
