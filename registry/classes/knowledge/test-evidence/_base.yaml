@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.3.1
+$id: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.4.0
 conforms_to: udlm/0.1
 uuid: 3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63
 record_type: class
 class: base
 resource_type: TestEvidence
-version: 0.3.1
+version: 0.4.0
 family: Knowledge
 status: active
 metadata:
@@ -91,7 +91,9 @@ elements:
           description: The adopted report format the full result is in.
         report_ref:
           type: string
-          description: 'Where the full report is: a path relative to the run''s artifacts, or a reference.'
+          format: uri-reference
+          description: 'Where the full report is: a path relative to the run''s artifacts, or a URL (RFC 3986 URI-reference).
+            A location, not an entity reference.'
         report_digest:
           type: string
           pattern: ^sha256:[0-9a-f]{64}$

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Container/1.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Container/1.2.0
 conforms_to: udlm/0.1
 uuid: 941d9211-6d64-47b8-9e1d-ccb4ccac2d49
 record_type: class
 class: base
 resource_type: Container
-version: 1.1.0
+version: 1.2.0
 family: Resource
 status: active
 filed_under:
@@ -113,8 +113,8 @@ elements:
                 description: Reference to a CredentialRef or a config source; secret material is never inline.
                 properties:
                   credential_ref:
-                    type: string
-                    description: handle or uuid of a CredentialRef
+                    $ref: ../../../../common-elements.schema.json#/$defs/Reference
+                    description: Reference to a CredentialRef
                   key:
                     type: string
         mounts:
@@ -128,8 +128,8 @@ elements:
               mount_path:
                 type: string
               source_ref:
-                type: string
-                description: handle/uuid of the mounted source (config/model snapshot, or a CredentialRef for secrets).
+                $ref: ../../../../common-elements.schema.json#/$defs/Reference
+                description: Reference to the mounted source (a config or model snapshot, or a CredentialRef for secrets).
               read_only:
                 type: boolean
       description: 'Process environment: `env` variables and `mounts`. Anything sensitive points at a CredentialRef.'
@@ -204,11 +204,11 @@ spec_examples:
           value: info
         - name: DB_PASSWORD
           value_from:
-            credential_ref: app-db-secret
+            credential_ref: cexample/credentials/app-db-secret
             key: password
       mounts:
         - mount_path: /etc/app
-          source_ref: app-config
+          source_ref: cexample/configs/app-config
           read_only: true
     network:
       ports:
