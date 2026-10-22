@@ -14,59 +14,13 @@
 
 ## 4d. Complete Layer Definition Structure
 
-Combining all elements — identity, version, status, scope, priority, and fields:
-
-```yaml
-# illustrative: layer shape; the layer schema is layer.schema.json
-# Complete layer definition
-layer:
-  # === IDENTITY, VERSION AND STATUS (layering-and-versioning §4b) ===
-  uuid: "layer-uuid-001"
-  handle: "platform/core/security-cpu-limits"
-  version: "1.2.0"
-  status: { state: active }
-  # Who created and changed it is the audit record of each submission; what changed is
-  # version control (each version's pull request). Neither is carried on the layer.
-
-  # === LAYER IDENTITY ===
-  domain: platform
-  layer_type: core
-
-  scope:
-    resource_types:
-      - Container
-      - Machine.VM
-    # Empty list = type-agnostic (applies to all resource types)
-
-  priority:
-    value: "200.30.10"
-    label: "security.container.cpu_limits"
-    category: security
-    rationale: >
-      CPU limit enforcement for container workloads per
-      CISO mandate SEC-2024-047. Overrides platform defaults.
-
-  # === LAYER CHAIN ===
-  parent_chain:
-    - uuid: "base-layer-uuid-001"
-      handle: "system/base/universal-defaults"
-      version: "1.0.0"
-      layer_type: base
-
-  # === FIELDS ===
-  fields:
-    cpu_limit:
-      value: 8
-      metadata:
-        basis_for_value: "CISO mandate SEC-2024-047-rev2"
-        baseline_value: 4
-      override: constrained
-      constraint_schema:
-        minimum: 1
-        maximum: 8
-```
-
----
+The complete layer structure, field by field and with an example that validates against
+`registry/layer.schema.json`, is in the normative document (§4.3). Shipped example layers, each
+validated in CI, are in `registry/examples/`: a base layer (`example-layer-base.yaml`), a core layer
+with `limits` (`example-layer-limits-baseline.yaml`), a layer that `extends` several others
+(`example-layer-extends-multi.yaml`), a request layer using `from_layers` and `skip`
+(`example-layer-request-scoped.yaml`), and reference-data layers
+(`example-reference-data-network-zone.yaml`).
 
 ---
 
