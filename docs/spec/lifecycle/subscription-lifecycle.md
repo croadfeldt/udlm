@@ -25,7 +25,7 @@ A Subscription follows every universal Data property defined in [foundations.md]
 
 - **UUID** — stable across full lifecycle
 - **Type** — `dcm.subscription` (registered in the Resource Type Registry)
-- **Lifecycle state** — exactly one state at any moment (see Section 4)
+- **Lifecycle** — the four states, like every entity (see Section 4)
 - **Identity, version and status** — handle, version, status (layering-and-versioning §4b)
 - **Provenance** — field-level lineage on every modification
 - **Data classification** — per-field classification, inherited from managed entities and subscription terms
@@ -87,9 +87,9 @@ subscription:
     - entity_uuid: <uuid>
       role: "replica"
 
-  # ── Lifecycle ──────────────────────────────────────────────────
-  lifecycle_state: "ACTIVE"
-  
+  # ── What the consumer wants (Section 4) ────────────────────────
+  desired_state: active                  # active | suspended | cancelled
+
   # ── Identity and version ───────────────────────────────────────
   version: "1.0.0"
   provenance: { ... }                    # Field-level provenance per universal model
@@ -187,49 +187,43 @@ Catalog items that only support one-time requests simply omit `subscription_tier
 
 ---
 
-## 4. Subscription Lifecycle States
+## 4. Subscription lifecycle
 
-```
-Consumer submits subscription request
-    │
-    ▼
-PENDING ──────────── Policy evaluation + approval routing
-    │
-    ▼
-PROVISIONING ─────── Provider creates initial managed entities
-    │
-    ▼
-ACTIVE ───────────── Ongoing — provider fulfills subscription obligations
-    │
-    ├──→ SUSPENDED ── Consumer or policy suspends; managed entities suspended
-    │       │
-    │       └──→ ACTIVE (resumed)
-    │
-    ├──→ RENEWAL_PENDING ── Approaching expiry with auto_renew
-    │       │
-    │       ├──→ ACTIVE (renewed — new terms_version)
-    │       └──→ EXPIRED (renewal failed or declined)
-    │
-    ├──→ TIER_CHANGE_PENDING ── Consumer requested tier change
-    │       │
-    │       └──→ ACTIVE (new tier applied)
-    │
-    ├──→ EXPIRED ──── Terms expired without renewal
-    │       │
-    │       └──→ DECOMMISSIONING (grace period passed)
-    │
-    └──→ CANCELLED ── Consumer or admin cancels
-            │
-            └──→ DECOMMISSIONING → DECOMMISSIONED
-```
+A subscription is an entity, so its lifecycle is the four states: its intent, the request the
+control plane assembled, what the provider realized, and what discovery observed, ending in
+Decommissioned. Two other things change over a subscription's life, and each has its own home. None
+of them is a second status field (core tenet T7: every field earns its place).
 
-**Terminal states:** DECOMMISSIONED, CANCELLED (after entity cleanup).
+| What changes | Where it lives |
+|---|---|
+| Where the order is | The four state records. A tier change is a new request: Requested until the provider realizes the new tier. |
+| What the consumer wants | `desired_state`, a spec element: `active`, `suspended` or `cancelled`. The same pattern as Machine.VM's `run_state.desired_state`. |
+| Where the terms stand | Derived from `terms`, never stored. Renewal is due within `renewal_advance_notice` of `expires_at` when `auto_renew` is set. The subscription is expired once `expires_at` passes without renewal. |
 
-**Grace period:** When a subscription transitions to EXPIRED or CANCELLED, managed entities are not immediately decommissioned. A configurable grace period (default: P30D) allows the consumer to renew, export data, or transition to a different subscription. During the grace period, entities remain in OPERATIONAL but new provisioning under the subscription is blocked.
+**What each older status value was.** An earlier draft kept one status field with these values:
 
-### 4.1 State Transitions and Policy Triggers
+| Older status | Now |
+|---|---|
+| `PENDING` | Intent or Requested: policy evaluation and approval are running |
+| `PROVISIONING` | Requested, before the provider reports the subscription realized |
+| `ACTIVE` | Realized, with `desired_state: active` |
+| `SUSPENDED` | Realized, with `desired_state: suspended`; managed entities follow through their own run state |
+| `RENEWAL_PENDING` | Derived from the terms: renewal is due |
+| `TIER_CHANGE_PENDING` | A request for the new tier: Requested, not yet Realized |
+| `EXPIRED` | Derived from the terms: past `expires_at` without renewal |
+| `CANCELLED` | `desired_state: cancelled` |
+| `DECOMMISSIONING`, `DECOMMISSIONED` | Decommissioned; decommissioning is that request in flight |
 
-Every state transition fires a subscription lifecycle event (see Section 7) and triggers policy evaluation. Policies govern:
+**Grace period.** When a subscription expires, or its `desired_state` becomes `cancelled`, managed
+entities are not decommissioned at once. A configurable grace period (default P30D) lets the consumer
+renew, export data or move to another subscription. During it, managed entities stay realized but no
+new provisioning happens under the subscription. When it ends, the control plane requests
+decommissioning.
+
+### 4.1 Changes and policy triggers
+
+Every change — a new request, a change of `desired_state`, renewal coming due, expiry — fires a
+subscription event (Section 7) and triggers policy evaluation. Policies govern:
 
 - Whether auto-renewal is permitted for this tenant/tier/resource type
 - Whether tier upgrades require approval (compliance-class Validation Policy)
@@ -313,21 +307,21 @@ All subscription events use the standard event envelope ([event-catalog.md](../c
 
 | Event Type | Fires When | Urgency |
 |------------|-----------|---------|
-| `subscription.created` | New subscription enters PENDING | medium |
-| `subscription.activated` | Subscription transitions to ACTIVE | medium |
-| `subscription.suspended` | Subscription suspended (consumer or policy) | high |
-| `subscription.resumed` | Subscription resumes from SUSPENDED | medium |
-| `subscription.renewal_pending` | Approaching expiry with auto_renew | medium |
+| `subscription.created` | A subscription intent is recorded | medium |
+| `subscription.activated` | The subscription is realized for the first time | medium |
+| `subscription.suspended` | `desired_state` becomes `suspended` (consumer or policy) | high |
+| `subscription.resumed` | `desired_state` returns to `active` from `suspended` | medium |
+| `subscription.renewal_pending` | Renewal comes due (derived from the terms) | medium |
 | `subscription.renewed` | Renewal completed — new terms_version | medium |
 | `subscription.renewal_failed` | Renewal attempt failed (payment, policy, provider) | high |
 | `subscription.tier_changed` | Tier upgrade or downgrade applied | medium |
 | `subscription.update_applied` | Provider-originated update applied to managed entity | low |
 | `subscription.update_rejected` | Consumer rejected a provider-originated update | medium |
 | `subscription.expiry_approaching` | Within renewal_advance_notice of expiry | high |
-| `subscription.expired` | Subscription reached expiry without renewal | high |
-| `subscription.cancelled` | Consumer or admin cancelled subscription | high |
-| `subscription.decommissioning` | Grace period ended — entities being decommissioned | critical |
-| `subscription.decommissioned` | All managed entities decommissioned — terminal | medium |
+| `subscription.expired` | `expires_at` passes without renewal | high |
+| `subscription.cancelled` | `desired_state` becomes `cancelled` (consumer or admin) | high |
+| `subscription.decommissioning` | The grace period ended; the decommission request is in flight | critical |
+| `subscription.decommissioned` | The subscription is Decommissioned — terminal | medium |
 
 ---
 
