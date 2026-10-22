@@ -368,13 +368,12 @@ audit_record:
 Recovery Policies are a formal UDLM policy type alongside Validation and Transformation. They use the same authoring model, the same artifact store, the same shadow mode validation, the same activation workflow, and the same audit trail.
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 recovery_policy:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "system/recovery/discard-on-timeout"
-    version: "1.0.0"
-    status: active
-    owned_by: { display_name: "Platform Team" }
+  uuid: <uuid>
+  handle: "system/recovery/discard-on-timeout"
+  version: "1.0.0"
+  status: active
 
   policy_type: recovery
   trigger: DISPATCH_TIMEOUT         # the trigger condition this policy handles

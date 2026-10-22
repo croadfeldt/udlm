@@ -91,8 +91,9 @@ State meanings: **REQUESTED** (Intent assembled, Requested committed) · **PENDI
 The field set is not incidental — each group exists to serve a specific capability the entity type promises: **ownership/allocation** fields drive decommission safety and cost attribution (ownership-sharing-allocation.md); **provider** fields carry the realized identity that changes across rehydration; **TTL/billing** fields drive expiry and chargeback; **drift** fields carry the last Discovered-vs-Realized comparison; **rehydration** fields gate and record re-instantiation; **provenance** makes every value auditable. An implementation that does not use a capability simply leaves its fields null — they are optional carriers, not mandatory ceremony.
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 resource_entity:
-  # Universal artifact metadata
+  # Identity
   uuid: <uuid>                          # stable across full lifecycle including rehydration
   handle: <string>                      # human-readable stable identifier
   resource_type: <fqn>                  # e.g., Machine.VM

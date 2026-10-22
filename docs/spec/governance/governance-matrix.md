@@ -202,15 +202,14 @@ context:
 ### 3.1 The Governance Matrix Rule
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 governance_matrix_rule:
-  # Artifact metadata (standard substrate artifact)
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "system/matrix/phi-federation-boundary"
-    version: "1.0.0"
-    status: active                       # developing | proposed | active | deprecated | retired
-    owned_by: { display_name: "Platform Security" }
-    tier: system | platform | tenant | resource_type | entity
+  # Identity, version and status (layering-and-versioning §4b)
+  uuid: <uuid>
+  handle: "system/matrix/phi-federation-boundary"
+  version: "1.0.0"
+  status: active                       # active | deprecated | retired
+  tier: system | platform | tenant | resource_type | entity
 
   description: "PHI must not cross to federated peers without HIPAA accreditation"
   rationale: "HIPAA 45 CFR 164.502 — minimum necessary standard for PHI disclosure"
@@ -307,13 +306,13 @@ The specific algorithm by which an implementation performs collection, sorting, 
 Sovereignty zones are first-class artifacts that define geopolitical and regulatory boundaries. They are an input to the governance matrix — rules reference zones, not raw country codes. The artifact shape is normative:
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 sovereignty_zone:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "zones/eu-west-sovereign"
-    version: "1.0.0"
-    status: active
-    tier: system | platform
+  uuid: <uuid>
+  handle: "zones/eu-west-sovereign"
+  version: "1.0.0"
+  status: active
+  tier: system | platform
 
   display_name: "EU Western Europe Sovereign Zone"
   description: "GDPR-covered EU member states with NIS2 alignment"

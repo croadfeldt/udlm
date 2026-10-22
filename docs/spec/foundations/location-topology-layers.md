@@ -99,18 +99,12 @@ The substrate requires that custom layer types can be added without modifying th
 Each location node is a first-class UDLM artifact. The wire shape is normative for all layer types:
 
 ```yaml
+# illustrative: layer shape; the layer schema is layer.schema.json
 layer:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "locations/<type>/<code>"     # standard handle pattern: locations/{type}/{code}
-    version: "1.2.0"
-    status: active
-    owned_by:
-      display_name: "Owning Authority"
-      group_handle: "groups/<owning-group>"
-      notification_endpoint: <endpoint>
-    created_via: pr
-    created_at: <ISO 8601>
+  uuid: <uuid>
+  handle: "locations/<type>/<code>"     # standard handle pattern: locations/{type}/{code}
+  version: "1.2.0"
+  status: { state: active }
 
   # Layer classification
   layer_type: core                        # always 'core' for location layers

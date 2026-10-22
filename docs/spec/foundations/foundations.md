@@ -46,7 +46,7 @@ describing where each field value came from.
 - **UUID** — every Data artifact has a universally unique identifier, stable across its full lifecycle
 - **Type** — every Data artifact has a declared type that determines its schema and valid field set
 - **Lifecycle state** — every Data artifact is in exactly one lifecycle state at any moment
-- **Artifact metadata** — every Data artifact carries a standard metadata block (handle, version, status, owned_by, created_by, created_via, contact modes); the **complete v1 field set** is defined canonically in [layering-and-versioning.md](layering-and-versioning.md) §4b, not a representative sample
+- **Identity, version and status** — every Data artifact carries its own `uuid`, `handle`, `version` and `status`; who did what is the audit record, and what changed is version control. [layering-and-versioning.md](layering-and-versioning.md) §4b maps each job to its home
 - **Provenance** — every field in every Data artifact carries lineage metadata describing its origin and all modifications
 - **Data classification** — every field carries a classification (public → classified) governing what may cross interaction boundaries
 - **Immutability if versioned** — once a version is published, it cannot be modified; changes produce new versions

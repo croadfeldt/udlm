@@ -51,8 +51,8 @@ to the Resource family's Realized-vs-Discovered drift. This *is* DAV's gap analy
 
 ## 3. Shared semantics
 
-- **Universal contracts honored:** UUID stable across lifecycle; the artifact-metadata
-  block (handle, version, status, owned_by, created_by, created_via); field-level
+- **Universal contracts honored:** UUID stable across lifecycle; record identity, version
+  and status (layering-and-versioning §4b); field-level
   provenance; data classification; contributor identity (the LLM-proposes / human-curates
   step is UDLM's federated-contribution model).
 - **Provenance is first-order:** every field records origin — e.g. a `Capability.domain`

@@ -38,7 +38,7 @@ All sources follow the same pattern: ingest, enrich, and promote. The same data 
 
 **Non-blocking.** Entities that cannot be immediately assigned a Tenant do not block migration or discovery. They land in the `__transitional__` Tenant and are resolved progressively. Migration does not require every entity to be assigned before any entity can proceed.
 
-**Provenance transparency.** Ingested entities are honest about their provenance depth. `created_via: migration` or `created_via: discovery` on the artifact metadata signals that the chain has limited depth. The ingestion record carries the confidence level.
+**Provenance transparency.** Ingested entities are honest about their provenance depth. The audit record of an ingestion (`migration` or `discovery`) signals that the chain has limited depth. The ingestion record carries the confidence level.
 
 **Promotion gates governance.** An entity in a holding state cannot be the parent of a new allocated resource claim, cannot be used as a hard dependency by new requests, and cannot receive new operational relationships until promoted. Informational relationships are permitted — entities can be referenced during enrichment.
 
@@ -91,6 +91,7 @@ Before an entity can be promoted, the following must be satisfied:
 The `__transitional__` Tenant is a substrate-required system artifact — a system-managed holding area for entities that have been ingested but not yet assigned to a real Tenant. Any UDLM-conformant implementation MUST provide this Tenant.
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 tenant:
   uuid: <system-assigned — stable across deployments>
   handle: "__transitional__"
@@ -102,11 +103,7 @@ tenant:
     escalation_endpoint: <notification endpoint — platform admin>
   hard_tenancy:
     cross_tenant_relationships: operational_only
-  artifact_metadata:
-    created_by:
-      display_name: "Ingestion System"
-    created_via: system
-    status: active
+  status: active
 ```
 
 **Substrate-required properties:**

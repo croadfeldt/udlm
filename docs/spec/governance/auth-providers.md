@@ -48,14 +48,12 @@ Authentication and credential issuance are **capabilities** (yields) a provider 
 The registration shape is normative — any conformant implementation MUST accept registrations in this form:
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 auth_provider_registration:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "providers/auth/corporate-freeipa"
-    version: "1.0.0"
-    status: active
-    owned_by:
-      display_name: "Platform Team"
+  uuid: <uuid>
+  handle: "providers/auth/corporate-freeipa"
+  version: "1.0.0"
+  status: active
 
   name: "Corporate FreeIPA"
   description: "Primary enterprise directory — FreeIPA with Kerberos"

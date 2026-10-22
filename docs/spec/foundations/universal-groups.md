@@ -30,16 +30,12 @@ The **Universal Group Model** expresses every grouping need — tenancy, resourc
 ### 2.1 Universal Structure
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 dcm_group:
-  artifact_metadata:
-    uuid: <uuid — immutable, assigned at creation>
-    handle: <domain/class/name — e.g., org/tenant/payments-bu>
-    version: <Major.Minor.Revision>
-    status: <developing|proposed|active|deprecated|retired>
-    created_by: <standard actor record>
-    owned_by: <standard actor record>
-    created_via: <pr|api|migration|system>
-    modifications: <append-only history>
+  uuid: <uuid — immutable, assigned at creation>
+  handle: <domain/class/name — e.g., org/tenant/payments-bu>
+  version: <Major.Minor.Revision>
+  status: <active | deprecated | retired>
 
   # IDENTITY
   name: <human-readable name>
@@ -596,12 +592,12 @@ Without a cross-tenant authorization, entities in different Tenants cannot form 
 ### 13.2 Authorization Lifecycle
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 cross_tenant_authorization:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "org/cross-tenant-auth/networkops-to-appteam-vlan100"
-    version: "1.0.0"
-    status: active
+  uuid: <uuid>
+  handle: "org/cross-tenant-auth/networkops-to-appteam-vlan100"
+  version: "1.0.0"
+  status: active
 
   granting_tenant_uuid: <networkops-tenant-uuid>
   receiving_tenant_uuid: <appteam-tenant-uuid>

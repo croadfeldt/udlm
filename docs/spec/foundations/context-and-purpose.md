@@ -161,37 +161,18 @@ This constraint is what makes the following capabilities trustworthy:
 
 ---
 
-## 5a. Artifact Metadata Standard
+## 5a. Record identity and accountability
 
-Every UDLM artifact — layers, policies, resource types, catalog items, provider registrations, entity definitions, and all other defined or stored objects — carries a universal **Artifact Metadata** block. This is a structural requirement that applies to all artifacts without exception.
+Every governed record says what it is (`uuid`, `handle`), which version it is (`version`), whether it
+is in force (`status`: `active`, `deprecated` or `retired`), and who may author it (`contributor`). Who
+did what is the audit record of each submission; what changed is version control; who set each value
+of an entity is field-level `provenance`. These replace the retired `artifact_metadata` block.
 
-### The Purpose
+Drafting and review are stages of a change before it becomes a record, not record states. An
+accountable owner and their contact have no schema field yet; reaching them is a control-plane
+obligation (#632).
 
-Artifact metadata answers: **who created this, when, who owns it, what changed, and how do we contact them?** It is the identity and accountability record for the artifact itself — distinct from field-level provenance which tracks data value lineage.
-
-### The Five Artifact Statuses
-
-All control-plane artifacts follow a five-status lifecycle:
-
-| Status | Meaning | Key Behavior |
-|--------|---------|-------------|
-| `developing` | In active development | Dev mode / dev pipeline only. Not applied in production. |
-| `proposed` | Submitted for validation | Shadow execution for policies — output captured, not applied. In PR review for data artifacts. |
-| `active` | Live and governing | Applied to all relevant requests. |
-| `deprecated` | Being phased out | Still works, replacement available, warning on use. |
-| `retired` | End of life | Cannot be used. Terminal status. |
-
-### Key Design Decisions
-
-**created_by vs owned_by:** Deliberately separate. The creator is the audit record — who physically submitted the artifact. The owner is the accountability record — who is responsible and receives notifications for conflicts, deprecation warnings, and policy violations.
-
-**Contact info — two modes:** When an Identity Provider is registered, the `uuid` field links to the IdP record and `display_name` is a non-authoritative display cache. In standalone/air-gapped mode, `uuid` is absent and `display_name` + `email` are the primary identity fields. Both modes are fully supported.
-
-**created_via:** Declares the ingestion path — `pr` (full GitOps review history), `api` (direct submission), `migration` (imported, limited provenance), `system` (control-plane-created). Makes audit quality transparent.
-
-**Proposed shadow execution:** Policy artifacts in `proposed` status execute in shadow mode against real traffic — output is captured and reported but never applied. Enables safe validation before activation.
-
-See [Data Layers and Assembly — Section 4b](layering-and-versioning.md) for the complete artifact metadata structure and all field definitions.
+See [Data Layers and Assembly — §4b](layering-and-versioning.md) for where each job lives.
 
 ---
 

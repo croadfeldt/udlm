@@ -219,6 +219,7 @@ The owning Tenant pre-defines allocations on the parent resource:
 
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 parent_resource_entity:
   uuid: <uuid>
   tenant_uuid: <Infrastructure Tenant uuid>
@@ -240,7 +241,7 @@ parent_resource_entity:
       claimed_by_tenant_uuid: <Tenant A uuid>
       claimed_entity_uuid: <uuid of Tenant A's allocated entity>
       claimed_at: <ISO 8601>
-      notification_endpoint: <Tenant A's contact — from artifact metadata>
+      notification_endpoint: <Tenant A's contact — no schema field yet (#632)>
       # Parent uses this to notify Tenant A of lifecycle changes
 ```
 
@@ -249,6 +250,7 @@ parent_resource_entity:
 When a consuming Tenant claims an available allocation, the control plane creates a first-class entity in the consuming Tenant's scope:
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 allocated_entity:
   uuid: <uuid — consuming Tenant's own entity>
   family: Resource  # ownership_model: allocation (ADR-027); shape derived — Atomic (no constituents)
@@ -286,8 +288,7 @@ allocated_entity:
         owning_tenant_policy_uuid: <policy permitting this allocation>
         consuming_tenant_policy_uuid: <policy permitting this dependency>
 
-  artifact_metadata:
-    <standard — owned_by Tenant A>
+  tenant_uuid: <Tenant A>
 ```
 
 ### 7.4 Lifecycle Event Propagation

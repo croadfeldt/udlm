@@ -1,7 +1,7 @@
 # UDLM — Data Layers and the Assembly Process
 
 **What this settles.** The normative contract for how a request payload is assembled from
-layers: the merge rules, the provenance obligation, the artifact-metadata standard, and the
+layers: the merge rules, the provenance obligation, record identity and status (§4b), and the
 `LAY-00x`/`OPS-00x` system policies an implementer must satisfy. Worked examples, the assembly
 diagram at scale, and the resolved-questions log live in the non-normative
 [Layering Annex](layering-and-versioning-annex.md), which adds no requirements.
@@ -378,16 +378,12 @@ select it.
 **Example — OS Image layer:**
 
 ```yaml
+# illustrative: layer shape; the layer schema is layer.schema.json
 layer:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "platform/os-images/rhel-9-4-approved"
-    version: "1.0.0"
-    status: active
-    owned_by:
-      display_name: "Platform Security Team"
-      group_handle: "groups/platform-security"
-    created_via: pr
+  uuid: <uuid>
+  handle: "platform/os-images/rhel-9-4-approved"
+  version: "1.0.0"
+  status: { state: active }
 
   layer_type: reference_data
   reference_data_type: os_image
@@ -417,16 +413,12 @@ layer:
 **Example — VM Size layer:**
 
 ```yaml
+# illustrative: layer shape; the layer schema is layer.schema.json
 layer:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "platform/vm-sizes/medium-general-purpose"
-    version: "2.1.0"
-    status: active
-    owned_by:
-      display_name: "Platform Team"
-      group_handle: "groups/platform-team"
-    created_via: pr
+  uuid: <uuid>
+  handle: "platform/vm-sizes/medium-general-purpose"
+  version: "2.1.0"
+  status: { state: active }
 
   layer_type: reference_data
   reference_data_type: vm_size
@@ -664,13 +656,13 @@ Layer Groups enable:
 - **Governance** — activate or deactivate a concern's worth of layers in one operation
 
 ```yaml
+# illustrative: layer shape; the layer schema is layer.schema.json
 # A Layer Group — grouping with record kind: layer_grouping
 dcm_group:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "platform/layer-groups/pci-network-standards"
-    version: "1.0.0"
-    status: active
+  uuid: <uuid>
+  handle: "platform/layer-groups/pci-network-standards"
+  version: "1.0.0"
+  status: active
   record kind: layer_grouping
   concern_tags: [pci-dss, networking, standards]
   members:
@@ -690,16 +682,12 @@ dcm_group:
 Every layer carries: identity, domain and authority, compatibility metadata, per-field override metadata, and usage context. This mirrors the richness of a Policy registration.
 
 ```yaml
+# illustrative: layer shape; the layer schema is layer.schema.json
 layer:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "platform/core/default-dns-config"
-    version: "1.2.0"
-    status: active
-    owned_by:
-      display_name: "Platform Infrastructure Team"
-      notification_endpoint: <endpoint>
-    created_via: pr   # pr | api | migration | system
+  uuid: <uuid>
+  handle: "platform/core/default-dns-config"
+  version: "1.2.0"
+  status: { state: active }
 
   # DOMAIN AND AUTHORITY
   domain: platform
@@ -825,118 +813,58 @@ Higher number = higher priority. Organizations adopt, adapt, or ignore this taxo
 
 ---
 
-## 4b. Artifact Metadata Standard
+## 4b. Record identity and accountability
 
-Every control-plane artifact — layers, policies, resource types, catalog items, provider registrations, entity definitions, and all other defined or stored objects — carries a standard **Artifact Metadata** block. This is a structural requirement, not optional.
+Every governed record — a layer, a policy, a class, a profile, a provider registration — says what it
+is, which version it is, whether it is in force, and who answers for it. These used to live in one
+`artifact_metadata` block. That block is retired: each of its jobs now has its own home in the
+record envelope, the audit record or version control, and the schemas enforce them.
 
-The artifact metadata block answers: **who created this, when, who owns it, what changed, and how do we contact them?**
+### 4b.1 Where each job lives
 
-### 4b.1 Universal Artifact Metadata Structure
+| Job | Old `artifact_metadata` field | Where it lives now |
+|---|---|---|
+| Identity | `uuid`, `handle` | The record's own top-level `uuid` and `handle` (ADR-051: the uuid is frozen identity). |
+| Version | `version` | The record's top-level `version`, under the publish law (`registry/VERSIONING.md`). |
+| In force or not | `status`, `status_detail` (deprecated, retired) | The record's top-level `status`. On a layer or policy it is an object: `state` (`active`, `deprecated`, `retired`) with `deprecation_date`, `sunset_date`, `replacement_uuid`, `deprecation_reason` and `migration_guidance`. On a class it is `status` plus a `deprecation` block. |
+| Drafting and review | `status: developing`, `status: proposed`, `shadow_execution` | Not a record state: `developing` and `proposed` are stages of the change before it merges (§4b.2), and shadow execution happens during review (§4b.3). |
+| Who did what | `created_by`, `created_at`, `created_via`, `modifications` | The audit record of each submission (`audit-record.schema.json`). |
+| What changed | `change_summary`, `pr_reference`, `version_before`/`version_after` | Version control history. A record carries no history of itself: a mutable record bumps its version, an immutable one is superseded by a new record. |
+| Who may author it | `contributed_by` | The `contributor` block (`contributor_type`, `review`) on records a contributor authors; the individual actor and reviewers are on the submission's audit record (federated-contribution-model §9). |
+| Which tenant owns it | `owned_by` (a tenant) | `tenant_uuid`. |
+| Display | display name, notes | `metadata` (`display_name`, `description`, `notes`). |
+| Accountable owner and contact | `owned_by` (a team or person), `notification_endpoint` | No schema field yet. Naming an accountable owner and reaching them is a control-plane obligation (§4b.4) until it is modelled (#632). |
 
-```yaml
-artifact_metadata:
+Field-level lineage — who set each value of an entity — is a separate job: `provenance` on the state
+records (four-states §2.7).
 
-  # Identity
-  uuid: <uuid — assigned by the control plane at creation, immutable>
-  handle: <domain/type/name — human-readable stable identifier>
+### 4b.2 Record status and the authoring pipeline
 
-  # Versioning
-  version: <Major.Minor.Revision>
-  status: <developing|proposed|active|deprecated|retired>
+A record in the store is in exactly one of three states:
 
-  # Status detail — populated per status
-  status_detail:
-    # When status: proposed
-    proposed_at: <ISO 8601>
-    proposed_by:
-      uuid: <actor UUID — optional>
-      display_name: <required>
-      email: <optional>
-    shadow_execution:
-      enabled: <true|false — only meaningful for policy artifacts>
-      started_at: <ISO 8601>
-      evaluation_count: <integer — requests shadowed so far>
-      validation_dashboard_url: <URL to shadow output review>
+| State | Meaning | Applied? |
+|---|---|---|
+| `active` | Live and governing. | Yes |
+| `deprecated` | Being phased out; a replacement is named. Works, with a warning. | Yes |
+| `retired` | End of life. Kept for history; cannot be selected. | No |
 
-    # When status: deprecated
-    deprecated_at: <ISO 8601>
-    deprecated_by:
-      uuid: <actor UUID>
-      display_name: <required>
-    replacement_uuid: <UUID of replacement artifact>
-    replacement_handle: <handle of replacement artifact>
-    deprecation_reason: <human-readable>
-    migration_guidance: <what users should do>
-    sunset_date: <ISO 8601 — when it becomes retired>
+**Transitions:** `active` → `deprecated` (a replacement and sunset date are declared) → `retired`
+(the sunset date passes, or an administrator retires it). `retired` is terminal.
 
-    # When status: retired
-    retired_at: <ISO 8601>
-    retired_by:
-      uuid: <actor UUID>
-      display_name: <required>
+Before a record is in the store, its change passes through two pipeline stages. They are stages of
+the change, never values of the record's `status`:
 
-  # Origination
-  created_by:
-    uuid: <actor UUID — optional when no Identity Provider registered>
-    display_name: <required — human-readable name>
-    email: <optional — direct contact fallback>
-    notification_endpoint: <optional — automated notification target>
-  created_at: <ISO 8601>
-  created_via: <pr|api|migration|system>
-  # pr:        submitted via GitOps PR workflow — full review history available
-  # api:       submitted via direct API
-  # migration: imported from external system — provenance depth may be limited
-  # system:    created by the control plane itself (entity stubs, system artifacts)
+| Stage | Meaning |
+|---|---|
+| `developing` | Drafted on a branch. Used only by development pipelines. |
+| `proposed` | Under review: the CI pipeline validates it (§4c), reviewers approve it, and a policy change is shadow-run (§4b.3). |
 
-  # Ownership — may differ from creator
-  owned_by:
-    uuid: <actor or team UUID — optional>
-    display_name: <required — team or individual name>
-    email: <optional>
-    notification_endpoint: <optional — receives conflict and deprecation alerts>
-  # Note: created_by is the audit record (who physically submitted it)
-  # owned_by is the accountability record (who is responsible and gets notified)
+Merging makes the record `active`. A change that is abandoned never becomes a record. Where other
+documents say a contribution "enters proposed status", they mean this stage.
 
-  # Modification history — append-only
-  modifications:
-    - sequence: 1
-      modified_by:
-        uuid: <actor UUID — optional>
-        display_name: <required>
-        email: <optional>
-      modified_at: <ISO 8601>
-      modification_type: <create|update|deprecate|retire|restore|status_change>
-      version_before: <Major.Minor.Revision>
-      version_after: <Major.Minor.Revision>
-      change_summary: <human-readable — what changed>
-      pr_reference: <Git PR URL — if via PR workflow>
-      reason: <why this change was made>
-```
+### 4b.3 Shadow execution for policies under review
 
-### 4b.2 The Five Artifact Statuses
-
-| Status | Meaning | Executes? | Output Applied? | Output Captured? | Merges to Active? |
-|--------|---------|-----------|----------------|-----------------|------------------|
-| `developing` | In active development. Development mode / dev pipeline only. | Dev mode only | No | Dev logs only | No — must transition to proposed first |
-| `proposed` | Development complete. Submitted for validation. Shadow mode for policies. | Yes (shadow) | No | Yes — validation report | Yes — after review approval |
-| `active` | Live and governing. Applied to all relevant requests. | Yes | Yes | Yes — audit/provenance | N/A |
-| `deprecated` | Being phased out. Replacement available. Works but warns. | Yes | Yes | Yes — with deprecation warning | N/A |
-| `retired` | End of life. Cannot be used. | No | No | No | No |
-
-**Status transition rules:**
-```
-developing → proposed  (author submits for review)
-developing → retired   (author abandons without proposing)
-proposed   → active    (reviewers approve — via PR merge or API approval)
-proposed   → developing (returned for rework)
-active     → deprecated (replacement available — sunset date declared)
-deprecated → retired   (sunset date reached or manual retirement)
-retired    → (terminal — no transitions out)
-```
-
-### 4b.3 Proposed Status — Shadow Execution for Policies
-
-When a policy artifact is in `proposed` status, it runs in **shadow mode** against real request traffic:
+While a policy change is under review, the control plane runs it in **shadow mode** against real request traffic:
 
 - Executes alongside active policies on every relevant request
 - Output is captured in a `proposed_evaluation_record` — what it would have done
@@ -949,31 +877,25 @@ the request and tenant, whether the policy would have applied, and the full woul
 (rejection + reason, patches, warnings) — never applied to the request, feeding the Validation
 Dashboard. The capture's shape is the control plane's implementation; this content is the contract.
 
-### 4b.4 Contact Info — Two Modes
+### 4b.4 Owner contact and notifications (no schema field yet)
 
-Contact information supports both IdP-backed and standalone deployments:
+Someone must answer for each record and hear about events that affect it. The control plane owes
+these notifications; the model has no field yet for the accountable owner or their contact, so how
+an implementation records them is its own until #632 models it.
 
-**Mode 1 — Identity Provider backed:**
-The `uuid` field contains control-plane external entity reference UUID linking to an Identity.Person or IdentityGroup in a registered Information Provider. The `display_name` is cached non-authoritatively for UI display. The control plane can resolve the full identity record via the Information Provider on demand.
-
-**Mode 2 — Standalone (no Identity Provider):**
-The `uuid` field is absent. `display_name`, `email`, and `notification_endpoint` are the primary identity fields. The control plane accepts and records these directly without external verification. This mode supports bootstrapping, air-gapped deployments, and organizations that have not yet registered an Identity Information Provider.
-
-Both modes are fully supported. An organization can start in standalone mode and migrate to IdP-backed mode by adding `uuid` fields to existing artifact metadata — no other changes required.
-
-### 4b.5 Notifications from Artifact Metadata
-
-The `owned_by.notification_endpoint` is the target for all proactive control-plane notifications about an artifact:
-
-| Event | Who Is Notified |
+| Event | Who is notified |
 |-------|----------------|
-| Layer conflict detected at ingestion | Owner of new layer AND owner of conflicting existing layer |
-| Layer deprecated | Owners of all artifacts that reference the deprecated layer |
-| Provider deregistered | Owners of all catalog items backed by that provider |
+| Layer conflict detected at ingestion | Owner of the new layer and owner of the conflicting layer |
+| Layer deprecated | Owners of every record that references the deprecated layer |
+| Provider deregistered | Owners of every catalog item backed by that provider |
 | Policy violation | Owner of the entity that violated the policy |
 | Drift detected | Owner of the entity that drifted |
-| Proposed policy shadow shows high/critical impact | Policy owner and designated reviewers |
-| Artifact approaching sunset date | Artifact owner |
+| Shadow run of a policy under review shows high or critical impact | Policy owner and the reviewers |
+| Record approaching its sunset date | Record owner |
+
+An owner can be named by identity — an `Identity` or `IdentityGroup` uuid resolved through a
+registered information provider — or, with no identity provider (bootstrapping, air-gapped), by a
+display name and contact address recorded as given.
 
 ---
 
@@ -989,7 +911,7 @@ When a layer is committed to the Layer Store (Git branch created or updated):
 flowchart TD
     G["Layer committed to Git branch"]
     CI["CI Pipeline fires automatically"]
-    S1["1. Schema validation<br/>Is the layer well-formed per the layer schema?<br/>Does it carry required artifact metadata?<br/>Is the version correctly incremented?"]
+    S1["1. Schema validation<br/>Is the layer well-formed per the layer schema?<br/>Does it carry its identity, version and status?<br/>Is the version correctly incremented?"]
     S2["2. Handle validation<br/>Is the handle unique in the control plane?<br/>Does the handle match the Git path?<br/>Does the domain match the submitting actor's authorization?"]
     S3["3. Scope validation<br/>If type-scoped: do declared resource types exist in the registry?<br/>Is the layer type consistent with the domain?"]
     S4["4. Priority validation<br/>Is the priority value in valid dotted-notation format?<br/>Does the priority category match the domain advisory range?<br/>(Warning only if category/domain mismatch — not a block)"]
@@ -1032,7 +954,7 @@ Because conflict detection runs at ingestion, all layers resident in the control
 
 ## 4d. Complete Layer Definition Structure
 
-> A complete worked example combining artifact metadata, identity, scope,
+> A complete worked example combining identity, status, scope,
 > priority, layer chain, and fields has moved to the non-normative
 > [Layering Annex](layering-and-versioning-annex.md) (“Complete Layer
 > Definition Structure”). The normative field/metadata rules are in §4 and §4b above.
@@ -1534,27 +1456,18 @@ All layers follow the universal the control plane versioning scheme: **Major.Min
 
 ---
 
-## 10. Artifact Lifecycle — The Five Statuses
+## 10. Layer status
 
-All control-plane artifacts — layers, policies, resource types, catalog items, and all other defined objects — follow a five-status lifecycle. The statuses are defined in Section 4b.2. For layers specifically:
+A layer in the store has one of the three record states of §4b.2. For layers specifically:
 
-| Status | Layer Behavior |
-|--------|---------------|
-| `developing` | Layer is in active development. Only usable in development mode pipelines. Not loaded by the assembly process in production. |
-| `proposed` | Layer has been submitted for review (PR open). Not yet active. For policy layers: shadow execution runs. For data layers: layer is visible in the registry but not applied. Cannot merge to active until PR is approved. |
-| `active` | Layer is current and applied in assembly. Can be included in new layer chains. |
-| `deprecated` | Layer is being phased out. Existing chains using it continue to function. New chains should use the replacement. Deprecation warning recorded in assembly provenance. Must include replacement UUID, reason, migration guidance, and sunset date. |
-| `retired` | Layer cannot be included in new layer chains. Existing realized entities that reference it retain the reference for audit purposes but cannot be used for new requests. |
+| State | Layer behaviour |
+|-------|---------------|
+| `active` | Applied in assembly. Can be included in new layer chains. |
+| `deprecated` | Being phased out. Existing chains using it keep working; new chains should use the replacement. A deprecation warning is recorded in assembly provenance. The layer's `status` names the replacement, the reason, migration guidance and the sunset date. |
+| `retired` | Cannot be included in new layer chains. Realized entities that referenced it keep the reference for audit, but it cannot be used for new requests. |
 
-**Status transition rules for layers:**
-```
-developing → proposed   (author submits PR)
-developing → retired    (author abandons)
-proposed   → active     (PR merged — approval complete)
-proposed   → developing (PR returned for rework)
-active     → deprecated (replacement available — sunset declared)
-deprecated → retired    (sunset date reached or manual retirement)
-```
+A layer change under review is not yet a layer: assembly never loads it. For a policy layer, the
+control plane shadow-runs the change while it is under review (§4b.3).
 
 ---
 

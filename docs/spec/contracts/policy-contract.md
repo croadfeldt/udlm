@@ -258,19 +258,16 @@ Within the same domain level, DENY wins over ALLOW. More-specific domain wins ov
 
 ## 5. Base Contract — Artifact Structure
 
-All policies are first-class the control plane Data artifacts. They share the standard artifact metadata and lifecycle:
+All policies are first-class the control plane Data artifacts. They carry the standard identity, version and status (layering-and-versioning §4b):
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 policy_artifact:
-  # Standard the control plane artifact metadata (all artifacts carry this)
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "<domain>/<concern>/<name>"
-    version: "1.0.0"
-    status: developing | proposed | active | deprecated | retired
-    owned_by: { display_name: "<team>", email: "<email>" }
-    created_by: { display_name: "<actor>" }
-    created_via: pr | api | migration | system
+  # Identity, version and status (every governed record carries these)
+  uuid: <uuid>
+  handle: "<domain>/<concern>/<name>"
+  version: "1.0.0"
+  status: active | deprecated | retired
 
   # Policy classification
   policy_type: <type>                    # validation | transformation |

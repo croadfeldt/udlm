@@ -402,27 +402,23 @@ When a contributor's access is revoked (actor departs, provider deregisters, pee
 
 ---
 
-## 9. Contributor Attribution (Wire Contract)
+## 9. Contributor attribution
 
-Every artifact MUST include a `contributed_by` block in its artifact metadata. Shape is normative:
+Attribution has two parts with two homes.
+
+**Who may author the record, and the review it needs**, is on the record: its `contributor` block.
 
 ```yaml
-artifact_metadata:
-  uuid: <uuid>
-  handle: "tenant/payments/validation/cost-ceiling"
-  version: "1.0.0"
-  status: active
-  contributed_by:
-    contributor_type: consumer       # platform_admin | consumer | service_provider | peer_implementation
-    actor_uuid: <uuid>               # for consumer/platform_admin contributions
-    tenant_uuid: <uuid>              # for consumer contributions
-    provider_uuid: <uuid>            # for provider contributions
-    peer_uuid: <uuid>                # for federation contributions
-    contribution_method: api         # implementation-specific (api | gui | git_pr | federation_push | ...)
-    pr_url: "https://..."            # if submitted via a source-control PR
-    reviewed_by: [<actor_uuid>]      # actors who approved
-    reviewed_at: <ISO 8601>
+# illustrative: shape of the record, not schema-checked
+contributor:
+  contributor_type: tenant_admin     # platform_admin | tenant_admin | consumer | provider | system
+  review: per_profile                # auto | per_profile | none | dual_approval
 ```
+
+**Who actually submitted it, how, and who approved it** is on the submission's audit record
+(`audit-record.schema.json`): the acting identity, the tenant, the method (API, GUI, source-control
+pull request, federation push), the pull request if there is one, and the approving reviewers. That
+record is immutable, so attribution cannot be rewritten after the fact.
 
 ---
 
@@ -430,10 +426,10 @@ artifact_metadata:
 
 | Policy | Rule |
 |--------|------|
-| `FCM-001` | Every UDLM data artifact has a contributor. The contributor is recorded in `artifact_metadata.contributed_by` at creation and is immutable. |
+| `FCM-001` | Every UDLM data artifact has a contributor. Its `contributor` block says who may author it and the review it needs; the submission's audit record names who did, and is immutable. |
 | `FCM-002` | Contributor permissions are enforced by the Governance Matrix at submission time. Domain scope violations are hard DENY — they cannot be overridden by the contributor. |
 | `FCM-003` | All contributions flow through the universal pipeline. No contributor can write directly to the authoritative artifact store without review (unless the active profile grants auto-approval for that contributor type and artifact type combination). |
-| `FCM-004` | Policies submitted by any contributor enter proposed (shadow) status by default. Shadow mode results must be available before the active profile's shadow review period expires. |
+| `FCM-004` | A policy change from any contributor is shadow-run while under review (layering-and-versioning §4b.3). Shadow results must be available before the active profile's shadow review period expires. |
 | `FCM-005` | Platform admins may override any contributor's artifact lifecycle at any time. Override actions are audited. |
 | `FCM-006` | Orphaned artifacts (contributor access revoked) do not automatically deactivate. A platform admin assigns a new owner or explicitly retires them. Exception: sovereign profile auto-retires orphaned artifacts. |
 | `FCM-007` | Federation contributions from peer implementations are scoped by the peer's federation trust posture. Verified peers: reviewed (standard+). Vouched peers: reviewed always. Provisional peers: authorized approval. |

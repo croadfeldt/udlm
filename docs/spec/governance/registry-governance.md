@@ -317,12 +317,12 @@ The Resource Type Registry is a specialized sub-type of Information Provider —
 The registration shape is normative:
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 internal_registry_registration:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "providers/registry/org-primary"
-    version: "1.0.0"
-    status: active
+  uuid: <uuid>
+  handle: "providers/registry/org-primary"
+  version: "1.0.0"
+  status: active
 
   name: "Organization Primary Registry"
   provider_type: registry              # sub-type of information_provider
