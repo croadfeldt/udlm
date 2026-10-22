@@ -25,7 +25,7 @@ A Subscription follows every universal Data property defined in [foundations.md]
 
 - **UUID** — stable across full lifecycle
 - **Type** — `dcm.subscription` (registered in the Resource Type Registry)
-- **Lifecycle state** — exactly one state at any moment (see Section 4)
+- **Subscription status** — exactly one at any moment (see Section 4). Not the entity's `lifecycle_state`, which is its four-state position (Intent, Requested, Realized, Discovered, Decommissioned).
 - **Identity, version and status** — handle, version, status (layering-and-versioning §4b)
 - **Provenance** — field-level lineage on every modification
 - **Data classification** — per-field classification, inherited from managed entities and subscription terms
@@ -87,8 +87,8 @@ subscription:
     - entity_uuid: <uuid>
       role: "replica"
 
-  # ── Lifecycle ──────────────────────────────────────────────────
-  lifecycle_state: "ACTIVE"
+  # ── Status (Section 4) ─────────────────────────────────────────
+  subscription_status: active
   
   # ── Identity and version ───────────────────────────────────────
   version: "1.0.0"
@@ -187,45 +187,47 @@ Catalog items that only support one-time requests simply omit `subscription_tier
 
 ---
 
-## 4. Subscription Lifecycle States
+## 4. Subscription status
+
+The values of `subscription_status`, in snake_case like every value UDLM mints (row 103):
 
 ```
 Consumer submits subscription request
     │
     ▼
-PENDING ──────────── Policy evaluation + approval routing
+pending ──────────── Policy evaluation + approval routing
     │
     ▼
-PROVISIONING ─────── Provider creates initial managed entities
+provisioning ─────── Provider creates initial managed entities
     │
     ▼
-ACTIVE ───────────── Ongoing — provider fulfills subscription obligations
+active ───────────── Ongoing — provider fulfills subscription obligations
     │
-    ├──→ SUSPENDED ── Consumer or policy suspends; managed entities suspended
+    ├──→ suspended ── Consumer or policy suspends; managed entities suspended
     │       │
-    │       └──→ ACTIVE (resumed)
+    │       └──→ active (resumed)
     │
-    ├──→ RENEWAL_PENDING ── Approaching expiry with auto_renew
+    ├──→ renewal_pending ── Approaching expiry with auto_renew
     │       │
-    │       ├──→ ACTIVE (renewed — new terms_version)
-    │       └──→ EXPIRED (renewal failed or declined)
+    │       ├──→ active (renewed — new terms_version)
+    │       └──→ expired (renewal failed or declined)
     │
-    ├──→ TIER_CHANGE_PENDING ── Consumer requested tier change
+    ├──→ tier_change_pending ── Consumer requested tier change
     │       │
-    │       └──→ ACTIVE (new tier applied)
+    │       └──→ active (new tier applied)
     │
-    ├──→ EXPIRED ──── Terms expired without renewal
+    ├──→ expired ──── Terms expired without renewal
     │       │
-    │       └──→ DECOMMISSIONING (grace period passed)
+    │       └──→ decommissioning (grace period passed)
     │
-    └──→ CANCELLED ── Consumer or admin cancels
+    └──→ cancelled ── Consumer or admin cancels
             │
-            └──→ DECOMMISSIONING → DECOMMISSIONED
+            └──→ decommissioning → decommissioned
 ```
 
-**Terminal states:** DECOMMISSIONED, CANCELLED (after entity cleanup).
+**Terminal values:** `decommissioned`, and `cancelled` once entity cleanup completes.
 
-**Grace period:** When a subscription transitions to EXPIRED or CANCELLED, managed entities are not immediately decommissioned. A configurable grace period (default: P30D) allows the consumer to renew, export data, or transition to a different subscription. During the grace period, entities remain in OPERATIONAL but new provisioning under the subscription is blocked.
+**Grace period:** When a subscription moves to `expired` or `cancelled`, managed entities are not immediately decommissioned. A configurable grace period (default: P30D) allows the consumer to renew, export data, or transition to a different subscription. During the grace period, managed entities stay realized but new provisioning under the subscription is blocked.
 
 ### 4.1 State Transitions and Policy Triggers
 
@@ -313,10 +315,10 @@ All subscription events use the standard event envelope ([event-catalog.md](../c
 
 | Event Type | Fires When | Urgency |
 |------------|-----------|---------|
-| `subscription.created` | New subscription enters PENDING | medium |
-| `subscription.activated` | Subscription transitions to ACTIVE | medium |
+| `subscription.created` | New subscription enters `pending` | medium |
+| `subscription.activated` | Subscription transitions to `active` | medium |
 | `subscription.suspended` | Subscription suspended (consumer or policy) | high |
-| `subscription.resumed` | Subscription resumes from SUSPENDED | medium |
+| `subscription.resumed` | Subscription resumes from `suspended` | medium |
 | `subscription.renewal_pending` | Approaching expiry with auto_renew | medium |
 | `subscription.renewed` | Renewal completed — new terms_version | medium |
 | `subscription.renewal_failed` | Renewal attempt failed (payment, policy, provider) | high |
