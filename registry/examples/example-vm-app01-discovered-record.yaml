@@ -2,13 +2,15 @@
 # proves: an edge a sweep observed rides the discovered record — the host probe saw domain app-01 and names the host by the natural key it read (the host's smbios-uuid), resolved to the entity that key matches — and carries none of the declared semantics (no strength, relation or binding) a probe cannot see. The second edge is the same observation before resolution: the probe read the volume's provider id, no record names it yet, and the edge is written without a target_uuid rather than dropped. The realized record of this entity carries the same `contained_by` with `strength: hard`; drift is the comparison of the two lists, never a field on either.
 record_type: discovered_record
 state: Discovered
-record_uuid: 01a0e3cb-34d1-7432-bb67-3a6d0c4f1e27
+record_uuid: 01a163b2-9390-700a-800a-00000000000a
+supersedes:
+  - 01a0e3cb-34d1-7432-bb67-3a6d0c4f1e27
 entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Machine.VM
 type_version: 2.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
 handle: lab/vm/app-01
 generation: 1
 origin: discovered-derived

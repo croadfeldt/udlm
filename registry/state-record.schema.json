@@ -76,7 +76,7 @@
     },
     "type_ref": {
       "type": "string",
-      "description": "The `$id` of the pinned class or served spec."
+      "description": "Where the pinned class is served: the `$id` of its served spec (`https://udlm.dev/registry/udlm/<spec>/<Class>/<version>`), the file a consumer fetches and validates against. A Provider class has no served spec, so its records give the class `$id` (`…/class/<Class>/<version>`). One correct form per record, so a resolver never guesses (row 105). The version matches `type_version`."
     },
     "handle": {
       "$ref": "#/$defs/handle",
@@ -406,7 +406,7 @@
       "conforms_to": "udlm/0.1",
       "resource_type": "Machine.VM",
       "type_version": "2.0.0",
-      "type_ref": "https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0",
+      "type_ref": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0",
       "handle": "lab/vm/app-01",
       "generation": 1,
       "origin": "declared",
@@ -545,7 +545,7 @@
       "conforms_to": "udlm/0.1",
       "resource_type": "Machine.VM",
       "type_version": "2.0.0",
-      "type_ref": "https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0",
+      "type_ref": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0",
       "handle": "lab/vm/app-01",
       "generation": 1,
       "origin": "declared",
@@ -706,13 +706,13 @@
     {
       "record_type": "discovered_record",
       "state": "Discovered",
-      "record_uuid": "01a0e3cb-34d1-7432-bb67-3a6d0c4f1e27",
+      "record_uuid": "01a163b2-9390-700a-800a-00000000000a",
       "entity_uuid": "2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03",
       "tenant_uuid": "75ccf4ff-3e8d-4963-bc51-459ae1014cb7",
       "conforms_to": "udlm/0.1",
       "resource_type": "Machine.VM",
       "type_version": "2.0.0",
-      "type_ref": "https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0",
+      "type_ref": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0",
       "handle": "lab/vm/app-01",
       "generation": 1,
       "origin": "discovered-derived",

@@ -4,12 +4,14 @@
 record_type: discovered_record
 state: Discovered
 entity_uuid: 6f2d8a1e-4b3c-4d5e-9f6a-7b8c9d0e1f2a
-record_uuid: 01a09a02-1236-7002-a002-0e5f3a2b1c4f
+record_uuid: 01a163b2-8fa8-7009-8009-000000000009
+supersedes:
+  - 01a09a02-1236-7002-a002-0e5f3a2b1c4f
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: SoftwarePackage
 type_version: 0.2.1
-type_ref: https://udlm.dev/registry/udlm/0.1/class/SoftwarePackage/0.2.1
+type_ref: https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.2.1
 handle: cexample/knowledge/software-package/python-jose-3-4-0
 at: '2026-09-13T13:00:00Z'
 time_source: example clock, NTP-synced
@@ -29,6 +31,6 @@ provenance:
     sequence: 1
     timestamp: '2026-09-13T13:00:00Z'
 integrity:
-  head: sha256:4da01e93f6e565e3fcaaf4ac4c608c39549a1041198be76ba828557f27250407
-  previous: null
+  head: sha256:6c8a189be8afab47f348f0bcf69774434edd56e0bead22454e3001dd5678148c
+  previous: sha256:4da01e93f6e565e3fcaaf4ac4c608c39549a1041198be76ba828557f27250407
   algorithm: sha256-jcs

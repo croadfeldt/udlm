@@ -3,16 +3,16 @@
 # Supersedes the prior record of this state (named in `supersedes`): it now carries the dispatch receipt — exactly Machine.VM's elements crossed, nothing granted or stripped (DSP-004).
 record_type: requested_record
 state: Requested
-record_uuid: 01a0eb91-3cbf-756c-bc00-a4e7eb1900e9
-intent_ref: 01a0e3cb-34d0-7261-9517-df3cbac3ce20
-intent_ref_head: sha256:684dcef63408595dc5df1728083640c205dc406c15f4ff4f9da8c431b341c4ac
-root_request_uuid: 01a0eb91-3cbf-756c-bc00-a4e7eb1900e9
+record_uuid: 01a163b2-83f0-7006-8006-000000000006
+intent_ref: 01a163b2-7838-7003-8003-000000000003
+intent_ref_head: sha256:5af5574648e4142ee5ae81f7ae28f30935ec441f3b3fb47789e9019cc1164571
+root_request_uuid: 01a163b2-83f0-7006-8006-000000000006
 entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Machine.VM
 type_version: 2.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
 handle: lab/vm/app-01
 generation: 1
 origin: declared
@@ -163,8 +163,8 @@ dispatch:
   granted: []
   stripped: []
 supersedes:
-  - 01a0eb4f-c492-70e3-a61a-c7a8b1822dbf
+  - 01a0eb91-3cbf-756c-bc00-a4e7eb1900e9
 integrity:
-  head: sha256:eb9de91bd6f2a9c69c5884cc751af7f12412d183239f8be6571893a040588c01
-  previous: sha256:b9db95c6eca95eebfd00d6bb0a970ae6eaa084f1da2f37ae9afb53fd08b4262d
+  head: sha256:e1ccd3936763d126fb3ac69eceeb4ded4d05f63dc7b1395cc16d01dc6e669027
+  previous: sha256:eb9de91bd6f2a9c69c5884cc751af7f12412d183239f8be6571893a040588c01
   algorithm: sha256-jcs
