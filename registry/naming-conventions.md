@@ -136,6 +136,13 @@ an **export adapter** at that domain boundary (not native consumption).
 - **Initialisms** are lowercased within a snake key (`pod_cidr`, `api_url`, `internal_dns`, `vlan_id`),
   never split into letters. (The PascalCase *Type segment* keeps uppercase initialisms — §1 — that is the
   type **name**, not a field key.)
+- **`state` has two meanings, fixed by the document it is on.** On a state record it is the lifecycle
+  position: `Intent`, `Requested`, `Realized` or `Discovered`. On a definition (a class element, a
+  decision record, a composition record) it is how far the definition has got through review:
+  `proposed`/`canonical` on an element, `PROPOSED` through `DEPRECATED` on a record. `record_type`, or
+  the class element it sits in, always says which. The field keeps its name (maintainer ruling
+  2026-10-22, row 104): renaming the review meaning would touch every class element for no gain a
+  reader cannot already get from the document type.
 
 **Event-type identifiers** (UDLM event-catalog names, e.g. `resource.discovered`, `entity.realized`) use
 lowercase **dot notation** so brokers can wildcard-route — distinct from payload property keys. The
