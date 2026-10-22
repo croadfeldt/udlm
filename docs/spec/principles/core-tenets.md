@@ -53,7 +53,7 @@ model." Read the row, then the section for the reasoning.
 | **T4** flow is relationship | cross-entity data moves by typed reference, not by copying/transforming | wire a `target_field` edge; don't restate another entity's value |
 | **T5** adopt by reference | bring standards in by referencing them; the owner stays authoritative | reference AEP / TOSCA / FOCUS — don't fork or absorb their text |
 | **T6** pre-validated outcomes | validate and rehearse *before* the incident, not during | reserve + conformance prove it works before commit; no test-in-prod |
-| **T7** reuse before coining | extend an existing mechanism before inventing a new one | check for an existing edge / field / pattern before adding surface |
+| **T7** reuse before coining | extend an existing mechanism before inventing a new one; every field earns its place | check for an existing edge / field / pattern before adding surface; a field needs a reader and an operation |
 | **T8** orchestrate, don't reimplement | wrap existing tools as providers; don't rebuild them | Terraform / Ansible / Crossplane are providers you *drive*, not replace |
 | **T9** never translate to native | the substrate stays neutral; the provider naturalizes, the model doesn't | the model never emits a provider's native spec — that's the provider's job |
 
@@ -147,6 +147,23 @@ members that don't operationally depend on each other). The first instinct was a
 request-layer dependency, not a new mechanism, and the whole best_effort/all_or_nothing axis
 dissolved. Extending the dependency concept was feasible, mutually beneficial (it also gave
 hold-all activation for free), and *lowered* complexity — exactly the balance this tenet asks for.
+
+**A field earns its place.** A field is surface too, and the same test applies at the smallest
+scale: every field needs a genuine use case and an operational benefit. Before adding one, and when
+reviewing one, ask:
+
+1. **What operation reads it, and what does it do with it?** No reader, no field.
+2. **Is it already carried elsewhere?** The four state records, provenance, the audit record,
+   version control, or another entity by reference (T4). A field that restates another will
+   eventually disagree with it.
+3. **Can it be derived instead of stored?** A stored derivable goes stale (T2).
+
+A consumer's choice is a spec element (Machine.VM `run_state.desired_state`). A fact that follows
+from others is computed, or surfaced as a condition. An entity's lifecycle is never a second field.
+Worked case: a subscription's status enum restated the four states (pending was Requested, active
+was Realized), and its remaining values were a desired-state choice or derivable from the term
+dates, so it had no place of its own (#653). Maintainer directive 2026-10-22 (row 108); the
+field-justification sweep applies it to every class and record schema (#664).
 
 ## T8 — Adopt tools by reference: orchestrate, don't reimplement
 Where a mature tool already owns a **mechanism** — building, scanning, signing, deploying, orchestrating
