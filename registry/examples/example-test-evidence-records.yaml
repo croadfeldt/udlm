@@ -1,15 +1,17 @@
 record_type: intent_record
 state: Intent
 entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
-record_uuid: 01a09a05-1239-7005-a005-0e5f3a2b1c52
+record_uuid: 01a1637b-7e00-7a01-8b02-0c03d04e05f6
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: TestEvidence.VulnerabilityCheck.AiTestHarness
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/class/TestEvidence.VulnerabilityCheck.AiTestHarness/0.1.0
 handle: cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
-at: '2026-09-13T13:17:27Z'
+at: '2026-10-22T12:00:00Z'
 time_source: example clock, NTP-synced
+supersedes:
+  - 01a09a05-1239-7005-a005-0e5f3a2b1c52
 origin: declared
 fields:
   test_id: python-jose::test_ghsa_cjwg_qfpm_7377_fix_pinning::5645aafeb0e8
@@ -18,14 +20,14 @@ fields:
   result:
     outcome: passed
     duration_ms: 21
-    format: junit-xml
+    format: junit_xml
     report_ref: execute/python-jose/new/junit.xml
     report_digest: sha256:9e1f3a5b7c9d1e3f5a7b9c1d3e5f7a9b1c3d5e7f9a1b3c5d7e9f1a3b5c7d9e1f
   job_ref: estate/cexample/jobs/ai-test-harness-run-76a3fa863e76
   file_path: tests/test_python_jose_cve_cve_2024_33664.py
   file_digest: sha256:5645aafeb0e88272a82afa9b176fa8b6c8a528c82948369193daefcb223df966
   vulnerability_ref: estate/cexample/knowledge/vulnerability/cve-2024-33664
-  vulnerability_role: fix-pinning
+  vulnerability_role: fix_pinning
   vex_statement_ref: estate/cexample/knowledge/vex-statement/cve-2024-33664-python-jose-3-4-0
   version_range: ==3.4.0
   source_version: requirements.txt@cfa8f4a3292b
@@ -50,14 +52,14 @@ provenance:
 record_type: requested_record
 state: Requested
 entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
-record_uuid: 01a0f335-684e-7382-a17b-e6053083d82d
+record_uuid: 01a1637b-81e8-7b11-9c12-1d13e14f1506
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: TestEvidence.VulnerabilityCheck.AiTestHarness
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/class/TestEvidence.VulnerabilityCheck.AiTestHarness/0.1.0
 handle: cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
-at: '2026-09-13T13:17:27Z'
+at: '2026-10-22T12:00:00Z'
 time_source: example clock, NTP-synced
 fields:
   test_id: python-jose::test_ghsa_cjwg_qfpm_7377_fix_pinning::5645aafeb0e8
@@ -66,14 +68,14 @@ fields:
   result:
     outcome: passed
     duration_ms: 21
-    format: junit-xml
+    format: junit_xml
     report_ref: execute/python-jose/new/junit.xml
     report_digest: sha256:9e1f3a5b7c9d1e3f5a7b9c1d3e5f7a9b1c3d5e7f9a1b3c5d7e9f1a3b5c7d9e1f
   job_ref: estate/cexample/jobs/ai-test-harness-run-76a3fa863e76
   file_path: tests/test_python_jose_cve_cve_2024_33664.py
   file_digest: sha256:5645aafeb0e88272a82afa9b176fa8b6c8a528c82948369193daefcb223df966
   vulnerability_ref: estate/cexample/knowledge/vulnerability/cve-2024-33664
-  vulnerability_role: fix-pinning
+  vulnerability_role: fix_pinning
   vex_statement_ref: estate/cexample/knowledge/vex-statement/cve-2024-33664-python-jose-3-4-0
   version_range: ==3.4.0
   source_version: requirements.txt@cfa8f4a3292b
@@ -114,22 +116,22 @@ dispatch:
     - validation.differential
   granted: []
   stripped: []
-intent_ref: 01a09a05-1239-7005-a005-0e5f3a2b1c52
-root_request_uuid: 01a0f335-684e-7382-a17b-e6053083d82d
+intent_ref: 01a1637b-7e00-7a01-8b02-0c03d04e05f6
+root_request_uuid: 01a1637b-81e8-7b11-9c12-1d13e14f1506
 supersedes:
-  - 01a0eb4f-c44e-71eb-b782-7e9b62d1aa19
+  - 01a0f335-684e-7382-a17b-e6053083d82d
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
-record_uuid: 01a0f335-684e-7382-a17b-e6066878548c
+record_uuid: 01a1637b-85d0-7c21-ad22-2e23f2401526
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: TestEvidence.VulnerabilityCheck.AiTestHarness
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/class/TestEvidence.VulnerabilityCheck.AiTestHarness/0.1.0
 handle: cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
-at: '2026-09-14T09:30:00Z'
+at: '2026-10-22T12:00:00Z'
 time_source: example clock, NTP-synced
 origin: declared
 fields:
@@ -139,14 +141,14 @@ fields:
   result:
     outcome: passed
     duration_ms: 21
-    format: junit-xml
+    format: junit_xml
     report_ref: execute/python-jose/new/junit.xml
     report_digest: sha256:9e1f3a5b7c9d1e3f5a7b9c1d3e5f7a9b1c3d5e7f9a1b3c5d7e9f1a3b5c7d9e1f
   job_ref: estate/cexample/jobs/ai-test-harness-run-76a3fa863e76
   file_path: tests/test_python_jose_cve_cve_2024_33664.py
   file_digest: sha256:5645aafeb0e88272a82afa9b176fa8b6c8a528c82948369193daefcb223df966
   vulnerability_ref: estate/cexample/knowledge/vulnerability/cve-2024-33664
-  vulnerability_role: fix-pinning
+  vulnerability_role: fix_pinning
   vex_statement_ref: estate/cexample/knowledge/vex-statement/cve-2024-33664-python-jose-3-4-0
   version_range: ==3.4.0
   source_version: requirements.txt@cfa8f4a3292b
@@ -160,7 +162,7 @@ fields:
     flake_runs: 2
     differential: changed
   scope: overlay
-requested_ref: 01a0f335-684e-7382-a17b-e6053083d82d
+requested_ref: 01a1637b-81e8-7b11-9c12-1d13e14f1506
 provider: cexample/providers/ai-test-harness
 provenance:
   fields.scope:
@@ -202,8 +204,8 @@ outputs:
   bumps_survived: 0
   regressions_caught: 0
 supersedes:
-  - 01a0eb4f-c44e-71eb-b782-7e9cf8ee009e
+  - 01a0f335-684e-7382-a17b-e6066878548c
 integrity:
-  head: sha256:25fc5a2548023de9828e5e961238a3c90aeef0a42a7610b9769df2ed27bf896a
-  previous: sha256:65f2e5bb9b6347834108171162afdd888504ba16b8a1d7dc02f233242cdd7fd8
+  head: sha256:cd1ef7d95ef7db25bf1f18c0b40650aeb6ef79c566ac6f469096c44cda3524af
+  previous: sha256:25fc5a2548023de9828e5e961238a3c90aeef0a42a7610b9769df2ed27bf896a
   algorithm: sha256-jcs

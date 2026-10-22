@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StorageCluster/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/StorageCluster/0.9.0
 conforms_to: udlm/0.1
 uuid: b3db807c-91a9-4ad3-bd28-b5a1042f740a
 record_type: class
 class: base
 resource_type: StorageCluster
-version: 0.8.0
+version: 0.9.0
 family: Resource
 status: active
 filed_under:
@@ -54,16 +54,16 @@ elements:
     scope: StorageCluster
     optional: true
     state: canonical
-    description: 'Redundancy scheme: `replication` with a replica count, or `erasure-coding`.'
+    description: 'Redundancy scheme: `replication` with a replica count, or `erasure_coding`.'
     schema:
       type: object
-      description: 'Redundancy scheme: `replication` with a replica count, or `erasure-coding`.'
+      description: 'Redundancy scheme: `replication` with a replica count, or `erasure_coding`.'
       properties:
         scheme:
           type: string
           enum:
             - replication
-            - erasure-coding
+            - erasure_coding
           description: Protection method.
         replicas:
           type: integer
@@ -124,7 +124,7 @@ context:
   plain_description: 'A multi-node storage system — Ceph is the reference implementation, but the technology is
     the provider, never the type. It declares which `protocols` it serves (required: `block`, `file`, `object`),
     its `capacity` — an object whose `total` and `usable` are whole-number sizes like 50TB, not a bare size string
-    — and its redundancy scheme, spelled `data_protection` (a `scheme` of `replication` or `erasure-coding`, plus
+    — and its redundancy scheme, spelled `data_protection` (a `scheme` of `replication` or `erasure_coding`, plus
     replica count), and publishes the consumption surfaces: the block and file storage-class names volumes provision
     through, and the S3-compatible object endpoint. Its own nodes are hosts or VMs it depends on — the cluster needs
     its quorum up.'

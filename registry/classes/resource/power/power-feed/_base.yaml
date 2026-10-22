@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/PowerFeed/0.7.2
+$id: https://udlm.dev/registry/udlm/0.1/class/PowerFeed/0.8.0
 conforms_to: udlm/0.1
 uuid: e1cdf697-ec3d-4208-8e62-ef1c88ba7a31
 record_type: class
 class: base
 resource_type: PowerFeed
-version: 0.7.2
+version: 0.8.0
 family: Resource
 status: active
 filed_under:
@@ -67,7 +67,7 @@ elements:
       type: string
       enum:
         - none
-        - n+1
+        - n_plus_1
         - 2n
       description: 'Feed redundancy: none, n+1, 2n.'
 spec_examples:
@@ -76,7 +76,7 @@ spec_examples:
       watts: 5000
       voltage: 208
       phases: 3
-    redundancy: n+1
+    redundancy: n_plus_1
 outputs:
   status:
     type: string
@@ -118,7 +118,7 @@ context:
   plain_description: One source of power feeding equipment. Hosts and switches declare which feed they draw from,
     so what loses power when a UPS drains is a graph walk, not tribal knowledge. For UPS feeds it carries live status
     (online, on-battery, low-battery), battery charge, and estimated runtime — the facts an automated graceful shutdown
-    triggers on. Rated `capacity` (watts, voltage, phases) and `redundancy` — the enum `none`, `n+1`, or `2n`, not
+    triggers on. Rated `capacity` (watts, voltage, phases) and `redundancy` — the enum `none`, `n_plus_1`, or `2n`, not
     a boolean — are declared up front.
   use_when:
     - You need equipment tied to its actual power source so a UPS on-battery event can drive an ordered shutdown

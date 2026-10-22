@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/TestEvidence/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/TestEvidence/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63",
   "resource_type": "TestEvidence",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "TestEvidence",
-          "version": "0.4.0",
+          "version": "0.5.0",
           "uuid": "3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63"
         }
       ]
@@ -75,7 +75,7 @@
             "type": "string",
             "enum": [
               "ctrf",
-              "junit-xml"
+              "junit_xml"
             ],
             "description": "The adopted report format the full result is in."
           },
@@ -129,7 +129,7 @@
         "result": {
           "outcome": "passed",
           "duration_ms": 12,
-          "format": "junit-xml"
+          "format": "junit_xml"
         },
         "job_ref": "estate/cexample/jobs/ci-run-000123"
       }

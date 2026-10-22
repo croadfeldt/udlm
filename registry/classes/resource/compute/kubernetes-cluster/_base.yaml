@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/2.0.4
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/2.0.5
 conforms_to: udlm/0.1
 uuid: 3909934c-4b06-48ae-9431-a19083e59a6c
 record_type: class
 class: base
 resource_type: KubernetesCluster
 short_name: K8sCluster
-version: 2.0.4
+version: 2.0.5
 family: Resource
 status: active
 filed_under:
@@ -76,7 +76,7 @@ relationships:
   - edge_type: contained_by
     target: Workload
     cardinality: 0..1
-    description: 'Provisioned and managed by a hub — a Workload of service_kind fleet-manager (hosted control planes):
+    description: 'Provisioned and managed by a hub — a Workload of service_kind fleet_manager (hosted control planes):
       the hub has lifecycle authority — hosted control planes run inside it. For imported clusters use the depends_on
       (soft) edge instead. Unnamed per ADR-043.'
   - edge_type: depends_on
@@ -128,5 +128,5 @@ context:
     - KubernetesNodePool — homogeneous slices of the cluster's node capacity.
     - VirtualNetwork — the network the cluster is realized onto.
     - Container — the workloads scheduled onto the cluster.
-    - 'Workload (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned,
+    - 'Workload (service_kind fleet_manager) — the fleet manager above this cluster: contained_by when hub-provisioned,
       depends_on (soft) when imported.'

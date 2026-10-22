@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "BMC",
-      "version": "0.7.2",
+      "version": "0.8.0",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/bmc/_base.yaml",
       "types": []
@@ -18,7 +18,7 @@
     },
     {
       "class": "NetworkInterface",
-      "version": "0.16.2",
+      "version": "0.16.3",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/network-interface/_base.yaml",
       "types": []

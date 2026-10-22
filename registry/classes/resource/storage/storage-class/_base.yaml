@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StorageClass/0.10.1
+$id: https://udlm.dev/registry/udlm/0.1/class/StorageClass/0.10.2
 conforms_to: udlm/0.1
 uuid: 8bca0919-e6b1-483a-8b46-841cea6e4b6f
 record_type: class
 class: base
 resource_type: StorageClass
-version: 0.10.1
+version: 0.10.2
 family: Resource
 status: active
 filed_under:
@@ -42,6 +42,7 @@ elements:
     description: 'What happens to the underlying storage when a volume is released: Retain, Delete or Recycle.'
     schema:
       type: string
+      x-standard: "Kubernetes:storage/v1 StorageClass.reclaimPolicy"
       enum:
         - Retain
         - Delete
@@ -55,6 +56,7 @@ elements:
       consumer is scheduled.'
     schema:
       type: string
+      x-standard: "Kubernetes:storage/v1 StorageClass.volumeBindingMode"
       enum:
         - Immediate
         - WaitForFirstConsumer

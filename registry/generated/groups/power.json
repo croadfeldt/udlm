@@ -4,14 +4,14 @@
   "classes": [
     {
       "class": "PowerFeed",
-      "version": "0.7.2",
+      "version": "0.8.0",
       "instantiable": true,
       "path": "registry/classes/resource/power/power-feed/_base.yaml",
       "types": []
     },
     {
       "class": "UPS",
-      "version": "0.1.5",
+      "version": "0.2.0",
       "instantiable": true,
       "path": "registry/classes/resource/power/ups/_base.yaml",
       "types": []

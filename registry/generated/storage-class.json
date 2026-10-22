@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StorageClass/0.10.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StorageClass/0.10.2",
   "conforms_to": "udlm/0.1",
   "uuid": "8bca0919-e6b1-483a-8b46-841cea6e4b6f",
   "resource_type": "StorageClass",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StorageClass",
-          "version": "0.10.1",
+          "version": "0.10.2",
           "uuid": "8bca0919-e6b1-483a-8b46-841cea6e4b6f"
         }
       ]
@@ -37,6 +37,7 @@
       },
       "reclaim_policy": {
         "type": "string",
+        "x-standard": "Kubernetes:storage/v1 StorageClass.reclaimPolicy",
         "enum": [
           "Retain",
           "Delete",
@@ -46,6 +47,7 @@
       },
       "volume_binding_mode": {
         "type": "string",
+        "x-standard": "Kubernetes:storage/v1 StorageClass.volumeBindingMode",
         "enum": [
           "Immediate",
           "WaitForFirstConsumer"

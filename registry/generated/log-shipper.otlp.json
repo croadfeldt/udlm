@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper.OTLP/0.1.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper.OTLP/0.1.2",
   "conforms_to": "udlm/0.1",
   "uuid": "f70bb63b-913f-4927-addc-ab34443013b0",
   "resource_type": "LogShipper.OTLP",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "LogShipper.OTLP",
-          "version": "0.1.1",
+          "version": "0.1.2",
           "uuid": "f70bb63b-913f-4927-addc-ab34443013b0"
         }
       ]
@@ -66,6 +66,7 @@
       },
       "protocol": {
         "type": "string",
+        "x-standard": "OpenTelemetry:OTLP exporter protocol",
         "enum": [
           "grpc",
           "http/protobuf",

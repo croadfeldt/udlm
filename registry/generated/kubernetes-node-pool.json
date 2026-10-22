@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesNodePool/1.1.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesNodePool/1.1.4",
   "conforms_to": "udlm/0.1",
   "uuid": "ff7f0b01-d451-4aed-89da-83117923820f",
   "resource_type": "KubernetesNodePool",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "KubernetesNodePool",
-          "version": "1.1.3",
+          "version": "1.1.4",
           "uuid": "ff7f0b01-d451-4aed-89da-83117923820f"
         }
       ]
@@ -100,6 +100,7 @@
             },
             "effect": {
               "type": "string",
+              "x-standard": "Kubernetes:core/v1 Taint.effect",
               "enum": [
                 "NoSchedule",
                 "PreferNoSchedule",

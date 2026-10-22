@@ -230,7 +230,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Abstract failure/locality kinds it can guarantee separation across (region|zone|rack|host|power-domain|network-segment ...). [] = no failure-domain concept → fails any spread constraint."
+          "description": "Abstract failure/locality kinds it can guarantee separation across (region|zone|rack|host|power_domain|network_segment ...). [] = no failure-domain concept → fails any spread constraint."
         },
         "native_mapping": {
           "type": "object",
