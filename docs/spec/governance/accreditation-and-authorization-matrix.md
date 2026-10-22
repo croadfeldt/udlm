@@ -101,14 +101,13 @@ Accreditation answers: **"Is this component certified to handle this type of dat
 ### 3.3 Accreditation Record Structure (Wire Contract)
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 accreditation:
-  # Standard artifact metadata
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "accreditations/providers/eu-west-prod-1/fedramp-high"
-    version: "1.0.0"
-    status: active
-    owned_by: { display_name: "Compliance Team" }
+  # Identity, version and status (layering-and-versioning §4b)
+  uuid: <uuid>
+  handle: "accreditations/providers/eu-west-prod-1/fedramp-high"
+  version: "1.0.0"
+  status: active
 
   subject_uuid: <provider-uuid>          # what is being accredited
   subject_type: service_provider | external_policy_evaluation |
@@ -315,12 +314,12 @@ The Data/Capability Authorization Matrix declares what data fields and provider 
 The authorization matrix is a **Policy Group artifact** with `concern_type: data_authorization_boundary`. It is activated as part of the compliance domain group — enabling the HIPAA compliance domain automatically activates the HIPAA boundary matrix. Organizations extend or restrict matrices via their own policy groups at the Tenant level.
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 data_authorization_matrix:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "system/matrix/hipaa-provider-boundary"
-    version: "1.0.0"
-    status: active
+  uuid: <uuid>
+  handle: "system/matrix/hipaa-provider-boundary"
+  version: "1.0.0"
+  status: active
 
   concern_type: data_authorization_boundary
   applicable_compliance_domains: [hipaa]
@@ -391,9 +390,9 @@ content; the decision semantics live in governance-matrix.md and are not redefin
 A dedicated matrix governs what crosses peer-to-peer federation boundaries:
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 federation_boundary_matrix:
-  artifact_metadata:
-    handle: "system/matrix/federation-boundary"
+  handle: "system/matrix/federation-boundary"
   concern_type: data_authorization_boundary
   applicable_to: federation_tunnel
 

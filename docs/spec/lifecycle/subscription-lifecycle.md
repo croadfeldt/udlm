@@ -26,7 +26,7 @@ A Subscription follows every universal Data property defined in [foundations.md]
 - **UUID** — stable across full lifecycle
 - **Type** — `dcm.subscription` (registered in the Resource Type Registry)
 - **Lifecycle state** — exactly one state at any moment (see Section 4)
-- **Artifact metadata** — handle, version, status, owned_by, created_by
+- **Identity, version and status** — handle, version, status (layering-and-versioning §4b)
 - **Provenance** — field-level lineage on every modification
 - **Data classification** — per-field classification, inherited from managed entities and subscription terms
 - **Immutability if versioned** — subscription terms are versioned; published terms cannot be modified
@@ -35,6 +35,7 @@ A Subscription follows every universal Data property defined in [foundations.md]
 ### 2.1 Subscription Artifact Structure
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 subscription:
   # ── Identity ───────────────────────────────────────────────────
   subscription_uuid: <uuid>
@@ -89,10 +90,8 @@ subscription:
   # ── Lifecycle ──────────────────────────────────────────────────
   lifecycle_state: "ACTIVE"
   
-  # ── Standard artifact metadata ─────────────────────────────────
+  # ── Identity and version ───────────────────────────────────────
   version: "1.0.0"
-  created_at: "2026-04-01T00:00:00Z"
-  created_by: <actor_uuid>
   provenance: { ... }                    # Field-level provenance per universal model
 ```
 

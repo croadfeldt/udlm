@@ -100,14 +100,13 @@ Relationships are authored differently across the four states — where **"autho
 All providers register through the same pipeline (registration specification is implementation-specific; see DCM repo for the complete flow).
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 provider_base_registration:
-  # Standard artifact metadata
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "<tier>/<category>/<name>"    # e.g., "org/compute/eu-west-prod-1"
-    version: "1.0.0"
-    status: submitted                      # submitted → validating → active
-    owned_by: { display_name: "<team>" }
+  # Identity, version and status (layering-and-versioning §4b)
+  uuid: <uuid>
+  handle: "<tier>/<category>/<name>"    # e.g., "org/compute/eu-west-prod-1"
+  version: "1.0.0"
+  status: submitted                      # submitted → validating → active
 
   # ONE DECLARATION, TWO PROJECTIONS (maintainer ruling 2026-08-03; ADR-038 addendum): the
   # capability content below is a PROJECTION of the classes the provider binds to
@@ -957,9 +956,9 @@ A consuming system integrating with a UDLM-conformant implementation:
 When a provider registers, it MAY declare what it offers AND what it needs from the implementation:
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 provider_base_registration:            # canonical shape — §2; only the discovery-relevant
-  artifact_metadata:                   # fields are shown here
-    handle: "org/finops/acme-finops"
+  handle: "org/finops/acme-finops"
   display_name: "Acme FinOps Platform"
   capabilities: [serve_data/Cost]      # verb × domain (§8.2 profile carries the data_domains detail)
 

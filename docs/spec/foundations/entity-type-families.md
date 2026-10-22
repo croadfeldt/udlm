@@ -147,5 +147,5 @@ Mechanics:
 | **scope** (instances) | Who may see/own this artifact? | global / shared / domain / project |
 
 **Recommendation:** `family` should be a **standard tag on all UDLM Data** (a candidate for
-the artifact-metadata block), so cross-family disambiguation works universally — not only
+the record envelope), so cross-family disambiguation works universally — not only
 for the Knowledge family.

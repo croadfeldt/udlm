@@ -14,52 +14,19 @@
 
 ## 4d. Complete Layer Definition Structure
 
-Combining all elements — identity, artifact metadata, scope, priority, and fields:
+Combining all elements — identity, version, status, scope, priority, and fields:
 
 ```yaml
+# illustrative: layer shape; the layer schema is layer.schema.json
 # Complete layer definition
 layer:
-  # === ARTIFACT METADATA (universal — required on all artifacts) ===
-  artifact_metadata:
-    uuid: "layer-uuid-001"
-    handle: "platform/core/security-cpu-limits"
-    version: "1.2.0"
-    status: active
-    created_by:
-      uuid: "actor-uuid-001"       # Optional — present if IdP registered
-      display_name: "Jane Smith"
-      email: "jane.smith@example.com"
-      notification_endpoint: "https://notify.example.com/webhooks/jane"
-    created_at: "2026-01-15T10:30:00Z"
-    created_via: pr
-    owned_by:
-      uuid: "team-uuid-security"   # Optional — present if IdP registered
-      display_name: "Platform Security Team"
-      email: "platform-security@example.com"
-      notification_endpoint: "https://notify.example.com/webhooks/platform-security"
-    modifications:
-      - sequence: 1
-        modified_by:
-          display_name: "Jane Smith"
-          email: "jane.smith@example.com"
-        modified_at: "2026-01-15T10:30:00Z"
-        modification_type: create
-        version_before: null
-        version_after: "1.0.0"
-        change_summary: "Initial creation — CPU limits per CISO mandate SEC-2024-047"
-        pr_reference: "https://github.com/org/dcm-layers/pull/42"
-        reason: "CISO mandate SEC-2024-047 requires CPU limits on all containers"
-      - sequence: 2
-        modified_by:
-          display_name: "Bob Jones"
-          email: "bob.jones@example.com"
-        modified_at: "2026-02-20T14:00:00Z"
-        modification_type: update
-        version_before: "1.0.0"
-        version_after: "1.2.0"
-        change_summary: "Increased CPU limit from 4 to 8 per updated mandate"
-        pr_reference: "https://github.com/org/dcm-layers/pull/67"
-        reason: "Updated CISO mandate SEC-2024-047-rev2 allows 8 CPU"
+  # === IDENTITY, VERSION AND STATUS (layering-and-versioning §4b) ===
+  uuid: "layer-uuid-001"
+  handle: "platform/core/security-cpu-limits"
+  version: "1.2.0"
+  status: { state: active }
+  # Who created and changed it is the audit record of each submission; what changed is
+  # version control (each version's pull request). Neither is carried on the layer.
 
   # === LAYER IDENTITY ===
   domain: platform
