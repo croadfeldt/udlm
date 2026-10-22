@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/IPAddressPool/0.8.1
+$id: https://udlm.dev/registry/udlm/0.1/class/IPAddressPool/0.9.0
 conforms_to: udlm/0.1
 uuid: 00257168-ae65-475c-bf34-f14f2e39f855
 record_type: class
 class: base
 resource_type: IPAddressPool
-version: 0.8.1
+version: 0.9.0
 family: Resource
 status: active
 filed_under:

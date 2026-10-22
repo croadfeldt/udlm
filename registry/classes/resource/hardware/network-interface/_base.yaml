@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/NetworkInterface/0.16.1
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkInterface/0.16.2
 conforms_to: udlm/0.1
 uuid: 04f5c089-85b3-4a89-9b2e-d0c8d172ad23
 record_type: class
 class: base
 resource_type: NetworkInterface
-version: 0.16.1
+version: 0.16.2
 family: Resource
 status: active
 filed_under:
@@ -108,27 +108,18 @@ elements:
     state: canonical
     description: 'Instance discriminators: MAC, PCI address, port name.'
     schema:
-      type: object
+      $ref: ../../../../common-elements.schema.json#/$defs/identity
       description: 'Instance discriminators: MAC, PCI address, port name.'
       properties:
         location:
-          type: string
-          description: PCIe slot / BDF / port designation within the parent (Redfish PhysicalLocation). Primary
-            discriminator; for a VF/sub-interface, its index/name.
+          description: PCIe slot / BDF / port designation within the parent (Redfish PhysicalLocation). Primary discriminator;
+            for a VF/sub-interface, its index/name.
         mac_address:
           type: string
           description: MAC address (Redfish Ethernet MACAddress) — globally unique interface identity.
-        serial_number:
-          type: string
-        asset_tag:
-          type: string
         model:
-          type: string
           description: Adapter model (Redfish Model).
-        manufacturer:
-          type: string
         role:
-          type: string
           description: Semantic usage, e.g. mgmt | storage | tenant | trunk.
   - element: speed
     scope: NetworkInterface

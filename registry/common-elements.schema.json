@@ -91,10 +91,33 @@
       "type": "string",
       "enum": [
         "ipv4",
+        "ipv6"
+      ],
+      "description": "The one address family of a thing that has exactly one: an address, a pool, a subnet, a DHCP scope. Canonical name is `ip_family` (not `family`). A thing that may carry both uses `ip_families` (#644)."
+    },
+    "ip_families": {
+      "$comment": "common-elements.md §2.4",
+      "type": "string",
+      "enum": [
+        "ipv4",
         "ipv6",
         "dual"
       ],
-      "description": "Address family. Canonical name is `ip_family` (not `family`)."
+      "description": "The address families of a thing that may carry both, such as a gateway that routes IPv4 and IPv6: `ipv4`, `ipv6`, or `dual` for both (#644)."
+    },
+    "identity": {
+      "$comment": "common-elements.md §5a (SPEC-DESIGN-REQUIREMENTS §27)",
+      "title": "Identity",
+      "type": "object",
+      "properties": {
+        "manufacturer": {"type": "string", "description": "Who made it (Redfish Manufacturer)."},
+        "model": {"type": "string", "description": "Type identity, the part number or model name: equal across identical units (Redfish Model)."},
+        "serial_number": {"type": "string", "description": "Hardware serial, globally unique: it follows the part across a move to another parent (Redfish SerialNumber)."},
+        "asset_tag": {"type": "string", "description": "Org-assigned asset tag (Redfish AssetTag)."},
+        "location": {"type": "string", "description": "Position within the parent, unique there and stable across reboots: a slot, bay or socket (Redfish PhysicalLocation). The primary discriminator."},
+        "role": {"type": "string", "description": "Semantic use that tells same-model units apart by purpose, such as boot, data or ceph-osd."}
+      },
+      "description": "What binds an entity's uuid to one physical or named instance (common-elements §5a). Discriminator precedence: `location`, then `serial_number`, then `role`. Open: a class declares its own extra discriminators beside it, such as `wwn` for a drive or `mac_address` for an interface (#644)."
     },
     "ip_address": {
       "$comment": "common-elements.md §2.4",

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/NetworkSwitch/0.9.0
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkSwitch/0.9.1
 conforms_to: udlm/0.1
 uuid: beda9f11-d152-4fb3-87c6-0da2e7c185ac
 record_type: class
 class: base
 resource_type: NetworkSwitch
-version: 0.9.0
+version: 0.9.1
 family: Resource
 status: active
 filed_under:
@@ -71,22 +71,15 @@ elements:
     state: canonical
     description: 'Chassis identity: vendor, model, serial.'
     schema:
-      type: object
+      $ref: ../../../../common-elements.schema.json#/$defs/identity
       description: 'Chassis identity: vendor, model, serial.'
       properties:
         chassis_id:
           type: string
-          description: LLDP chassis identifier — normally the chassis MAC (IEEE 802.1AB Chassis ID TLV). Primary
-            discovered-identity key; stable across renames/re-IPs.
+          description: LLDP chassis identifier — normally the chassis MAC (IEEE 802.1AB Chassis ID TLV). Primary discovered-identity
+            key; stable across renames/re-IPs.
         serial_number:
-          type: string
           description: Vendor serial.
-        asset_tag:
-          type: string
-        manufacturer:
-          type: string
-        model:
-          type: string
         system_name:
           type: string
           description: Configured system name (LLDP System Name TLV) — mutable, secondary to chassis_id.

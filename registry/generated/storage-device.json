@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StorageDevice/0.8.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StorageDevice/0.8.1",
   "conforms_to": "udlm/0.1",
   "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b",
   "resource_type": "StorageDevice",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StorageDevice",
-          "version": "0.8.0",
+          "version": "0.8.1",
           "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b"
         }
       ]
@@ -36,33 +36,23 @@
         "description": "How a partition is carved, when `device_class` is partition: `namespace` (NVMe) or `lun`."
       },
       "identity": {
-        "type": "object",
+        "$ref": "../common-elements.schema.json#/$defs/identity",
         "description": "Instance discriminators: WWN, serial, bay.",
         "properties": {
           "location": {
-            "type": "string",
             "description": "Drive bay / slot within the parent, e.g. Bay 7 (Redfish PhysicalLocation). Primary discriminator."
           },
           "serial_number": {
-            "type": "string",
             "description": "Drive serial (Redfish SerialNumber)."
           },
           "wwn": {
             "type": "string",
             "description": "World-Wide Name — globally unique block-device identity."
           },
-          "asset_tag": {
-            "type": "string"
-          },
           "model": {
-            "type": "string",
             "description": "Drive model (Redfish Model)."
           },
-          "manufacturer": {
-            "type": "string"
-          },
           "role": {
-            "type": "string",
             "description": "Semantic usage, e.g. boot | data | ceph-osd | cache."
           }
         }

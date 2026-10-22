@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/GPU/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/GPU/0.8.1
 conforms_to: udlm/0.1
 uuid: 7456b9f8-f215-4b75-ae6a-edd8cc854949
 record_type: class
 class: base
 resource_type: GPU
-version: 0.8.0
+version: 0.8.1
 family: Resource
 status: active
 filed_under:
@@ -45,25 +45,17 @@ elements:
     state: canonical
     description: 'Instance discriminators: vendor, model, serial, PCI address.'
     schema:
-      type: object
+      $ref: ../../../../common-elements.schema.json#/$defs/identity
       description: 'Instance discriminators: vendor, model, serial, PCI address.'
       properties:
         location:
-          type: string
-          description: PCIe slot / BDF within the parent (Redfish PhysicalLocation). Primary discriminator; for
-            a partition, the vGPU/MIG instance id.
+          description: PCIe slot / BDF within the parent (Redfish PhysicalLocation). Primary discriminator; for a partition,
+            the vGPU/MIG instance id.
         serial_number:
-          type: string
           description: GPU serial (absent for virtual/partition).
-        asset_tag:
-          type: string
         model:
-          type: string
           description: GPU model, e.g. AMD Radeon Pro W7900 (Redfish Model).
-        manufacturer:
-          type: string
         role:
-          type: string
           description: Semantic usage, e.g. compute | display | inference.
   - element: memory
     scope: GPU

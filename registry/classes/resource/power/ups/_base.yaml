@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/UPS/0.1.4
+$id: https://udlm.dev/registry/udlm/0.1/class/UPS/0.1.5
 conforms_to: udlm/0.1
 uuid: db585146-41b2-4cd9-86e6-c90d086df2cf
 record_type: class
 class: base
 resource_type: UPS
-version: 0.1.4
+version: 0.1.5
 family: Resource
 status: active
 filed_under:
@@ -27,20 +27,16 @@ elements:
     state: canonical
     description: 'Unit identity: vendor, model, serial.'
     schema:
-      type: object
+      $ref: ../../../../common-elements.schema.json#/$defs/identity
       description: 'Unit identity: vendor, model, serial.'
       properties:
         manufacturer:
-          type: string
           description: Maker (Redfish Manufacturer; NUT ups.mfr / device.mfr).
         model:
-          type: string
           description: Model (Redfish Model; NUT ups.model / device.model).
         serial_number:
-          type: string
           description: Unit serial (Redfish SerialNumber; NUT ups.serial / device.serial).
         asset_tag:
-          type: string
           description: Org asset tag (Redfish AssetTag).
   - element: topology
     scope: UPS

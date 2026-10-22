@@ -196,7 +196,7 @@ A reference to a secret, never the secret. It names the kind of credential (the 
 
 ## DHCPScope
 
-### DHCPScope (0.9.1)
+### DHCPScope (0.9.2)
 
 **Purpose:** Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.
 
@@ -303,7 +303,7 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 
 ## GPU
 
-### GPU (0.8.0)
+### GPU (0.8.1)
 
 **Purpose:** Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.
 
@@ -385,7 +385,7 @@ A tenant. A thing belongs to exactly one at a time, and that is a structural loc
 
 ## IPAddress
 
-### IPAddress (0.11.1)
+### IPAddress (0.12.0)
 
 **Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
 
@@ -407,7 +407,7 @@ One IP address, bound to the interface it is configured on, with how it came to 
 
 ## IPAddressPool
 
-### IPAddressPool (0.8.1)
+### IPAddressPool (0.9.0)
 
 **Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
 
@@ -726,7 +726,7 @@ The most portable way to ask for a machine: how big, what image, what storage ti
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 
-### Machine.BareMetalHost (0.15.0)
+### Machine.BareMetalHost (0.15.1)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -794,7 +794,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 ## NetworkGateway
 
-### NetworkGateway (0.7.1)
+### NetworkGateway (0.7.2)
 
 **Purpose:** Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.
 
@@ -816,7 +816,7 @@ The router/firewall at the edge of a network: which functions it provides (routi
 
 ## NetworkInterface
 
-### NetworkInterface (0.16.1)
+### NetworkInterface (0.16.2)
 
 **Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
 
@@ -840,7 +840,7 @@ One network interface, of any kind: device_class says whether it is a physical N
 
 ## NetworkSwitch
 
-### NetworkSwitch (0.9.0)
+### NetworkSwitch (0.9.1)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
@@ -884,7 +884,7 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 
 ## Processor
 
-### Processor (0.7.1)
+### Processor (0.7.2)
 
 **Purpose:** Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when the host rollup is not enough.
 
@@ -1010,7 +1010,7 @@ A multi-node storage system — Ceph is the reference implementation, but the te
 
 ## StorageDevice
 
-### StorageDevice (0.8.0)
+### StorageDevice (0.8.1)
 
 **Purpose:** Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.
 
@@ -1080,7 +1080,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 
 ## Subnet
 
-### Subnet (0.2.1)
+### Subnet (0.3.0)
 
 **Purpose:** Give the layer 3 network a first-class identity, so a consumer can require an IP network without naming a segment, and an allocation pool has something to sit inside.
 
@@ -1216,7 +1216,7 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 
 ## UPS
 
-### UPS (0.1.4)
+### UPS (0.1.5)
 
 **Purpose:** Models the battery-backed unit itself — what it is rated for, what wears, when it must signal low battery, and what it reports — so the feed it protects can be supplied_by a real entity instead of a feed_type string.
 
@@ -1272,7 +1272,7 @@ One statement per (vulnerability, package version). It carries the OpenVEX statu
 
 ## VirtualNetwork
 
-### VirtualNetwork (0.9.1)
+### VirtualNetwork (0.9.2)
 
 **Purpose:** Models the attachment point workloads plug into — the host- or cluster-scoped network a guest names when it says attach me here.
 
