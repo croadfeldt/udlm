@@ -677,83 +677,70 @@ dcm_group:
       member_role: tls_minimum_version
 ```
 
-### 4.3 The Full Layer Structure
+### 4.3 The full layer structure
 
-Every layer carries: identity, domain and authority, compatibility metadata, per-field override metadata, and usage context. This mirrors the richness of a Policy registration.
+A layer is a record defined by `registry/layer.schema.json`. Its fields fall into six groups.
+
+| Group | Fields | What they say |
+|---|---|---|
+| Identity | `record_type`, `uuid`, `handle`, `name`, `description`, `conforms_to`, `version`, `supersedes`, `status` | What this layer is, which version, and whether it is in force (§4b). A layer version is immutable: a change is a new record that names its predecessor in `supersedes`. |
+| Ownership | `tenant_uuid`, `domain`, `contributor` | Which tenant owns it, which policy domain it sits in, and who may author it with what review. |
+| Position | `layer_type`, `precedence_class`, `precedence_order`, `reference_data_type`, `resource_type` | Where it sits in assembly (§3): its class, its order within the class, the dataset it governs if it is reference data, and the type it is scoped to. |
+| Targeting | `covers`, `applies_on`, `from_layers`, `skip` | Which resources it may inject into (a URF filter), during which convergence scenarios, and, on a request, which layers feed it (ADR-054). |
+| Data | `fields` | The values it contributes. Each value records this layer's uuid as its provenance source. |
+| Bounds | `extends`, `limits`, `narrow_only` | The layers it extends, the envelope its descendants must stay inside, and whether it may only tighten. |
+
+`metadata` carries display data and notes.
+
+A layer that sets platform DNS for every VM and container, and stops anything below it from
+changing the search domain:
 
 ```yaml
-# illustrative: layer shape; the layer schema is layer.schema.json
-layer:
-  uuid: <uuid>
-  handle: "platform/core/default-dns-config"
-  version: "1.2.0"
-  status: { state: active }
-
-  # DOMAIN AND AUTHORITY
-  domain: platform
-  priority:
-    value: "500.20.0"
-    label: "platform.networking.dns"
-    category: platform
-    rationale: "Platform DNS infrastructure — primary and secondary resolvers"
-
-  # CONCERN TAGS — for discoverability and grouping
-  concern_tags: [networking, dns, platform-defaults]
-
-  # COMPATIBILITY METADATA — what this layer applies to
-  compatibility:
-    resource_types: [Machine.VM, Container]
-    resource_type_versions: "^1.0.0"
-    provider_types: []              # empty = all providers
-    profile_constraints: []         # empty = all profiles; or: [standard, prod, fsi]
-    domains_applicable: [platform, tenant, service, provider]  # which domains may use this
-
-  # CONDITIONAL INCLUSION (Q23) — activation condition
-  activation_condition:
-    # Layer only included if this condition evaluates true during Step 2 (Layer Resolution)
-    field: tenant.tags
-    operator: not_contains          # equals|not_equals|exists|not_exists|contains|in|not_in
-    value: custom-dns
-    # Compound conditions:
-    # conditions:
-    #   operator: and   # and | or
-    #   rules:
-    #     - field: request.gpu_requested
-    #       operator: equals
-    #       value: true
-    #     - field: ingress.actor.roles
-    #       operator: contains
-    #       value: developer
-
-  # FIELDS — with per-field override metadata
-  fields:
-    dns_servers:
-      value: [192.0.2.53, 192.0.2.54]
-      metadata:
-        override: allow             # allow | constrained | immutable
-        basis_for_value: "Platform DNS infrastructure — primary and secondary"
-        provenance_note: "Set by platform infrastructure team per INFRA-2024-089"
-    dns_search_domain:
-      value: corp.example.com
-      metadata:
-        override: immutable         # lower layers cannot override this field
-        locked_by_policy_uuid: <uuid>
-        basis_for_value: "Corporate domain — cannot be customized per SECURITY-2024-034"
-
-  # USAGE CONTEXT — human documentation embedded in the artifact
-  usage:
-    description: "Default DNS configuration for all platform VMs and containers"
-    applies_when: "All requests unless consumer declares layer exclusion or tenant has custom-dns tag"
-    excludes_when: "Tenant has custom_dns tag; consumer declares explicit layer exclusion"
-    supersedes: []                  # uuids of the layer records this replaces
-    conflicts_with: []              # handles of layers this conflicts with — detected at ingestion
-
-  # SOURCE OF TRUTH
-  scm_location:
-    repository: https://git.corp.example.com/dcm-layers
-    path: platform/core/default-dns-config/v1.2.0.yaml
-    commit: <sha>
+# schema: layer.schema.json
+record_type: layer
+uuid: 3b6f0c2e-8a41-4d7e-9b25-6c1e0f4a7d93
+handle: platform/core/default-dns-config
+conforms_to: udlm/0.1
+name: Default DNS configuration
+description: Platform DNS resolvers and search domain for VMs and containers.
+version: 1.2.0
+supersedes:
+  - 9d1e4a7c-2f68-4b03-a5c9-7e0b3d8f1a26
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: core
+precedence_class: core
+domain: platform
+covers: estate?resource_type=in=(Machine.VM,Container)
+applies_on: [realize, reconfigure]
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+fields:
+  dns_servers: [192.0.2.53, 192.0.2.54]
+  dns_search_domain: corp.example.com
+limits:
+  dns_search_domain:
+    - values: [corp.example.com]
+      reason: The corporate domain cannot be customized (SECURITY-2024-034).
+metadata:
+  display_name: Default DNS
 ```
+
+**What replaced the older layer fields.** Earlier drafts of this section showed fields the schema no
+longer has:
+
+| Older field | Now |
+|---|---|
+| `priority` (value, label, category) | `precedence_class` and `precedence_order` |
+| `concern_tags`, `compatibility` (resource types, providers, profiles) | `covers`, one URF filter over the resources the layer may inject into |
+| `activation_condition` | `covers` and `applies_on`; conditions on request data belong to policy |
+| per-field `metadata.override` (`allow`, `constrained`, `immutable`), `locked_by_policy_uuid` | `limits` on the fields descendants may not leave, and `narrow_only` |
+| per-field `basis_for_value`, `provenance_note` | `limits[].reason`, and `metadata.notes` |
+| `usage` (description, applies or excludes when) | `description`, `covers`, `skip` |
+| `usage.conflicts_with` | Detected at ingestion (§4c); not carried |
+| `scm_location` | Version control; not carried |
 
 ### 4.4 Layer Handle
 
@@ -954,10 +941,8 @@ Because conflict detection runs at ingestion, all layers resident in the control
 
 ## 4d. Complete Layer Definition Structure
 
-> A complete worked example combining identity, status, scope,
-> priority, layer chain, and fields has moved to the non-normative
-> [Layering Annex](layering-and-versioning-annex.md) (“Complete Layer
-> Definition Structure”). The normative field/metadata rules are in §4 and §4b above.
+> The complete layer structure, with an example that validates against the layer schema, is §4.3.
+> The shipped example layers in `registry/examples/` are each validated in CI.
 
 ---
 
@@ -1006,6 +991,16 @@ When two layers at the same precedence level declare conflicting values for the 
 
 ## 5a. Field Override Control
 
+> **What the schemas carry today.** This section describes the override-control obligation in
+> full; only part of it has a schema surface. A field that descendants may not change, or may
+> change only within a set, is a layer's `limits` (with `narrow_only` for a layer that may only
+> tighten) — §4.3. A value an authorized actor overrode is recorded in provenance with source kind
+> `override`. A time-bounded exception to a soft policy is a policy of `policy_type: override`, with a
+> narrowed `scope` and a mandatory `expires_at` (policy-contract §18). The per-field `override`
+> levels, the actor `override_matrix`, `trusted_grants`, `constraint_schema` and the lock references
+> (`locked_by_policy_uuid`, `immutable_ceiling`, `locked_at_level`) have no schema field; the blocks
+> below show the obligation, not a record shape (#632).
+
 Field override control is the mechanism by which the control plane governs **who can change what, under what conditions**, across the layer precedence chain — a graduated model that is **simple by default and powerful when needed**.
 
 **Design Principle:** A field with no override declaration is fully overridable by anyone. Restrictions are always opt-in. The model has three levels — you use only the level you need. Levels 1 and 2 cover the vast majority of real-world cases. Level 3 exists for fields that genuinely require nuanced, actor-specific governance.
@@ -1052,6 +1047,7 @@ Applies override control at request processing time based on current organizatio
 No override control declaration on a field means it is fully overridable by any actor. This is the default for all fields. Zero configuration required.
 
 ```yaml
+# illustrative: override control has no schema field yet (#632)
 # Level 1 — fully overridable, no declaration needed
 cpu_count:
   value: 4
@@ -1066,6 +1062,7 @@ This covers the majority of fields in most implementations.
 A single `override` property covers the most common governance needs without requiring a full matrix. Sufficient for most governed fields.
 
 ```yaml
+# illustrative: override control has no schema field yet (#632)
 # Level 2a — nobody can change this
 sovereignty_zone:
   value: us-east
@@ -1097,6 +1094,7 @@ display_name:
 Full actor-level control for fields that require nuanced governance. Used only when Level 2 is insufficient.
 
 ```yaml
+# illustrative: override control has no schema field yet (#632)
 billing_tag:
   value: engineering
   override_matrix:
@@ -1189,6 +1187,7 @@ The actor list is extensible. The control plane ships with built-in actors. Orga
 **Custom actor registration:**
 
 ```yaml
+# illustrative: override control has no schema field yet (#632)
 custom_actor:
   uuid: <uuid>
   name: <actor name>
@@ -1254,6 +1253,7 @@ A `pinned` policy-version rehydration (Historical Exact or Historical Portable m
 The complete field metadata structure carrying override control in the payload:
 
 ```yaml
+# illustrative: override control has no schema field yet (#632)
 field_name:
   value: <current value>
   metadata:
@@ -1300,6 +1300,7 @@ The Request Payload Processor assembles the final payload by executing the follo
 **The `immutable_ceiling` declaration** is a forward-looking protection for fields that must remain locked even if a higher-priority policy is **added to the system later**:
 
 ```yaml
+# illustrative: override control has no schema field yet (#632)
 # Default immutable — protected by execution order during this request
 # The highest-priority Global compliance-class Validation Policy to run first locks it
 # No subsequent policy in this execution can change it
