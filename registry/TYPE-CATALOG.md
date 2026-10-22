@@ -52,7 +52,7 @@ The thing that hands out addresses and answers name lookups, as a single, thin s
 
 ## Automation
 
-### Automation (1.2.1)
+### Automation (1.3.0)
 
 **Purpose:** Declares an automation — what a run is, portable across engines — so any engine that exposes run, status and cancel can execute it.
 
@@ -70,7 +70,7 @@ The definition of something that can be run: what it takes in, what it gives bac
 - Job — the receipt of running it.
 - Automation.OSPatch — a Type that narrows it.
 
-### Automation.OSPatch (1.2.3)
+### Automation.OSPatch (1.3.0)
 
 **Purpose:** The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.
 
@@ -91,11 +91,11 @@ Declares that hosts get patched: which package sets, within which maintenance wi
 
 ## BMC
 
-### BMC (0.7.2)
+### BMC (0.8.0)
 
 **Purpose:** Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.
 
-The always-on management controller inside a server that answers even when the host is off — each board vendor ships its own flavor. This record carries its `management_address`, the single `protocol` it answers — `redfish`, `ipmi`, or the combined `redfish+ipmi` — and its `vendor`, and points at the one host it controls. Credentials are never stored here — they are referenced. It exists so that power that host off resolves to a concrete address and mechanism instead of prose.
+The always-on management controller inside a server that answers even when the host is off — each board vendor ships its own flavor. This record carries its `management_address`, the single `protocol` it answers — `redfish`, `ipmi`, or the combined `redfish_and_ipmi` — and its `vendor`, and points at the one host it controls. Credentials are never stored here — they are referenced. It exists so that power that host off resolves to a concrete address and mechanism instead of prose.
 
 **Use when:**
 - You need out-of-band power/reset control of a host to be addressable data, for shutdown ordering and recovery automation.
@@ -152,7 +152,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 
 ## Container
 
-### Container (1.2.0)
+### Container (1.3.0)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -385,14 +385,14 @@ A tenant. A thing belongs to exactly one at a time, and that is a structural loc
 
 ## IPAddress
 
-### IPAddress (0.12.0)
+### IPAddress (0.13.0)
 
 **Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
 
-One IP address, bound to the interface it is configured on, with how it came to be — `allocation`: `static` (a fixed reservation — this IS the DHCP reservation; there is no second record), `dhcp` (leased), or self-assigned as `link-layer` or `random` (SLAAC/privacy). The `address` itself is CIDR with prefix length — 192.0.2.10/24, never a bare 192.0.2.10. A static record authors the address up front; a dynamic one gets its address filled in once observed. From this one record, projections are derived — a DHCP scope's reservation list, name-side entries — instead of the same fact being retyped per system.
+One IP address, bound to the interface it is configured on, with how it came to be — `allocation`: `static` (a fixed reservation — this IS the DHCP reservation; there is no second record), `dhcp` (leased), or self-assigned as `link_layer` or `random` (SLAAC/privacy). The `address` itself is CIDR with prefix length — 192.0.2.10/24, never a bare 192.0.2.10. A static record authors the address up front; a dynamic one gets its address filled in once observed. From this one record, projections are derived — a DHCP scope's reservation list, name-side entries — instead of the same fact being retyped per system.
 
 **Use when:**
-- You need address assignments tracked per interface with their `allocation` origin (`static`, `dhcp`, `link-layer`, `random`).
+- You need address assignments tracked per interface with their `allocation` origin (`static`, `dhcp`, `link_layer`, `random`).
 - You need one authoritative record that DHCP reservation lists and other projections derive from.
 
 **Not for:**
@@ -555,7 +555,7 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 
 ## KubernetesCluster
 
-### KubernetesCluster (2.0.4)
+### KubernetesCluster (2.0.5)
 
 **Purpose:** Declares a managed Kubernetes cluster — release and network ranges — as one provisionable intent; its node pools are KubernetesNodePool records contained by it.
 
@@ -574,7 +574,7 @@ The request for a control plane: which release and what internal network ranges 
 - KubernetesNodePool — homogeneous slices of the cluster's node capacity.
 - VirtualNetwork — the network the cluster is realized onto.
 - Container — the workloads scheduled onto the cluster.
-- Workload (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned, depends_on (soft) when imported.
+- Workload (service_kind fleet_manager) — the fleet manager above this cluster: contained_by when hub-provisioned, depends_on (soft) when imported.
 
 ## KubernetesNamespace
 
@@ -597,7 +597,7 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 
 ## KubernetesNodePool
 
-### KubernetesNodePool (1.1.3)
+### KubernetesNodePool (1.1.4)
 
 **Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
 
@@ -656,7 +656,7 @@ A statement of outcome: logs from one resource (a machine, a BMC, a switch, a ga
 - Machine / BMC / NetworkSwitch / NetworkGateway / KubernetesCluster — the resource whose logs are shipped.
 - LogStore — where the logs go; its published intake is what the shipper binds.
 
-### LogShipper.OTLP (0.1.1)
+### LogShipper.OTLP (0.1.2)
 
 **Purpose:** Ships a resource's logs over OTLP.
 
@@ -726,7 +726,7 @@ The most portable way to ask for a machine: how big, what image, what storage ti
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 
-### Machine.BareMetalHost (0.15.1)
+### Machine.BareMetalHost (0.15.2)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -794,7 +794,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 ## NetworkGateway
 
-### NetworkGateway (0.7.2)
+### NetworkGateway (0.8.0)
 
 **Purpose:** Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.
 
@@ -816,7 +816,7 @@ The router/firewall at the edge of a network: which functions it provides (routi
 
 ## NetworkInterface
 
-### NetworkInterface (0.16.2)
+### NetworkInterface (0.16.3)
 
 **Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
 
@@ -863,11 +863,11 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 
 ## PowerFeed
 
-### PowerFeed (0.7.2)
+### PowerFeed (0.8.0)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
-One source of power feeding equipment. Hosts and switches declare which feed they draw from, so what loses power when a UPS drains is a graph walk, not tribal knowledge. For UPS feeds it carries live status (online, on-battery, low-battery), battery charge, and estimated runtime — the facts an automated graceful shutdown triggers on. Rated `capacity` (watts, voltage, phases) and `redundancy` — the enum `none`, `n+1`, or `2n`, not a boolean — are declared up front.
+One source of power feeding equipment. Hosts and switches declare which feed they draw from, so what loses power when a UPS drains is a graph walk, not tribal knowledge. For UPS feeds it carries live status (online, on-battery, low-battery), battery charge, and estimated runtime — the facts an automated graceful shutdown triggers on. Rated `capacity` (watts, voltage, phases) and `redundancy` — the enum `none`, `n_plus_1`, or `2n`, not a boolean — are declared up front.
 
 **Use when:**
 - You need equipment tied to its actual power source so a UPS on-battery event can drive an ordered shutdown of exactly what that UPS feeds.
@@ -966,7 +966,7 @@ What a zone name actually means. `eu-west` is Germany and the Netherlands, under
 
 ## StorageClass
 
-### StorageClass (0.10.1)
+### StorageClass (0.10.2)
 
 **Purpose:** Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.
 
@@ -988,11 +988,11 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 
 ## StorageCluster
 
-### StorageCluster (0.8.0)
+### StorageCluster (0.9.0)
 
 **Purpose:** Models a distributed storage system serving block, file, and/or object storage — the platform volumes are provisioned from.
 
-A multi-node storage system — Ceph is the reference implementation, but the technology is the provider, never the type. It declares which `protocols` it serves (required: `block`, `file`, `object`), its `capacity` — an object whose `total` and `usable` are whole-number sizes like 50TB, not a bare size string — and its redundancy scheme, spelled `data_protection` (a `scheme` of `replication` or `erasure-coding`, plus replica count), and publishes the consumption surfaces: the block and file storage-class names volumes provision through, and the S3-compatible object endpoint. Its own nodes are hosts or VMs it depends on — the cluster needs its quorum up.
+A multi-node storage system — Ceph is the reference implementation, but the technology is the provider, never the type. It declares which `protocols` it serves (required: `block`, `file`, `object`), its `capacity` — an object whose `total` and `usable` are whole-number sizes like 50TB, not a bare size string — and its redundancy scheme, spelled `data_protection` (a `scheme` of `replication` or `erasure_coding`, plus replica count), and publishes the consumption surfaces: the block and file storage-class names volumes provision through, and the S3-compatible object endpoint. Its own nodes are hosts or VMs it depends on — the cluster needs its quorum up.
 
 **Use when:**
 - You need the storage platform in the graph so volumes and their consumers order correctly against it and its member nodes.
@@ -1056,7 +1056,7 @@ The list of disks a machine should have: each entry names a disk (`name`, the st
 
 ## StoragePool
 
-### StoragePool (0.6.0)
+### StoragePool (0.6.1)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
@@ -1162,7 +1162,7 @@ A ready-made application shape. Somebody who knows how the pieces fit wrote it d
 
 ## TestEvidence
 
-### TestEvidence (0.4.0)
+### TestEvidence (0.5.0)
 
 **Purpose:** Records the evidence a test provides about a subject — any test, from any suite, in the result format the suite already emits.
 
@@ -1181,7 +1181,7 @@ One test, what it was about, and how it went: the subject it exercised, the kind
 - TestEvidence.VulnerabilityCheck — the Type for CVE checks.
 - VexStatement — cites evidence records.
 
-### TestEvidence.VulnerabilityCheck (0.1.1)
+### TestEvidence.VulnerabilityCheck (0.2.0)
 
 **Purpose:** Records one test that checks one known vulnerability in one package version, so a claim that a vulnerability is fixed or reachable can be traced to a test that ran.
 
@@ -1194,7 +1194,7 @@ The vulnerability-check dialect of test evidence: the subject is a package versi
 
 ## Topology
 
-### Topology (0.5.6)
+### Topology (0.6.0)
 
 **Purpose:** Declares the failure and locality domains — region, zone, rack, power, network — that placement, residency, and maintenance gating resolve against.
 
@@ -1216,7 +1216,7 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 
 ## UPS
 
-### UPS (0.1.5)
+### UPS (0.2.0)
 
 **Purpose:** Models the battery-backed unit itself — what it is rated for, what wears, when it must signal low battery, and what it reports — so the feed it protects can be supplied_by a real entity instead of a feed_type string.
 
@@ -1359,11 +1359,11 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 
 ## Workload
 
-### Workload (0.9.2)
+### Workload (0.10.0)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
-The application layer: the mail service, the registry, model serving — a named service, classified by its required `service_kind` (application, infrastructure-daemon, database, and kin), composed of `constituents` that each declare their `form`: a `container` constituent references its container record via `container_ref`; a `systemd` constituent names its `host` and `units`. It declares what the service needs — a database, a directory, name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications derivable. Endpoints and a ready signal surface how it is reached and whether it is serving.
+The application layer: the mail service, the registry, model serving — a named service, classified by its required `service_kind` (application, infrastructure_daemon, database, and kin), composed of `constituents` that each declare their `form`: a `container` constituent references its container record via `container_ref`; a `systemd` constituent names its `host` and `units`. It declares what the service needs — a database, a directory, name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications derivable. Endpoints and a ready signal surface how it is reached and whether it is serving.
 
 **Use when:**
 - You need an application composed of several workloads treated as one node with one dependency surface.

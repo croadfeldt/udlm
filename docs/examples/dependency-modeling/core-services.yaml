@@ -14,7 +14,7 @@ tenant_uuid: 14230477-819f-4e9b-bfec-3fcec6ee3b79
 states:
   discovered:
     fields:
-      service_kind: infrastructure-daemon
+      service_kind: infrastructure_daemon
     at: '2026-07-13T00:00:00Z'
 dependencies:
 - edge_type: depends_on

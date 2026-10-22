@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/LogShipper.OTLP/0.1.1
+$id: https://udlm.dev/registry/udlm/0.1/class/LogShipper.OTLP/0.1.2
 conforms_to: udlm/0.1
 uuid: f70bb63b-913f-4927-addc-ab34443013b0
 record_type: class
 class: type
 resource_type: LogShipper.OTLP
 parent: LogShipper
-version: 0.1.1
+version: 0.1.2
 family: Resource
 status: active
 metadata:
@@ -23,6 +23,7 @@ elements:
     description: The OTLP encoding, with the values the OTLP exporter configuration uses (`OTEL_EXPORTER_OTLP_PROTOCOL`).
     schema:
       type: string
+      x-standard: "OpenTelemetry:OTLP exporter protocol"
       enum:
         - grpc
         - http/protobuf

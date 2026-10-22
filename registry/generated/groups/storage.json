@@ -11,14 +11,14 @@
     },
     {
       "class": "StorageClass",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "instantiable": true,
       "path": "registry/classes/resource/storage/storage-class/_base.yaml",
       "types": []
     },
     {
       "class": "StorageCluster",
-      "version": "0.8.0",
+      "version": "0.9.0",
       "instantiable": true,
       "path": "registry/classes/resource/storage/storage-cluster/_base.yaml",
       "types": []
@@ -39,7 +39,7 @@
     },
     {
       "class": "StoragePool",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "instantiable": true,
       "path": "registry/classes/resource/storage/storage-pool/_base.yaml",
       "types": []

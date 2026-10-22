@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5611,
-    "mutations_rejected": 5611,
+    "mutations_attempted": 5623,
+    "mutations_rejected": 5623,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -168,8 +168,8 @@
         "rejected": 246
       },
       "NetworkGateway": {
-        "attempted": 118,
-        "rejected": 118
+        "attempted": 119,
+        "rejected": 119
       },
       "NetworkInterface": {
         "attempted": 141,
@@ -248,8 +248,8 @@
         "rejected": 171
       },
       "UPS": {
-        "attempted": 134,
-        "rejected": 134
+        "attempted": 145,
+        "rejected": 145
       },
       "VLAN": {
         "attempted": 42,

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/NetworkInterface/0.16.2
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkInterface/0.16.3
 conforms_to: udlm/0.1
 uuid: 04f5c089-85b3-4a89-9b2e-d0c8d172ad23
 record_type: class
 class: base
 resource_type: NetworkInterface
-version: 0.16.2
+version: 0.16.3
 family: Resource
 status: active
 filed_under:
@@ -56,6 +56,7 @@ elements:
       properties:
         mode:
           type: string
+          x-standard: "NMstate:link-aggregation.mode"
           enum:
             - 802.3ad
             - active-backup
@@ -245,6 +246,14 @@ relationships:
     description: The VLAN(s) this port is a member of (see spec.vlan_memberships); each carries a mode (native/tagged).
       The port references the shared VLAN objects rather than duplicating the id.
 adopts:
+  - standard: NMstate
+    version: 2.x
+    standard_name: link-aggregation.mode
+    role: the bond `mode` values, verbatim (the Linux bonding driver names NMstate carries)
+    source: https://nmstate.io/
+    license: Apache-2.0
+    license_compatibility: compatible-reference
+    disposition: tier1_value
   - standard: Redfish
     version: '2024.4'
     standard_name: NetworkAdapter

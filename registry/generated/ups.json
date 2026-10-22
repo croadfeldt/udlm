@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/UPS/0.1.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/UPS/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "db585146-41b2-4cd9-86e6-c90d086df2cf",
   "resource_type": "UPS",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "UPS",
-          "version": "0.1.5",
+          "version": "0.2.0",
           "uuid": "db585146-41b2-4cd9-86e6-c90d086df2cf"
         }
       ]
@@ -28,19 +28,23 @@
     "additionalProperties": false,
     "properties": {
       "identity": {
-        "$ref": "../common-elements.schema.json#/$defs/identity",
+        "type": "object",
         "description": "Unit identity: vendor, model, serial.",
         "properties": {
           "manufacturer": {
+            "type": "string",
             "description": "Maker (Redfish Manufacturer; NUT ups.mfr / device.mfr)."
           },
           "model": {
+            "type": "string",
             "description": "Model (Redfish Model; NUT ups.model / device.model)."
           },
           "serial_number": {
+            "type": "string",
             "description": "Unit serial (Redfish SerialNumber; NUT ups.serial / device.serial)."
           },
           "asset_tag": {
+            "type": "string",
             "description": "Org asset tag (Redfish AssetTag)."
           }
         }
@@ -48,11 +52,11 @@
       "topology": {
         "type": "string",
         "enum": [
-          "double-conversion",
-          "line-interactive",
+          "double_conversion",
+          "line_interactive",
           "standby"
         ],
-        "description": "IEC 62040-3 class: `double-conversion` (VFI), `line-interactive` (VI), `standby` (VFD). An element, not a Type axis: it does not change the definition structure."
+        "description": "IEC 62040-3 class: `double_conversion` (VFI), `line_interactive` (VI), `standby` (VFD). An element, not a Type axis: it does not change the definition structure."
       },
       "rated_capacity": {
         "type": "object",
@@ -90,9 +94,9 @@
           "chemistry": {
             "type": "string",
             "enum": [
-              "lead-acid",
-              "lithium-ion",
-              "nickel-cadmium"
+              "lead_acid",
+              "lithium_ion",
+              "nickel_cadmium"
             ],
             "description": "Battery chemistry (NUT battery.type carries the vendor string; this is the neutral class)."
           },
@@ -154,7 +158,7 @@
           "model": "Rackmount 1500",
           "serial_number": "EXMPL-000001"
         },
-        "topology": "line-interactive",
+        "topology": "line_interactive",
         "rated_capacity": {
           "va": 1500,
           "watts": 900,
@@ -162,7 +166,7 @@
           "phases": 1
         },
         "battery": {
-          "chemistry": "lead-acid",
+          "chemistry": "lead_acid",
           "count": 1,
           "installed_at": "2026-01-15"
         },

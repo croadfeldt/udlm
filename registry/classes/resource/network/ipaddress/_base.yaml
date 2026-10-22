@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/IPAddress/0.12.0
+$id: https://udlm.dev/registry/udlm/0.1/class/IPAddress/0.13.0
 conforms_to: udlm/0.1
 uuid: 6b7a4336-da9c-4b42-883d-44c96940f45a
 record_type: class
 class: base
 resource_type: IPAddress
-version: 0.12.0
+version: 0.13.0
 family: Resource
 status: active
 filed_under:
@@ -59,16 +59,16 @@ elements:
     optional: true
     state: canonical
     description: 'Origin (RFC 8344 / NMstate): `static` (a fixed reservation bound to the interface), `dhcp` (leased),
-      `link-layer` or `random` (SLAAC, privacy).'
+      `link_layer` or `random` (SLAAC, privacy).'
     schema:
       type: string
       enum:
         - static
         - dhcp
-        - link-layer
+        - link_layer
         - random
       description: 'Origin (RFC 8344 / NMstate): `static` (a fixed reservation bound to the interface), `dhcp` (leased),
-        `link-layer` or `random` (SLAAC, privacy).'
+        `link_layer` or `random` (SLAAC, privacy).'
 spec_examples:
   - address: 192.0.2.10/24
     ip_family: ipv4
@@ -126,12 +126,12 @@ context:
     fact lives in exactly one place.
   plain_description: 'One IP address, bound to the interface it is configured on, with how it came to be — `allocation`:
     `static` (a fixed reservation — this IS the DHCP reservation; there is no second record), `dhcp` (leased), or
-    self-assigned as `link-layer` or `random` (SLAAC/privacy). The `address` itself is CIDR with prefix length —
+    self-assigned as `link_layer` or `random` (SLAAC/privacy). The `address` itself is CIDR with prefix length —
     192.0.2.10/24, never a bare 192.0.2.10. A static record authors the address up front; a dynamic one gets its
     address filled in once observed. From this one record, projections are derived — a DHCP scope''s reservation
     list, name-side entries — instead of the same fact being retyped per system.'
   use_when:
-    - You need address assignments tracked per interface with their `allocation` origin (`static`, `dhcp`, `link-layer`,
+    - You need address assignments tracked per interface with their `allocation` origin (`static`, `dhcp`, `link_layer`,
       `random`).
     - You need one authoritative record that DHCP reservation lists and other projections derive from.
   not_for:

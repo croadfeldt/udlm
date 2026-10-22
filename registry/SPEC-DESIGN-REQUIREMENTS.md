@@ -299,7 +299,7 @@ Each hard constraint cites the UDLM contract it derives from.
 
 35. **Provider-neutral framing — model the fact, never dictate the mechanism.** A type models *what* a
     fact is, never *how* or *by what* it is realized, and MUST NOT imply a particular mechanism or provider
-    is *the* or *preferred* way. (An IP address's origin is a field — `static`/`dhcp`/`link-layer`/`random`;
+    is *the* or *preferred* way. (An IP address's origin is a field — `static`/`dhcp`/`link_layer`/`random`;
     UDLM neither prescribes DHCP as the way to serve it nor names Kea/dnsmasq/BIND as the way to run it.)
     Concrete providers appear only as **examples** ("e.g. …") or reference implementations — never as the type's
     grounding, its normative text, or an adopted "the model." And **no estate/deployment-specific references

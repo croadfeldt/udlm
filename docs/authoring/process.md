@@ -48,7 +48,7 @@ Do **not** author a process when:
 Follow [`scoped-class.md`](scoped-class.md) for the full Class procedure; the Process-specific parts:
 
 1. **Author the Base and Type Classes.** The Process Base Class carries what every run shares —
-   `inputs_schema`, `outputs_schema`, `idempotency` (`idempotent` / `at-most-once` / `unsafe-repeat` —
+   `inputs_schema`, `outputs_schema`, `idempotency` (`idempotent` / `at_most_once` / `unsafe_repeat` —
    the re-run semantics), `timeout`, `retry_policy`, `compensation`, and **`affected_entities`** (the
    blast-radius declaration — which records this run may mutate). Your Type Class (`Automation.OSPatch`)
    extends it with the domain intent (`targets`, `patch_policy`, `reboot_policy`) under Liskov.

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.5.6",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "34b1a133-4377-4bd6-b089-2345e8e80aab",
   "resource_type": "Topology",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Topology",
-          "version": "0.5.6",
+          "version": "0.6.0",
           "uuid": "34b1a133-4377-4bd6-b089-2345e8e80aab"
         }
       ]
@@ -55,12 +55,12 @@
               "type": "string",
               "enum": [
                 "region",
-                "availability-zone",
+                "availability_zone",
                 "zone",
                 "rack",
                 "host",
-                "power-domain",
-                "network-segment"
+                "power_domain",
+                "network_segment"
               ],
               "description": "Abstract domain level a placement/residency constraint targets (the portable dimension)."
             },
@@ -98,12 +98,12 @@
           },
           {
             "id": "az-a",
-            "kind": "availability-zone",
+            "kind": "availability_zone",
             "parent": "region-1"
           },
           {
             "id": "ups-a",
-            "kind": "power-domain",
+            "kind": "power_domain",
             "parent": "az-a"
           },
           {

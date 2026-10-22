@@ -17,6 +17,10 @@ fails CI. Shrink the baseline with every fix-wave PR; never grow it.
   G6 property-strict    schema-authoring keys inside spec.properties subtrees come from the JSON
                         Schema keyword allowlist (catches mangled keys that are legal-but-wrong)
 
+G9 enum-casing: an enum value UDLM mints is snake_case; a value copied from an adopted standard
+keeps its casing only under an `x-standard: "<standard>:<where>"` naming a standard the class adopts
+(naming-conventions §4, row 103).
+
 G7 context-present (rule 36(l)) rides the same ratchet. G4 (worked-example currency) is deferred pending the D8 example-bar ruling; the exists-half is
 reported informationally, never failing.
 """
@@ -37,7 +41,7 @@ SCHEMA_KEYWORDS = {
     "properties", "additionalProperties", "required", "oneOf", "anyOf", "allOf", "not",
     "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "minLength", "maxLength",
     "minItems", "maxItems", "uniqueItems", "propertyNames", "patternProperties", "$ref",
-    "title", "examples", "deprecated", "readOnly", "sensitive", "x-udlm", "x-extensible-enum",
+    "title", "examples", "deprecated", "readOnly", "sensitive", "x-udlm", "x-extensible-enum", "x-standard",
 }
 ADOPT_TOKENS = re.compile(r"\bADOPT\b|\badopts\b|\bOCI\b|\bpurl\b|\bSPDX\b|\bCycloneDX\b|\bOSV\b|\bCVSS\b|\bRedfish\b|\bSCIM\b|\bTOSCA\b", re.I)
 
@@ -66,6 +70,33 @@ def walk_props(node, path, hits):
                 walk_props(sub, path, hits)
         elif k not in SCHEMA_KEYWORDS:
             hits.append((path, k))
+
+
+SNAKE = re.compile(r"^[a-z0-9]+(_[a-z0-9]+)*$")
+
+
+def enum_casing(node, adopted, prefix=""):
+    """(path, problem) for enum values that are not snake_case and not covered by an x-standard
+    naming an adopted standard."""
+    out = []
+    if isinstance(node, dict):
+        values = node.get("enum")
+        if isinstance(values, list):
+            bad = [v for v in values if isinstance(v, str) and not SNAKE.match(v)]
+            marker = node.get("x-standard")
+            standard = marker.split(":", 1)[0] if isinstance(marker, str) else None
+            if bad and standard not in adopted:
+                why = (f"x-standard names {standard!r}, which the class does not adopt" if marker
+                       else "not snake_case and no x-standard marks it as adopted")
+                out.append((prefix or "/", f"{bad} — {why}"))
+        for k, v in node.items():
+            if k in ("enum", "examples", "default", "const"):
+                continue
+            out += enum_casing(v, adopted, f"{prefix}.{k}" if prefix else k)
+    elif isinstance(node, list):
+        for v in node:
+            out += enum_casing(v, adopted, prefix)
+    return out
 
 
 def bare_refs(node, prefix=""):
@@ -149,6 +180,11 @@ def main():
         # reaches).
         for m in re.finditer(r'"\$ref"\s*:\s*"(https?://[^"]+)"', json.dumps(d)):
             found.append(("G8", rt, m.group(1)[:60], "absolute $ref — use a relative sibling ref"))
+
+        # G9 — enum casing (naming-conventions §4)
+        adopted = {a.get("standard") for a in d.get("adopts") or [] if isinstance(a, dict)}
+        for path, problem in enum_casing(spec, adopted):
+            found.append(("G9", rt, path, problem))
 
         # G5
         meta_desc = (d.get("metadata", {}) or {}).get("description", "") or d.get("description", "") or ""

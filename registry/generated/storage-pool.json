@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StoragePool/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StoragePool/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "643156a0-5c7b-4fa7-bcfb-089c0a06d520",
   "resource_type": "StoragePool",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StoragePool",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "643156a0-5c7b-4fa7-bcfb-089c0a06d520"
         }
       ]
@@ -110,6 +110,7 @@
           },
           "raid_type": {
             "type": "string",
+            "x-standard": "SNIA-Swordfish:Volume.RAIDType",
             "enum": [
               "RAID0",
               "RAID1",

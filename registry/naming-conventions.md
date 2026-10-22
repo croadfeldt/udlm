@@ -125,8 +125,11 @@ an **export adapter** at that domain boundary (not native consumption).
   cidr/ip_family, Reference, Condition) — SPEC-DESIGN §24.
 - **Don't use `camelCase` or `PascalCase` keys** (would diverge from the canonical/AEP casing) or
   **`kebab-case` keys** (forces `data['a-b']` bracket access).
-- **Enum values → lowercase, hyphenated for multi-word** (`compatible-reference`, `whole-allocation`).
-  These are string *values*, never keys, and AEP governs field *names* not *values*.
+- **Enum values → `snake_case`**, the same as keys (`read_write_once`, `at_most_once`, `fleet_manager`).
+  One casing for every word UDLM mints, key or value (maintainer ruling 2026-10-22, row 103). A value
+  copied verbatim from an adopted standard keeps that standard's casing (`NoSchedule`, `balance-rr`,
+  `http/protobuf`); the element marks it with `x-standard: "<standard>:<where>"`, naming a standard the
+  class adopts. `tests/check_type_standard.py` G9 refuses any other non-snake value in a class.
 - **Quantities** carry an explicit unit via the `Quantity` pattern; timestamps are RFC 3339.
 - **Outputs** are `snake_case` typed keys naming the capability, not the implementation
   (`block_storage_class`, `connection_string`) — the cross-entity binding surface (E2).

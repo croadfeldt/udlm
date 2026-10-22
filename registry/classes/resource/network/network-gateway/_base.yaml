@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/NetworkGateway/0.7.2
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkGateway/0.8.0
 conforms_to: udlm/0.1
 uuid: ceb29900-486a-4c51-ac66-d686d8030711
 record_type: class
 class: base
 resource_type: NetworkGateway
-version: 0.7.2
+version: 0.8.0
 family: Resource
 status: active
 filed_under:
@@ -48,7 +48,7 @@ elements:
           - nat
           - firewall
           - vpn
-          - l7-proxy
+          - l7_proxy
       description: 'Edge functions provided: `routing`, `nat`, `firewall`, ….'
   - element: segments
     scope: NetworkGateway
@@ -77,7 +77,11 @@ elements:
     state: canonical
     description: Address families routed.
     schema:
-      $ref: ../../../../common-elements.schema.json#/$defs/ip_families
+      type: string
+      enum:
+        - ipv4
+        - ipv6
+        - dual
       description: Address families routed.
 spec_examples:
   - functions:

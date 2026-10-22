@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/BMC/0.7.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/BMC/0.8.0",
   "conforms_to": "udlm/0.1",
   "uuid": "ea6715e2-30d1-4a34-9611-00c85208e20a",
   "resource_type": "BMC",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "BMC",
-          "version": "0.7.2",
+          "version": "0.8.0",
           "uuid": "ea6715e2-30d1-4a34-9611-00c85208e20a"
         }
       ]
@@ -40,7 +40,7 @@
         "enum": [
           "redfish",
           "ipmi",
-          "redfish+ipmi"
+          "redfish_and_ipmi"
         ],
         "description": "Out-of-band protocols the BMC answers: `redfish` for power and reset, `ipmi` as the legacy fallback."
       },
@@ -59,7 +59,7 @@
     "examples": [
       {
         "management_address": "192.0.2.20",
-        "protocol": "redfish+ipmi",
+        "protocol": "redfish_and_ipmi",
         "vendor": "ASPEED",
         "dns_name": "bmc-node01.example.com"
       }
@@ -100,7 +100,7 @@
   ],
   "context": {
     "purpose": "Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.",
-    "plain_description": "The always-on management controller inside a server that answers even when the host is off — each board vendor ships its own flavor. This record carries its `management_address`, the single `protocol` it answers — `redfish`, `ipmi`, or the combined `redfish+ipmi` — and its `vendor`, and points at the one host it controls. Credentials are never stored here — they are referenced. It exists so that power that host off resolves to a concrete address and mechanism instead of prose.",
+    "plain_description": "The always-on management controller inside a server that answers even when the host is off — each board vendor ships its own flavor. This record carries its `management_address`, the single `protocol` it answers — `redfish`, `ipmi`, or the combined `redfish_and_ipmi` — and its `vendor`, and points at the one host it controls. Credentials are never stored here — they are referenced. It exists so that power that host off resolves to a concrete address and mechanism instead of prose.",
     "use_when": [
       "You need out-of-band power/reset control of a host to be addressable data, for shutdown ordering and recovery automation.",
       "You need the management-network surface of the fleet inventoried separately from in-band host addresses."

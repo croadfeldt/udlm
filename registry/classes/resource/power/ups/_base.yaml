@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/UPS/0.1.5
+$id: https://udlm.dev/registry/udlm/0.1/class/UPS/0.2.0
 conforms_to: udlm/0.1
 uuid: db585146-41b2-4cd9-86e6-c90d086df2cf
 record_type: class
 class: base
 resource_type: UPS
-version: 0.1.5
+version: 0.2.0
 family: Resource
 status: active
 filed_under:
@@ -27,30 +27,34 @@ elements:
     state: canonical
     description: 'Unit identity: vendor, model, serial.'
     schema:
-      $ref: ../../../../common-elements.schema.json#/$defs/identity
+      type: object
       description: 'Unit identity: vendor, model, serial.'
       properties:
         manufacturer:
+          type: string
           description: Maker (Redfish Manufacturer; NUT ups.mfr / device.mfr).
         model:
+          type: string
           description: Model (Redfish Model; NUT ups.model / device.model).
         serial_number:
+          type: string
           description: Unit serial (Redfish SerialNumber; NUT ups.serial / device.serial).
         asset_tag:
+          type: string
           description: Org asset tag (Redfish AssetTag).
   - element: topology
     scope: UPS
     optional: true
     state: canonical
-    description: 'IEC 62040-3 class: `double-conversion` (VFI), `line-interactive` (VI), `standby` (VFD). An element,
+    description: 'IEC 62040-3 class: `double_conversion` (VFI), `line_interactive` (VI), `standby` (VFD). An element,
       not a Type axis: it does not change the definition structure.'
     schema:
       type: string
       enum:
-        - double-conversion
-        - line-interactive
+        - double_conversion
+        - line_interactive
         - standby
-      description: 'IEC 62040-3 class: `double-conversion` (VFI), `line-interactive` (VI), `standby` (VFD). An element,
+      description: 'IEC 62040-3 class: `double_conversion` (VFI), `line_interactive` (VI), `standby` (VFD). An element,
         not a Type axis: it does not change the definition structure.'
   - element: rated_capacity
     scope: UPS
@@ -91,9 +95,9 @@ elements:
         chemistry:
           type: string
           enum:
-            - lead-acid
-            - lithium-ion
-            - nickel-cadmium
+            - lead_acid
+            - lithium_ion
+            - nickel_cadmium
           description: Battery chemistry (NUT battery.type carries the vendor string; this is the neutral class).
         count:
           type: integer
@@ -160,14 +164,14 @@ spec_examples:
       manufacturer: Example Power Co.
       model: Rackmount 1500
       serial_number: EXMPL-000001
-    topology: line-interactive
+    topology: line_interactive
     rated_capacity:
       va: 1500
       watts: 900
       voltage: 120
       phases: 1
     battery:
-      chemistry: lead-acid
+      chemistry: lead_acid
       count: 1
       installed_at: '2026-01-15'
     outlets: 8
