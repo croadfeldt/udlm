@@ -59,7 +59,7 @@ portably, without UDLM prescribing a fixed resource math.
 
 ### 2.4 Network
 - `cidr`: a CIDR string (`"192.0.2.0/24"`).
-- `ip_family`: enum `{ ipv4, ipv6, dual }` (canonicalizes `network.ip-address`'s `family`).
+- `ip_family`: enum `{ ipv4, ipv6 }`, the one family of an address, pool, subnet or DHCP scope (canonicalizes `network.ip-address`'s `family`). `ip_families`: enum `{ ipv4, ipv6, dual }`, for a thing that may carry both, such as a gateway (row 102).
 - `address`: an IP string (an `outputs` value, per existing `network.ip-address`).
 
 ### 2.5 `Reference`
@@ -163,7 +163,9 @@ boundary.
 
 Two identical 32 GB DIMMs, eight same-model drives — all the same type, size, often the same use. To
 keep them individually addressable, every component (whether a `Hardware.*` entity or an inline
-`modules[]`/`disks[]` element) carries the canonical **`Identity`** block:
+`modules[]`/`disks[]` element) carries the canonical **`Identity`** block, defined once as
+`common-elements.schema.json#/$defs/identity` (row 102). A class `$ref`s it and declares its own extra
+discriminators beside it, such as `wwn` on a drive or `mac_address` on an interface:
 
 ```yaml
 Identity:

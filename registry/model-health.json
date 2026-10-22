@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5692,
-    "mutations_rejected": 5692,
+    "mutations_attempted": 5611,
+    "mutations_rejected": 5611,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -52,8 +52,8 @@
         "rejected": 71
       },
       "DHCPScope": {
-        "attempted": 95,
-        "rejected": 95
+        "attempted": 94,
+        "rejected": 94
       },
       "DNSZone": {
         "attempted": 152,
@@ -72,8 +72,8 @@
         "rejected": 120
       },
       "GPU": {
-        "attempted": 76,
-        "rejected": 76
+        "attempted": 55,
+        "rejected": 55
       },
       "Grouping": {
         "attempted": 56,
@@ -156,8 +156,8 @@
         "rejected": 112
       },
       "Machine.BareMetalHost": {
-        "attempted": 219,
-        "rejected": 219
+        "attempted": 208,
+        "rejected": 208
       },
       "Machine.LPAR": {
         "attempted": 189,
@@ -168,24 +168,24 @@
         "rejected": 246
       },
       "NetworkGateway": {
-        "attempted": 119,
-        "rejected": 119
+        "attempted": 118,
+        "rejected": 118
       },
       "NetworkInterface": {
-        "attempted": 157,
-        "rejected": 157
+        "attempted": 141,
+        "rejected": 141
       },
       "NetworkSwitch": {
-        "attempted": 94,
-        "rejected": 94
+        "attempted": 98,
+        "rejected": 98
       },
       "PowerFeed": {
         "attempted": 52,
         "rejected": 52
       },
       "Processor": {
-        "attempted": 87,
-        "rejected": 87
+        "attempted": 76,
+        "rejected": 76
       },
       "SoftwareImage": {
         "attempted": 47,
@@ -208,8 +208,8 @@
         "rejected": 72
       },
       "StorageDevice": {
-        "attempted": 92,
-        "rejected": 92
+        "attempted": 71,
+        "rejected": 71
       },
       "StorageLayout": {
         "attempted": 89,
@@ -220,8 +220,8 @@
         "rejected": 122
       },
       "Subnet": {
-        "attempted": 66,
-        "rejected": 66
+        "attempted": 65,
+        "rejected": 65
       },
       "TaxonomyTerm": {
         "attempted": 61,
@@ -248,8 +248,8 @@
         "rejected": 171
       },
       "UPS": {
-        "attempted": 145,
-        "rejected": 145
+        "attempted": 134,
+        "rejected": 134
       },
       "VLAN": {
         "attempted": 42,
@@ -260,8 +260,8 @@
         "rejected": 60
       },
       "VirtualNetwork": {
-        "attempted": 48,
-        "rejected": 48
+        "attempted": 57,
+        "rejected": 57
       },
       "Volume": {
         "attempted": 52,

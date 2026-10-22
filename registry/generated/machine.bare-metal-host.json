@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.15.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.15.1",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Machine.BareMetalHost",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Machine.BareMetalHost",
-          "version": "0.15.0",
+          "version": "0.15.1",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]
@@ -139,23 +139,19 @@
         "description": "Whether the host's components are modeled as their own records or only as rollups on the host (`opaque`). CPU, memory and local storage stay rollups either way."
       },
       "identity": {
-        "type": "object",
+        "$ref": "../common-elements.schema.json#/$defs/identity",
         "description": "Chassis and system identity: serial, model, asset tag.",
         "properties": {
           "serial_number": {
-            "type": "string",
             "description": "System serial (Redfish ComputerSystem.SerialNumber)."
           },
           "asset_tag": {
-            "type": "string",
             "description": "Org asset tag (Redfish AssetTag)."
           },
           "manufacturer": {
-            "type": "string",
             "description": "Redfish Manufacturer."
           },
           "model": {
-            "type": "string",
             "description": "Redfish Model."
           },
           "sku": {

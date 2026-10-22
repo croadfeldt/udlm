@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Subnet/0.2.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Subnet/0.3.0
 conforms_to: udlm/0.1
 uuid: 07faf9f7-511b-4a77-8743-092fa6ca06a1
 record_type: class
 class: base
 resource_type: Subnet
-version: 0.2.1
+version: 0.3.0
 family: Resource
 status: active
 filed_under:
@@ -88,11 +88,7 @@ elements:
     description: Address family. Derivable from `prefix`; carried only where a provider reports it independently,
       and a disagreement with the prefix is drift, never an override.
     schema:
-      type: string
-      enum:
-        - ipv4
-        - ipv6
-      x-extensible-enum: true
+      $ref: ../../../../common-elements.schema.json#/$defs/ip_family
       description: Address family. Derivable from `prefix`; carried only where a provider reports it independently,
         and a disagreement with the prefix is drift, never an override.
   - element: gateway_address

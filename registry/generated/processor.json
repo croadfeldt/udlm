@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Processor/0.7.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Processor/0.7.2",
   "conforms_to": "udlm/0.1",
   "uuid": "418c9acb-3cd8-4e73-817d-8be2bdf13442",
   "resource_type": "Processor",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Processor",
-          "version": "0.7.1",
+          "version": "0.7.2",
           "uuid": "418c9acb-3cd8-4e73-817d-8be2bdf13442"
         }
       ]
@@ -36,28 +36,14 @@
         "description": "How a partition is carved, when `device_class` is partition: `cpu-pinning` or `cpu-set`."
       },
       "identity": {
-        "type": "object",
+        "$ref": "../common-elements.schema.json#/$defs/identity",
         "description": "Instance discriminators: socket, model, serial.",
         "properties": {
           "location": {
-            "type": "string",
             "description": "Socket designation within the parent, e.g. CPU1 (Redfish Socket). Primary discriminator."
           },
-          "serial_number": {
-            "type": "string"
-          },
-          "asset_tag": {
-            "type": "string"
-          },
           "model": {
-            "type": "string",
             "description": "Processor model, e.g. AMD EPYC 7443P (Redfish Model)."
-          },
-          "manufacturer": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string"
           }
         }
       },

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/IPAddress/0.11.1
+$id: https://udlm.dev/registry/udlm/0.1/class/IPAddress/0.12.0
 conforms_to: udlm/0.1
 uuid: 6b7a4336-da9c-4b42-883d-44c96940f45a
 record_type: class
 class: base
 resource_type: IPAddress
-version: 0.11.1
+version: 0.12.0
 family: Resource
 status: active
 filed_under:

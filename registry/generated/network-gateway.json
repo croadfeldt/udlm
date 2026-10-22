@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkGateway/0.7.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkGateway/0.7.2",
   "conforms_to": "udlm/0.1",
   "uuid": "ceb29900-486a-4c51-ac66-d686d8030711",
   "resource_type": "NetworkGateway",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "NetworkGateway",
-          "version": "0.7.1",
+          "version": "0.7.2",
           "uuid": "ceb29900-486a-4c51-ac66-d686d8030711"
         }
       ]
@@ -71,12 +71,7 @@
         }
       },
       "ip_family": {
-        "type": "string",
-        "enum": [
-          "ipv4",
-          "ipv6",
-          "dual"
-        ],
+        "$ref": "../common-elements.schema.json#/$defs/ip_families",
         "description": "Address families routed."
       }
     },
