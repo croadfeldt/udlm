@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/AddressService/0.7.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/AddressService/0.8.0",
   "conforms_to": "udlm/0.1",
   "uuid": "2d2100a1-3813-4f01-8b55-12389cec51cc",
   "resource_type": "AddressService",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "AddressService",
-          "version": "0.7.1",
+          "version": "0.8.0",
           "uuid": "2d2100a1-3813-4f01-8b55-12389cec51cc"
         }
       ]
@@ -27,14 +27,6 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-      "zone": {
-        "$ref": "../common-elements.schema.json#/$defs/network_zone_ref",
-        "description": "What kind of network this is — a governed network-zone term, for placement only (common-elements.schema.json `network_zone_ref`)."
-      },
-      "tier": {
-        "$ref": "../common-elements.schema.json#/$defs/network_tier_ref",
-        "description": "How good this network is — a governed network_tier floor the provider reports (common-elements.schema.json `network_tier_ref`)."
-      },
       "services": {
         "type": "array",
         "items": {

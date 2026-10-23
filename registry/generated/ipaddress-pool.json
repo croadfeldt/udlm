@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/IPAddressPool/0.9.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/IPAddressPool/0.10.0",
   "conforms_to": "udlm/0.1",
   "uuid": "00257168-ae65-475c-bf34-f14f2e39f855",
   "resource_type": "IPAddressPool",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "IPAddressPool",
-          "version": "0.9.0",
+          "version": "0.10.0",
           "uuid": "00257168-ae65-475c-bf34-f14f2e39f855"
         }
       ]
@@ -27,21 +27,9 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-      "zone": {
-        "$ref": "../common-elements.schema.json#/$defs/network_zone_ref",
-        "description": "What kind of network this is — a governed network-zone term, for placement only (common-elements.schema.json `network_zone_ref`)."
-      },
-      "tier": {
-        "$ref": "../common-elements.schema.json#/$defs/network_tier_ref",
-        "description": "How good this network is — a governed network_tier floor the provider reports (common-elements.schema.json `network_tier_ref`)."
-      },
       "prefix": {
         "$ref": "../common-elements.schema.json#/$defs/cidr",
         "description": "The subnet the pool draws from, in CIDR."
-      },
-      "ip_family": {
-        "$ref": "../common-elements.schema.json#/$defs/ip_family",
-        "description": "Address family."
       },
       "ranges": {
         "type": "array",
@@ -87,7 +75,6 @@
     "examples": [
       {
         "prefix": "192.0.2.0/24",
-        "ip_family": "ipv4",
         "ranges": [
           {
             "start": "192.0.2.100",
@@ -120,9 +107,6 @@
       "description": "True when free_count == 0 — the pool-exhaustion signal capacity/placement and quota policies read."
     }
   },
-  "immutable": [
-    "ip_family"
-  ],
   "relationships": [
     {
       "edge_type": "contained_by",
