@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/VLAN/0.6.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/VLAN/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426",
   "resource_type": "VLAN",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "VLAN",
-          "version": "0.6.1",
+          "version": "0.7.0",
           "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426"
         }
       ]
@@ -50,10 +50,6 @@
         "minimum": 0,
         "maximum": 16777215,
         "description": "The VLAN id (1–4094) or VNI (0–16777215). Omitted for flat."
-      },
-      "name": {
-        "type": "string",
-        "description": "Human name for the segment (dmz)."
       }
     },
     "required": [
@@ -62,8 +58,7 @@
     "examples": [
       {
         "encapsulation": "vlan",
-        "segment_id": 100,
-        "name": "mgmt"
+        "segment_id": 100
       }
     ]
   },

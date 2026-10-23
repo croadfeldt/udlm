@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Subnet/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Subnet/0.4.0
 conforms_to: udlm/0.1
 uuid: 07faf9f7-511b-4a77-8743-092fa6ca06a1
 record_type: class
 class: base
 resource_type: Subnet
-version: 0.3.0
+version: 0.4.0
 family: Resource
 status: active
 filed_under:
@@ -81,16 +81,6 @@ elements:
       type: string
       description: 'The IP network in CIDR (198.51.100.0/24, 2001:db8::/64). Required: a subnet without a prefix
         is a name, not a subnet.'
-  - element: ip_family
-    scope: Subnet
-    optional: true
-    state: proposed
-    description: Address family. Derivable from `prefix`; carried only where a provider reports it independently,
-      and a disagreement with the prefix is drift, never an override.
-    schema:
-      $ref: ../../../../common-elements.schema.json#/$defs/ip_family
-      description: Address family. Derivable from `prefix`; carried only where a provider reports it independently,
-        and a disagreement with the prefix is drift, never an override.
   - element: gateway_address
     scope: Subnet
     optional: true
@@ -133,7 +123,6 @@ elements:
         and a consumer cannot obtain it any other way.
 spec_examples:
   - prefix: 198.51.100.0/24
-    ip_family: ipv4
     gateway_address: 198.51.100.1
     address_assignment: pool
     dns_servers:

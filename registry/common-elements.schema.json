@@ -467,7 +467,7 @@
           }
         }
       ],
-      "description": "WHAT KIND OF NETWORK THIS IS — a governed taxonomy term (registry/taxonomies/network-zone.yaml): a classification for placement, never an authorization or a boundary; anything required because of a zone is enforced by policy reading it. One home (ADR-082); every network Base declares `zone` by $ref."
+      "description": "WHAT KIND OF NETWORK THIS IS — a governed taxonomy term (registry/taxonomies/network-zone.yaml): a classification for placement, never an authorization or a boundary; anything required because of a zone is enforced by policy reading it. One home (ADR-082). Declared by the Bases placement selects a network by — VLAN, Subnet, VirtualNetwork — and by no other: an address, pool, scope or service carries its network's zone through the edge it already declares (row 110)."
     },
     "network_tier_ref": {
       "title": "Network tier (reference)",
@@ -486,7 +486,7 @@
           }
         }
       ],
-      "description": "HOW GOOD THIS NETWORK IS — a governed `network_tier` term, each denoting a floor (bandwidth, latency) any provider that clears it satisfies; name-selectable but requirements-authoritative (ADR-036). The provider reports it (the party that knows is the party that says). One home (ADR-082); every network Base declares `tier` by $ref."
+      "description": "HOW GOOD THIS NETWORK IS — a governed `network_tier` term, each denoting a floor (bandwidth, latency) any provider that clears it satisfies; name-selectable but requirements-authoritative (ADR-036). The provider reports it (the party that knows is the party that says). One home (ADR-082). Declared by VLAN, Subnet and VirtualNetwork, the networks placement selects; everything else reaches its network's tier through its edge (row 110)."
     },
     "partition_mechanism": {
       "title": "Partition mechanism",

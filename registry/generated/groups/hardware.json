@@ -25,7 +25,7 @@
     },
     {
       "class": "NetworkSwitch",
-      "version": "0.9.1",
+      "version": "0.10.0",
       "instantiable": true,
       "path": "registry/classes/resource/network/network-switch/_base.yaml",
       "types": []

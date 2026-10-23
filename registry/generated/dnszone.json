@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/DNSZone/0.6.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/DNSZone/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5",
   "resource_type": "DNSZone",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "DNSZone",
-          "version": "0.6.2",
+          "version": "0.7.0",
           "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5"
         }
       ]
@@ -27,14 +27,6 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-      "zone": {
-        "$ref": "../common-elements.schema.json#/$defs/network_zone_ref",
-        "description": "What kind of network this is — a governed network-zone term, for placement only (common-elements.schema.json `network_zone_ref`)."
-      },
-      "tier": {
-        "$ref": "../common-elements.schema.json#/$defs/network_tier_ref",
-        "description": "How good this network is — a governed network_tier floor the provider reports (common-elements.schema.json `network_tier_ref`)."
-      },
       "zone_name": {
         "type": "string",
         "description": "Fully qualified zone name (example.com)."

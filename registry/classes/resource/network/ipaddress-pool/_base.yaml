@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/IPAddressPool/0.9.0
+$id: https://udlm.dev/registry/udlm/0.1/class/IPAddressPool/0.10.0
 conforms_to: udlm/0.1
 uuid: 00257168-ae65-475c-bf34-f14f2e39f855
 record_type: class
 class: base
 resource_type: IPAddressPool
-version: 0.9.0
+version: 0.10.0
 family: Resource
 status: active
 filed_under:
@@ -22,22 +22,6 @@ metadata:
   maintainer: udlm-registry
   origination_timestamp: '2026-07-16T06:00:00Z'
 elements:
-  - element: zone
-    scope: IPAddressPool
-    optional: true
-    state: proposed
-    description: What kind of network this is — a governed network-zone term, for placement only (common-elements.schema.json
-      `network_zone_ref`).
-    schema:
-      $ref: ../../../../common-elements.schema.json#/$defs/network_zone_ref
-  - element: tier
-    scope: IPAddressPool
-    optional: true
-    state: proposed
-    description: How good this network is — a governed network_tier floor the provider reports (common-elements.schema.json
-      `network_tier_ref`).
-    schema:
-      $ref: ../../../../common-elements.schema.json#/$defs/network_tier_ref
   - element: prefix
     scope: IPAddressPool
     optional: false
@@ -46,14 +30,6 @@ elements:
     schema:
       $ref: ../../../../common-elements.schema.json#/$defs/cidr
       description: The subnet the pool draws from, in CIDR.
-  - element: ip_family
-    scope: IPAddressPool
-    optional: true
-    state: canonical
-    description: Address family.
-    schema:
-      $ref: ../../../../common-elements.schema.json#/$defs/ip_family
-      description: Address family.
   - element: ranges
     scope: IPAddressPool
     optional: true
@@ -102,7 +78,6 @@ elements:
         a range.
 spec_examples:
   - prefix: 192.0.2.0/24
-    ip_family: ipv4
     ranges:
       - start: 192.0.2.100
         end: 192.0.2.200
@@ -126,8 +101,6 @@ outputs:
   exhausted:
     type: boolean
     description: True when free_count == 0 — the pool-exhaustion signal capacity/placement and quota policies read.
-immutable:
-  - ip_family
 relationships:
   - edge_type: contained_by
     name: subnet

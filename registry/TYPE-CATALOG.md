@@ -30,7 +30,7 @@ A named handle for 'a suite of things treated as a unit' — a tenant, a team's 
 
 ## AddressService
 
-### AddressService (0.7.1)
+### AddressService (0.8.0)
 
 **Purpose:** Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.
 
@@ -132,7 +132,7 @@ A single named thing a platform can do — e.g. workload placement, or secret ro
 
 ## ConnectionProfile
 
-### ConnectionProfile (0.5.1)
+### ConnectionProfile (0.6.0)
 
 **Purpose:** Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN membership — as declarative state a provider applies.
 
@@ -196,7 +196,7 @@ A reference to a secret, never the secret. It names the kind of credential (the 
 
 ## DHCPScope
 
-### DHCPScope (0.9.2)
+### DHCPScope (0.10.0)
 
 **Purpose:** Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.
 
@@ -217,7 +217,7 @@ One subnet's DHCP setup: the required `subnet` CIDR, the dynamic ranges leased f
 
 ## DNSZone
 
-### DNSZone (0.6.2)
+### DNSZone (0.7.0)
 
 **Purpose:** Declares an authoritative DNS zone — its name, role, and records — independent of the software serving it.
 
@@ -385,7 +385,7 @@ A tenant. A thing belongs to exactly one at a time, and that is a structural loc
 
 ## IPAddress
 
-### IPAddress (0.13.0)
+### IPAddress (0.14.0)
 
 **Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
 
@@ -407,7 +407,7 @@ One IP address, bound to the interface it is configured on, with how it came to 
 
 ## IPAddressPool
 
-### IPAddressPool (0.9.0)
+### IPAddressPool (0.10.0)
 
 **Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
 
@@ -794,7 +794,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 ## NetworkGateway
 
-### NetworkGateway (0.8.0)
+### NetworkGateway (0.9.0)
 
 **Purpose:** Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.
 
@@ -840,7 +840,7 @@ One network interface, of any kind: device_class says whether it is a physical N
 
 ## NetworkSwitch
 
-### NetworkSwitch (0.9.1)
+### NetworkSwitch (0.10.0)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
@@ -1080,7 +1080,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 
 ## Subnet
 
-### Subnet (0.3.0)
+### Subnet (0.4.0)
 
 **Purpose:** Give the layer 3 network a first-class identity, so a consumer can require an IP network without naming a segment, and an allocation pool has something to sit inside.
 
@@ -1237,7 +1237,7 @@ A UPS as a thing you own, separate from the circuit it protects. You declare its
 
 ## VLAN
 
-### VLAN (0.6.1)
+### VLAN (0.7.0)
 
 **Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
 

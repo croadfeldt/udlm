@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/NetworkGateway/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkGateway/0.9.0
 conforms_to: udlm/0.1
 uuid: ceb29900-486a-4c51-ac66-d686d8030711
 record_type: class
 class: base
 resource_type: NetworkGateway
-version: 0.8.0
+version: 0.9.0
 family: Resource
 status: active
 filed_under:
@@ -18,22 +18,6 @@ metadata:
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:38:59Z'
 elements:
-  - element: zone
-    scope: NetworkGateway
-    optional: true
-    state: proposed
-    description: What kind of network this is — a governed network-zone term, for placement only (common-elements.schema.json
-      `network_zone_ref`).
-    schema:
-      $ref: ../../../../common-elements.schema.json#/$defs/network_zone_ref
-  - element: tier
-    scope: NetworkGateway
-    optional: true
-    state: proposed
-    description: How good this network is — a governed network_tier floor the provider reports (common-elements.schema.json
-      `network_tier_ref`).
-    schema:
-      $ref: ../../../../common-elements.schema.json#/$defs/network_tier_ref
   - element: functions
     scope: NetworkGateway
     optional: true

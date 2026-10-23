@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5623,
-    "mutations_rejected": 5623,
+    "mutations_attempted": 5516,
+    "mutations_rejected": 5516,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -20,8 +20,8 @@
         "rejected": 57
       },
       "AddressService": {
-        "attempted": 42,
-        "rejected": 42
+        "attempted": 32,
+        "rejected": 32
       },
       "Automation": {
         "attempted": 77,
@@ -40,8 +40,8 @@
         "rejected": 43
       },
       "ConnectionProfile": {
-        "attempted": 35,
-        "rejected": 35
+        "attempted": 25,
+        "rejected": 25
       },
       "Container": {
         "attempted": 230,
@@ -52,12 +52,12 @@
         "rejected": 71
       },
       "DHCPScope": {
-        "attempted": 94,
-        "rejected": 94
+        "attempted": 77,
+        "rejected": 77
       },
       "DNSZone": {
-        "attempted": 152,
-        "rejected": 152
+        "attempted": 142,
+        "rejected": 142
       },
       "Database": {
         "attempted": 65,
@@ -88,12 +88,12 @@
         "rejected": 66
       },
       "IPAddress": {
-        "attempted": 39,
-        "rejected": 39
+        "attempted": 29,
+        "rejected": 29
       },
       "IPAddressPool": {
-        "attempted": 87,
-        "rejected": 87
+        "attempted": 70,
+        "rejected": 70
       },
       "Identity": {
         "attempted": 44,
@@ -168,16 +168,16 @@
         "rejected": 246
       },
       "NetworkGateway": {
-        "attempted": 119,
-        "rejected": 119
+        "attempted": 109,
+        "rejected": 109
       },
       "NetworkInterface": {
         "attempted": 141,
         "rejected": 141
       },
       "NetworkSwitch": {
-        "attempted": 98,
-        "rejected": 98
+        "attempted": 88,
+        "rejected": 88
       },
       "PowerFeed": {
         "attempted": 52,
@@ -220,8 +220,8 @@
         "rejected": 122
       },
       "Subnet": {
-        "attempted": 65,
-        "rejected": 65
+        "attempted": 58,
+        "rejected": 58
       },
       "TaxonomyTerm": {
         "attempted": 61,
@@ -252,8 +252,8 @@
         "rejected": 145
       },
       "VLAN": {
-        "attempted": 42,
-        "rejected": 42
+        "attempted": 36,
+        "rejected": 36
       },
       "VexStatement": {
         "attempted": 60,
