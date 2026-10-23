@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5516,
-    "mutations_rejected": 5516,
+    "mutations_attempted": 5538,
+    "mutations_rejected": 5538,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -124,8 +124,8 @@
         "rejected": 37
       },
       "KubernetesNamespace": {
-        "attempted": 71,
-        "rejected": 71
+        "attempted": 65,
+        "rejected": 65
       },
       "KubernetesNodePool": {
         "attempted": 145,
@@ -152,20 +152,20 @@
         "rejected": 129
       },
       "Machine": {
-        "attempted": 112,
-        "rejected": 112
+        "attempted": 124,
+        "rejected": 124
       },
       "Machine.BareMetalHost": {
-        "attempted": 208,
-        "rejected": 208
+        "attempted": 214,
+        "rejected": 214
       },
       "Machine.LPAR": {
-        "attempted": 189,
-        "rejected": 189
+        "attempted": 194,
+        "rejected": 194
       },
       "Machine.VM": {
-        "attempted": 246,
-        "rejected": 246
+        "attempted": 251,
+        "rejected": 251
       },
       "NetworkGateway": {
         "attempted": 109,
@@ -321,7 +321,7 @@
       "LogShipper.OTLP": 3,
       "LogShipper.Syslog": 3,
       "LogStore": 2,
-      "Machine": 3,
+      "Machine": 4,
       "Machine.BareMetalHost": 8,
       "Machine.LPAR": 5,
       "Machine.VM": 7,

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
   "resource_type": "Machine.VM",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -20,12 +20,12 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.2.0",
+          "version": "2.3.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Machine.VM",
-          "version": "2.2.0",
+          "version": "2.3.0",
           "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
         }
       ]
@@ -152,6 +152,21 @@
             ]
           }
         ]
+      },
+      "run_state": {
+        "type": "object",
+        "properties": {
+          "desired_state": {
+            "type": "string",
+            "enum": [
+              "running",
+              "stopped",
+              "suspended"
+            ],
+            "description": "Target run state."
+          }
+        },
+        "description": "The run state the consumer wants the provider to drive the machine to (`running`, `stopped`, `suspended`); the provider translates it to its native spec. Observed counterpart: `outputs.observed_run_state`."
       },
       "firmware": {
         "type": "object",
@@ -299,20 +314,6 @@
             }
           }
         }
-      },
-      "run_state": {
-        "type": "object",
-        "description": "Desired run state the provider drives to (running | stopped | …). Distinct from the four-state lifecycle; snapshot and restore are operations, not run states. Observed counterpart: `outputs.observed_run_state`.",
-        "properties": {
-          "desired_state": {
-            "enum": [
-              "running",
-              "stopped",
-              "suspended"
-            ],
-            "description": "Target guest run state."
-          }
-        }
       }
     },
     "description": "Deliberate exclusions: GPU/PCI passthrough and SR-IOV are Provider-Class SharedDataElements (ADR-038) — provider-variable capability, not portable base surface. Day-0 guest personalization (cloud-init/user-data) is an open design decision (process concern vs VM field) — tracked on the type, not silently absent. Per-disk shape (sizes, boot designation) lives on StorageLayout, referenced via layout_ref.",
@@ -380,6 +381,10 @@
     ]
   },
   "outputs": {
+    "observed_run_state": {
+      "type": "string",
+      "description": "The run state the provider last observed, normalized to the same vocabulary as `run_state` (Redfish PowerState On and Off, a KubeVirt phase, an HMC partition state all land here; PoweringOn and PoweringOff are `transitioning`). Drives shutdown and startup ordering for the dependency graph. One output for every form of Machine (row 111)."
+    },
     "provider_handle": {
       "type": "string",
       "description": "The provider-native identifier of the realized VM (opaque; correlation/ops use only — never a portable reference)."
@@ -399,10 +404,6 @@
     "mac_addresses": {
       "type": "array",
       "description": "Realized MAC per interface, ordered as spec.networks[]. Binding surface for DHCP reservation and switch-port records."
-    },
-    "observed_run_state": {
-      "type": "string",
-      "description": "Observed run state at last reconciliation (running|stopped|suspended) — the discovered counterpart of spec.run_state.desired_state. Renamed from `run_state` (0.7.0) so desired (spec) and observed (outputs) never share a name."
     },
     "target_segment": {
       "type": "string",

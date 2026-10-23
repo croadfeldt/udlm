@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.15.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.16.0",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Machine.BareMetalHost",
-  "version": "0.15.2",
+  "version": "0.16.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.2.0",
+          "version": "2.3.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Machine.BareMetalHost",
-          "version": "0.15.2",
+          "version": "0.16.0",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]
@@ -119,6 +119,21 @@
             ]
           }
         ]
+      },
+      "run_state": {
+        "type": "object",
+        "properties": {
+          "desired_state": {
+            "type": "string",
+            "enum": [
+              "running",
+              "stopped",
+              "suspended"
+            ],
+            "description": "Target run state."
+          }
+        },
+        "description": "The run state the consumer wants the provider to drive the machine to (`running`, `stopped`, `suspended`); the provider translates it to its native spec. Observed counterpart: `outputs.observed_run_state`."
       },
       "allocation_state": {
         "type": "string",
@@ -233,10 +248,6 @@
         "pattern": "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$",
         "description": "The NIC MAC the host network-boots from (Metal3 bootMACAddress); pairs with that NIC's NetworkInterface record."
       },
-      "online": {
-        "type": "boolean",
-        "description": "Desired power target (Metal3 online): true = powered on and kept on. Observed counterpart: `outputs.power_state`."
-      },
       "firmware": {
         "type": "object",
         "additionalProperties": false,
@@ -292,7 +303,9 @@
           "min_size_gigabytes": 480
         },
         "boot_mac_address": "00:11:22:33:44:55",
-        "online": true,
+        "run_state": {
+          "desired_state": "running"
+        },
         "firmware": {
           "type": "uefi"
         }
@@ -300,6 +313,10 @@
     ]
   },
   "outputs": {
+    "observed_run_state": {
+      "type": "string",
+      "description": "The run state the provider last observed, normalized to the same vocabulary as `run_state` (Redfish PowerState On and Off, a KubeVirt phase, an HMC partition state all land here; PoweringOn and PoweringOff are `transitioning`). Drives shutdown and startup ordering for the dependency graph. One output for every form of Machine (row 111)."
+    },
     "provider_handle": {
       "type": "string",
       "description": "The provider-native identifier of the realized machine (opaque; correlation and operations only — never a portable reference). Promoted from Machine.VM: every form has one."
@@ -311,10 +328,6 @@
     "hostname": {
       "type": "string",
       "description": "Realized hostname (FQDN where the realm provides one). Promoted from Machine.VM."
-    },
-    "power_state": {
-      "type": "string",
-      "description": "Observed power state — On | Off | PoweringOn | PoweringOff (Redfish ComputerSystem.PowerState). Drives shutdown/startup ordering for the dependency graph."
     },
     "management_address": {
       "type": "string",
@@ -359,7 +372,7 @@
       "standard": "Metal3",
       "version": "1.x",
       "standard_name": "BareMetalHost",
-      "role": "bare-metal provisioning lifecycle + available/provisioned state",
+      "role": "bare-metal provisioning lifecycle + available/provisioned state; the provider translates `run_state.desired_state` into `online` (running = true, stopped = false)",
       "source": "https://book.metal3.io/",
       "license": "Apache-2.0",
       "license_compatibility": "compatible-reference",

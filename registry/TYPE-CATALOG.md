@@ -578,11 +578,11 @@ The request for a control plane: which release and what internal network ranges 
 
 ## KubernetesNamespace
 
-### KubernetesNamespace (1.1.5)
+### KubernetesNamespace (1.2.0)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
-What Kubernetes calls a Namespace (and some distributions overlay as a project): a named partition of a cluster that workloads live in. Its `name` is required and authored as intent — the same name is published back at realization alongside the platform UID. It binds a tenant (`tenant_uuid`), references its cluster (`cluster_ref`), carries `labels` and `annotations`, and cannot outlive its cluster. Providers and placement policies use it to answer which namespace a request lands in.
+What Kubernetes calls a Namespace (and some distributions overlay as a project): a named partition of a cluster that workloads live in. Its `name` is required and authored as intent — the same name is published back at realization alongside the platform UID. It is owned by one tenant (the record's `tenant_uuid`; another tenant using it holds a stake), references its cluster (`cluster_ref`), carries `labels` and `annotations`, and cannot outlive its cluster. Providers and placement policies use it to answer which namespace a request lands in.
 
 **Use when:**
 - You need workloads partitioned per tenant, team, or environment inside a shared cluster.
@@ -708,7 +708,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.2.0)
+### Machine (2.3.0)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -726,7 +726,7 @@ The most portable way to ask for a machine: how big, what image, what storage ti
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 
-### Machine.BareMetalHost (0.15.2)
+### Machine.BareMetalHost (0.16.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -749,7 +749,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - NetworkInterface, StorageDevice, GPU, BMC — the host's components, as contained records.
 - Machine.VM — the guests the host runs.
 
-### Machine.LPAR (0.1.4)
+### Machine.LPAR (0.2.0)
 
 **Purpose:** Declares a logical partition on a partitioned system as one provisionable Machine.
 
@@ -768,7 +768,7 @@ The request for a slice of a big partitioned server: how much processor capacity
 - Volume — the disks served through virtual I/O.
 - VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.2.0)
+### Machine.VM (2.3.0)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 

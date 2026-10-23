@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.3.0
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Machine
-version: 2.2.0
+version: 2.3.0
 family: Resource
 status: active
 filed_under:
@@ -151,6 +151,28 @@ elements:
               properties:
                 reference_data_type:
                   const: os_image
+  - element: run_state
+    scope: Machine
+    optional: true
+    state: canonical
+    description: 'The run state the consumer wants the provider to drive the machine to: `running`, `stopped` or
+      `suspended`. One element for every form of Machine (row 111): a VM, a bare-metal host and an LPAR all have
+      one, and the provider translates it to its native spec (Metal3 `online`, a KubeVirt run strategy, an HMC
+      activate or shut down). A provider that cannot honour a value refuses the request; an LPAR never takes
+      `suspended`. Distinct from the four-state lifecycle, which says where the order is, not whether the machine
+      is on. Observed counterpart: `outputs.observed_run_state`.'
+    schema:
+      type: object
+      properties:
+        desired_state:
+          type: string
+          enum:
+            - running
+            - stopped
+            - suspended
+          description: Target run state.
+      description: 'The run state the consumer wants the provider to drive the machine to (`running`, `stopped`,
+        `suspended`); the provider translates it to its native spec. Observed counterpart: `outputs.observed_run_state`.'
 coverage:
   use_cases:
     - scoped-class/author-scoped-class
@@ -159,6 +181,12 @@ coverage:
   flows:
     - docs/flows/scoped-class-lifecycle.md
 outputs:
+  observed_run_state:
+    type: string
+    description: 'The run state the provider last observed, normalized to the same vocabulary as `run_state`
+      (Redfish PowerState On and Off, a KubeVirt phase, an HMC partition state all land here; PoweringOn and
+      PoweringOff are `transitioning`). Drives shutdown and startup ordering for the dependency graph. One output
+      for every form of Machine (row 111).'
   provider_handle:
     type: string
     description: 'The provider-native identifier of the realized machine (opaque; correlation and operations only
