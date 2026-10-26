@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/BMC/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/BMC/0.9.0
 conforms_to: udlm/0.1
 uuid: ea6715e2-30d1-4a34-9611-00c85208e20a
 record_type: class
 class: base
 resource_type: BMC
-version: 0.8.0
+version: 0.9.0
 family: Resource
 status: active
 filed_under:
@@ -15,7 +15,7 @@ metadata:
     reset surface those actions target. A Base by the Base test (CLS-002): Redfish Manager abstracts over every
     vendor''s controller, so a management surface with an address and a protocol is one deliverable any host provider
     realizes. It manages exactly one host; credentials are referenced, never inline; how a power action is carried
-    out is policy, not data.'
+    out is policy, not data. outputs-exempt: a BMC publishes nothing of its own; the host''s run state and management address are the host''s outputs (row 113).'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-12T00:00:00Z'
 elements:
@@ -49,14 +49,14 @@ elements:
         - ipmi
         - redfish_and_ipmi
       description: 'Out-of-band protocols the BMC answers: `redfish` for power and reset, `ipmi` as the legacy fallback.'
-  - element: vendor
+  - element: identity
     scope: BMC
     optional: true
     state: canonical
-    description: Board or BMC vendor, as observed.
+    description: 'Controller identity: manufacturer, model, serial, in the shared identity block (common-elements §5a).'
     schema:
-      type: string
-      description: Board or BMC vendor, as observed.
+      $ref: ../../../../common-elements.schema.json#/$defs/identity
+      description: 'Controller identity: manufacturer, model, serial, in the shared identity block (common-elements §5a).'
   - element: dns_name
     scope: BMC
     optional: true
@@ -68,12 +68,9 @@ elements:
 spec_examples:
   - management_address: 192.0.2.20
     protocol: redfish_and_ipmi
-    vendor: ASPEED
+    identity:
+      manufacturer: ASPEED
     dns_name: bmc-node01.example.com
-outputs:
-  power_state:
-    type: string
-    description: Last-observed chassis power state (On/Off) from Redfish ComputerSystem.PowerState.
 relationships:
   - edge_type: contained_by
     target: Machine.BareMetalHost

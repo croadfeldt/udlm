@@ -1,4 +1,4 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.16.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.17.0
 conforms_to: udlm/0.1
 uuid: 7196d55a-d584-40e5-8b47-5247dad7d421
 record_type: class
@@ -6,7 +6,7 @@ class: type
 resource_type: Machine.BareMetalHost
 short_name: Machine.BMH
 parent: Machine
-version: 0.16.0
+version: 0.17.0
 family: Resource
 status: active
 metadata:
@@ -19,20 +19,6 @@ metadata:
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:31:44Z'
 elements:
-  - element: allocation_state
-    scope: Machine.BareMetalHost
-    optional: true
-    state: canonical
-    description: 'Allocation state: `available` = inventoried and unallocated; `allocated` = adopted into the managed
-      lifecycle (Metal3 provisioning state). Not the four-state `lifecycle_state` of the entity view.'
-    schema:
-      type: string
-      enum:
-        - available
-        - allocated
-        - retired
-      description: 'Allocation state: `available` = inventoried and unallocated; `allocated` = adopted into the
-        managed lifecycle (Metal3 provisioning state).'
   - element: composition_visibility
     scope: Machine.BareMetalHost
     optional: true
@@ -185,17 +171,15 @@ elements:
         min_size_gigabytes:
           type: integer
           description: Smallest acceptable root device.
-  - element: boot_mac_address
+  - element: boot_interface_ref
     scope: Machine.BareMetalHost
     optional: true
     state: canonical
-    description: The NIC MAC the host network-boots from (Metal3 bootMACAddress); pairs with that NIC's NetworkInterface
-      record.
+    description: 'Reference to the NetworkInterface the host network-boots from. The provider reads the MAC Metal3
+      needs (bootMACAddress) from that record''s `identity.mac_address`, so the address is recorded once.'
     schema:
-      type: string
-      pattern: ^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$
-      description: The NIC MAC the host network-boots from (Metal3 bootMACAddress); pairs with that NIC's NetworkInterface
-        record.
+      $ref: ../../../../common-elements.schema.json#/$defs/Reference
+      description: Reference to the NetworkInterface the host network-boots from.
   - element: firmware
     scope: Machine.BareMetalHost
     optional: true
@@ -219,8 +203,7 @@ elements:
           type: boolean
           description: 'UEFI Secure Boot. Only valid with type: uefi (policy-validated).'
 spec_examples:
-  - allocation_state: allocated
-    composition_visibility: selective
+  - composition_visibility: selective
     identity:
       serial_number: SN-EXAMPLE-0001
       asset_tag: ASSET-0042
@@ -246,7 +229,7 @@ spec_examples:
       device_name: /dev/sda
       serial_number: DISK-EX-0001
       min_size_gigabytes: 480
-    boot_mac_address: 00:11:22:33:44:55
+    boot_interface_ref: cexample/interfaces/node01-eno1
     run_state:
       desired_state: running
     firmware:
@@ -256,10 +239,6 @@ outputs:
     type: string
     description: Reachable management endpoint (BMC/Redfish or host management IP) once Realized. When a BMC record
       exists for this host, the BMC record is authoritative; this output is the convenience copy.
-  provisioning_state:
-    type: string
-    description: 'Metal3''s headline status (available | provisioning | provisioned | deprovisioning | error) —
-      the signal cluster bring-up binds on: a Cluster/NodePool consumer waits for provisioned.'
   os_image_digest:
     type: string
     description: 'Content digest of the OS image the host actually runs — the Realized twin of spec.image.checksum.
@@ -292,7 +271,8 @@ adopts:
     version: 1.x
     standard_name: BareMetalHost
     role: bare-metal provisioning lifecycle + available/provisioned state; the provider translates
-      `run_state.desired_state` into `online` (running = true, stopped = false)
+      `run_state.desired_state` into `online` (running = true, stopped = false) and reads bootMACAddress from the
+      referenced boot interface
     source: https://book.metal3.io/
     license: Apache-2.0
     license_compatibility: compatible-reference

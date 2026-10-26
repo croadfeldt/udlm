@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/NetworkInterface/0.16.3
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkInterface/0.17.0
 conforms_to: udlm/0.1
 uuid: 04f5c089-85b3-4a89-9b2e-d0c8d172ad23
 record_type: class
 class: base
 resource_type: NetworkInterface
-version: 0.16.3
+version: 0.17.0
 family: Resource
 status: active
 filed_under:
@@ -140,18 +140,6 @@ elements:
       type: integer
       minimum: 68
       description: MTU in bytes.
-  - element: vlan_id
-    scope: NetworkInterface
-    optional: true
-    state: canonical
-    description: An observed VLAN tag recorded by discovery; a convenience, not authoritative. Membership is `vlan_memberships`,
-      and resolution promotes a raw tag into it.
-    schema:
-      type: integer
-      minimum: 1
-      maximum: 4094
-      description: An observed VLAN tag recorded by discovery; a convenience, not authoritative. Membership is `vlan_memberships`,
-        and resolution promotes a raw tag into it.
   - element: vlan_memberships
     scope: NetworkInterface
     optional: true

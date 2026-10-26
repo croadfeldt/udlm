@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5654,
-    "mutations_rejected": 5654,
+    "mutations_attempted": 5656,
+    "mutations_rejected": 5656,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -32,8 +32,8 @@
         "rejected": 122
       },
       "BMC": {
-        "attempted": 43,
-        "rejected": 43
+        "attempted": 71,
+        "rejected": 71
       },
       "Capability": {
         "attempted": 43,
@@ -156,8 +156,8 @@
         "rejected": 172
       },
       "Machine.BareMetalHost": {
-        "attempted": 261,
-        "rejected": 261
+        "attempted": 250,
+        "rejected": 250
       },
       "Machine.LPAR": {
         "attempted": 241,
@@ -172,12 +172,12 @@
         "rejected": 109
       },
       "NetworkInterface": {
-        "attempted": 141,
-        "rejected": 141
+        "attempted": 134,
+        "rejected": 134
       },
       "NetworkSwitch": {
-        "attempted": 88,
-        "rejected": 88
+        "attempted": 80,
+        "rejected": 80
       },
       "PowerFeed": {
         "attempted": 52,
@@ -287,7 +287,7 @@
       "AddressService": 1,
       "Automation": 0,
       "Automation.OSPatch": 3,
-      "BMC": 1,
+      "BMC": 0,
       "Capability": 1,
       "ConnectionProfile": 2,
       "Container": 2,
@@ -318,7 +318,7 @@
       "LogShipper.Syslog": 3,
       "LogStore": 2,
       "Machine": 5,
-      "Machine.BareMetalHost": 9,
+      "Machine.BareMetalHost": 8,
       "Machine.LPAR": 6,
       "Machine.VM": 8,
       "NetworkGateway": 1,
@@ -352,6 +352,7 @@
     "zero_output_types": [
       "Access.Grouping",
       "Automation",
+      "BMC",
       "GPU",
       "Grouping",
       "Grouping.Authorization",
@@ -369,7 +370,6 @@
     ],
     "one_output_types": [
       "AddressService",
-      "BMC",
       "Capability",
       "DHCPScope",
       "DNSZone",

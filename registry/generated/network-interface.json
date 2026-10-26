@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkInterface/0.16.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkInterface/0.17.0",
   "conforms_to": "udlm/0.1",
   "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23",
   "resource_type": "NetworkInterface",
-  "version": "0.16.3",
+  "version": "0.17.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "NetworkInterface",
-          "version": "0.16.3",
+          "version": "0.17.0",
           "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23"
         }
       ]
@@ -119,12 +119,6 @@
         "type": "integer",
         "minimum": 68,
         "description": "MTU in bytes."
-      },
-      "vlan_id": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 4094,
-        "description": "An observed VLAN tag recorded by discovery; a convenience, not authoritative. Membership is `vlan_memberships`, and resolution promotes a raw tag into it."
       },
       "vlan_memberships": {
         "type": "array",

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.16.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.17.0",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Machine.BareMetalHost",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Machine.BareMetalHost",
-          "version": "0.16.0",
+          "version": "0.17.0",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]
@@ -179,15 +179,6 @@
         },
         "description": "The run state the consumer wants the provider to drive the machine to (`running`, `stopped`, `suspended`); the provider translates it to its native spec. Observed counterpart: `outputs.observed_run_state`."
       },
-      "allocation_state": {
-        "type": "string",
-        "enum": [
-          "available",
-          "allocated",
-          "retired"
-        ],
-        "description": "Allocation state: `available` = inventoried and unallocated; `allocated` = adopted into the managed lifecycle (Metal3 provisioning state)."
-      },
       "composition_visibility": {
         "type": "string",
         "enum": [
@@ -287,10 +278,9 @@
           }
         }
       },
-      "boot_mac_address": {
-        "type": "string",
-        "pattern": "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$",
-        "description": "The NIC MAC the host network-boots from (Metal3 bootMACAddress); pairs with that NIC's NetworkInterface record."
+      "boot_interface_ref": {
+        "$ref": "../common-elements.schema.json#/$defs/Reference",
+        "description": "Reference to the NetworkInterface the host network-boots from."
       },
       "firmware": {
         "type": "object",
@@ -313,7 +303,6 @@
     },
     "examples": [
       {
-        "allocation_state": "allocated",
         "composition_visibility": "selective",
         "identity": {
           "serial_number": "SN-EXAMPLE-0001",
@@ -346,7 +335,7 @@
           "serial_number": "DISK-EX-0001",
           "min_size_gigabytes": 480
         },
-        "boot_mac_address": "00:11:22:33:44:55",
+        "boot_interface_ref": "cexample/interfaces/node01-eno1",
         "run_state": {
           "desired_state": "running"
         },
@@ -380,10 +369,6 @@
     "management_address": {
       "type": "string",
       "description": "Reachable management endpoint (BMC/Redfish or host management IP) once Realized. When a BMC record exists for this host, the BMC record is authoritative; this output is the convenience copy."
-    },
-    "provisioning_state": {
-      "type": "string",
-      "description": "Metal3's headline status (available | provisioning | provisioned | deprovisioning | error) — the signal cluster bring-up binds on: a Cluster/NodePool consumer waits for provisioned."
     },
     "os_image_digest": {
       "type": "string",
@@ -420,7 +405,7 @@
       "standard": "Metal3",
       "version": "1.x",
       "standard_name": "BareMetalHost",
-      "role": "bare-metal provisioning lifecycle + available/provisioned state; the provider translates `run_state.desired_state` into `online` (running = true, stopped = false)",
+      "role": "bare-metal provisioning lifecycle + available/provisioned state; the provider translates `run_state.desired_state` into `online` (running = true, stopped = false) and reads bootMACAddress from the referenced boot interface",
       "source": "https://book.metal3.io/",
       "license": "Apache-2.0",
       "license_compatibility": "compatible-reference",

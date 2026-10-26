@@ -61,7 +61,7 @@ use-cases/        the CI-consumed coverage corpus · tests/ the gates · scripts
     `Identity` (`location` → `serial_number`/`wwn` → `role`) so two identical DIMMs / two same-use
     drives are individually addressable.
   - **Raw resources are first-class** (§28): a type MUST be instantiable with Discovered state and **no
-    Intent** (racked-but-unallocated, brownfield), carrying `allocation_state: available`, later
+    Intent** (racked-but-unallocated, brownfield), with Discovered records and no Intent, later
     **adopted** (Intent attached, UUID preserved).
 - **Adding a type:** author a CLASS in `registry/classes/<family>/…` (ADR-061 layout; ADR-038 grammar),
   following `registry/naming-conventions.md` and the registry process (`docs/spec/governance/registry-governance.md` §3,
