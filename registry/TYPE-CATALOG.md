@@ -1268,7 +1268,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Volume
 
-### Volume (0.14.1)
+### Volume (0.15.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1288,6 +1288,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - StorageClass — the class declaring what kind of storage the volume gets.
 - StorageCluster — the platform provisioning it.
 - Machine.VM — the consumer(s) it attaches to.
+- VolumeSnapshot — a point-in-time copy it can be restored from (`data_source`).
 - Database — databases whose data directory it backs.
 
 ### Volume.ZFS (0.8.1)
@@ -1309,6 +1310,26 @@ A volume realized by ZFS on one host: its `volume_mode` says whether it is a mou
 - StoragePool — the pool the volume is carved from.
 - Machine.BareMetalHost — the host the volume is local to.
 - Volume.ZFS — the parent dataset, when nested.
+
+## VolumeSnapshot
+
+### VolumeSnapshot (0.1.0)
+
+**Purpose:** Declares a point-in-time copy of a volume's data that a new volume can be restored from.
+
+A snapshot of one volume, taken at one moment. It names the volume it copies (`source`) and what happens to its data when the record is released (`deletion_policy`). Once realized, the provider reports its handle and how large a volume restored from it must be. Whether it is ready to restore from is a `Ready` status condition, not a field. A new Volume restores from it by naming it in `data_source`.
+
+**Use when:**
+- You need a point-in-time copy of a volume to restore, clone or move its data from.
+- You need a restored volume's lineage, which snapshot of which volume it came from, kept in the graph.
+
+**Not for:**
+- Continuous replication of a volume to another site, which is a different relationship (a stream, not a copy).
+- A backup held outside the provisioner, which is not restorable by the provisioner alone.
+- The volume itself — Volume.
+
+**Works with:**
+- Volume — the volume it copies (`source`), and the volumes restored from it (their `data_source`).
 
 ## Vulnerability
 
@@ -1355,4 +1376,4 @@ The application layer: the mail service, the registry, model serving — a named
 - CredentialRef — the service's secrets, by reference.
 
 ---
-*65 types; 65 with context, 0 pending.*
+*66 types; 66 with context, 0 pending.*

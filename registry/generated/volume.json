@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Volume/0.14.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Volume/0.15.0",
   "conforms_to": "udlm/0.1",
   "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270",
   "resource_type": "Volume",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Volume",
-          "version": "0.14.1",
+          "version": "0.15.0",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         }
       ]
@@ -61,6 +61,10 @@
         "type": "string",
         "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
         "description": "The `disks[].name` on the Machine this volume realizes; set exactly when the `realizes_disk` edge is declared. Reconvergence joins on it to fill the machine's `realized_volumes`."
+      },
+      "data_source": {
+        "$ref": "../common-elements.schema.json#/$defs/Reference",
+        "description": "What the volume is filled from when it is created: a VolumeSnapshot (a restore) or another Volume (a clone). Absent means it starts empty."
       }
     },
     "required": [
@@ -85,6 +89,10 @@
     "attached": {
       "type": "boolean",
       "description": "Whether the volume is currently attached to a consumer."
+    },
+    "accessible_from": {
+      "type": "array",
+      "description": "Where the volume can be attached from, as the provider reports it once Realized (CSI `accessible_topology`, a Kubernetes PV `nodeAffinity`): References to the narrowest scope that reaches it, a Machine.BareMetalHost for host-local storage, a StorageCluster for storage any of its clients can attach, a Location for a site. Placement reads it to put a consumer where its volume is, and a move reads it to tell a re-bind (the target machine is in scope) from a copy (it is not, so a new volume is filled through `data_source`). Each entry a Reference (common-elements §2.5). Absent means the provider did not say, never \"anywhere\"."
     }
   },
   "relationships": [
@@ -110,6 +118,20 @@
       "name": "realizes_disk",
       "cardinality": "0..1",
       "description": "Declared on the volume: this volume realizes one named disk of a Machine, joining on the disk name carried in spec.disk_entry (the edge itself carries no qualifier)."
+    },
+    {
+      "edge_type": "references",
+      "target": "VolumeSnapshot",
+      "name": "restored_from",
+      "cardinality": "0..1",
+      "description": "The snapshot this volume was filled from (spec.data_source names it). Lineage, read at provisioning."
+    },
+    {
+      "edge_type": "references",
+      "target": "Volume",
+      "name": "cloned_from",
+      "cardinality": "0..1",
+      "description": "The volume this one was cloned from (spec.data_source names it). Lineage, read at provisioning."
     }
   ],
   "adopts": [
@@ -117,7 +139,7 @@
       "standard": "Kubernetes",
       "version": "storage/v1",
       "standard_name": "PersistentVolumeClaim / CSI",
-      "role": "consumable-volume request vocabulary (capacity, accessModes, volumeMode, storageClass, reclaimPolicy)",
+      "role": "consumable-volume request vocabulary (capacity, accessModes, volumeMode, storageClass, reclaimPolicy, dataSource) and the CSI accessible-topology semantics behind `accessible_from`",
       "source": "https://kubernetes.io/docs/concepts/storage/persistent-volumes/",
       "license": "Apache-2.0",
       "license_compatibility": "compatible_reference",
@@ -154,6 +176,7 @@
       "StorageClass — the class declaring what kind of storage the volume gets.",
       "StorageCluster — the platform provisioning it.",
       "Machine.VM — the consumer(s) it attaches to.",
+      "VolumeSnapshot — a point-in-time copy it can be restored from (`data_source`).",
       "Database — databases whose data directory it backs."
     ]
   }
