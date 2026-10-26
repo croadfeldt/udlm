@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/FileShare/0.7.2
+$id: https://udlm.dev/registry/udlm/0.1/class/FileShare/0.7.3
 conforms_to: udlm/0.1
 uuid: 83f66b92-ad66-4415-aa94-01327dec4f27
 record_type: class
 class: base
 resource_type: FileShare
-version: 0.7.2
+version: 0.7.3
 family: Resource
 status: active
 filed_under:
@@ -135,7 +135,7 @@ adopts:
     role: share + access vocabulary (share name, exported path, access, read-only)
     source: https://learn.microsoft.com/openspecs/windows_protocols/ms-smb2/
     license: Microsoft OSP
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
 context:
   purpose: Declares a file-sharing service and its exported shares — who may reach which path over which protocol.

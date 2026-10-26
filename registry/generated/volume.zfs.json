@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.8.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.8.1",
   "conforms_to": "udlm/0.1",
   "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f",
   "resource_type": "Volume.ZFS",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Volume",
-          "version": "0.14.0",
+          "version": "0.14.1",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         },
         {
           "class": "Volume.ZFS",
-          "version": "0.8.0",
+          "version": "0.8.1",
           "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f"
         }
       ]
@@ -165,7 +165,7 @@
       "role": "consumable-volume request vocabulary (capacity, accessModes, volumeMode, storageClass, reclaimPolicy)",
       "source": "https://kubernetes.io/docs/concepts/storage/persistent-volumes/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -175,7 +175,7 @@
       "role": "storage-volume-as-asset vocabulary (CapacityBytes, AccessCapabilities) — same family as StorageCluster",
       "source": "https://www.snia.org/forums/smi/swordfish",
       "license": "SNIA",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -185,7 +185,7 @@
       "role": "dataset vocabulary (mountpoint, quota, properties, hierarchy)",
       "source": "https://openzfs.github.io/openzfs-docs/",
       "license": "CDDL-1.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

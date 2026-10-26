@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.17.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.17.1",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Machine.BareMetalHost",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.4.1",
+          "version": "2.4.2",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Machine.BareMetalHost",
-          "version": "0.17.0",
+          "version": "0.17.1",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]
@@ -369,7 +369,7 @@
       "role": "Vendor-neutral compute-system representation spanning physical, virtual and partitioned (Redfish ComputerSystem SystemType: Physical | Virtual | Composed | PhysicallyPartitioned | VirtuallyPartitioned) — the one representative standard for the Machine family, shared by Machine.VM, Machine.BareMetalHost and Machine.LPAR and declared once here. Nova with Ironic, Cluster API's Machine and TOSCA's Compute are the industry abstractions that treat the three forms as one thing (CLS-002 (a)); Redfish is the wire representation adopted. Provider-native realizations are declared on the provider support matrix, not on the substrate type.",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -379,7 +379,7 @@
       "role": "bare-metal provisioning lifecycle + available/provisioned state; the provider translates `run_state.desired_state` into `online` (running = true, stopped = false) and reads bootMACAddress from the referenced boot interface",
       "source": "https://book.metal3.io/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

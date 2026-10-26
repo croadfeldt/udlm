@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/IPAddressPool/0.10.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/IPAddressPool/0.10.1",
   "conforms_to": "udlm/0.1",
   "uuid": "00257168-ae65-475c-bf34-f14f2e39f855",
   "resource_type": "IPAddressPool",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "IPAddressPool",
-          "version": "0.10.0",
+          "version": "0.10.1",
           "uuid": "00257168-ae65-475c-bf34-f14f2e39f855"
         }
       ]
@@ -131,7 +131,7 @@
       "role": "allocatable-range shape: a pool is one or more contiguous address ranges within a subnet from which addresses are handed out (dynamic) or reserved (static)",
       "source": "https://www.rfc-editor.org/rfc/rfc2131.html",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -141,7 +141,7 @@
       "role": "prefix + ip_family shape reused from IPAddress (same family, DCM ADR-023)",
       "source": "https://www.rfc-editor.org/rfc/rfc8344.html",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier2_record"
     }
   ],

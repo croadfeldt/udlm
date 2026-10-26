@@ -15,7 +15,7 @@ transient rows).
 
 **In one breath.** A container operationally-hard-depends on a PVC; the PVC has no storage capacity
 yet (transient). Because the coupling is operational, the container does not realize dangling
-against a volume that is not there — it is classified **blocked-transient** and waits. Independent
+against a volume that is not there — it is classified **blocked_transient** and waits. Independent
 members (a ConfigMap, an unrelated service) realize now — the operational block is scoped to the
 directional chain, not the whole intent. The reconciliation loop keeps re-attempting the PVC; when
 capacity frees, the PVC realizes and the container converges behind it, with no new request. The
@@ -36,7 +36,7 @@ sequenceDiagram
     Ind-->>C: Realized
     P->>PVC: reserve? no eligible storage capacity (transient)
     P->>Ct: hold — dependency unsatisfied
-    Note over Ct: status = blocked-transient (not failed, not dangling)
+    Note over Ct: status = blocked_transient (not failed, not dangling)
     P-->>C: WARNING — root=PVC (transient capacity), container converges when PVC does
     loop reconciliation (w > 0)
         P->>PVC: re-attempt reserve
@@ -50,7 +50,7 @@ sequenceDiagram
 ## Invariants
 
 - **Operational = blocked, never dangling.** A container is never realized pointing at a PVC that
-  is not there; while the PVC is unsatisfied the container is `blocked-transient`.
+  is not there; while the PVC is unsatisfied the container is `blocked_transient`.
 - **The block is scoped to the directional chain.** Members with no operational dependency on the
   PVC realize now; the block does not spread to the whole intent.
 - **Convergence is the existing loop.** With `w>0` the container carries no new machinery — the
@@ -62,12 +62,12 @@ sequenceDiagram
 
 The **window value** (`w`) and whether a stalled transient member is eventually given up or waits
 forever, and the schedule on which the reconciler re-attempts — those are DCM policy over the
-window/nature UDLM declares (ADR-008). UDLM defines the operational nature, the `blocked-transient`
+window/nature UDLM declares (ADR-008). UDLM defines the operational nature, the `blocked_transient`
 status, the convergence-order contract, and the surfacing obligation; DCM's reconciler drives them.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
-- **Data:** the operational (hard, directional) dependency edge; the container's `blocked-transient`
+- **Data:** the operational (hard, directional) dependency edge; the container's `blocked_transient`
   status; the PVC as the named root.
 - **Policy:** operational nature blocks the dependent while unsatisfied; independents proceed; the
   block is transient, so it converges rather than fails.

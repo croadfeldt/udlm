@@ -4,14 +4,14 @@
   "classes": [
     {
       "class": "Database",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "instantiable": true,
       "path": "registry/classes/resource/data/database/_base.yaml",
       "types": []
     },
     {
       "class": "LogStore",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "instantiable": true,
       "path": "registry/classes/resource/data/log-store/_base.yaml",
       "types": []

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/TestEvidence/0.5.1
 conforms_to: udlm/0.1
 uuid: 3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63
 record_type: class
 class: base
 resource_type: TestEvidence
-version: 0.5.0
+version: 0.5.1
 family: Knowledge
 status: active
 metadata:
@@ -153,15 +153,15 @@ adopts:
       format adopted here
     source: https://ctrf.io/
     license: MIT
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
   - standard: JUnit XML
     version: xunit2
     standard_name: JUnit XML test report
     role: the accepted full-result body every CI tool emits, pointed at by result.report_ref
     source: https://github.com/testmoapp/junitxml
-    license: reference-only
-    license_compatibility: reference-only
+    license: reference_only
+    license_compatibility: reference_only
     disposition: tier1_value
   - standard: in-toto Attestation Framework
     version: '1.0'
@@ -170,7 +170,7 @@ adopts:
       statement schema is not restated
     source: https://in-toto.io/attestation/test-result/v0.1
     license: Apache-2.0
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
   - standard: SLSA
     version: '1.2'
@@ -179,7 +179,7 @@ adopts:
       carried by reference, never asserted on this record
     source: https://slsa.dev/spec/v1.2/
     license: CC-BY-4.0
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
 context:
   purpose: Records the evidence a test provides about a subject — any test, from any suite, in the result format

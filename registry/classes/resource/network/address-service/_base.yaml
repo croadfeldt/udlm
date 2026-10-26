@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/AddressService/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/AddressService/0.8.1
 conforms_to: udlm/0.1
 uuid: 2d2100a1-3813-4f01-8b55-12389cec51cc
 record_type: class
 class: base
 resource_type: AddressService
-version: 0.8.0
+version: 0.8.1
 family: Resource
 status: active
 filed_under:
@@ -71,7 +71,7 @@ adopts:
       providers
     source: https://www.rfc-editor.org/rfc/rfc2131
     license: IETF-Trust
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
   - standard: IETF DNS
     version: RFC 1035
@@ -79,7 +79,7 @@ adopts:
     role: name-resolution vocabulary
     source: https://www.rfc-editor.org/rfc/rfc1035
     license: IETF Trust
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
 context:
   purpose: Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.

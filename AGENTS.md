@@ -52,7 +52,7 @@ use-cases/        the CI-consumed coverage corpus · tests/ the gates · scripts
   - **Reuse canonical common-elements** (§24–25) — **snake_case** (settled 2026-06-27; never re-litigate), explicit-unit `Quantity`, RFC 3339.
   - **Adopt standards by reference, record provenance + license** (§22–23): every `adopts[]` entry
     carries `source` (name/version/URL) and `license` + `license_compatibility`
-    (`compatible-vendor` | `compatible-reference` | `reference-only`). UDLM is Apache-2.0 — copying
+    (`compatible_vendor` | `compatible_reference` | `reference_only`). UDLM is Apache-2.0 — copying
     schema text only from Apache-compatible sources; copyleft (GPL/MPL) is **reference-by-name only**.
   - **Component granularity is both-ways** (§26): the parent always carries the **rollup** data element
     (`memory.size`); a component MAY *also* be a first-class `Hardware.*` entity `contained_by` it,
@@ -93,7 +93,7 @@ engineering team (issue #217) — never claim Accepted/ratified status.
   (hard|soft) + declared `relation`; nature is derived; the Atomic/Composite **shape is derived**
   (`has_constituents`), never stored (ADR-027 addendum); `kind`/`dependency_type`/
   `relationship_type` are rejected vocabulary, guarded by tests/check_model_vocabulary.py (incl. prose).
-- **No `provider_extensions`** — the validator rejects it; provider-specific data is a
+- **No `provider_extensions`** — the validator rejects it; provider_specific data is a
   Provider-Class `SharedDataElement` (ADR-038).
 - **provider-contract.md owns the whole provider/capability surface**: registration §2, sovereignty
   obligations `SOV-*` §2a, capability profiles §8, registry §9, discovery wire protocol §10.

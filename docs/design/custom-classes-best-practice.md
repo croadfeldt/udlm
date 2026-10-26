@@ -26,7 +26,7 @@ class **only** when nothing above it fits:
 | the **same shape written down** but not offered to anyone — an ingested diagram, your own bundle | a **`composition` record** — same composition shape, no class machinery | it carries a `tenant_uuid`; it belongs to you rather than being shared vocabulary |
 | a genuinely **new type** the canonical library lacks, *with its own schema* | a **custom Type class** under your authority | ✅ this is the tool |
 | a genuinely **new category** the library lacks entirely | a **custom Base class** under your authority | ✅ this is the tool (rare) |
-| a genuinely **provider-specific** datum with no vendor-neutral form | a **Provider Class element**, provider-authored | ✅ the provider-scoped tool (§3) |
+| a genuinely **provider_specific** datum with no vendor-neutral form | a **Provider Class element**, provider-authored | ✅ the provider-scoped tool (§3) |
 
 The gate for the two Template rows is one question: **is someone standing behind this as an offer, or did
 someone write it down?** An offer is a class — it carries `supports` (what a consumer may pick), a parent it
@@ -50,12 +50,12 @@ field in disguise. The gate for the Provider Class row is **§3**.
 
 ## 3. Authoring a Provider Class — the provider-authored layer
 
-A **Provider Class** (`Machine.VM.OCPVirt`) extends a canonical **Type Class** with **provider-specific
+A **Provider Class** (`Machine.VM.OCPVirt`) extends a canonical **Type Class** with **provider_specific
 elements**. UDLM defines the *grammar*; the **provider authors the definition** (ADR-038 *Authorship & domain*).
-It is the sanctioned home for a genuinely provider-specific datum — a first-class, **provider-defined
+It is the sanctioned home for a genuinely provider_specific datum — a first-class, **provider-defined
 `SharedDataElement`**, not an opaque additive bag.
 
-**When to author one.** Only for a datum that is *genuinely provider-specific* with **no vendor-neutral
+**When to author one.** Only for a datum that is *genuinely provider_specific* with **no vendor-neutral
 (Base/Type) expression** — a construct only that provider has. If the need is an *intent* another provider could
 satisfy natively (e.g. `isolation: private`), it belongs at the **Type Class** as a portable requirement, not
 here. Provider scope is the last resort, not the default.
@@ -78,11 +78,11 @@ Author a new element only when the search comes up empty.
 **The element.** A `SharedDataElement` at Provider scope — `{scope: Machine.VM.OCPVirt, element, schema, values,
 state}`. The **provider owns the schema** of what is inside; UDLM **custodies** it (identity, provenance,
 versioning, tenancy) and passes it to the provider to apply. UDLM never renders it into a native spec —
-naturalization stays at the provider edge (DCM ADR-023). A Provider Class element carries provider-specific *data*,
+naturalization stays at the provider edge (DCM ADR-023). A Provider Class element carries provider_specific *data*,
 never the provider's native/naturalized form.
 
 **Discipline (beyond the general discipline in §4):**
-1. **Express intent higher when you can.** Ask whether the datum is truly provider-specific or an intent stated
+1. **Express intent higher when you can.** Ask whether the datum is truly provider_specific or an intent stated
    in provider terms. Portable intent → Type Class; only the irreducibly-provider-specific → Provider Class.
 2. **Structured, not a free-string bag (PVD).** A Provider Class element is reference / codelist /
    requirement-shaped — never an untyped string blob. "Provider-specific" is not a licence to be unstructured.
@@ -167,7 +167,7 @@ it for all.
 | Constrain / standardize | constraint profile / policy / layer value |
 | A type canon lacks | **custom Type class** under your authority (extends canon) |
 | A category canon lacks | **custom Base class** under your authority (rare) |
-| A provider-specific datum | **Provider Class element** under the provider's authority (§3) |
+| A provider_specific datum | **Provider Class element** under the provider's authority (§3) |
 | Improve canon for everyone | **versioned promotion** — the only legitimate "redefinition" |
 | Change a field's meaning just for you | don't — add a field, or author your own class |
 
@@ -178,7 +178,7 @@ it for all.
 - **DCM ADR-025** / **`contribution-pipeline.md`** — the engine that registers, validates, and promotes
   provider/org-authored classes (§5, provider-contribution integration).
 - **`context-and-purpose.md` §7.1 / DCM ADR-023** (naturalization boundary) — a Provider Class element carries
-  provider-specific *data*; the substrate never translates it to native form.
+  provider_specific *data*; the substrate never translates it to native form.
 - **ADR-041 / DCM ADR-027** — the information-firewall: a class-authoring contribution is an ingress crossing,
   admitted by policy.
 - **core-tenets T5** (adopt outward) / **T7** (reduce inward); **`portable-values.md`** (PVD) — reference the

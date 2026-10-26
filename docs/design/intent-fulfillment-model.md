@@ -43,8 +43,8 @@ The window governs **transient** members only. A member's **status** is orthogon
   **refused immediately, regardless of `w`**. Waiting cannot help, so the window is inert.
 
 A member **blocked by a dependency** inherits the dependency's status **transitively**:
-transient → waits (blocked-transient), permanent → refused (blocked-permanent),
-cancelled → dependency-cancelled. That inheritance is what makes a chain behave coherently:
+transient → waits (blocked_transient), permanent → refused (blocked_permanent),
+cancelled → dependency_cancelled. That inheritance is what makes a chain behave coherently:
 the root's status flows down the operational chain, and the request nature couples the unit.
 
 ### The convergence-status classification
@@ -56,10 +56,10 @@ owns; DCM drives entities through it:
 |---|---|
 | `realized` | the member is live (Realized) |
 | `converging` | actively being (re)attempted by the reconciliation loop |
-| `blocked-transient` | held, waiting on a transiently-unsatisfied dependency; converges when it clears |
-| `blocked-permanent` | refused because a dependency is permanently refused (inherited) |
+| `blocked_transient` | held, waiting on a transiently-unsatisfied dependency; converges when it clears |
+| `blocked_permanent` | refused because a dependency is permanently refused (inherited) |
 | `refused` | permanently unrealizable under the current intent (needs an intent change) |
-| `dependency-cancelled` | given up because a dependency it required was given up / cancelled |
+| `dependency_cancelled` | given up because a dependency it required was given up / cancelled |
 | `cancelled` | given up as part of a request-unit cancel-all, or a fail-fast give-up at `w=0` |
 
 ## The complete permutation matrix
@@ -78,10 +78,10 @@ a soft dependent's fate is window-invariant), so no cell is unmapped.
 
 | Status × window | Realized members | Affected member fate | Consumer surface | Corpus |
 |---|---|---|---|---|
-| transient · `w=0` | independents only | PVC given up now (fail-fast); container **dependency-cancelled** | refusal-with-resolution naming the PVC (given up at `w=0`) + the cancelled container | UC-005 (`w=0` arm) |
-| transient · `w=N` | all, if the PVC converges within `N`; else independents only | PVC **blocked-transient** → realized, or given up at window expiry; container waits → proceeds, or dependency-cancelled | warning naming the PVC + expected resolution; escalates to refusal if the window expires | UC-001, UC-005 (`w=N` arm) |
-| transient · `w=∞` | independents now; PVC + container on convergence | PVC **blocked-transient** (pending); container **blocked-transient** (inherited) | warning naming the root PVC + the chain, "will converge" | UC-001, UC-007, UC-005 (`w=∞` arm) |
-| permanent · `w=0` | independents only | PVC **refused**; container **blocked-permanent**; app **blocked-permanent** (chain) | refusal-with-resolution naming the **root** PVC + its rule + the chain | UC-002 |
+| transient · `w=0` | independents only | PVC given up now (fail-fast); container **dependency_cancelled** | refusal-with-resolution naming the PVC (given up at `w=0`) + the cancelled container | UC-005 (`w=0` arm) |
+| transient · `w=N` | all, if the PVC converges within `N`; else independents only | PVC **blocked_transient** → realized, or given up at window expiry; container waits → proceeds, or dependency_cancelled | warning naming the PVC + expected resolution; escalates to refusal if the window expires | UC-001, UC-005 (`w=N` arm) |
+| transient · `w=∞` | independents now; PVC + container on convergence | PVC **blocked_transient** (pending); container **blocked_transient** (inherited) | warning naming the root PVC + the chain, "will converge" | UC-001, UC-007, UC-005 (`w=∞` arm) |
+| permanent · `w=0` | independents only | PVC **refused**; container **blocked_permanent**; app **blocked_permanent** (chain) | refusal-with-resolution naming the **root** PVC + its rule + the chain | UC-002 |
 | permanent · `w=N` | independents only | identical to `w=0` — permanence makes the window inert | refusal-with-resolution, root + chain | derivation of permanent · `w=0` (UC-002) |
 | permanent · `w=∞` | independents only | identical to `w=0` — refused immediately, never held | refusal-with-resolution, root + chain | derivation of permanent · `w=0` (UC-002) |
 
@@ -106,7 +106,7 @@ above). The window is therefore inert for the dependent.
 | Status × window | Realized members | Affected member fate | Consumer surface | Corpus |
 |---|---|---|---|---|
 | transient · `w=0` | container (degraded) + independents | container **realized-degraded**; DNS given up per its own `w` | warning: container degraded, DNS unrealized, reduced capability | UC-006 |
-| transient · `w=N` | container (degraded) + independents | container **realized-degraded** (heals if DNS converges); DNS blocked-transient | warning: container degraded; clears if DNS converges | derivation of soft transient · `w=0` (UC-006) + DNS follows operational-transient |
+| transient · `w=N` | container (degraded) + independents | container **realized-degraded** (heals if DNS converges); DNS blocked_transient | warning: container degraded; clears if DNS converges | derivation of soft transient · `w=0` (UC-006) + DNS follows operational-transient |
 | transient · `w=∞` | container (degraded) + independents | container **realized-degraded**; DNS pending | warning: container degraded, DNS pending | derivation of soft transient · `w=0` (UC-006) |
 | permanent · `w=0` | container (degraded) + independents | container **realized-degraded** (permanently); DNS **refused** | warning: container permanently degraded, DNS refused with reason | UC-006 (permanent derivation) |
 | permanent · `w=N` | container (degraded) + independents | identical — soft never blocks, window inert | warning: permanently degraded | derivation of soft permanent · `w=0` (UC-006) |
@@ -147,7 +147,7 @@ Nothing above is a new mechanism; each piece names an existing surface:
   activation until every member can activate — so a member that reserved early is never left running
   while its siblings are held.
 - **The reconciliation loop (`reserve → recompute-dependents`).** Convergence is not new code — it
-  is the existing loop re-attempting a blocked-transient member and recomputing its dependents,
+  is the existing loop re-attempting a blocked_transient member and recomputing its dependents,
   which is what carries a `w>0` member from pending to realized and cascades a status change down
   the chain.
 - **`dependencies[].strength: hard | soft`.** The operational nature's block-versus-degrade
@@ -166,7 +166,7 @@ UDLM contributes is vocabulary and contract; the mechanics are DCM's.
 |---|---|
 | the **nature** on the dependency edge (`request` \| `operational`) — the ONE new field | the reconciler walking the graph + convergence order (`reserve → recompute-dependents`, exists) |
 | the hard/soft dependency edges (`dependencies[].strength`, exist) | **policies** deciding the window value and the cascade behavior (cascade-cancel vs hold-and-surface) |
-| the **convergence-status classification** {converging, blocked-transient, blocked-permanent, dependency-cancelled, realized, refused, cancelled} | the actual cancellation / rollback / cascade execution |
+| the **convergence-status classification** {converging, blocked_transient, blocked_permanent, dependency_cancelled, realized, refused, cancelled} | the actual cancellation / rollback / cascade execution |
 | the **propagation semantics** (operational cascades directionally; request couples the unit; soft never blocks) | evaluating the surfacing contract at runtime, emitting the warning / refusal |
 | the **surfacing contract** (name the root dependency + the chain) + the **window** as an intent field | reading the window/nature off the intent and driving convergence to them |
 
@@ -187,7 +187,7 @@ the decision stay in step:
 - **The placement of `nature`** → **one attribute on the single existing dependency edge**, not a
   second edge family. `nature` is the only new field in the portable model.
 - **The convergence-status set** → the **seven values confirmed and complete**, computed as a
-  **derived projection (never stored)** per ADR-048; `cancelled` and `dependency-cancelled` stay
+  **derived projection (never stored)** per ADR-048; `cancelled` and `dependency_cancelled` stay
   **distinct** (different provenance; the root must be nameable).
 - **The surfacing contract** → a warning (transient) / refusal-with-resolution (permanent) MUST
   carry the **root** dependency, the **chain**, the blocking **nature**, the **verdict**, and — for

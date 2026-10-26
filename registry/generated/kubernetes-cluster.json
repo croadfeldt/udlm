@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesCluster/2.0.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesCluster/2.0.6",
   "conforms_to": "udlm/0.1",
   "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c",
   "resource_type": "KubernetesCluster",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "KubernetesCluster",
-          "version": "2.0.5",
+          "version": "2.0.6",
           "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c"
         }
       ]
@@ -113,7 +113,7 @@
       },
       "source": "https://focus.finops.org/",
       "license": "CC-BY-4.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier2_record"
     },
     {
@@ -126,7 +126,7 @@
       },
       "source": "https://opencost.io/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier2_record"
     }
   ],

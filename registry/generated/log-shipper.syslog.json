@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper.Syslog/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper.Syslog/0.2.1",
   "conforms_to": "udlm/0.1",
   "uuid": "08b6eafd-abae-4c69-ac70-aff7d87778a8",
   "resource_type": "LogShipper.Syslog",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "LogShipper",
-          "version": "0.10.0",
+          "version": "0.10.1",
           "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922"
         },
         {
           "class": "LogShipper.Syslog",
-          "version": "0.2.0",
+          "version": "0.2.1",
           "uuid": "08b6eafd-abae-4c69-ac70-aff7d87778a8"
         }
       ]
@@ -156,7 +156,7 @@
       "role": "the attribute names in `labels`, the identity the provider stamps (`host.name`), and the log record fields a `filter` criterion addresses",
       "source": "https://opentelemetry.io/docs/specs/semconv/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -166,7 +166,7 @@
       "role": "the names of `transport`, and the facility-and-severity selector a provider renders from a `filter` criterion",
       "source": "https://www.rfc-editor.org/rfc/rfc9742",
       "license": "IETF Trust",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -176,7 +176,7 @@
       "role": "the `rfc5424` message format",
       "source": "https://www.rfc-editor.org/rfc/rfc5424",
       "license": "IETF Trust",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -186,7 +186,7 @@
       "role": "the `tcp` and `relp` transport values, and how a BMC fills this Type",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

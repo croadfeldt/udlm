@@ -234,7 +234,7 @@ custom_location_type:
 | Policy | Rule |
 |--------|------|
 | `LOC-001` | Every resource entity MUST have a resolved leaf-layer UUID. Requests without a resolvable location are rejected at validation time. |
-| `LOC-002` | Location layers are Core Layers. They MUST NOT contain service-specific or provider-specific data. Location layers that include resource-type-scoped fields are invalid. |
+| `LOC-002` | Location layers are Core Layers. They MUST NOT contain service-specific or provider_specific data. Location layers that include resource-type-scoped fields are invalid. |
 | `LOC-003` | The location hierarchy MUST be acyclic. A location node cannot be its own ancestor. The implementation MUST validate acyclicity at layer submission time. |
 | `LOC-004` | Location layer handles follow the pattern `locations/{type}/{code}`. Any location layer with a non-conforming handle MUST be rejected at registration. |
 | `LOC-005` | When a consumer selects a location at a level above leaf, the implementation MUST resolve to a specific leaf during placement. A request MAY NOT remain at an abstract location level after dispatch. |

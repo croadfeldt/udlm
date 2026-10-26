@@ -14,7 +14,7 @@ transient sibling) and stages the operational · permanent rows of
 **In one breath.** An app operationally depends on a container, which operationally depends on a
 PVC. The PVC is **permanently refused** — a sovereignty/policy violation that will never clear
 unless the intent changes. Permanence ignores the window: the PVC does not wait. Its status flows
-down the operational chain — the container becomes `blocked-permanent`, the app inherits the same —
+down the operational chain — the container becomes `blocked_permanent`, the app inherits the same —
 and none of the three realizes dangling. The consumer gets **one** refusal-with-resolution that
 names the **root** (the PVC and its violated rule) and the chain it took down, so they fix the
 cause, not the symptom. Members outside this chain still realize.
@@ -31,8 +31,8 @@ sequenceDiagram
     C->>P: Intent (app operationalto container operationalto PVC)
     P->>PVC: validate to permanent policy violation
     Note over PVC: status = refused (immediate, window inert)
-    P->>Ct: dependency refused to blocked-permanent
-    P->>App: dependency (container) blocked-permanent to blocked-permanent
+    P->>Ct: dependency refused to blocked_permanent
+    P->>App: dependency (container) blocked_permanent to blocked_permanent
     Note over App,Ct: inherited transitively down the operational chain, nothing realized dangling
     P-->>C: REFUSAL-with-resolution — root = PVC + violated rule, chain = container, app
     P->>P: members outside this chain realize normally
@@ -42,8 +42,8 @@ sequenceDiagram
 
 - **Permanence is window-inert.** A permanently-refused member is `refused` immediately; `w` has
   nothing to act on. Waiting is never offered for something that cannot converge.
-- **Status inherits transitively.** `refused` root → `blocked-permanent` dependent →
-  `blocked-permanent` next-up; the operational chain carries the status the whole way.
+- **Status inherits transitively.** `refused` root → `blocked_permanent` dependent →
+  `blocked_permanent` next-up; the operational chain carries the status the whole way.
 - **One surface, rooted.** The chain is surfaced as a single refusal naming the **root** and the
   members it took down — not one opaque failure per member (UC-008 forbids naming only the
   proximate one).
@@ -53,13 +53,13 @@ sequenceDiagram
 
 Whether the refused chain is torn down, left inert, or routed for human override, and how the
 refusal is delivered — DCM policy over the statuses and surfacing contract UDLM declares (ADR-008).
-UDLM owns the `refused`/`blocked-permanent` vocabulary, the transitive-inheritance semantics, and
+UDLM owns the `refused`/`blocked_permanent` vocabulary, the transitive-inheritance semantics, and
 the root-naming obligation.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
 - **Data:** the operational edges; each member's inherited status; the root PVC and its rule.
-- **Policy:** permanent refusal at the root propagates as `blocked-permanent` down the chain,
+- **Policy:** permanent refusal at the root propagates as `blocked_permanent` down the chain,
   immediately; independents proceed.
 - **Provider:** reports the PVC unrealizable under the violated rule; no member on the chain is
   realized.

@@ -11,7 +11,7 @@
 # claim, and a claim needs a version, a narrowing check against a parent, and a named owner — which
 # is what a class carries and this does not.
 #
-# `origin: discovered-derived` is doing real work. The mapping from LikeC4 was clean, but a human
+# `origin: discovered_derived` is doing real work. The mapping from LikeC4 was clean, but a human
 # did not write these constituents — the importer did. Inferred content is never silently presented
 # as human-declared, which is the same rule brownfield ingestion already applies to entities.
 record_type: composition
@@ -23,11 +23,11 @@ tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 # PROPOSED = it exists, exactly as a freshly written ADR is Proposed. Nobody has nominated it as a
 # class, so nobody is reviewing it. Nomination is a separate, recordable act — that is what makes
 # the promotion process auditable instead of a thing that happened once and left no trace.
-state: PROPOSED
+state: proposed
 
 provenance:
   arrival: ingested_likec4
-  origin: discovered-derived
+  origin: discovered_derived
   # What a re-ingest next quarter matches on, so the second import updates THIS record rather than
   # creating a second copy of the same architecture.
   source_ref: architecture/storefront.c4

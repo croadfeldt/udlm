@@ -26,7 +26,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import generate_pin_manifest as _pin  # noqa: E402  (path must be set first)
 
-ALGORITHM = "sha256-jcs"
+ALGORITHM = "sha256_jcs"
 
 
 def head_for(record, previous=None):

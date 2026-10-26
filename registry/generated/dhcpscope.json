@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/DHCPScope/0.10.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/DHCPScope/0.10.1",
   "conforms_to": "udlm/0.1",
   "uuid": "c71a7ad9-23ea-40fe-a07d-ee088a20cf42",
   "resource_type": "DHCPScope",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "DHCPScope",
-          "version": "0.10.0",
+          "version": "0.10.1",
           "uuid": "c71a7ad9-23ea-40fe-a07d-ee088a20cf42"
         }
       ]
@@ -133,7 +133,7 @@
       "role": "DHCPv4 scope / pool / lease vocabulary",
       "source": "https://www.rfc-editor.org/rfc/rfc2131",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -143,7 +143,7 @@
       "role": "reference implementation — one DHCP provider's subnet/pool/reservation model (MPL-2.0, referenced by name only, not the type's grounding)",
       "source": "https://kea.readthedocs.io/",
       "license": "MPL-2.0",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     }
   ],

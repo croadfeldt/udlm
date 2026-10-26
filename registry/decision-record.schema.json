@@ -34,7 +34,7 @@
     },
     "decision": {"type": "string", "description": "The chosen decision (the answer)."},
     "action": {
-      "enum": ["answer", "clarify", "change-spec", "defer", "wontfix"],
+      "enum": ["answer", "clarify", "change_spec", "defer", "wontfix"],
       "description": "The disposition (knowledge-family §4.5)."
     },
     "abstraction_decomposition": {

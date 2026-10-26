@@ -65,13 +65,13 @@
         "provisioning",
         "curation"
       ],
-      "description": "How this type interprets the universal four states: `provisioning` (Resource — Intent→Requested→Realized→Discovered via a provider) or `curation` (Knowledge — proposed→under-review→canonical→deprecated). Optional; inferred from `family` if absent. DERIVED from `family` (ADR-027 addendum) — optional; authored specs may omit it."
+      "description": "How this type interprets the universal four states: `provisioning` (Resource — Intent→Requested→Realized→Discovered via a provider) or `curation` (Knowledge — proposed→under_review→canonical→deprecated). Optional; inferred from `family` if absent. DERIVED from `family` (ADR-027 addendum) — optional; authored specs may omit it."
     },
     "portability": {
       "enum": [
         "portable",
         "partial",
-        "provider-specific"
+        "provider_specific"
       ],
       "description": "Portability classification (docs/spec/foundations/class-tiers.md §7). Any deviation from full portability MUST be explicitly declared. DERIVED (ADR-027 addendum, 3rd finding): portability is scope × advertised capabilities (the control plane's eligible-set computation), not a stored self-declaration — a provider does not declare its own portability; support is decided by target providers/orgs. Optional; authored specs may omit it."
     },
@@ -172,7 +172,7 @@
         "type",
         "properties"
       ],
-      "description": "The field schema for the Intent/Requested state — the wire contract every provider offering this type MUST satisfy. A nested JSON Schema 2020-12 fragment. Catalog items / constraint profiles project over these fields by path; they never widen them. This base is CLOSED (a type's `spec` sets `additionalProperties: false`): provider-specific data is declared as a Provider-Class `SharedDataElement` (ADR-038 — scope IS portability), never by widening this base — no-override is structural.",
+      "description": "The field schema for the Intent/Requested state — the wire contract every provider offering this type MUST satisfy. A nested JSON Schema 2020-12 fragment. Catalog items / constraint profiles project over these fields by path; they never widen them. This base is CLOSED (a type's `spec` sets `additionalProperties: false`): provider_specific data is declared as a Provider-Class `SharedDataElement` (ADR-038 — scope IS portability), never by widening this base — no-override is structural.",
       "properties": {
         "type": {
           "const": "object"
@@ -674,11 +674,11 @@
         },
         "license_compatibility": {
           "enum": [
-            "compatible-reference",
-            "compatible-vendor",
-            "reference-only"
+            "compatible_reference",
+            "compatible_vendor",
+            "reference_only"
           ],
-          "description": "Recorded verdict of the license check against UDLM's Apache-2.0 (SPEC-DESIGN-REQUIREMENTS §23): `compatible-reference` = we only reference the vocabulary (field names = facts), license-clean regardless of source license (the default); `compatible-vendor` = source is Apache-2.0-compatible, so its text MAY be absorbed/vendored; `reference-only` = copyleft/file-scoped source (GPL/LGPL/MPL) whose names MAY be referenced but whose text/files MUST NOT be vendored."
+          "description": "Recorded verdict of the license check against UDLM's Apache-2.0 (SPEC-DESIGN-REQUIREMENTS §23): `compatible_reference` = we only reference the vocabulary (field names = facts), license-clean regardless of source license (the default); `compatible_vendor` = source is Apache-2.0-compatible, so its text MAY be absorbed/vendored; `reference_only` = copyleft/file-scoped source (GPL/LGPL/MPL) whose names MAY be referenced but whose text/files MUST NOT be vendored."
         },
         "disposition": {
           "type": "string",

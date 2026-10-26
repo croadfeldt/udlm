@@ -168,7 +168,7 @@ The control plane defines six layer types. Each has a distinct purpose, scope, o
 
 **Characteristics:**
 - Every layer chain must begin with a Base Layer
-- Base Layers contain only universal fields — no provider-specific data
+- Base Layers contain only universal fields — no provider_specific data
 - A Base Layer for a typed resource must conform to the Resource Type Specification's universal field requirements
 - Multiple Base Layers can exist for the same context — the applicable one is selected based on the request context
 
@@ -189,7 +189,7 @@ The control plane defines six layer types. Each has a distinct purpose, scope, o
 
 **Characteristics:**
 - Applied to every request regardless of resource type
-- Cannot contain service-specific or provider-specific data
+- Cannot contain service-specific or provider_specific data
 - Carry location, organizational, and infrastructure context
 - Stored in the Core Layer Store
 - Cached in the Service Layer Cache at deployment time
@@ -253,7 +253,7 @@ type_scope:
 **Characteristics:**
 - Only applied when the request resource type matches the layer's declared type scope
 - Carry service-specific configuration, defaults, and constraints
-- Must not contain provider-specific data unless marked as portability-breaking
+- Must not contain provider_specific data unless marked as portability-breaking
 - Cached in the Service Layer Cache at Service Provider registration time
 
 **Examples:**
@@ -637,7 +637,7 @@ The **Layer Domain** mirrors the Policy domain model exactly. It declares owners
 A lower-domain layer cannot override a higher-domain layer.
 
 **Provider extension layers** (`domain: provider`) are contributed by Service Providers
-as part of their catalog item registration. They add provider-specific fields to the
+as part of their catalog item registration. They add provider_specific fields to the
 assembled payload for their offering only. They cannot override platform or tenant layers.
 They carry the same portability implications as inline `provider_specific_extensions` in
 the catalog item declaration — any request using them is non-portable and must be
@@ -1377,7 +1377,7 @@ Placement takes the policy-processed payload and the **placement constraints** f
 ### Step 7 — Post-Placement Policy Processing
 Policies with `placement_phase: post` (or `both`) execute after placement has confirmed a provider selection. These policies have full access to the `placement` block of the payload including the provider selection, hold confirmation, and all returned metadata.
 
-1. **Transformation Policies** — provider-aware enrichment. Inject zone-specific configuration, provider-specific defaults, topology-derived values that are only knowable after provider selection.
+1. **Transformation Policies** — provider-aware enrichment. Inject zone-specific configuration, provider_specific defaults, topology-derived values that are only knowable after provider selection.
 2. **Validation Policies** — post-placement checks. Verify the selected provider meets requirements that couldn't be expressed as pre-placement constraints.
 3. **Compliance-class Validation Policies** — post-placement hard overrides. May inject mandatory fields triggered by the specific provider selected (e.g., additional data handling requirements for a provider in a specific jurisdiction).
 
@@ -1427,7 +1427,7 @@ The end-to-end diagram of these steps (placement loop, policy phases) is in the
 ## 8. Layer Scope and Type Enforcement
 
 ### 8.1 Core Layer Scope Enforcement
-Core Layers are type-agnostic by default. They are applied to every request regardless of Resource Type. A Core Layer that contains service-specific or provider-specific data is invalid and must be rejected.
+Core Layers are type-agnostic by default. They are applied to every request regardless of Resource Type. A Core Layer that contains service-specific or provider_specific data is invalid and must be rejected.
 
 ### 8.2 Service Layer Scope Enforcement
 Service Layers must declare a Resource Type scope. The Request Payload Processor enforces this during Layer Resolution:
@@ -1580,7 +1580,7 @@ policy:
 | `LAY-001` | Consumers may declare `layer_exclusions` in their request. Each exclusion must carry a human-readable reason recorded in provenance. Compliance-class Validation Policies may declare specific layers non-excludable. Excluded layers produce no fields in the assembled payload. |
 | `LAY-002` | Service Layers are independently versioned artifacts. Service Providers declare layer compatibility using semver constraints. Service Layer Cache entries carry the layer version and are invalidated when the registered version changes. |
 | `LAY-003` | Service Layers may declare `activation_condition` evaluated during Step 2 (Layer Resolution). Layers whose conditions evaluate false are excluded from the candidate set. Condition evaluation results are recorded in the assembly provenance. Conditions may reference request fields, tenant attributes, resource type fields, resolved core layer fields, and ingress fields. |
-| `LAY-004` | Each service dependency executes its own independent layer chain during assembly. Dependencies inherit the parent's resolved placement and identity fields as declared by the Resource Type Specification. Dependencies do not inherit parent consumer declarations, resource-type-specific layers, or provider-specific layers. Layer exclusions may be declared per-dependency. |
+| `LAY-004` | Each service dependency executes its own independent layer chain during assembly. Dependencies inherit the parent's resolved placement and identity fields as declared by the Resource Type Specification. Dependencies do not inherit parent consumer declarations, resource-type-specific layers, or provider_specific layers. Layer exclusions may be declared per-dependency. |
 
 ---
 

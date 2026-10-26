@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Volume.ZFS/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Volume.ZFS/0.8.1
 conforms_to: udlm/0.1
 uuid: 90eb6692-1b70-4dc1-b43b-bfedf44c317f
 record_type: class
 class: type
 resource_type: Volume.ZFS
 parent: Volume
-version: 0.8.0
+version: 0.8.1
 family: Resource
 status: active
 metadata:
@@ -72,7 +72,7 @@ adopts:
     role: dataset vocabulary (mountpoint, quota, properties, hierarchy)
     source: https://openzfs.github.io/openzfs-docs/
     license: CDDL-1.0
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
 context:
   purpose: Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host

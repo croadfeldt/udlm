@@ -216,7 +216,7 @@ sub-interface — is traversable.
 
 ```yaml
 device_class: physical          # physical | virtual | passthrough | partition | aggregate | bridge
-partition_mechanism: sr-iov     # OPTIONAL; only when device_class=partition: sr-iov | mediated | mig |
+partition_mechanism: sr_iov     # OPTIONAL; only when device_class=partition: sr_iov | mediated | mig |
                                # vlan | macvlan | …  (the slicing mechanism; extensible)
 # parent_device: a `references` relationship to the ONE parent Hardware.* entity (1→N) —
 #   REQUIRED when device_class ∈ {passthrough, partition}.
@@ -234,7 +234,7 @@ partition_mechanism: sr-iov     # OPTIONAL; only when device_class=partition: sr
 | `bridge` | a **software L2 bridge over many** ports (N→1) | **Linux bridge / OVS bridge** (802.1Q) | `lower_layer` → the bridged ports |
 
 The device-partition mechanism applies to interfaces (GPU partitioning is deferred — GPU is a host capability, DCM ADR-013): an **SR-IOV VF / vETH** =
-`NetworkInterface` `device_class: partition`, `partition_mechanism: sr-iov` (or `vlan`/`macvlan`),
+`NetworkInterface` `device_class: partition`, `partition_mechanism: sr_iov` (or `vlan`/`macvlan`),
 `parent_device` → the physical NIC. A **bond** = `NetworkInterface` `device_class: aggregate`,
 `aggregation.mode: 802.3ad`, `lower_layer` → its member NICs; a **bridge** =
 `NetworkInterface` `device_class: bridge`, `lower_layer` → the bond (or NICs) it bridges. The

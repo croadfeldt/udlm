@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Workload/0.11.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Workload/0.11.1",
   "conforms_to": "udlm/0.1",
   "uuid": "905fef1c-3384-4a49-9c44-71420d07eedd",
   "resource_type": "Workload",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Workload",
-          "version": "0.11.0",
+          "version": "0.11.1",
           "uuid": "905fef1c-3384-4a49-9c44-71420d07eedd"
         }
       ]
@@ -174,7 +174,7 @@
       "role": "service-as-composed-nodes shape and the typed relationship vocabulary for runs_on / requires / binds_to",
       "source": "https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/",
       "license": "OASIS",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -184,7 +184,7 @@
       "role": "grounds `constituents[]` — an application is a set of component workloads, one level up from Container",
       "source": "https://oam.dev/",
       "license": "MIT",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -194,7 +194,7 @@
       "role": "realization vocabulary for Kubernetes-hosted services — naturalized by the provider, not restated",
       "source": "https://kubernetes.io/docs/concepts/workloads/",
       "license": "CC-BY-4.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

@@ -184,13 +184,13 @@ the tier an element sits at is that classification seen structurally:
 |---|---|---|
 | `universal` | Base element | every provider implementing the class supports it |
 | `conditional` | Type element | providers that declare the Type support it |
-| `provider-specific` | Provider Class element | using it binds the request to that provider; marked `portability_breaking` |
+| `provider_specific` | Provider Class element | using it binds the request to that provider; marked `portability_breaking` |
 | `exclusive` | Provider Class element | one provider is the only implementor of the technology; declared, not inferred |
 
 Five requirements hold regardless of tier: a `universal` element MUST be supported by every provider
-implementing the class; a `provider-specific` element MUST be marked `portability_breaking`; a consumer
+implementing the class; a `provider_specific` element MUST be marked `portability_breaking`; a consumer
 MUST be warned when a request carries one; `exclusive` is the only sanctioned exception to vendor
-neutrality, declared in the registry; and a class that carries a provider-specific element as universal
+neutrality, declared in the registry; and a class that carries a provider_specific element as universal
 is invalid. The classification rides each element's `portability` block in the flat spec
 (`registry/resource-type-spec.schema.json`). The tree names and validates. The portability of a given
 *request* is computed from the classification and what providers advertise (ADR-PROV-002), never from
@@ -204,7 +204,7 @@ the tree alone.
 | `CLS-002` | **A Base Class is a deliverable that any member can realize.** A grouping earns a Base only when (a) an existing, widely used API already abstracts over its members, (b) every Base element is honorable by every descendant, and (c) an offering declared at any tier accepts orders at every tier above it. A grouping that fails (a) is a folder (`CLS-003`). |
 | `CLS-003` | **A grouping that fails the Base test is a usage group, not a class.** Nothing is filed as a Base to be found; it is filed under a term of the usage-group vocabulary (`CLS-010`). A member of a former folder becomes a Base in its own right when it passes `CLS-002`, else is re-homed under a Base that does. An `instantiable: false` Base was tolerated only while its dissolution was in progress (ADR-082); none remains: the Access family gained its group level in row 089. |
 | `CLS-004` | **The Type tier is spent on one axis per family.** The second segment narrows by form or by dialect, whichever carries the definition structure. Form and dialect MUST NOT both appear as Types under one Base. |
-| `CLS-005` | **A Provider Class exists only for provider-specific data.** A provider needing nothing beyond the Type binds at the Type. Two deployments with the same data are instances on the authority axis. An offering that requires consumer-supplied data the Type lacks MUST declare a Provider Class carrying it as elements, never as an opaque blob. |
+| `CLS-005` | **A Provider Class exists only for provider_specific data.** A provider needing nothing beyond the Type binds at the Type. Two deployments with the same data are instances on the authority axis. An offering that requires consumer-supplied data the Type lacks MUST declare a Provider Class carrying it as elements, never as an opaque blob. |
 | `CLS-006` | **A class is named for its deliverable.** A technology name appears only when the technology is the contract (a conformance-tested standard), never when it is a product. A Base is never named for a vendor; a Type is a form or a dialect; a Provider Class is the offering. |
 | `CLS-007` | **One short name, resolved on input, never stored.** A class MAY declare one `short_name` matching the `resource_type` pattern, unique case-insensitively against every canonical name and every other short name. It is accepted at every input surface, canonicalized on write, and MUST NOT appear in `$id`, `parent`, an element `scope`, a relationship `target`, or an offering list. Gate: `tests/check_class_short_names.py`. |
 | `CLS-008` | **Instantiability belongs to the Base.** `instantiable` MAY appear only on a Base Class (`class: base`); absent means true. Gate: `tests/check_class_short_names.py`. |

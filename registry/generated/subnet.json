@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Subnet/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Subnet/0.4.1",
   "conforms_to": "udlm/0.1",
   "uuid": "07faf9f7-511b-4a77-8743-092fa6ca06a1",
   "resource_type": "Subnet",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Subnet",
-          "version": "0.4.0",
+          "version": "0.4.1",
           "uuid": "07faf9f7-511b-4a77-8743-092fa6ca06a1"
         }
       ]
@@ -115,7 +115,7 @@
       "role": "The prefix notation and the aggregation semantics — adopted by reference, never re-expressed.",
       "source": "https://www.rfc-editor.org/rfc/rfc4632.html",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -125,7 +125,7 @@
       "role": "The cloud realization of an L3 network. Recorded so a cloud provider naturalizes into this class rather than a cloud-only branch. The VPC that CONTAINS such a subnet has no class yet, and `contained_by → VirtualNetwork` below is the on-prem attachment-point case rather than a VPC. Tracked separately: a subnet is useful without its container, and guessing the container's shape would be worse than leaving it open.",
       "source": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html",
       "license": "vendor-documentation",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     }
   ],

@@ -2,7 +2,7 @@
 
 **What this settles:** the content obligation on the consumer surface — a chain failure must name the
 **root** unsatisfied dependency and the chain it took down, not only the proximate member. A surface
-that says "container failed" without naming that the container was `blocked-permanent` because its PVC
+that says "container failed" without naming that the container was `blocked_permanent` because its PVC
 was refused is **refused as insufficient surfacing**, even though it did emit a warning. It stages the
 surfacing constraint that gates every cell of
 [`intent-fulfillment-model.md`](../design/intent-fulfillment-model.md), paired with
@@ -21,7 +21,7 @@ root-less surface does not satisfy the contract, warning or no warning.
 
 ```mermaid
 flowchart TD
-    F["Chain failure: PVC refused → container blocked-permanent → app"] --> S{"What does the surface name?"}
+    F["Chain failure: PVC refused → container blocked_permanent → app"] --> S{"What does the surface name?"}
     S -->|"only the proximate member ('container failed')"| R["REFUSED — insufficient surfacing;\nthe consumer chases the symptom"]
     S -->|"root (PVC + rule) + the chain"| A["ACCEPTED — consumer acts on the cause"]
     R -.corrective.-> A

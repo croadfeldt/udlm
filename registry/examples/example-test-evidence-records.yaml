@@ -124,7 +124,7 @@ supersedes:
 record_type: realized_record
 state: Realized
 entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
-record_uuid: 01a1637b-85d0-7c21-ad22-2e23f2401526
+record_uuid: 01a178b9-d4d8-7007-8007-000000000007
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: TestEvidence.VulnerabilityCheck.AiTestHarness
@@ -204,8 +204,8 @@ outputs:
   bumps_survived: 0
   regressions_caught: 0
 supersedes:
-  - 01a0f335-684e-7382-a17b-e6066878548c
+  - 01a1637b-85d0-7c21-ad22-2e23f2401526
 integrity:
-  head: sha256:cd1ef7d95ef7db25bf1f18c0b40650aeb6ef79c566ac6f469096c44cda3524af
-  previous: sha256:25fc5a2548023de9828e5e961238a3c90aeef0a42a7610b9769df2ed27bf896a
-  algorithm: sha256-jcs
+  head: sha256:4c36b4f5b6e4b8643b365f5c9e66510937306363bf5fa0624f69f49493c5eb75
+  previous: sha256:cd1ef7d95ef7db25bf1f18c0b40650aeb6ef79c566ac6f469096c44cda3524af
+  algorithm: sha256_jcs

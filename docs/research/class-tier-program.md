@@ -91,7 +91,7 @@ test clause; row 069 in PR 1 supersedes it.
 
 | | |
 |---|---|
-| Content | both projection comments in `docs/spec/contracts/provider-contract.md` say "PROJECTION of … Provider Classes" and list Types. Rewrite to: a provider binds at Base or Type; a Provider Class exists only for provider-specific data; declaring at a tier accepts orders at every tier above |
+| Content | both projection comments in `docs/spec/contracts/provider-contract.md` say "PROJECTION of … Provider Classes" and list Types. Rewrite to: a provider binds at Base or Type; a Provider Class exists only for provider_specific data; declaring at a tier accepts orders at every tier above |
 | Depends on | PR 1 |
 
 ### PR 7 — amend ADR-038

@@ -113,7 +113,7 @@ Three declarative records. All are nouns — no logic.
       "identity_join": { "local_field": "uuid", "standard_column": "ResourceId" },
       "source": "https://focus.finops.org/",
       "license": "CC-BY-4.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible_reference"
     }
   ]
 }
@@ -125,11 +125,11 @@ restated here.
 **`source`, `license`, and `license_compatibility` are mandatory** (SPEC-DESIGN-REQUIREMENTS §22–23): the
 provenance (name + version + canonical URL) and a recorded license-compatibility verdict against the
 UDLM license (Apache-2.0 — declared once in [`README.md` § License](../../../README.md#license) /
-the repository `LICENSE` file). `license_compatibility` ∈ `{compatible-reference, compatible-vendor,
-reference-only}` — `reference-only` flags a copyleft/file-scoped source (GPL/LGPL/MPL) whose **names may
+the repository `LICENSE` file). `license_compatibility` ∈ `{compatible_reference, compatible_vendor,
+reference_only}` — `reference_only` flags a copyleft/file-scoped source (GPL/LGPL/MPL) whose **names may
 be referenced but whose text/files MUST NOT be vendored** into UDLM. Because adoption only references
 the standard's vocabulary (field names = facts) and never restates its columns, the default verdict is
-`compatible-reference` regardless of the source license — adopt-by-reference is license-clean by
+`compatible_reference` regardless of the source license — adopt-by-reference is license-clean by
 construction; the check exists to catch the cases where someone is tempted to *copy* (absorb) instead.
 
 ### 3.2 Provider support matrix (a provider capability declaration)

@@ -74,7 +74,7 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
-record_uuid: 01a112d4-3de9-7588-9e9e-ee58b3272517
+record_uuid: 01a178b9-c150-7002-8002-000000000002
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Container
@@ -93,7 +93,7 @@ dispatch:
   granted: []
   stripped: []
 intent_ref: 01a09385-cad9-72da-a308-da5dba42d6c4
-root_request_uuid: 01a112d4-3de9-7588-9e9e-ee58b3272517
+root_request_uuid: 01a178b9-c150-7002-8002-000000000002
 dependencies:
   - edge_type: depends_on
     strength: hard
@@ -103,13 +103,14 @@ dependencies:
 status:
   state: pending
   conditions:
-    - type: blocked-permanent
+    - type: blocked_permanent
       status: 'True'
       reason: the volume this container mounts was permanently refused
       blocked_on: udlm://estate/cexample/storage/orders-data
       last_transition_time: '2026-08-10T09:00:06Z'
 supersedes:
-  - 01a0eb4f-c2ed-735c-8686-0c86ebe45029
+  - 01a112d4-3de9-7588-9e9e-ee58b3272517
+
 ---
 record_type: intent_record
 state: Intent
@@ -133,7 +134,7 @@ supersedes:
 record_type: requested_record
 state: Requested
 entity_uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
-record_uuid: 01a112d4-3de9-7588-9e9e-ee59704b732c
+record_uuid: 01a178b9-c538-7003-8003-000000000003
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Workload
@@ -151,7 +152,7 @@ dispatch:
   granted: []
   stripped: []
 intent_ref: 01a0ee84-c436-7483-a79e-c50fdae7e8a7
-root_request_uuid: 01a112d4-3de9-7588-9e9e-ee59704b732c
+root_request_uuid: 01a178b9-c538-7003-8003-000000000003
 dependencies:
   - edge_type: depends_on
     strength: hard
@@ -161,10 +162,10 @@ dependencies:
 status:
   state: pending
   conditions:
-    - type: blocked-permanent
+    - type: blocked_permanent
       status: 'True'
       reason: the container this service runs on is blocked
       blocked_on: udlm://estate/cexample/app/orders-api
       last_transition_time: '2026-08-10T09:00:07Z'
 supersedes:
-  - 01a0ee84-c436-7483-a79e-c510ed90839b
+  - 01a112d4-3de9-7588-9e9e-ee59704b732c

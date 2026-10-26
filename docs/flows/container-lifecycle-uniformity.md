@@ -13,7 +13,7 @@ registry under one edge model, so a container is declared with the same intent s
 networks, storage, placement) and its dependencies are the **same typed edges**. It flows through the
 **same request-realization pipeline** (assemble → policy → validate-and-reserve → commit); placement selects
 the provider — a **container runtime** or a **hypervisor**, on-prem or in a cloud — and the realized record
-carries provider-specific facts against the same provider-neutral intent. Everything downstream —
+carries provider_specific facts against the same provider-neutral intent. Everything downstream —
 **rehydration, drift, supply-chain remediation** — runs the **same pipeline over the same graph**, whether
 the thing is a container or a VM, on-prem or cloud. One model, one process, all four quadrants.
 

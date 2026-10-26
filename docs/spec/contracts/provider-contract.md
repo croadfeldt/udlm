@@ -63,14 +63,14 @@ A resource's relationships arise at two different points in the lifecycle, and t
 
 When a provider brokers a dependency it does **not** own (a VM provider needs a `IPAddress` the IP provider owns — `fulfillment: provider`), it conveys the criteria the dependency needs via a constituent `binding` into the target resource. **Most of what a broker conveys is a shared foundational reference, not custom info** — the IP case needs only the **target `VLAN` segment (or `Location`)** so the IP provider knows *where* to allocate; no NIC, MAC, or switch-port is involved (binding the returned IP to a vNIC is the VM provider's own post-allocation concern). That path needs **no accommodation** — the base type already references the shared segment.
 
-Accommodation is the **rarer** case: a broker must convey **genuinely provider-specific realize-time state the base type does not model** (e.g. a vendor-specific offload or QoS class). A provider that **owns** a resource type therefore **MUST** make that type accommodate such fields in one of two sanctioned ways, and a **brokering** provider **MUST** use whichever the target offers when — and only when — a shared reference does not suffice:
+Accommodation is the **rarer** case: a broker must convey **genuinely provider_specific realize-time state the base type does not model** (e.g. a vendor-specific offload or QoS class). A provider that **owns** a resource type therefore **MUST** make that type accommodate such fields in one of two sanctioned ways, and a **brokering** provider **MUST** use whichever the target offers when — and only when — a shared reference does not suffice:
 
 - **(a) Base-type extension surface** — the target type carries an open extension block (a provider-extension layer, `domain: provider`, `layering-and-versioning.md`) into which the broker's fields are written, namespaced to the contributing provider; the base type stays vendor-neutral.
 - **(b) Custom resource type layered on the base** — a Type or Provider Class (`docs/spec/foundations/class-tiers.md`) that extends the base and adds the broker's fields as first-class.
 
-A type that supports **neither** — where a genuinely-bespoke field is required — is **non-conformant for brokered fulfillment**. *Note:* `IPAddress` is **not** such a case: it needs only the shared segment reference above, so it requires no extension and no derived type. Accommodation applies only where the base type cannot carry provider-specific realize-time state at all. See UDLM ADR-009 for the end-to-end flow.
+A type that supports **neither** — where a genuinely-bespoke field is required — is **non-conformant for brokered fulfillment**. *Note:* `IPAddress` is **not** such a case: it needs only the shared segment reference above, so it requires no extension and no derived type. Accommodation applies only where the base type cannot carry provider_specific realize-time state at all. See UDLM ADR-009 for the end-to-end flow.
 
-**Why.** The goal is to let the broker and the owning provider **exchange the full, contextual information the dependency needs** — not to constrain them to a fixed vocabulary. Usually that information is a **shared reference** both sides already understand (a segment, a location), and nothing bespoke crosses the boundary. Where a broker genuinely must convey provider-specific state the base type does not model, a sanctioned extension (a) or custom type (b) carries it faithfully, namespaced and typed, so nothing is dropped or approximated. Agreeing the shape in advance and validating it at admission follows from this, but the aim is the **complete, contextual exchange** itself.
+**Why.** The goal is to let the broker and the owning provider **exchange the full, contextual information the dependency needs** — not to constrain them to a fixed vocabulary. Usually that information is a **shared reference** both sides already understand (a segment, a location), and nothing bespoke crosses the boundary. Where a broker genuinely must convey provider_specific state the base type does not model, a sanctioned extension (a) or custom type (b) carries it faithfully, namespaced and typed, so nothing is dropped or approximated. Agreeing the shape in advance and validating it at admission follows from this, but the aim is the **complete, contextual exchange** itself.
 
 ### 1b.2 Who writes the relationship — the control plane by default, provider only when required
 
@@ -326,7 +326,7 @@ Response 200:
   "status": "healthy | degraded | unhealthy",
   "version": "<provider version>",
   "capabilities_available": ["<list of currently available capabilities>"],
-  "details": { }    # provider-specific; the control plane treats as opaque
+  "details": { }    # provider_specific; the control plane treats as opaque
 }
 ```
 
@@ -559,10 +559,11 @@ GET  {capabilities_endpoint}                  # return available options (networ
 
 **Capability declaration extension:**
 ```yaml
+# illustrative: shape of the record, not schema-checked
 service_provider_capabilities:
   resource_types:                       # PROJECTION of the Resource-family classes the provider
                                         # binds to — a Base or a Type as listed, a Provider Class
-                                        # only where the offering carries provider-specific data
+                                        # only where the offering carries provider_specific data
                                         # (CLS-005); the class is authored, this list is rendered
                                         # (ADR-038 addendum). Binding at a tier accepts orders at
                                         # every tier above it (CLS-002 (c)).

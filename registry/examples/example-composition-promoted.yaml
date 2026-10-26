@@ -26,12 +26,12 @@ tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 
 # CANONICAL means a class exists — and the schema refuses this state without `promoted_to`,
 # because a record claiming acceptance while naming nothing records an outcome nobody can verify.
-state: CANONICAL
+state: canonical
 promoted_to: udlm://class/Template.Application.AcmeThreeTier
 
 provenance:
   arrival: ingested_likec4
-  origin: discovered-derived
+  origin: discovered_derived
   source_ref: architecture/three-tier-web-app.c4
 
 metadata:

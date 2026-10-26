@@ -43,7 +43,7 @@ Dependencies declared at the Resource Type Specification level are **portable an
 
 - Declared in the Resource Type Specification
 - Apply to all Provider Catalog Items implementing that Resource Type
-- Use Resource Type UUIDs — not provider-specific references
+- Use Resource Type UUIDs — not provider_specific references
 - Required for all implementations of the Resource Type
 - Portable — the dependency can be fulfilled by any provider implementing the required Resource Type
 
@@ -67,7 +67,7 @@ type_level_dependencies:
 
 ### 3.2 Provider-Specific Dependencies (Provider Catalog Item)
 
-Dependencies declared at the Provider Catalog Item level are **provider-specific additions** beyond the type-level dependencies. They must be marked as portability-breaking.
+Dependencies declared at the Provider Catalog Item level are **provider_specific additions** beyond the type-level dependencies. They must be marked as portability-breaking.
 
 - Declared in the Provider Catalog Item registration
 - Apply only to requests fulfilled by that specific provider
@@ -543,12 +543,12 @@ composite_service_registration:
 | `DEP-015` | **Every requested record names its root request.** `root_request_uuid` is the record_uuid of the requested record at the root of the order. A root names itself. A record the control plane expanded from a declared dependency (DEP-014) or a composition names the root's. It is the record form of §6.1's `dependency_graph.root_request_uuid`. Causation, not structure: `parent_composite_uuid` (CMP-007) is the other axis. Required on requested records; refused on intent, realized and discovered. Register row 079. |
 | `DEP-018` | **A request one provider makes to another names the request that caused it — provenance, never authority.** When a provider's need crosses a provider boundary (PRV-012), its request is a requested record of its own: in the provider's tenant, under its authority, with its own `root_request_uuid`. It carries `caused_by_request`, the consumer's requested record. Never walked for authority. The consumer's sovereignty and zone constraints arrive as placement requirements, re-evaluated under current policy. The runtime link back is DEP-017 `blocked_on`. The fulfilling provider gets the request's execution slice and placement requirements only: not the consumer's tenant, entity, request or reason (data-roles.md §3). |
 | `DEP-016` | composite service definitions declare composition_visibility as opaque, transparent, or selective. Transparent and selective modes register sub-resources as control-plane entities subject to standard lifecycle management and drift detection. Opaque mode delegates sub-resource management entirely to the provider. |
-| `DEP-017` | **A member that has not realized says WHY, and what it is waiting on.** The fulfillment conditions are a **closed** family on `status.conditions[].type` — `blocked-transient` (waiting on something expected to clear; converges when it can, gated by the convergence window), `blocked-permanent` (cannot be satisfied; refused immediately, window-independent), `refused` (the root: this member itself cannot be satisfied), `dependency-cancelled` (a dependency was cancelled out from under it). Closed because these carry PROPAGATION semantics — a dependent inherits its dependency's status transitively (transient → waits, permanent → refused, cancelled → dependency-cancelled) — so a fifth spelling is not a new condition but an unactionable member of this one. **`blocked_on` is required on every inherited condition** and names the IMMEDIATE blocker; the root is found by walking the chain, never by copying it down (DRV-001). `refused` is exempt — it IS the root, so there is nothing upstream to point at. **Not a lifecycle state:** these are overlays on a `lifecycle_state` that never leaves its five values, exactly as recovery and health are (data-model-core §3). **Not a refusal by the model:** a member blocked on a value that arrives one step later is EARLY, not wrong — refusing it would fail a request that was always going to succeed. Whether and when a transient block becomes permanent is the execution pipeline's call, over the convergence window; what the model owes is somewhere to record what is being waited on, so that call rests on evidence rather than a stopwatch. |
+| `DEP-017` | **A member that has not realized says WHY, and what it is waiting on.** The fulfillment conditions are a **closed** family on `status.conditions[].type` — `blocked_transient` (waiting on something expected to clear; converges when it can, gated by the convergence window), `blocked_permanent` (cannot be satisfied; refused immediately, window-independent), `refused` (the root: this member itself cannot be satisfied), `dependency_cancelled` (a dependency was cancelled out from under it). Closed because these carry PROPAGATION semantics — a dependent inherits its dependency's status transitively (transient → waits, permanent → refused, cancelled → dependency_cancelled) — so a fifth spelling is not a new condition but an unactionable member of this one. **`blocked_on` is required on every inherited condition** and names the IMMEDIATE blocker; the root is found by walking the chain, never by copying it down (DRV-001). `refused` is exempt — it IS the root, so there is nothing upstream to point at. **Not a lifecycle state:** these are overlays on a `lifecycle_state` that never leaves its five values, exactly as recovery and health are (data-model-core §3). **Not a refusal by the model:** a member blocked on a value that arrives one step later is EARLY, not wrong — refusing it would fail a request that was always going to succeed. Whether and when a transient block becomes permanent is the execution pipeline's call, over the convergence window; what the model owes is somewhere to record what is being waited on, so that call rests on evidence rather than a stopwatch. |
 
 ---
 
 - **Resource Type Specification** — declares type-level dependencies for a Resource Type
-- **Provider Catalog Item** — declares provider-specific additional dependencies
+- **Provider Catalog Item** — declares provider_specific additional dependencies
 - **Request Payload Processor** — constructs the dependency graph during assembly
 - **Policy Engine** — evaluates conditional dependencies, enforces dependency policies, governs failure handling
 - **Intent Portability** — rehydration uses Intent State to allow replay with different providers

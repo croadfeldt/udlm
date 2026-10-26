@@ -3,9 +3,9 @@
 # Supersedes the prior record of this state (named in `supersedes`): re-bound to the requested record that carries the dispatch receipt.
 record_type: realized_record
 state: Realized
-record_uuid: 01a17249-ce50-7002-8002-00d15c000002
-requested_ref: 01a17249-ca68-7001-8001-00d15c000001
-requested_ref_head: sha256:97907a72170f6250b8ec2c825236c53754b7c3f9a3a1fcd2a55129917d40c103
+record_uuid: 01a178b9-d8c0-7008-8008-000000000008
+requested_ref: 01a178b9-cd08-7005-8005-000000000005
+requested_ref_head: sha256:53d6fe5884e96c6514ef8a574a9cfcac4ba89948414108346ef3bdaec1803437
 entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
@@ -72,7 +72,7 @@ dependencies:
     strength: hard
     resolved_at: '2026-09-03T14:03:40Z'
 correlation_ids:
-  - scheme: libvirt-domain-uuid
+  - scheme: libvirt_domain_uuid
     value: 4e2a7c19-6b3d-4f8e-a1c5-9d0b2e7f3a64
   - scheme: mac
     value: 52:54:00:ab:12:34
@@ -148,8 +148,8 @@ provenance:
       sequence: 1
       timestamp: '2026-09-03T14:03:40Z'
 supersedes:
-  - 01a163b2-8bc0-7008-8008-000000000008
+  - 01a17249-ce50-7002-8002-00d15c000002
 integrity:
-  head: sha256:141e4a6dc2bfcfa0e178818e0cf00962711084597b8ac9cf90247c61276bc544
-  previous: sha256:c1df28908b5ec92e865482822e07f7dbf175851ef5d37d18acb016ddd54ce335
-  algorithm: sha256-jcs
+  head: sha256:23e6cf3ce315f6f81058589eb090ade72d7ac1a1640e0bcfd8e37ac3b2be888a
+  previous: sha256:141e4a6dc2bfcfa0e178818e0cf00962711084597b8ac9cf90247c61276bc544
+  algorithm: sha256_jcs

@@ -96,7 +96,7 @@ The **Realized State** is the provider-confirmed record of what was actually bui
 **Characteristics:**
 - Write-once complete snapshots — each Realized State record is a full entity state, never modified after writing
 - Every Realized State record is traceable to exactly one Requested State record — no exceptions
-- Contains provider-specific details not in the Requested State — assigned IPs, generated passwords, actual storage sizes, provider-internal IDs
+- Contains provider_specific details not in the Requested State — assigned IPs, generated passwords, actual storage sizes, provider-internal IDs
 - Is the authoritative record of what actually exists
 - Drift is detected by comparing the most recent Realized State snapshot against Discovered State
 - Carries a supersession chain — each snapshot knows which snapshot it superseded and which superseded it
@@ -182,18 +182,18 @@ and value — a libvirt domain UUID, a WWN, a MAC, a chassis id; a compound key 
 uses a scheme that names the compound). **A key that is unique only within a scope carries the scope in
 its value**, rooted at the isolation domain the probe observed it in, because two VLAN 100s or two
 198.51.100.0/24s coexist on purpose exactly when they sit in different domains (row 118): a segment is
-`segment-id: <observer>/<domain>/<id>`, the observing device's own key, then the bridge domain, VRF,
+`segment_id: <observer>/<domain>/<id>`, the observing device's own key, then the bridge domain, VRF,
 bridge or overlay, then the tag or VNI. An observer-rooted key is an **observation, never an identity**:
 a VLAN trunked across three switches is seen as three keys, one per chassis, and nothing in them says
 they are one broadcast domain. Working that out from LLDP neighbours and trunk tag lists is the fabric
 controller's knowledge, and it breaks under tag translation, QinQ or a deliberate duplicate, so UDLM
 never infers that two observer keys name the same VLAN (row 119). A VLAN record's identity is its owning
-provider's own identifier, `provider-id` (a fabric controller's network id); the record lists the
+provider's own identifier, `provider_id` (a fabric controller's network id); the record lists the
 observer keys that resolve to it. A fabric with no provider reporting its VLANs has no authoritative VLAN
 identity, and an observed edge stays key-only (REF-003) until a provider-backed record claims its key,
 which is a valid state, not a failure. A bridge or overlay a host owns is keyed at the host, because
 there the host is the provider; a subnet
-is `subnet-prefix: <segment>#<cidr>`, with `gateway-mac`, the MAC that answers the gateway address, as
+is `subnet_prefix: <segment>#<cidr>`, with `gateway_mac`, the MAC that answers the gateway address, as
 a second key that separates a masqueraded test copy from the original. A record MAY carry several keys;
 resolution matches on what it has and refuses a tie as `ambiguous` rather than merging on a guess, the
 same refusal a reference gets (URF-004). Resolving that key to an entity is the control plane's act,
@@ -353,7 +353,7 @@ A rehydration starts from any of the three stored states; this is not new struct
 |--------|------------------|-------------|
 | **Intent** | the raw declaration, through current layers | upgrade to current standards, environment refresh |
 | **Requested** | the assembled, policy-processed payload | reproduce close to the approved spec |
-| **Realized** | the provider-confirmed state (provider-specific fields stripped) | exact DR / clone / replace a failed resource |
+| **Realized** | the provider-confirmed state (provider_specific fields stripped) | exact DR / clone / replace a failed resource |
 
 ### 5.2 Preserved identity + lineage
 

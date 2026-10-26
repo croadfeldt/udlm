@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Identity/1.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Identity/1.3.1
 conforms_to: udlm/0.1
 uuid: db886a00-0e24-4ff7-992a-c6d546a34eb6
 record_type: class
 class: base
 resource_type: Identity
-version: 1.3.0
+version: 1.3.1
 family: Access
 status: active
 filed_under:
@@ -68,7 +68,7 @@ adopts:
       both Users)
     source: https://www.rfc-editor.org/rfc/rfc7643
     license: IETF Trust (BCP 78)
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
 context:
   purpose: Declares a subject the control plane authenticates and authorizes — a person or a service account — with

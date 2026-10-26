@@ -156,7 +156,7 @@ def key(finding):
 def self_test():
     intent = {"record_type": "intent_record", "entity_uuid": "e", "record_uuid": "i1",
               "fields": {"cpu": {"count": 4}, "memory": {"size": "16Gi"}, "networks": [{"name": "eth0"}]},
-              "integrity": {"algorithm": "sha256-jcs", "head": "sha256:" + "a" * 64, "previous": None}}
+              "integrity": {"algorithm": "sha256_jcs", "head": "sha256:" + "a" * 64, "previous": None}}
     good = {"record_type": "requested_record", "entity_uuid": "e", "record_uuid": "r1", "intent_ref": "i1",
             "intent_ref_head": intent["integrity"]["head"],
             "fields": {"cpu": {"count": 4, "sockets": 1}, "memory": {"size": "32Gi"}, "networks": [{"name": "eth0", "vlan": "v20"}]},

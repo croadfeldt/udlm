@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StorageDevice/0.8.1
+$id: https://udlm.dev/registry/udlm/0.1/class/StorageDevice/0.8.2
 conforms_to: udlm/0.1
 uuid: b9b08521-7927-479c-8671-6d4fdadc9f1b
 record_type: class
 class: base
 resource_type: StorageDevice
-version: 0.8.1
+version: 0.8.2
 family: Resource
 status: active
 filed_under:
@@ -137,13 +137,13 @@ adopts:
     role: drive component vocabulary (capacity, media, protocol, wwn, serial, bay)
     source: https://www.dmtf.org/standards/redfish
     license: DMTF
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
   - standard: SNIA-Swordfish
     version: '1.2'
     role: storage-device modeling alignment at the system level
     source: https://www.snia.org/forums/smi/swordfish
     license: SNIA
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
 context:
   purpose: Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that
     ties failures and replacements to one device.

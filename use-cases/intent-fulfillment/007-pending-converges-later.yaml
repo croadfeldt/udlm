@@ -3,12 +3,12 @@ handle: intent-fulfillment/pending-converges-later
 version: 1.0.0
 scenario:
   description: >-
-    An intent left a container blocked-transient on a PVC that had no capacity (the operational
+    An intent left a container blocked_transient on a PVC that had no capacity (the operational
     convergence case, w>0). Later, storage capacity frees. The reconciliation loop realizes the
     previously-pending PVC and then the container that operationally depended on it — with no new
     consumer request. The original intent was persistent desired state, not a one-shot command, so
     the held members converge on their own when the transient blocker clears. The consumer's
-    surfaced state updates from blocked-transient to realized and the shortfall warning clears.
+    surfaced state updates from blocked_transient to realized and the shortfall warning clears.
     This is the persistence proof under the nature model: a transient member (and the operational
     dependents it was holding) converges later, driven by reconciliation, traceable to the
     original intent.
@@ -21,10 +21,10 @@ scenario:
     - sre
     - provider-owner
   intent: >-
-    Have a persistent intent's blocked-transient member and its operational dependents converge to
+    Have a persistent intent's blocked_transient member and its operational dependents converge to
     Realized later via reconciliation, with no re-request and the surfaced state updating
   success_criteria:
-  - The blocked-transient PVC realizes when its transient blocker clears, driven by reconciliation, not a new request
+  - The blocked_transient PVC realizes when its transient blocker clears, driven by reconciliation, not a new request
   - The container that operationally depended on it converges once the PVC realizes — the held chain proceeds automatically
   - The original intent persisted as desired state across the gap (held, not discarded)
   - The consumer's surfaced shortfall clears when the members reach Realized
@@ -39,7 +39,7 @@ scenario:
   profile: standard
   expected_domain_interactions:
   - domain: data
-    interaction: Intent persists as desired state; realized state is its current projection; held members carry blocked-transient
+    interaction: Intent persists as desired state; realized state is its current projection; held members carry blocked_transient
   - domain: policy
     interaction: reconciliation converges the transient member and its operational dependents without re-request
   - domain: provider

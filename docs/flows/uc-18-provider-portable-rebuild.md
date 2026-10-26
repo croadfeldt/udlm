@@ -1,7 +1,7 @@
 # UC-18 · Workload portability across providers — the stage
 
 **What this settles:** how resources survive **losing their provider** — the placement engine re-resolves them
-onto an alternate eligible provider, the provider-specific references are rewritten for the new home, and the
+onto an alternate eligible provider, the provider_specific references are rewritten for the new home, and the
 rebuild proceeds from intent alone. A **lighter** flow — it **builds on
 [request-realization](request-realization.md)**; the trigger is a provider failure, and the new twist is
 rewriting naturalized references.
@@ -9,7 +9,7 @@ rewriting naturalized references.
 > **Use Case:** `osac/provider-portability-new-cloud`. **Persona:** platform-engineer · **Profile:** standard.
 
 **In one breath.** A provider goes away — health check fails, or it is deregistered — while resources depend on
-it. Placement re-resolves the affected resources onto an alternate eligible provider, the provider-specific
+it. Placement re-resolves the affected resources onto an alternate eligible provider, the provider_specific
 references (the naturalized values like a namespace or a native id) are rewritten for the new provider, and the
 resources are re-realized from their intent. The provider-neutral fields still match the original intent — the
 resource was never locked to one provider.
@@ -19,7 +19,7 @@ resource was never locked to one provider.
   deregistration) is what kicks the flow off; the affected resources are already realized.
 - **Re-placement onto an *alternate* provider.** Placement runs again but with the failed provider excluded,
   landing the resource on a different eligible one. Validation policies re-evaluate for the new provider.
-- **Naturalized references are rewritten.** The provider-specific values — the old provider's
+- **Naturalized references are rewritten.** The provider_specific values — the old provider's
   Provider-Class elements (ADR-038): the
   namespace, the native id, the cluster — are the old provider's and cannot carry over. They are re-derived
   (re-enriched) for the new provider; the portable base is untouched.
@@ -31,7 +31,7 @@ resource was never locked to one provider.
 flowchart TD
   F["Provider unavailable<br/>(health check fails / deregistered)"] --> A["Identify affected realized resources"]
   A --> P["Re-place — placement excludes failed provider<br/>re-evaluate validation policies for alternate"]
-  P --> RW["Rewrite provider-specific references<br/>(naturalization) for the new provider"]
+  P --> RW["Rewrite provider_specific references<br/>(naturalization) for the new provider"]
   RW --> RR["Re-realize on the alternate<br/>(request-realization from intent)"]
   RR --> V["Provider-neutral fields match original intent"]
 ```
@@ -46,7 +46,7 @@ The re-realize step is request-realization, run with the failed provider exclude
 - The re-resolution and rebuild are recorded in the audit trail.
 
 ## Data · Policy · Provider
-- **Data:** intent is the source of truth; provider-specific references (Provider-Class elements) are rewritten
+- **Data:** intent is the source of truth; provider_specific references (Provider-Class elements) are rewritten
   while the portable base holds steady; realized state is updated.
 - **Policy:** validation policies re-evaluate for the alternate provider — the move is governed, not blind.
 - **Provider:** the original is detected unavailable; an alternate eligible provider re-realizes the resources.

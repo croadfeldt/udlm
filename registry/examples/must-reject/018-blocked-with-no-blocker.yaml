@@ -21,6 +21,6 @@ record:
   status:
     state: pending
     conditions:
-    - type: blocked-transient
+    - type: blocked_transient
       status: 'True'
       reason: waiting

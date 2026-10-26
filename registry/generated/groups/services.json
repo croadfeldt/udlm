@@ -4,14 +4,14 @@
   "classes": [
     {
       "class": "AddressService",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/address-service/_base.yaml",
       "types": []
     },
     {
       "class": "DirectoryService",
-      "version": "0.8.3",
+      "version": "0.8.4",
       "instantiable": true,
       "path": "registry/classes/resource/identity/directory-service/_base.yaml",
       "types": []
@@ -27,7 +27,7 @@
     },
     {
       "class": "Workload",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "instantiable": true,
       "path": "registry/classes/resource/services/workload/_base.yaml",
       "types": []

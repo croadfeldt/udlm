@@ -22,7 +22,7 @@ record:
   status:
     state: pending
     conditions:
-    - type: blocked_transient
+    - type: blocked-transient
       status: 'True'
       reason: waiting on storage
       blocked_on: udlm://estate/cexample/storage/orders-data

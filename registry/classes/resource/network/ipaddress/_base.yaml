@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/IPAddress/0.14.0
+$id: https://udlm.dev/registry/udlm/0.1/class/IPAddress/0.14.1
 conforms_to: udlm/0.1
 uuid: 6b7a4336-da9c-4b42-883d-44c96940f45a
 record_type: class
 class: base
 resource_type: IPAddress
-version: 0.14.0
+version: 0.14.1
 family: Resource
 status: active
 filed_under:
@@ -86,7 +86,7 @@ adopts:
     role: relation vocabulary — attaches_to address-on-interface relation name (common-elements §9)
     source: https://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html
     license: OASIS
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
   - standard: RFC-8344
     version: RFC-8344
@@ -94,7 +94,7 @@ adopts:
     role: 'address-on-interface shape: `address`/prefix + `origin` (static|dhcp|link-layer|random)'
     source: https://www.rfc-editor.org/rfc/rfc8344.html
     license: IETF-Trust
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
   - standard: NMstate
     version: 2.x
@@ -103,7 +103,7 @@ adopts:
       desired-state
     source: https://nmstate.io/
     license: Apache-2.0
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier2_record
 context:
   purpose: Makes a single IP address its own record — origin, interface binding, and allocation — so each address
