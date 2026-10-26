@@ -660,6 +660,20 @@
       ],
       "description": "A CPU amount in cores: a number (0.5, 2) or a Kubernetes quantity string (500m for half a core, \"2\"). One home for every CPU request (#638)."
     },
+    "disk": {
+      "$comment": "common-elements.md §2.6; born on Machine.disks (row 112), shared with KubernetesNodePool.node_disks (row 117)",
+      "title": "Disk",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "size"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$", "description": "Stable disk identity, unique within the machine or node. Lowercase DNS-label shape."},
+        "size": {"$ref": "#/$defs/quantity", "description": "Requested disk size, quantity form (100Gi, 500GB)."},
+        "storage_tier": {"type": "string", "description": "Optional storage performance class for this disk, a governed `storage_tier` term; absent, the carrier's `storage_tier` applies."},
+        "role": {"type": "string", "x-extensible-enum": ["boot", "data", "log"], "description": "What the disk is for. `boot` marks the disk that carries the OS; a machine declares at most one. Boot order is the machine's `boot_order`, never a property of a disk."}
+      },
+      "description": "One disk of a machine or of every node in a pool, as portable intent: a stable name, a size, an optional tier and a role. The name is the join key a realized Volume binds to (`disk_entry`). One shape wherever disks are declared (row 117)."
+    },
     "uuid_v4": {
       "title": "UUID v4",
       "type": "string",

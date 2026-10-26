@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNodePool/1.1.4
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNodePool/1.2.0
 conforms_to: udlm/0.1
 uuid: ff7f0b01-d451-4aed-89da-83117923820f
 record_type: class
 class: base
 resource_type: KubernetesNodePool
 short_name: K8sNodePool
-version: 1.1.4
+version: 1.2.0
 family: Resource
 status: active
 filed_under:
@@ -55,6 +55,20 @@ elements:
       $ref: ../../../../common-elements.schema.json#/$defs/ComputeResources
       description: 'Per-node sizing in the shared compute shape (common-elements §2.2): a size class, or explicit
         cpu and memory. The provider maps it to a concrete node shape at realization.'
+  - element: node_disks
+    scope: KubernetesNodePool
+    optional: true
+    state: canonical
+    description: 'The disks every node in the pool gets, in the shared `disk` shape Machine uses (common-elements §2.6):
+      a `name`, a `size`, an optional `storage_tier` and a `role`, `boot` for the disk the node OS runs from. Cloud node
+      pools expose one size per node (GKE diskSizeGb, EKS volume size, AKS osDiskSizeGB), which is a one-entry list
+      with role `boot`; Cluster API infrastructure templates carry a disk list. Row 117 (#650).'
+    schema:
+      type: array
+      minItems: 1
+      items:
+        $ref: ../../../../common-elements.schema.json#/$defs/disk
+      description: The disks every node in the pool gets; one entry of role `boot` is the node OS disk.
   - element: capabilities
     scope: KubernetesNodePool
     optional: true
@@ -129,6 +143,10 @@ spec_examples:
         count: 16
       memory:
         size: 64Gi
+    node_disks:
+      - name: root
+        size: 120Gi
+        role: boot
     capabilities:
       gpu:
         available: true

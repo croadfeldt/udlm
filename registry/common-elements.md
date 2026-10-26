@@ -59,6 +59,7 @@ portably, without UDLM prescribing a fixed resource math.
 
 ### 2.4 Network
 - `cidr`: a CIDR string (`"192.0.2.0/24"`).
+- `disk` (§2.6): one disk as portable intent — `name`, `size`, optional `storage_tier` and `role`. Declared once; Machine `disks` and KubernetesNodePool `node_disks` are lists of it (rows 112, 117).
 - `ip_family`: enum `{ ipv4, ipv6 }`, the one family of an address, pool, subnet or DHCP scope (canonicalizes `network.ip-address`'s `family`). `ip_families`: enum `{ ipv4, ipv6, dual }`, for a thing that may carry both, such as a gateway (row 102).
 - `address`: an IP string (an `outputs` value, per existing `network.ip-address`).
 
