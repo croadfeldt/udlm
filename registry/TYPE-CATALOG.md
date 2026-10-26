@@ -1029,7 +1029,7 @@ One storage device as a record: its required `capacity` — a whole-number quant
 
 ## StoragePool
 
-### StoragePool (0.6.1)
+### StoragePool (0.7.0)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
@@ -1290,11 +1290,11 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - Machine.VM — the consumer(s) it attaches to.
 - Database — databases whose data directory it backs.
 
-### Volume.ZFS (0.7.0)
+### Volume.ZFS (0.8.0)
 
 **Purpose:** Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host workloads use.
 
-A volume realized by ZFS on one host: its `volume_mode` says whether it is a mounted dataset (`filesystem`) or a zvol block device (`block`); its `capacity` is the quota or volsize; `mountpoint`, reported `used` and passthrough `properties` are the ZFS-native details. It is what a podman container or host service bind-mounts, so it is the storage node those workloads depend on. Volumes nest (parent chains) and cannot outlive the pool they are carved from. Snapshot and replication policy is orchestration, not stored here.
+A volume realized by ZFS on one host: its `volume_mode` says whether it is a mounted dataset (`filesystem`) or a zvol block device (`block`); its `capacity` is the quota or volsize; `mountpoint`, reported passthrough `properties` are the ZFS-native details. It is what a podman container or host service bind-mounts, so it is the storage node those workloads depend on. Volumes nest (parent chains) and cannot outlive the pool they are carved from. Snapshot and replication policy is orchestration, not stored here.
 
 **Use when:**
 - You need host services and containers tied to the specific dataset they store on, so the dataset outlives them in shutdown order.

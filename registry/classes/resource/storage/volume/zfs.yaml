@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Volume.ZFS/0.7.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Volume.ZFS/0.8.0
 conforms_to: udlm/0.1
 uuid: 90eb6692-1b70-4dc1-b43b-bfedf44c317f
 record_type: class
 class: type
 resource_type: Volume.ZFS
 parent: Volume
-version: 0.7.0
+version: 0.8.0
 family: Resource
 status: active
 metadata:
@@ -26,14 +26,6 @@ elements:
     schema:
       type: string
       description: Filesystem mountpoint when `volume_mode` is filesystem (/export/gitlab); `none` or `-` if unmounted.
-  - element: used
-    scope: Volume.ZFS
-    optional: true
-    state: canonical
-    description: Space consumed, as the provider reports it.
-    schema:
-      $ref: ../../../../common-elements.schema.json#/$defs/quantity
-      description: Space consumed, as the provider reports it.
   - element: properties
     scope: Volume.ZFS
     optional: true
@@ -49,7 +41,6 @@ spec_examples:
     access_mode: read_write_once
     volume_mode: filesystem
     mountpoint: /export/gitlab
-    used: 84.2G
     properties:
       compression: zstd
       recordsize: 128K
@@ -78,7 +69,7 @@ adopts:
   - standard: OpenZFS
     version: 2.x
     standard_name: dataset (filesystem / volume)
-    role: dataset vocabulary (mountpoint, used, quota, properties, hierarchy)
+    role: dataset vocabulary (mountpoint, quota, properties, hierarchy)
     source: https://openzfs.github.io/openzfs-docs/
     license: CDDL-1.0
     license_compatibility: compatible-reference
@@ -88,7 +79,7 @@ context:
     workloads use.
   plain_description: 'A volume realized by ZFS on one host: its `volume_mode` says whether it is a mounted dataset
     (`filesystem`) or a zvol block device (`block`); its `capacity` is the quota or volsize; `mountpoint`, reported
-    `used` and passthrough `properties` are the ZFS-native details. It is what a podman container or host service
+    passthrough `properties` are the ZFS-native details. It is what a podman container or host service
     bind-mounts, so it is the storage node those workloads depend on. Volumes nest (parent chains) and cannot outlive
     the pool they are carved from. Snapshot and replication policy is orchestration, not stored here.'
   use_when:

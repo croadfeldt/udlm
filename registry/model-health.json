@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5656,
-    "mutations_rejected": 5656,
+    "mutations_attempted": 5631,
+    "mutations_rejected": 5631,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -212,8 +212,8 @@
         "rejected": 71
       },
       "StoragePool": {
-        "attempted": 122,
-        "rejected": 122
+        "attempted": 103,
+        "rejected": 103
       },
       "Subnet": {
         "attempted": 58,
@@ -264,8 +264,8 @@
         "rejected": 52
       },
       "Volume.ZFS": {
-        "attempted": 70,
-        "rejected": 70
+        "attempted": 64,
+        "rejected": 64
       },
       "Vulnerability": {
         "attempted": 67,
@@ -332,7 +332,7 @@
       "StorageClass": 1,
       "StorageCluster": 3,
       "StorageDevice": 1,
-      "StoragePool": 5,
+      "StoragePool": 4,
       "Subnet": 3,
       "TaxonomyTerm": 1,
       "Template": 0,
