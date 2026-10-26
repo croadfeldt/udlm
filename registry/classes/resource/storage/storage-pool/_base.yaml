@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StoragePool/0.6.1
+$id: https://udlm.dev/registry/udlm/0.1/class/StoragePool/0.7.0
 conforms_to: udlm/0.1
 uuid: 643156a0-5c7b-4fa7-bcfb-089c0a06d520
 record_type: class
 class: base
 resource_type: StoragePool
-version: 0.6.1
+version: 0.7.0
 family: Resource
 status: active
 filed_under:
@@ -40,32 +40,19 @@ elements:
         host; the provisioning provider derives the controller configuration from it, so the host carries no RAID
         fields.'
       x-extensible-enum: true
-  - element: health
-    scope: StoragePool
-    optional: true
-    state: canonical
-    description: Pool health as the provider reports it (ZFS ONLINE/DEGRADED/FAULTED; Swordfish Status). The canonical
-      rollup is the `redundancy_status` output.
-    schema:
-      type: string
-      description: Pool health as the provider reports it (ZFS ONLINE/DEGRADED/FAULTED; Swordfish Status). The canonical
-        rollup is the `redundancy_status` output.
   - element: capacity
     scope: StoragePool
     optional: true
     state: canonical
-    description: 'Pool capacity: `size`, `allocated`, `free`, as quantities.'
+    description: 'Pool capacity: `size`, as a quantity. What is allocated and free is observed, read as the `usable_capacity`
+      output and the Volume records carved from the pool, never stored here.'
     schema:
       type: object
       properties:
         size:
           $ref: ../../../../common-elements.schema.json#/$defs/quantity
           description: Total pool size.
-        allocated:
-          $ref: ../../../../common-elements.schema.json#/$defs/quantity
-        free:
-          $ref: ../../../../common-elements.schema.json#/$defs/quantity
-      description: 'Pool capacity: `size`, `allocated`, `free`, as quantities.'
+      description: 'Pool capacity: `size`, as a quantity.'
   - element: vdevs
     scope: StoragePool
     optional: true
@@ -167,11 +154,8 @@ spec_constraints:
             exists; rebuild is distributed. Mutually exclusive with member spare groups inside this vdev.'
 spec_examples:
   - pool_kind: zfs
-    health: ONLINE
     capacity:
       size: 32TiB
-      allocated: 18.4TiB
-      free: 13.6TiB
     vdevs:
       - type: raidz2
         raid_type: RAID6
@@ -193,9 +177,6 @@ outputs:
   usable_capacity:
     type: string
     description: Usable capacity after redundancy overhead, once Realized.
-  degraded:
-    type: boolean
-    description: Whether the pool is currently degraded (a member vdev is not fully redundant).
   redundancy_status:
     type: string
     description: healthy | degraded | failed — the pool-level protection state (rollup of vdev states); the binding-friendly

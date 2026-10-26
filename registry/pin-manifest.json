@@ -1760,7 +1760,7 @@
   }
  },
  "type:StoragePool": {
-  "current": "0.6.1",
+  "current": "0.7.0",
   "path": "registry/classes/resource/storage/storage-pool/_base.yaml",
   "versions": {
    "0.5.0": "sha256:6bf5de09cfcba3a74e4df13fe0ccb5c199cb060e75530a18bab777392c5fb88c",
@@ -1768,7 +1768,8 @@
    "0.5.2": "sha256:4139c90a79c9e5de75c1842d9853faf101e86bac63c05e2963bdee433c5ac091",
    "0.5.3": "sha256:d15fd92343d44fc2c4ac53dbb81d27bde9e09a75f0a4e8c1a386142b7026915f",
    "0.6.0": "sha256:32ca2c20c5af74d99ada207dfc7558921ffe64dbd4f836195d5eb4c3643cd4fe",
-   "0.6.1": "sha256:d30c7c538da479b4bfa4d0ca4ab15c8df255952cf7b66519ea1d3c092c05afe7"
+   "0.6.1": "sha256:d30c7c538da479b4bfa4d0ca4ab15c8df255952cf7b66519ea1d3c092c05afe7",
+   "0.7.0": "sha256:2b01f83a02aa70121c47a5668f3319c16d5d24be3557ab94f720f22395decad0"
   }
  },
  "type:Subnet": {
@@ -1922,12 +1923,13 @@
   }
  },
  "type:Volume.ZFS": {
-  "current": "0.7.0",
+  "current": "0.8.0",
   "path": "registry/classes/resource/storage/volume/zfs.yaml",
   "versions": {
    "0.6.0": "sha256:57a6f528b74a7ae69b5757a16f6420270964d8aedbd5f7ea8cf488c542f33f03",
    "0.6.1": "sha256:b70071f0fb36bdafc012ce0e23d032a75a67ac75d4f8e6c8a3edbe92d95faf46",
-   "0.7.0": "sha256:71f3668118597b4bbf729060d602392459ca691a4714dc172f55026f9ed6ed71"
+   "0.7.0": "sha256:71f3668118597b4bbf729060d602392459ca691a4714dc172f55026f9ed6ed71",
+   "0.8.0": "sha256:53d46f7d57a95c034614e1e253b045c618c20b387d22991b83cad9f339bfb4f8"
   }
  },
  "type:Vulnerability": {

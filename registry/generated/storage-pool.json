@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StoragePool/0.6.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StoragePool/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "643156a0-5c7b-4fa7-bcfb-089c0a06d520",
   "resource_type": "StoragePool",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StoragePool",
-          "version": "0.6.1",
+          "version": "0.7.0",
           "uuid": "643156a0-5c7b-4fa7-bcfb-089c0a06d520"
         }
       ]
@@ -40,25 +40,15 @@
         "description": "The pooling backend: `zfs`, `md`, `hardware_raid`, `lvm`, `btrfs` or `other` (a provider hint; the provider is authoritative). A hardware-RAID pool MAY be declared as intent contained by a bare-metal host; the provisioning provider derives the controller configuration from it, so the host carries no RAID fields.",
         "x-extensible-enum": true
       },
-      "health": {
-        "type": "string",
-        "description": "Pool health as the provider reports it (ZFS ONLINE/DEGRADED/FAULTED; Swordfish Status). The canonical rollup is the `redundancy_status` output."
-      },
       "capacity": {
         "type": "object",
         "properties": {
           "size": {
             "$ref": "../common-elements.schema.json#/$defs/quantity",
             "description": "Total pool size."
-          },
-          "allocated": {
-            "$ref": "../common-elements.schema.json#/$defs/quantity"
-          },
-          "free": {
-            "$ref": "../common-elements.schema.json#/$defs/quantity"
           }
         },
-        "description": "Pool capacity: `size`, `allocated`, `free`, as quantities."
+        "description": "Pool capacity: `size`, as a quantity."
       },
       "vdevs": {
         "type": "array",
@@ -149,11 +139,8 @@
     "examples": [
       {
         "pool_kind": "zfs",
-        "health": "ONLINE",
         "capacity": {
-          "size": "32TiB",
-          "allocated": "18.4TiB",
-          "free": "13.6TiB"
+          "size": "32TiB"
         },
         "vdevs": [
           {
@@ -187,10 +174,6 @@
     "usable_capacity": {
       "type": "string",
       "description": "Usable capacity after redundancy overhead, once Realized."
-    },
-    "degraded": {
-      "type": "boolean",
-      "description": "Whether the pool is currently degraded (a member vdev is not fully redundant)."
     },
     "redundancy_status": {
       "type": "string",

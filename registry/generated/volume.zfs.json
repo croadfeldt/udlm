@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.8.0",
   "conforms_to": "udlm/0.1",
   "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f",
   "resource_type": "Volume.ZFS",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Volume.ZFS",
-          "version": "0.7.0",
+          "version": "0.8.0",
           "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f"
         }
       ]
@@ -71,10 +71,6 @@
         "type": "string",
         "description": "Filesystem mountpoint when `volume_mode` is filesystem (/export/gitlab); `none` or `-` if unmounted."
       },
-      "used": {
-        "$ref": "../common-elements.schema.json#/$defs/quantity",
-        "description": "Space consumed, as the provider reports it."
-      },
       "properties": {
         "type": "object",
         "additionalProperties": {
@@ -93,7 +89,6 @@
         "access_mode": "read_write_once",
         "volume_mode": "filesystem",
         "mountpoint": "/export/gitlab",
-        "used": "84.2G",
         "properties": {
           "compression": "zstd",
           "recordsize": "128K",
@@ -187,7 +182,7 @@
       "standard": "OpenZFS",
       "version": "2.x",
       "standard_name": "dataset (filesystem / volume)",
-      "role": "dataset vocabulary (mountpoint, used, quota, properties, hierarchy)",
+      "role": "dataset vocabulary (mountpoint, quota, properties, hierarchy)",
       "source": "https://openzfs.github.io/openzfs-docs/",
       "license": "CDDL-1.0",
       "license_compatibility": "compatible-reference",
@@ -199,7 +194,7 @@
   ],
   "context": {
     "purpose": "Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host workloads use.",
-    "plain_description": "A volume realized by ZFS on one host: its `volume_mode` says whether it is a mounted dataset (`filesystem`) or a zvol block device (`block`); its `capacity` is the quota or volsize; `mountpoint`, reported `used` and passthrough `properties` are the ZFS-native details. It is what a podman container or host service bind-mounts, so it is the storage node those workloads depend on. Volumes nest (parent chains) and cannot outlive the pool they are carved from. Snapshot and replication policy is orchestration, not stored here.",
+    "plain_description": "A volume realized by ZFS on one host: its `volume_mode` says whether it is a mounted dataset (`filesystem`) or a zvol block device (`block`); its `capacity` is the quota or volsize; `mountpoint`, reported passthrough `properties` are the ZFS-native details. It is what a podman container or host service bind-mounts, so it is the storage node those workloads depend on. Volumes nest (parent chains) and cannot outlive the pool they are carved from. Snapshot and replication policy is orchestration, not stored here.",
     "use_when": [
       "You need host services and containers tied to the specific dataset they store on, so the dataset outlives them in shutdown order.",
       "You need the pool → dataset → workload chain explicit for capacity and migration planning."
