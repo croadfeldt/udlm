@@ -27,6 +27,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import generate_pin_manifest as _pin  # noqa: E402  (path must be set first)
 
 ALGORITHM = "sha256_jcs"
+# Every spelling a verifier accepts for the same construction (SHA-256 over the RFC 8785 form of the
+# record minus `integrity`, `previous` folded in). Row 120 respelled it; records sealed before then say
+# "sha256-jcs" and are never re-sealed (ADR-051), and the spelling is not hashed, so both name one rule.
+# seal() writes ALGORITHM only. A genuinely different construction is a new entry here AND a new branch
+# in head_for, never a respelling.
+ALGORITHMS = {ALGORITHM, "sha256-jcs"}
 
 
 def head_for(record, previous=None):
@@ -50,9 +56,9 @@ def verify(record):
     integ = record.get("integrity")
     if not isinstance(integ, dict):
         return True, "no integrity block — unchained (permitted; the chain is opt-in per record)"
-    if integ.get("algorithm") != ALGORITHM:
-        return False, (f"algorithm {integ.get('algorithm')!r} is not {ALGORITHM!r} — a head cannot "
-                       f"be checked without knowing the rule that produced it")
+    if integ.get("algorithm") not in ALGORITHMS:
+        return False, (f"algorithm {integ.get('algorithm')!r} is not one of {sorted(ALGORITHMS)} — a head "
+                       f"cannot be checked without knowing the rule that produced it")
     if "previous" not in integ:
         return False, ("`previous` is absent. Null means chain ROOT; absent means a link that was "
                        "never stated, and a verifier that treated them alike would read every "
