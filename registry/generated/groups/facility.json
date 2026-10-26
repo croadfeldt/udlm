@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "Location",
-      "version": "0.5.1",
+      "version": "0.6.0",
       "instantiable": true,
       "path": "registry/classes/resource/facility/location/_base.yaml",
       "types": []

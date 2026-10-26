@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/IdentityGroup/0.5.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/IdentityGroup/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd",
   "resource_type": "IdentityGroup",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "family": "Access",
   "status": "active",
   "metadata": {
     "display_name": "Identity Group",
-    "description": "A group of identities — persons and service accounts — as identity data, the subject side of the RBAC bridge. A Base by the Base test (CLS-002): SCIM (RFC 7643) Group abstracts over every directory's and IdP's group, so a group with a handle, a source and members is one deliverable any of them serves. Distinct from Grouping, which groups resources by a stored criterion; this groups subjects.",
+    "description": "A group of identities — persons and service accounts — as identity data, the subject side of the RBAC bridge. A Base by the Base test (CLS-002): SCIM (RFC 7643) Group abstracts over every directory's and IdP's group, so a group with a source and members is one deliverable any of them serves. Distinct from Grouping, which groups resources by a stored criterion; this groups subjects.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "IdentityGroup",
-          "version": "0.5.1",
+          "version": "0.6.0",
           "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd"
         }
       ]
@@ -27,14 +27,6 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-      "handle": {
-        "type": "string",
-        "description": "Group name."
-      },
-      "display_name": {
-        "type": "string",
-        "description": "Human-readable name."
-      },
       "source": {
         "enum": [
           "built_in",
@@ -55,13 +47,10 @@
       }
     },
     "required": [
-      "handle",
       "source"
     ],
     "examples": [
       {
-        "handle": "platform-admins",
-        "display_name": "Platform Administrators",
         "source": "external",
         "external_group_ref": "corp-directory-platform-admins",
         "members": [

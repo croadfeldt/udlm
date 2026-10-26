@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Database/0.9.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Database/0.10.0
 conforms_to: udlm/0.1
 uuid: c199bb49-3ed4-4ed5-a902-2ebccd0a8337
 record_type: class
 class: base
 resource_type: Database
-version: 0.9.0
+version: 0.10.0
 family: Resource
 status: active
 filed_under:
@@ -69,17 +69,6 @@ elements:
           $ref: ../../../../common-elements.schema.json#/$defs/quantity
       description: 'Resource request in the shared compute shape: `cpu` as a quantity string (500m, 2), `memory`,
         `storage`.'
-  - element: metadata
-    scope: Database
-    optional: true
-    state: canonical
-    description: Free labels for the instance (environment, owner).
-    schema:
-      type: object
-      properties:
-        name:
-          type: string
-      description: Free labels for the instance (environment, owner).
 spec_examples:
   - engine: postgres
     version: '16'
@@ -87,8 +76,6 @@ spec_examples:
       cpu: '2'
       memory: 16GB
       storage: 200GB
-    metadata:
-      name: orders-db
 outputs:
   applied_version:
     type: string

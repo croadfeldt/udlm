@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366",
   "resource_type": "SoftwarePackage",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SoftwarePackage",
-          "version": "0.3.1",
+          "version": "0.4.0",
           "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366"
         }
       ]
@@ -31,18 +31,6 @@
         "type": "string",
         "description": "Package URL, the portable identity and dedup key (pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1). One record per purl."
       },
-      "name": {
-        "type": "string",
-        "description": "Package name, as parsed from the purl or SBOM."
-      },
-      "version": {
-        "type": "string",
-        "description": "Package version, as parsed."
-      },
-      "type": {
-        "$ref": "../common-elements.schema.json#/$defs/purl_type",
-        "description": "Package ecosystem, the purl type (rpm, deb, npm, pypi, …)."
-      },
       "license": {
         "type": "string",
         "description": "Declared license as an SPDX identifier (Apache-2.0), where the SBOM reports one."
@@ -54,9 +42,6 @@
     "examples": [
       {
         "purl": "pkg:rpm/redhat/openssl@3.0.7-18.el9?arch=x86_64",
-        "name": "openssl",
-        "version": "3.0.7-18.el9",
-        "type": "rpm",
         "license": "OpenSSL"
       }
     ]

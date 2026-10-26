@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/IdentityGroup/0.5.1
+$id: https://udlm.dev/registry/udlm/0.1/class/IdentityGroup/0.6.0
 conforms_to: udlm/0.1
 uuid: 679b1fad-95f4-4910-99ae-72147eef4dbd
 record_type: class
 class: base
 resource_type: IdentityGroup
-version: 0.5.1
+version: 0.6.0
 family: Access
 status: active
 filed_under:
@@ -13,27 +13,11 @@ metadata:
   display_name: Identity Group
   description: 'A group of identities — persons and service accounts — as identity data, the subject side of the
     RBAC bridge. A Base by the Base test (CLS-002): SCIM (RFC 7643) Group abstracts over every directory''s and
-    IdP''s group, so a group with a handle, a source and members is one deliverable any of them serves. Distinct
+    IdP''s group, so a group with a source and members is one deliverable any of them serves. Distinct
     from Grouping, which groups resources by a stored criterion; this groups subjects.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-11T00:00:00Z'
 elements:
-  - element: handle
-    scope: IdentityGroup
-    optional: false
-    state: canonical
-    description: Group name.
-    schema:
-      type: string
-      description: Group name.
-  - element: display_name
-    scope: IdentityGroup
-    optional: true
-    state: canonical
-    description: Human-readable name.
-    schema:
-      type: string
-      description: Human-readable name.
   - element: source
     scope: IdentityGroup
     optional: false
@@ -65,9 +49,7 @@ elements:
         type: string
       description: For a built-in group, the member identities by uuid; for an external one, resolved from the directory.
 spec_examples:
-  - handle: platform-admins
-    display_name: Platform Administrators
-    source: external
+  - source: external
     external_group_ref: corp-directory-platform-admins
     members:
       - 679b14ef-f169-441e-968d-dacafffe1966

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Identity/1.2.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Identity/1.3.0
 conforms_to: udlm/0.1
 uuid: db886a00-0e24-4ff7-992a-c6d546a34eb6
 record_type: class
 class: base
 resource_type: Identity
-version: 1.2.1
+version: 1.3.0
 family: Access
 status: active
 filed_under:
@@ -20,33 +20,16 @@ metadata:
     an IdP, a cloud IAM) fills the same way. Person and ServiceAccount are its two forms (CLS-004); a group of identities
     is IdentityGroup.'
 elements:
-  - element: handle
+  - element: login
     scope: Identity
     optional: false
     state: canonical
-    description: Login handle, unique within the implementation.
+    description: 'The login name the identity authenticates with, unique within the implementation; it may differ from
+      the record''s handle (row 115).'
     schema:
       type: string
-      description: Login handle, unique within the implementation.
-  - element: display_name
-    scope: Identity
-    optional: true
-    state: canonical
-    description: Human-readable name.
-    schema:
-      type: string
-      description: Human-readable name.
-  - element: actor_type
-    scope: Identity
-    optional: false
-    state: canonical
-    description: 'What kind of actor this is: `human` or `service_account`; each form narrows it to one value.'
-    schema:
-      type: string
-      enum:
-        - human
-        - service_account
-      description: 'What kind of actor this is: `human` or `service_account`; each form narrows it to one value.'
+      pattern: ^\S{1,255}$
+      description: The login name the identity authenticates with, unique within the implementation.
   - element: authenticated_by
     scope: Identity
     optional: true
@@ -89,9 +72,8 @@ adopts:
     disposition: tier1_value
 context:
   purpose: Declares a subject the control plane authenticates and authorizes — a person or a service account — with
-    the handle, actor type, authentication source and credential reference every identity provider serves.
-  plain_description: 'Who can act. An identity has a `handle`, an `actor_type` (`human` or `service_account`, which
-    its two forms narrow to one), where it is `authenticated_by`, an optional `credential_ref` to the secret that
+    the login, authentication source and credential reference every identity provider serves.
+  plain_description: 'Who can act. An identity has a `login`, where it is `authenticated_by`, an optional `credential_ref` to the secret that
     proves it, and a `status`. It is the subject side of the RBAC bridge: a Grouping''s subject bindings name identities,
     and the function-capability matrix says what those identities may do. Modelled on SCIM''s User so a directory,
     an IdP and a cloud IAM all fill it the same way.'
@@ -109,9 +91,7 @@ context:
     - CredentialRef — the credential that authenticates it.
     - DirectoryService — the directory that authenticates it.
 spec_examples:
-  - handle: platform/identities/ci-runner
-    display_name: CI runner
-    actor_type: service_account
+  - login: ci-runner
     authenticated_by: platform/directory/example
     credential_ref: platform/credentials/ci-runner-token
     status: active

@@ -52,7 +52,7 @@ BASELINE = os.path.join(ROOT, "tests", "portable-values-baseline.yaml")
 # Names the rule puts out of scope: free by nature, or already constrained by an adopted format.
 # A heuristic, and the reason findings are triaged rather than trusted.
 FREE = re.compile(
-    r"(^|_)(name|handle|description|definition|display_name|notes?|reason|comment|label|title|"
+    r"(^|_)(name|handle|login|description|definition|display_name|notes?|reason|comment|label|title|"
     r"summary|text|uuid|id|version|hash|digest|url|uri|endpoint|path|email|address|serial_number|"
     r"wwn|mac|fqdn|hostname|cidr|subnet|prefix|schema_version|dn|realm|mountpoint|purl|cwe|"
     r"registry|repository|tag|criterion|jitter|timeout|time|from|at|by|to|"
