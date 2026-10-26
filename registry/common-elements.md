@@ -188,24 +188,21 @@ different serial**" (two `ceph-osd` drives → same `role`, distinct `serial_num
 Adopts Redfish (`Memory.SerialNumber`+`DeviceLocator`, `Drive.SerialNumber`+`WWN`+`PhysicalLocation`)
 and Metal3 (`storage[].{name,serial_number,wwn,model}`, `nics[].mac`) — vocabulary by reference.
 
-## 6. `allocation_state` — allocation / availability (SPEC-DESIGN-REQUIREMENTS §28)
+## 6. Raw resources — available, allocated, retired (SPEC-DESIGN-REQUIREMENTS §28)
 
 A resource that exists physically but is not yet allocated (a racked-but-unassigned server, a spare
-drive, a brownfield import) is **raw** — tracked with Discovered state and **no Intent**. The canonical
-`allocation_state` marks where it sits:
+drive, a brownfield import) is **raw**: tracked with Discovered records and **no Intent**. Where it sits
+is read from its state records, never stored as a field (row 113; the element `allocation_state` is gone):
 
-```yaml
-allocation_state: available   # available | allocated | retired   (extensible per type)
-```
+| It is | When |
+|---|---|
+| available | it has Discovered records and no Intent record |
+| allocated | an Intent has been **adopted** onto it (it entered the managed lifecycle, UUID preserved) |
+| retired | it is Decommissioned, kept for history |
 
-It is not `lifecycle_state`, which names an entity's four-state position (Intent, Requested, Realized,
-Discovered, Decommissioned) on the entity view. The two were once spelled the same (row 099).
-
-`available` = inventoried, unallocated, tracked. `allocated` = an Intent has been **adopted** onto it
-(it entered the managed lifecycle, UUID preserved). `retired` = decommissioned but retained for history.
-Adopts Metal3 `BareMetalHost.status.provisioning.state` (`available` is its canonical
-inspected-but-unprovisioned state). See `docs/spec/foundations/four-states.md` §2.4 (raw / discovered-first entry)
-and SPEC-DESIGN-REQUIREMENTS §28 (ingest-raw-then-adopt, UUID-preserving).
+Metal3's `BareMetalHost.status.provisioning.state` (`available` is its inspected-but-unprovisioned
+state) lands on the same reading. See `docs/spec/foundations/four-states.md` §2.4 (raw /
+discovered-first entry) and SPEC-DESIGN-REQUIREMENTS §28 (ingest-raw-then-adopt, UUID-preserving).
 
 ## 7. `device_class` — device implementation (hardware device classes)
 

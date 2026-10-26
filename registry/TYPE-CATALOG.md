@@ -91,7 +91,7 @@ Declares that hosts get patched: which package sets, within which maintenance wi
 
 ## BMC
 
-### BMC (0.8.0)
+### BMC (0.9.0)
 
 **Purpose:** Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.
 
@@ -726,7 +726,7 @@ The most portable way to ask for a machine: how big, what image, which disks, wh
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 
-### Machine.BareMetalHost (0.16.0)
+### Machine.BareMetalHost (0.17.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -814,7 +814,7 @@ The router/firewall at the edge of a network: which functions it provides (routi
 
 ## NetworkInterface
 
-### NetworkInterface (0.16.3)
+### NetworkInterface (0.17.0)
 
 **Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
 
@@ -838,7 +838,7 @@ One network interface, of any kind: device_class says whether it is a physical N
 
 ## NetworkSwitch
 
-### NetworkSwitch (0.10.0)
+### NetworkSwitch (0.11.0)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
