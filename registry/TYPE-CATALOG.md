@@ -777,7 +777,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 **Use when:**
 - You need to request a VM with declared size, OS, storage requirements, and network attachments, portable across hypervisors.
 - You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.
-- You need a VM's disk shape and addresses to reference existing StorageLayout / IPAddress records rather than duplicate them.
+- You need a VM's addresses to reference existing IPAddress records rather than duplicate them.
 
 **Not for:**
 - The physical machine it runs on — Machine.BareMetalHost.
@@ -785,9 +785,8 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 - The vNIC as a device record — that is NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory.
 
 **Works with:**
-- StorageLayout — the disk layout the VM realizes (per-disk shape, boot designation).
 - VirtualNetwork — the networks the VM's NICs attach to.
-- Volume — the consumable volumes realizing its layout entries.
+- Volume — the consumable volumes realizing its `disks` entries.
 - Location — where the VM is placed (selected from existing places, policy-governed).
 - IPAddress — pre-allocated addresses the VM consumes.
 
