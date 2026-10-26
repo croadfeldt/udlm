@@ -179,7 +179,15 @@ NIC is cabled to. These are observations of the same standing as a discovered fi
 discovered record as `dependencies` — with one difference in shape that is the whole rule. An observed
 edge names its target by the **natural key the probe read** (`target_key`: a `correlation_ids` scheme
 and value — a libvirt domain UUID, a WWN, a MAC, a chassis id; a compound key such as a switch port
-uses a scheme that names the compound). Resolving that key to an entity is the control plane's act,
+uses a scheme that names the compound). **A key that is unique only within a scope carries the scope in
+its value**, rooted at the isolation domain the probe observed it in, because two VLAN 100s or two
+198.51.100.0/24s coexist on purpose exactly when they sit in different domains (row 118): a segment is
+`segment-id: <observer>/<domain>/<id>`, the observing device's own key, then the bridge domain, VRF,
+bridge or overlay, then the tag or VNI, and a single-fabric estate is the path with one hop; a subnet
+is `subnet-prefix: <segment>#<cidr>`, with `gateway-mac`, the MAC that answers the gateway address, as
+a second key that separates a masqueraded test copy from the original. A record MAY carry several keys;
+resolution matches on what it has and refuses a tie as `ambiguous` rather than merging on a guess, the
+same refusal a reference gets (URF-004). Resolving that key to an entity is the control plane's act,
 not the sweep's: `target_uuid` is present once the key has matched an entity and absent until then,
 and an unresolved observed edge is a true observation the sweep writes anyway — it is the signal that
 something exists which no record yet names (the durable inventory role above), reported by the estate
