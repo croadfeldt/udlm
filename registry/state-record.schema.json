@@ -1333,9 +1333,10 @@
         "algorithm": {
           "type": "string",
           "enum": [
-            "sha256_jcs"
+            "sha256_jcs",
+            "sha256-jcs"
           ],
-          "description": "How `head` was computed: SHA-256 over the RFC 8785 canonical form. Stated rather than assumed so a future algorithm is a declared migration and not a silent reinterpretation of existing heads — a verifier reading an old record must know which rule produced it."
+          "description": "How `head` was computed: SHA-256 over the RFC 8785 canonical form. `sha256-jcs` is the same rule's spelling before row 120: a record sealed then keeps it, because a sealed record is never re-sealed (row 121); new seals write `sha256_jcs`. Stated rather than assumed so a future algorithm is a declared migration and not a silent reinterpretation of existing heads — a verifier reading an old record must know which rule produced it."
         },
         "hashed_by": {
           "type": "string",

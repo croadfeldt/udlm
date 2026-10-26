@@ -66,9 +66,9 @@ def main():
                          f"means a link that was never stated, and treating them alike would read "
                          f"every truncation as a fresh start")
             continue
-        if integ.get("algorithm") != IC.ALGORITHM:
-            fails.append(f"INT-002 {where}: algorithm {integ.get('algorithm')!r} is not "
-                         f"{IC.ALGORITHM!r} — a head cannot be checked without the rule that made it")
+        if integ.get("algorithm") not in IC.ALGORITHMS:
+            fails.append(f"INT-002 {where}: algorithm {integ.get('algorithm')!r} is not one of "
+                         f"{sorted(IC.ALGORITHMS)} — a head cannot be checked without the rule that made it")
             continue
 
         ok, detail = IC.verify(doc)
@@ -104,6 +104,17 @@ def main():
                   "per-record checksum, which cannot see order")
     if not IC.verify_chain([r1, r2, r3])[0]:
         st.append("INT-SELF an intact chain is reported broken")
+    # Row 121: a record sealed before row 120 says "sha256-jcs" and is never re-sealed. A chain whose
+    # history carries the old spelling under a head carrying the new one must verify, and a name that is
+    # not a known spelling must still be refused.
+    old = dict(r1, integrity=dict(r1["integrity"], algorithm="sha256-jcs"))
+    if not IC.verify(old)[0]:
+        st.append("INT-SELF a record sealed under the pre-row-120 spelling no longer verifies — "
+                  "every chain sealed before the respelling is reported broken")
+    if not IC.verify_chain([old, r2, r3])[0]:
+        st.append("INT-SELF a mixed chain (old-spelling root, new-spelling head) is reported broken")
+    if IC.verify(dict(r1, integrity=dict(r1["integrity"], algorithm="sha512_jcs")))[0]:
+        st.append("INT-SELF an unknown algorithm is accepted — a head checked under the wrong rule")
 
     print(f"integrity chains: {len(found)} record(s) declare a chain")
     for m in st:
