@@ -1077,7 +1077,7 @@
   }
  },
  "type:Machine": {
-  "current": "2.3.0",
+  "current": "2.4.0",
   "path": "registry/classes/resource/compute/machine/_base.yaml",
   "versions": {
    "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
@@ -1087,7 +1087,8 @@
    "2.1.3": "sha256:19b8aa6a712997dcab98aa6ecfa3d003ef18cdbc561f6b2d04a6225c2fb3a9bf",
    "2.1.4": "sha256:1f966ba2f309c50ca66489ca2a7910f90062b02b86ebfad014f0eded557003b3",
    "2.2.0": "sha256:0e3e9f7f0c3342aa1f6e7f5be7e2dd50df8dbaf5513c14d1669ce95877818627",
-   "2.3.0": "sha256:0801c11065ca36a38cafb710a41446b23acf6f83506b3a6e8d7c82e8fc1d0c0f"
+   "2.3.0": "sha256:0801c11065ca36a38cafb710a41446b23acf6f83506b3a6e8d7c82e8fc1d0c0f",
+   "2.4.0": "sha256:61633e944fb3b090f9eaba0a3f9318b130f0cee730d4e0111c69d2dd16939afc"
   }
  },
  "type:Machine.BareMetalHost": {
@@ -1119,7 +1120,7 @@
   }
  },
  "type:Machine.VM": {
-  "current": "2.3.0",
+  "current": "2.4.0",
   "path": "registry/classes/resource/compute/machine/vm.yaml",
   "versions": {
    "2.0.0": "sha256:2a5c4f36fbdf6c2cea6a7f2dc90c4f122b10a04c9b35d77622fc9d2c9092a47e",
@@ -1131,7 +1132,8 @@
    "2.0.6": "sha256:9e90e906209ab580e4ae65c21473d99b59f9b0f47d71ac2825b68b03b760b725",
    "2.1.0": "sha256:c3061b8c34cda47266abb8b2ff891fc83dba84acd54d2ddd94f6f57774e18546",
    "2.2.0": "sha256:5c72589bb2d6a82fa75d79d50f67881a36b71ed10dcbbfee9a020e3f906d792f",
-   "2.3.0": "sha256:507f78d693b0a1e203e91329ee664134a021fdabe835b9140ce98a1a60d6ae9d"
+   "2.3.0": "sha256:507f78d693b0a1e203e91329ee664134a021fdabe835b9140ce98a1a60d6ae9d",
+   "2.4.0": "sha256:39a707385e6d0b05999fa2225f92d23f7bdc500802c458c94b366dbe3a203486"
   }
  },
  "type:Machine.VM.CExampleCloud": {
@@ -1746,6 +1748,7 @@
  "type:StorageLayout": {
   "current": "0.7.0",
   "path": "registry/classes/resource/storage/storage-layout/_base.yaml",
+  "stranded": true,
   "versions": {
    "0.6.0": "sha256:566f23ed32b8f7464528a9c5640a54f261c518e3bad05b9efe34bf2157a5ebef",
    "0.6.1": "sha256:6f4538ac191453147ea5b666e80146e9c2f96807b305825c0d09b1e37d6e95c3",
@@ -1903,14 +1906,15 @@
   }
  },
  "type:Volume": {
-  "current": "0.13.0",
+  "current": "0.14.0",
   "path": "registry/classes/resource/storage/volume/_base.yaml",
   "versions": {
    "0.12.0": "sha256:3e5b1467f4a935805834d1d916acdabdd32886a4e411038ff3067fe2767971a5",
    "0.12.1": "sha256:f1e75502af1075b34c18914cb0cb4c1a95e43da44a1f8e9c223bde177db36c3c",
    "0.12.2": "sha256:cbaebd3dae3bc993bedd6968bc8fff39ec3fb17ffb66eb5f8aa20b00df008c06",
    "0.12.3": "sha256:65a76546f3d614e7c0d58c009c686f9a34ca7851e6227d50c1435e151341416e",
-   "0.13.0": "sha256:fefab850a9e9d78588c1cd64b7f62f06fe19097e351d57382b03639c88c2219b"
+   "0.13.0": "sha256:fefab850a9e9d78588c1cd64b7f62f06fe19097e351d57382b03639c88c2219b",
+   "0.14.0": "sha256:53709f3bf0ba8b24c197c221ef0e4c0f4886f6bae73fee5d8b9e0028c1cfb520"
   }
  },
  "type:Volume.ZFS": {

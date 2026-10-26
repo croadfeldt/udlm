@@ -3,9 +3,9 @@
 # Supersedes the prior record of this state (named in `supersedes`): re-bound to the requested record that carries the dispatch receipt.
 record_type: realized_record
 state: Realized
-record_uuid: 01a163b2-8bc0-7008-8008-000000000008
-requested_ref: 01a163b2-83f0-7006-8006-000000000006
-requested_ref_head: sha256:e1ccd3936763d126fb3ac69eceeb4ded4d05f63dc7b1395cc16d01dc6e669027
+record_uuid: 01a17249-ce50-7002-8002-00d15c000002
+requested_ref: 01a17249-ca68-7001-8001-00d15c000001
+requested_ref_head: sha256:97907a72170f6250b8ec2c825236c53754b7c3f9a3a1fcd2a55129917d40c103
 entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
@@ -15,7 +15,7 @@ type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
 handle: lab/vm/app-01
 generation: 1
 origin: declared
-at: '2026-09-03T14:03:40Z'
+at: '2026-10-25T09:00:00Z'
 time_source: provider-callback
 provider: lab/providers/libvirt-host-a
 fields:
@@ -36,7 +36,10 @@ fields:
     - name: eth0
       vlan: lab/net/vlan-20
       network_ref: lab/net/dmz
-  layout_ref: lab/storage/layout/app-01
+  disks:
+    - name: root
+      size: 100Gi
+      role: boot
   placement:
     location_ref: lab/facility/rack-3
   run_state:
@@ -145,8 +148,8 @@ provenance:
       sequence: 1
       timestamp: '2026-09-03T14:03:40Z'
 supersedes:
-  - 01a0eb91-3cc0-706d-80c5-4709fc3f7e6b
+  - 01a163b2-8bc0-7008-8008-000000000008
 integrity:
-  head: sha256:c1df28908b5ec92e865482822e07f7dbf175851ef5d37d18acb016ddd54ce335
-  previous: sha256:12497c4e8b893398f0ab1e0de9922ca51e9befceb5c5f68613a36624c0606366
+  head: sha256:141e4a6dc2bfcfa0e178818e0cf00962711084597b8ac9cf90247c61276bc544
+  previous: sha256:c1df28908b5ec92e865482822e07f7dbf175851ef5d37d18acb016ddd54ce335
   algorithm: sha256-jcs

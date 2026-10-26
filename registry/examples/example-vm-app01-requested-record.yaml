@@ -3,10 +3,10 @@
 # Supersedes the prior record of this state (named in `supersedes`): it now carries the dispatch receipt — exactly Machine.VM's elements crossed, nothing granted or stripped (DSP-004).
 record_type: requested_record
 state: Requested
-record_uuid: 01a163b2-83f0-7006-8006-000000000006
-intent_ref: 01a163b2-7838-7003-8003-000000000003
-intent_ref_head: sha256:5af5574648e4142ee5ae81f7ae28f30935ec441f3b3fb47789e9019cc1164571
-root_request_uuid: 01a163b2-83f0-7006-8006-000000000006
+record_uuid: 01a17249-ca68-7001-8001-00d15c000001
+intent_ref: 01a17249-c680-7000-8000-00d15c000000
+intent_ref_head: sha256:d921fad83313b2c572088fc7f253d92801e7c7e5f1b5f2448a04b7d214d2d7b3
+root_request_uuid: 01a17249-ca68-7001-8001-00d15c000001
 entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
@@ -16,7 +16,7 @@ type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
 handle: lab/vm/app-01
 generation: 1
 origin: declared
-at: '2026-09-03T14:02:14Z'
+at: '2026-10-25T09:00:00Z'
 time_source: dcm-api
 fields:
   cpu:
@@ -36,7 +36,10 @@ fields:
     - name: eth0
       vlan: lab/net/vlan-20
       network_ref: lab/net/dmz
-  layout_ref: lab/storage/layout/app-01
+  disks:
+    - name: root
+      size: 100Gi
+      role: boot
   placement:
     location_ref: lab/facility/rack-3
   run_state:
@@ -78,10 +81,6 @@ dependencies:
   - edge_type: references
     target_uuid: 5d7f9b1c-3e4a-4f6b-9c1d-4e6a8b0c2d3f
     target_handle: lab/net/dmz
-    resolved_at: '2026-09-03T14:02:14Z'
-  - edge_type: references
-    target_uuid: 7e9a1c3d-5f6b-4a8c-8d2e-6a8b0c2d4e5f
-    target_handle: lab/storage/layout/app-01
     resolved_at: '2026-09-03T14:02:14Z'
 provenance:
   cpu.sockets:
@@ -157,14 +156,16 @@ dispatch:
     - firmware.secure_boot
     - firmware.vtpm
     - networks
-    - layout_ref
+    - disks[0].name
+    - disks[0].role
+    - disks[0].size
     - placement.location_ref
     - run_state.desired_state
   granted: []
   stripped: []
 supersedes:
-  - 01a0eb91-3cbf-756c-bc00-a4e7eb1900e9
+  - 01a163b2-83f0-7006-8006-000000000006
 integrity:
-  head: sha256:e1ccd3936763d126fb3ac69eceeb4ded4d05f63dc7b1395cc16d01dc6e669027
-  previous: sha256:eb9de91bd6f2a9c69c5884cc751af7f12412d183239f8be6571893a040588c01
+  head: sha256:97907a72170f6250b8ec2c825236c53754b7c3f9a3a1fcd2a55129917d40c103
+  previous: sha256:e1ccd3936763d126fb3ac69eceeb4ded4d05f63dc7b1395cc16d01dc6e669027
   algorithm: sha256-jcs

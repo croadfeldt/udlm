@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.4.0
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Machine.VM
 parent: Machine
-version: 2.3.0
+version: 2.4.0
 family: Resource
 status: active
 ownership_model: whole_allocation
@@ -46,26 +46,6 @@ elements:
         vtpm:
           type: boolean
           description: Virtual TPM 2.0 device presented to the guest.
-  - element: boot_order
-    scope: Machine.VM
-    optional: true
-    state: proposed
-    description: Ordered boot device preference.
-    schema:
-      type: array
-      items:
-        type: string
-      description: Ordered boot device preference.
-  - element: layout_ref
-    scope: Machine.VM
-    optional: true
-    state: canonical
-    description: Reference to the StorageLayout whose entries describe this VM's disks (per-disk size, role, boot
-      position). Also carried as the `storage_layout` relationship.
-    schema:
-      description: Reference to the StorageLayout whose entries describe this VM's disks (per-disk size, role, boot
-        position). Also carried as the `storage_layout` relationship.
-      $ref: ../../../../common-elements.schema.json#/$defs/Reference
   - element: networks
     scope: Machine.VM
     optional: true
@@ -316,17 +296,11 @@ relationships:
     name: network_attachment
     cardinality: 0..n
     description: Attaches to existing VirtualNetwork(s) — see spec.networks[].network_ref.
-  - edge_type: references
-    target: StorageLayout
-    name: storage_layout
-    cardinality: 0..1
-    description: The StorageLayout this VM realizes — see spec.layout_ref; the layout's entries describe the VM's
-      disks.
   - edge_type: depends_on
     target: Volume
     name: disk
     cardinality: 0..n
-    description: Consumes existing/allocated Volume(s) — the consumable volumes realizing its StorageLayout entries.
+    description: Consumes existing/allocated Volume(s) — the consumable volumes realizing its `disks` entries.
 adopts:
   - standard: Redfish
     version: '2024.4'
@@ -353,7 +327,7 @@ context:
     as portable intent any virtualization provider can realize.
   plain_description: 'The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu`
     and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`),
-    which StorageLayout describes its disks (`layout_ref`), and which existing networks its NICs attach to (`networks`,
+    which disks it has (`disks`, on Machine), and which existing networks its NICs attach to (`networks`,
     each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once
     the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The
     hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.'
@@ -366,7 +340,6 @@ context:
   not_for:
     - The physical machine it runs on — Machine.BareMetalHost.
     - A containerized workload — Container; the VM carries a full guest OS.
-    - The per-disk shape (sizes, boot designation) — StorageLayout; the VM references one via layout_ref.
     - The vNIC as a device record — that is NetworkInterface with a virtual device_class; the VM's networks list
       declares attachment intent, not device inventory.
   works_with:
@@ -385,7 +358,12 @@ spec_examples:
     guest_os:
       type: linux-server-9
       version: '9.4'
-    layout_ref: web-01-layout
+    disks:
+      - name: root
+        size: 100Gi
+        role: boot
+      - name: data
+        size: 500Gi
     storage:
       min_iops: 5000
       min_replication: 2
@@ -412,7 +390,7 @@ spec_constraints:
   description: 'Deliberate exclusions: GPU/PCI passthrough and SR-IOV are Provider-Class SharedDataElements (ADR-038)
     — provider-variable capability, not portable base surface. Day-0 guest personalization (cloud-init/user-data)
     is an open design decision (process concern vs VM field) — tracked on the type, not silently absent. Per-disk
-    shape (sizes, boot designation) lives on StorageLayout, referenced via layout_ref.'
+    shape (sizes, roles) is the `disks` element on Machine.'
   oneOf:
     - required:
         - instance_size

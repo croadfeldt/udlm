@@ -394,3 +394,9 @@ retired:
   # 2026-09-29 — the Access folder (ADR-082, row 089).
   registry/classes/access/_base.yaml#5c12d240-240e-4f78-a419-37bb546fed87: >-
     retired 2026-09-29 — a dissolved folder; its member IdentityEscrow is a Base filed under `identity`
+
+  # 2026-10-25 — StorageLayout dissolves into Machine (row 112). A machine's disk list is the `disks`
+  # element on Machine, as every platform declares it; the volumes stay separate records.
+  registry/classes/resource/storage/storage-layout/_base.yaml#d8a30490-9b8f-410c-9894-c43eeee43b89: >-
+    retired 2026-10-25 — dissolved into Machine 2.4.0 `disks` (row 112); a Volume joins a machine's disk through
+    `disk_entry` and the `realizes_disk` edge
