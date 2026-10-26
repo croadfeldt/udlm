@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 66,
+    "types": 65,
     "by_family": {
       "Access": 9,
       "Knowledge": 9,
       "Process": 3,
-      "Resource": 45
+      "Resource": 44
     }
   },
   "discrimination": {
-    "mutations_attempted": 5538,
-    "mutations_rejected": 5538,
+    "mutations_attempted": 5654,
+    "mutations_rejected": 5654,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -152,20 +152,20 @@
         "rejected": 129
       },
       "Machine": {
-        "attempted": 124,
-        "rejected": 124
+        "attempted": 172,
+        "rejected": 172
       },
       "Machine.BareMetalHost": {
-        "attempted": 214,
-        "rejected": 214
+        "attempted": 261,
+        "rejected": 261
       },
       "Machine.LPAR": {
-        "attempted": 194,
-        "rejected": 194
+        "attempted": 241,
+        "rejected": 241
       },
       "Machine.VM": {
-        "attempted": 251,
-        "rejected": 251
+        "attempted": 314,
+        "rejected": 314
       },
       "NetworkGateway": {
         "attempted": 109,
@@ -210,10 +210,6 @@
       "StorageDevice": {
         "attempted": 71,
         "rejected": 71
-      },
-      "StorageLayout": {
-        "attempted": 89,
-        "rejected": 89
       },
       "StoragePool": {
         "attempted": 122,
@@ -282,8 +278,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 66,
-    "total": 66
+    "strict_specs": 65,
+    "total": 65
   },
   "outputs": {
     "per_type": {
@@ -321,10 +317,10 @@
       "LogShipper.OTLP": 3,
       "LogShipper.Syslog": 3,
       "LogStore": 2,
-      "Machine": 4,
-      "Machine.BareMetalHost": 8,
-      "Machine.LPAR": 5,
-      "Machine.VM": 7,
+      "Machine": 5,
+      "Machine.BareMetalHost": 9,
+      "Machine.LPAR": 6,
+      "Machine.VM": 8,
       "NetworkGateway": 1,
       "NetworkInterface": 1,
       "NetworkSwitch": 2,
@@ -336,7 +332,6 @@
       "StorageClass": 1,
       "StorageCluster": 3,
       "StorageDevice": 1,
-      "StorageLayout": 1,
       "StoragePool": 5,
       "Subnet": 3,
       "TaxonomyTerm": 1,
@@ -388,7 +383,6 @@
       "NetworkInterface",
       "StorageClass",
       "StorageDevice",
-      "StorageLayout",
       "TaxonomyTerm",
       "Template.Application",
       "Topology",
@@ -398,13 +392,13 @@
     ]
   },
   "context": {
-    "with_context": 66,
-    "total": 66,
+    "with_context": 65,
+    "total": 65,
     "missing": []
   },
   "relationships": {
     "with_relationships": 52,
-    "total": 66,
+    "total": 65,
     "missing": [
       "Access.Grouping",
       "Automation",
@@ -415,7 +409,6 @@
       "Identity",
       "Machine",
       "SovereigntyZone",
-      "StorageLayout",
       "Template",
       "Template.Application",
       "Topology",
@@ -485,7 +478,6 @@
       "SovereigntyZone",
       "StorageCluster",
       "StorageDevice",
-      "StorageLayout",
       "Subnet",
       "Template",
       "Template.Application",
@@ -566,7 +558,6 @@
       "StorageClass",
       "StorageCluster",
       "StorageDevice",
-      "StorageLayout",
       "StoragePool",
       "Subnet",
       "TaxonomyTerm",
@@ -583,7 +574,7 @@
       "Vulnerability",
       "Workload"
     ],
-    "consumed_by_at_least_one": 66
+    "consumed_by_at_least_one": 65
   },
   "expressibility_coverage": {
     "value": null,

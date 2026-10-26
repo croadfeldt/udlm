@@ -32,7 +32,7 @@
     },
     {
       "class": "Machine",
-      "version": "2.3.0",
+      "version": "2.4.0",
       "instantiable": true,
       "path": "registry/classes/resource/compute/machine/_base.yaml",
       "types": [

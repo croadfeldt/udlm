@@ -99,6 +99,7 @@ to a fact the model does not carry is refused rather than silently never firing.
 Each policy declares which lifecycle operations it applies to. This is configured per policy via `lifecycle_scope`:
 
 ```yaml
+# illustrative: policy shape; the policy schema is policy.schema.json
 policy_artifact:
   handle: "placement/sovereignty-zone-check"
   lifecycle_scope:
@@ -110,7 +111,7 @@ policy_artifact:
   handle: "validation/vm-size-limits"
   lifecycle_scope:
     operations: [initial_provisioning, update, scale]
-    changed_field_filter: ["cpu.count", "memory.size", "layout_ref"]
+    changed_field_filter: ["cpu.count", "memory.size", "disks"]
     # Fires on new resources AND on updates that change sizing fields
     # Does NOT fire on: tag changes, owner changes, etc.
 

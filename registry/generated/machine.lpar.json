@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.3.0",
+          "version": "2.4.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
@@ -104,6 +104,50 @@
       "storage_tier": {
         "type": "string",
         "description": "The requested storage performance class — a governed `storage_tier` term (standard | performance | archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036): a tier name resolves to its floor, explicit `storage` requirements win where both are given, and any provider class that clears the floor qualifies. The provider records the native class it chose as a realized output. Profile decides whether a bare term or a data_reference is required. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+      },
+      "disks": {
+        "type": "array",
+        "minItems": 1,
+        "description": "The machine's disks as portable intent, in order; each entry's `name` is the join key a realized Volume binds to through its `disk_entry`.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "size"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+              "description": "Stable disk identity, unique within the machine. Lowercase DNS-label shape."
+            },
+            "size": {
+              "$ref": "../common-elements.schema.json#/$defs/quantity",
+              "description": "Requested disk size, quantity form (100Gi, 500GB)."
+            },
+            "storage_tier": {
+              "type": "string",
+              "description": "Optional storage performance class for this disk, a governed `storage_tier` term; absent, the machine's `storage_tier` applies. The class the provider chose is recorded per disk as `storage_backing` in `outputs.realized_volumes`."
+            },
+            "role": {
+              "type": "string",
+              "x-extensible-enum": [
+                "boot",
+                "data",
+                "log"
+              ],
+              "description": "What the disk is for. `boot` marks the disk that carries the OS; a machine declares at most one. Boot *order* is the machine's `boot_order`, not a property of a disk."
+            }
+          }
+        }
+      },
+      "boot_order": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Ordered boot devices: a `disks[].name`, or the device class `network` or `cdrom`."
       },
       "guest_os": {
         "description": "The requested operating system. Portable form: a data_reference to an `os_image` term the provider advertises. Inline `{type, version}` is the portability-breaking escape. Optional: a machine may be declared by sizing alone; a profile may require it.",
@@ -263,6 +307,10 @@
     ]
   },
   "outputs": {
+    "realized_volumes": {
+      "type": "array",
+      "description": "DERIVED: per-disk realization map, items {entry, volume, storage_backing}. For each `disks[].name`, the Volume realizing it (by the volume's `realizes_disk` edge and `disk_entry` join key) and the native storage class the provider chose, the ADR-036 realized fact behind the entry's `storage_tier`. Computed from the Volume records, never stored (compute-never-store); the lineage surface from declared disk to realized volume."
+    },
     "observed_run_state": {
       "type": "string",
       "description": "The run state the provider last observed, normalized to the same vocabulary as `run_state` (Redfish PowerState On and Off, a KubeVirt phase, an HMC partition state all land here; PoweringOn and PoweringOff are `transitioning`). Drives shutdown and startup ordering for the dependency graph. One output for every form of Machine (row 111)."

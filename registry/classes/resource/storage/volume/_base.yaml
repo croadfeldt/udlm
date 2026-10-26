@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Volume/0.13.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Volume/0.14.0
 conforms_to: udlm/0.1
 uuid: aff9e319-cfb9-44da-8c35-fa47f3ea6270
 record_type: class
 class: base
 resource_type: Volume
-version: 0.13.0
+version: 0.14.0
 family: Resource
 status: active
 filed_under:
@@ -71,19 +71,17 @@ elements:
     schema:
       type: boolean
       description: true keeps the data after the consumer releases the volume (Retain); false deletes it.
-  - element: layout_entry
+  - element: disk_entry
     scope: Volume
     optional: true
     state: canonical
-    description: The StorageLayout entry name this volume realizes; set exactly when the `realizes_layout_entry`
-      edge is declared, matching an entry in the referenced layout. Reconvergence joins on it to fill the layout's
-      realized_volumes map.
+    description: The `disks[].name` on the Machine this volume realizes; set exactly when the `realizes_disk` edge is
+      declared. Reconvergence joins on it to fill the machine's `realized_volumes`.
     schema:
       type: string
       pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$
-      description: The StorageLayout entry name this volume realizes; set exactly when the `realizes_layout_entry`
-        edge is declared, matching an entry in the referenced layout. Reconvergence joins on it to fill the layout's
-        realized_volumes map.
+      description: The `disks[].name` on the Machine this volume realizes; set exactly when the `realizes_disk` edge is
+        declared. Reconvergence joins on it to fill the machine's `realized_volumes`.
 spec_examples:
   - capacity: 500Gi
     access_mode: read_write_once
@@ -113,12 +111,11 @@ relationships:
     description: The consumer(s) this volume is attached to (RWX volumes attach to many). attaches_to is the same
       relation IPAddress uses for interface attachment — the consumable-resource-to-consumer edge.
   - edge_type: references
-    target: StorageLayout
-    name: realizes_layout_entry
+    target: Machine
+    name: realizes_disk
     cardinality: 0..1
-    description: 'Declared consumer-side (consumers declare what they consume — the layout never lists its consumers):
-      this volume realizes one named entry of a StorageLayout, joining on the entry''s stable name carried in spec.layout_entry
-      (the edge itself carries no qualifier).'
+    description: 'Declared on the volume: this volume realizes one named disk of a Machine, joining on the disk name carried
+      in spec.disk_entry (the edge itself carries no qualifier).'
 adopts:
   - standard: Kubernetes
     version: storage/v1

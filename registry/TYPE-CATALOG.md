@@ -708,11 +708,11 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.3.0)
+### Machine (2.4.0)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
-The most portable way to ask for a machine: how big, what image, what storage tier. Placement decides the form (VM, bare metal, LPAR) and the provider; policy fills what the form needs. A producer bound at any of the three forms must accept this order (class-tiers CLS-002 (c)).
+The most portable way to ask for a machine: how big, what image, which disks, what storage tier. Placement decides the form (VM, bare metal, LPAR) and the provider; policy fills what the form needs. A producer bound at any of the three forms must accept this order (class-tiers CLS-002 (c)).
 
 **Use when:**
 - You need a host and do not care whether it is virtual or physical.
@@ -768,11 +768,11 @@ The request for a slice of a big partitioned server: how much processor capacity
 - Volume — the disks served through virtual I/O.
 - VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.3.0)
+### Machine.VM (2.4.0)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
-The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`), which StorageLayout describes its disks (`layout_ref`), and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.
+The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`), which disks it has (`disks`, on Machine), and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.
 
 **Use when:**
 - You need to request a VM with declared size, OS, storage requirements, and network attachments, portable across hypervisors.
@@ -782,7 +782,6 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 **Not for:**
 - The physical machine it runs on — Machine.BareMetalHost.
 - A containerized workload — Container; the VM carries a full guest OS.
-- The per-disk shape (sizes, boot designation) — StorageLayout; the VM references one via layout_ref.
 - The vNIC as a device record — that is NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory.
 
 **Works with:**
@@ -1029,31 +1028,6 @@ One storage device as a record: its required `capacity` — a whole-number quant
 - StoragePool — pools whose vdevs group these drives.
 - Machine.VM — the guest a virtual disk is presented to.
 
-## StorageLayout
-
-### StorageLayout (0.7.0)
-
-**Purpose:** Declares the per-disk shape of a compute consumer — named, sized entries with boot designation — as its own record, so disk layout is authored once and referenced, never duplicated inside each consumer.
-
-The list of disks a machine should have: each entry names a disk (`name`, the stable join key), sizes it (`size`), and may request a storage performance class (`storage_tier`, the governed vocabulary), state what the disk is for (`role`: boot/data/log), and place it in the boot order (`boot_order`). The layout is shape, not data — it declares nothing about who consumes it. Consumers declare their side: whatever realizes or references a layout entry joins on the entry's stable `name` and declares that edge itself. The provider's chosen native class per entry is a realized fact, recorded in the realization map — never authored here.
-
-**Use when:**
-- You need a VM's (or other compute consumer's) disks declared as portable intent — sizes, roles, boot designation — separate from the consumer's own sizing.
-- You need reconvergence to join realized volumes back to declared disks by a stable per-entry identity.
-- You need disk shapes comparable across consumers by lifting the shape to a Template (ADR-033) — layout RECORDS stay per-consumer so realization is unambiguous.
-
-**Not for:**
-- The consumable volume itself — Volume; a layout entry may be realized by one.
-- The provisioning policy — StorageClass; an entry requests a governed `storage_tier`, and the provider's chosen class is recorded per entry in `outputs.realized_volumes` (ADR-036: the native class is a realized fact, not intent).
-- A shared multi-consumer layout record — one record per consumer; sharing is the ADR-033 Template tier.
-- Host-local ZFS/LVM layout a host service mounts — Volume.ZFS / StoragePool.
-- The VM's numeric storage requirements (min_iops, encryption) — those live on the consumer's `storage` descriptor.
-
-**Works with:**
-- Machine.VM — the consumer that realizes this layout (spec.layout_ref).
-- Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).
-- StorageClass — the provider-advertised class satisfying an entry's `storage_tier` (an advertised class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in the realization map).
-
 ## StoragePool
 
 ### StoragePool (0.6.1)
@@ -1295,7 +1269,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Volume
 
-### Volume (0.13.0)
+### Volume (0.14.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1382,4 +1356,4 @@ The application layer: the mail service, the registry, model serving — a named
 - CredentialRef — the service's secrets, by reference.
 
 ---
-*66 types; 66 with context, 0 pending.*
+*65 types; 65 with context, 0 pending.*

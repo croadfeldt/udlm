@@ -4,7 +4,7 @@
 # Supersedes the second record of this state (named in `supersedes`): the reference to the state it was built from now carries that record's head, and every output is attributed (TRN-001/002) — a published record is never edited, it is superseded.
 record_type: intent_record
 state: Intent
-record_uuid: 01a163b2-7838-7003-8003-000000000003
+record_uuid: 01a17249-c680-7000-8000-00d15c000000
 entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
@@ -14,7 +14,7 @@ type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
 handle: lab/vm/app-01
 generation: 1
 origin: declared
-at: '2026-09-03T14:02:11Z'
+at: '2026-10-25T09:00:00Z'
 time_source: dcm-api
 metadata:
   display_name: app-01 (KVM guest on host-a)
@@ -32,7 +32,10 @@ fields:
   networks:
     - name: eth0
       vlan: lab/net/vlan-20
-  layout_ref: lab/storage/layout/app-01
+  disks:
+    - name: root
+      size: 100Gi
+      role: boot
   run_state:
     desired_state: running
 provenance:
@@ -78,7 +81,7 @@ provenance:
       operation_type: set
       sequence: 1
       timestamp: '2026-09-03T14:02:11Z'
-  layout_ref:
+  disks:
     - source:
         kind: actor
         id: lab/users/app-team-lead
@@ -93,8 +96,8 @@ provenance:
       sequence: 1
       timestamp: '2026-09-03T14:02:11Z'
 supersedes:
-  - 01a0e3cb-34d0-7261-9517-df3cbac3ce20
+  - 01a163b2-7838-7003-8003-000000000003
 integrity:
-  head: sha256:5af5574648e4142ee5ae81f7ae28f30935ec441f3b3fb47789e9019cc1164571
-  previous: sha256:684dcef63408595dc5df1728083640c205dc406c15f4ff4f9da8c431b341c4ac
+  head: sha256:d921fad83313b2c572088fc7f253d92801e7c7e5f1b5f2448a04b7d214d2d7b3
+  previous: sha256:5af5574648e4142ee5ae81f7ae28f30935ec441f3b3fb47789e9019cc1164571
   algorithm: sha256-jcs

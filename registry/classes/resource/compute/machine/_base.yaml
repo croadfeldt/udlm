@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.4.0
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Machine
-version: 2.3.0
+version: 2.4.0
 family: Resource
 status: active
 filed_under:
@@ -120,6 +120,60 @@ elements:
         Profile decides whether a bare term or a data_reference is required.'
     values:
       reference_data_type: storage_tier
+  - element: disks
+    scope: Machine
+    optional: true
+    state: canonical
+    description: 'The machine''s disks as portable intent, in order: each a stable `name`, a `size`, and optionally a
+      governed `storage_tier` and a `role` (`boot` for the disk that carries the OS, `data`, `log`). The name is the
+      join key a realized Volume binds to through its `disk_entry`, surviving reorder and resize. Embedded here, not
+      a record of its own: every platform declares a machine''s disk list on the machine and keeps the volumes
+      separate (row 112; formerly StorageLayout).'
+    schema:
+      type: array
+      minItems: 1
+      description: 'The machine''s disks as portable intent, in order; each entry''s `name` is the join key a realized
+        Volume binds to through its `disk_entry`.'
+      items:
+        type: object
+        additionalProperties: false
+        required:
+          - name
+          - size
+        properties:
+          name:
+            type: string
+            pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$
+            description: Stable disk identity, unique within the machine. Lowercase DNS-label shape.
+          size:
+            $ref: ../../../../common-elements.schema.json#/$defs/quantity
+            description: Requested disk size, quantity form (100Gi, 500GB).
+          storage_tier:
+            type: string
+            description: 'Optional storage performance class for this disk, a governed `storage_tier` term; absent,
+              the machine''s `storage_tier` applies. The class the provider chose is recorded per disk as
+              `storage_backing` in `outputs.realized_volumes`.'
+          role:
+            type: string
+            x-extensible-enum:
+              - boot
+              - data
+              - log
+            description: 'What the disk is for. `boot` marks the disk that carries the OS; a machine declares at most
+              one. Boot *order* is the machine''s `boot_order`, not a property of a disk.'
+  - element: boot_order
+    scope: Machine
+    optional: true
+    state: canonical
+    description: 'Which devices the firmware tries, in order: a `disks[].name`, or the device class `network` or
+      `cdrom`. One list for every form of Machine (row 112): libvirt, KubeVirt, VMware and Redfish each take an
+      ordered device list, and the provider translates; a cloud that has no boot order ignores it. Absent means the
+      provider default.'
+    schema:
+      type: array
+      items:
+        type: string
+      description: 'Ordered boot devices: a `disks[].name`, or the device class `network` or `cdrom`.'
   - element: guest_os
     scope: Machine
     optional: true
@@ -181,6 +235,12 @@ coverage:
   flows:
     - docs/flows/scoped-class-lifecycle.md
 outputs:
+  realized_volumes:
+    type: array
+    description: 'DERIVED: per-disk realization map, items {entry, volume, storage_backing}. For each `disks[].name`,
+      the Volume realizing it (by the volume''s `realizes_disk` edge and `disk_entry` join key) and the native storage
+      class the provider chose, the ADR-036 realized fact behind the entry''s `storage_tier`. Computed from the Volume
+      records, never stored (compute-never-store); the lineage surface from declared disk to realized volume.'
   observed_run_state:
     type: string
     description: 'The run state the provider last observed, normalized to the same vocabulary as `run_state`
@@ -201,7 +261,7 @@ outputs:
 context:
   purpose: Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying
     whether it is a VM, a bare-metal host or a logical partition.
-  plain_description: 'The most portable way to ask for a machine: how big, what image, what storage tier. Placement
+  plain_description: 'The most portable way to ask for a machine: how big, what image, which disks, what storage tier. Placement
     decides the form (VM, bare metal, LPAR) and the provider; policy fills what the form needs. A producer bound
     at any of the three forms must accept this order (class-tiers CLS-002 (c)).'
   use_when:
@@ -222,6 +282,10 @@ spec_examples:
       type: linux-server-9
       version: '9.6'
     storage_tier: performance
+    disks:
+      - name: root
+        size: 100Gi
+        role: boot
 adopts:
   - standard: Redfish
     version: '2024.4'
