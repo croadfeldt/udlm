@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5631,
-    "mutations_rejected": 5631,
+    "mutations_attempted": 5591,
+    "mutations_rejected": 5591,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -28,8 +28,8 @@
         "rejected": 77
       },
       "Automation.OSPatch": {
-        "attempted": 122,
-        "rejected": 122
+        "attempted": 119,
+        "rejected": 119
       },
       "BMC": {
         "attempted": 71,
@@ -136,20 +136,20 @@
         "rejected": 30
       },
       "LogShipper": {
-        "attempted": 41,
-        "rejected": 41
+        "attempted": 39,
+        "rejected": 39
       },
       "LogShipper.OTLP": {
-        "attempted": 58,
-        "rejected": 58
+        "attempted": 56,
+        "rejected": 56
       },
       "LogShipper.Syslog": {
-        "attempted": 58,
-        "rejected": 58
+        "attempted": 56,
+        "rejected": 56
       },
       "LogStore": {
-        "attempted": 129,
-        "rejected": 129
+        "attempted": 128,
+        "rejected": 128
       },
       "Machine": {
         "attempted": 172,
@@ -180,8 +180,8 @@
         "rejected": 80
       },
       "PowerFeed": {
-        "attempted": 52,
-        "rejected": 52
+        "attempted": 49,
+        "rejected": 49
       },
       "Processor": {
         "attempted": 76,
@@ -272,8 +272,8 @@
         "rejected": 67
       },
       "Workload": {
-        "attempted": 90,
-        "rejected": 90
+        "attempted": 63,
+        "rejected": 63
       }
     }
   },
@@ -286,7 +286,7 @@
       "Access.Grouping": 0,
       "AddressService": 1,
       "Automation": 0,
-      "Automation.OSPatch": 3,
+      "Automation.OSPatch": 0,
       "BMC": 0,
       "Capability": 1,
       "ConnectionProfile": 2,
@@ -313,10 +313,10 @@
       "KubernetesNamespace": 2,
       "KubernetesNodePool": 2,
       "Location": 1,
-      "LogShipper": 3,
-      "LogShipper.OTLP": 3,
-      "LogShipper.Syslog": 3,
-      "LogStore": 2,
+      "LogShipper": 1,
+      "LogShipper.OTLP": 1,
+      "LogShipper.Syslog": 1,
+      "LogStore": 1,
       "Machine": 5,
       "Machine.BareMetalHost": 8,
       "Machine.LPAR": 6,
@@ -324,7 +324,7 @@
       "NetworkGateway": 1,
       "NetworkInterface": 1,
       "NetworkSwitch": 2,
-      "PowerFeed": 3,
+      "PowerFeed": 0,
       "Processor": 0,
       "SoftwareImage": 0,
       "SoftwarePackage": 0,
@@ -352,12 +352,14 @@
     "zero_output_types": [
       "Access.Grouping",
       "Automation",
+      "Automation.OSPatch",
       "BMC",
       "GPU",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Identity",
+      "PowerFeed",
       "Processor",
       "SoftwareImage",
       "SoftwarePackage",
@@ -379,6 +381,10 @@
       "Identity.ServiceAccount",
       "IdentityGroup",
       "Location",
+      "LogShipper",
+      "LogShipper.OTLP",
+      "LogShipper.Syslog",
+      "LogStore",
       "NetworkGateway",
       "NetworkInterface",
       "StorageClass",

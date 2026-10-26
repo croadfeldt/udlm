@@ -70,7 +70,7 @@ The definition of something that can be run: what it takes in, what it gives bac
 - Job — the receipt of running it.
 - Automation.OSPatch — a Type that narrows it.
 
-### Automation.OSPatch (1.3.0)
+### Automation.OSPatch (1.4.0)
 
 **Purpose:** The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.
 
@@ -638,7 +638,7 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 
 ## LogShipper
 
-### LogShipper (0.9.0)
+### LogShipper (0.10.0)
 
 **Purpose:** Declares the outcome that a resource's logs reach a log store, without saying anything about how.
 
@@ -688,7 +688,7 @@ A LogShipper that speaks syslog: which transport (TLS preferred) and which messa
 
 ## LogStore
 
-### LogStore (0.2.0)
+### LogStore (0.3.0)
 
 **Purpose:** Declares a log store by what it accepts, how long it keeps it, and who may read it.
 
@@ -861,7 +861,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 
 ## PowerFeed
 
-### PowerFeed (0.8.0)
+### PowerFeed (0.9.0)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
@@ -1332,7 +1332,7 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 
 ## Workload
 
-### Workload (0.10.0)
+### Workload (0.11.0)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 

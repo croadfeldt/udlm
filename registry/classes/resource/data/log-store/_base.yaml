@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/LogStore/0.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/LogStore/0.3.0
 conforms_to: udlm/0.1
 uuid: 89fb33fa-ebf2-4b38-bf74-2e163ea8033b
 record_type: class
 class: base
 resource_type: LogStore
-version: 0.2.0
+version: 0.3.0
 family: Resource
 status: active
 filed_under:
@@ -117,9 +117,6 @@ spec_examples:
       - protocol: otlp
         transport: http
 outputs:
-  status:
-    type: string
-    description: Realized health of the store (e.g. ready / degraded), as reported by discovery.
   intake_endpoints:
     type: array
     description: 'The realized intake: one entry per `intake` element, each { protocol, transport, address, port }.

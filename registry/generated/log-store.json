@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/LogStore/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/LogStore/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "89fb33fa-ebf2-4b38-bf74-2e163ea8033b",
   "resource_type": "LogStore",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "LogStore",
-          "version": "0.2.0",
+          "version": "0.3.0",
           "uuid": "89fb33fa-ebf2-4b38-bf74-2e163ea8033b"
         }
       ]
@@ -133,10 +133,6 @@
     ]
   },
   "outputs": {
-    "status": {
-      "type": "string",
-      "description": "Realized health of the store (e.g. ready / degraded), as reported by discovery."
-    },
     "intake_endpoints": {
       "type": "array",
       "description": "The realized intake: one entry per `intake` element, each { protocol, transport, address, port }. This is what a LogShipper's `sink` edge binds."

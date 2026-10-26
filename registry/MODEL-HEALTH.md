@@ -4,16 +4,16 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **65 types** (Access 9, Knowledge 9, Process 3, Resource 44). Every spec is strict (`additionalProperties: false`, 65/65 (100%)) and the instance-fuzz harness rejected 5631 of 5631 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 40/65 (61%) of types appear in at least one use case; 25 appear in none. 5 types are named by a specific consumer manifest; the other 60 are carried only by the 4 envelope-level (all-types) consumers. 17 types declare no outputs and 20 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **65 types** (Access 9, Knowledge 9, Process 3, Resource 44). Every spec is strict (`additionalProperties: false`, 65/65 (100%)) and the instance-fuzz harness rejected 5591 of 5591 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 40/65 (61%) of types appear in at least one use case; 25 appear in none. 5 types are named by a specific consumer manifest; the other 60 are carried only by the 4 envelope-level (all-types) consumers. 19 types declare no outputs and 24 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
 | Metric | Value | Reading |
 |---|---|---|
 | Types (by family) | 65 (Access 9, Knowledge 9, Process 3, Resource 44) | — |
-| Discrimination density | 5631/5631 = 100.00% | mutations rejected / attempted; 0 finding(s) |
+| Discrimination density | 5591/5591 = 100.00% | mutations rejected / attempted; 0 finding(s) |
 | Strictness coverage | 65/65 (100%) | asserted — a non-strict spec fails this tool |
-| Outputs adequacy | 17 zero-output, 20 one-output | declared Realized binding surface |
+| Outputs adequacy | 19 zero-output, 24 one-output | declared Realized binding surface |
 | Context coverage | 65/65 (100%) | plain-English `context` blocks |
 | Relationships coverage | 52/65 (80%) | types declaring `relationships[]` |
 | UC coverage | 40/65 (61%) | types appearing in >=1 use case (166 UC files scanned) |
@@ -24,9 +24,9 @@ The registry holds **65 types** (Access 9, Knowledge 9, Process 3, Resource 44).
 Outputs are the contract-checked binding surface — a type with none publishes nothing a
 downstream consumer can bind on.
 
-**Zero-output types (17):** `Access.Grouping`, `Automation`, `BMC`, `GPU`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Identity`, `Processor`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
+**Zero-output types (19):** `Access.Grouping`, `Automation`, `Automation.OSPatch`, `BMC`, `GPU`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Identity`, `PowerFeed`, `Processor`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
 
-**One-output types (20):** `AddressService`, `Capability`, `DHCPScope`, `DNSZone`, `FileShare`, `IPAddress`, `Identity.Person`, `Identity.ServiceAccount`, `IdentityGroup`, `Location`, `NetworkGateway`, `NetworkInterface`, `StorageClass`, `StorageDevice`, `TaxonomyTerm`, `Template.Application`, `Topology`, `VLAN`, `VirtualNetwork`, `Workload`
+**One-output types (24):** `AddressService`, `Capability`, `DHCPScope`, `DNSZone`, `FileShare`, `IPAddress`, `Identity.Person`, `Identity.ServiceAccount`, `IdentityGroup`, `Location`, `LogShipper`, `LogShipper.OTLP`, `LogShipper.Syslog`, `LogStore`, `NetworkGateway`, `NetworkInterface`, `StorageClass`, `StorageDevice`, `TaxonomyTerm`, `Template.Application`, `Topology`, `VLAN`, `VirtualNetwork`, `Workload`
 
 ## UC coverage gaps
 

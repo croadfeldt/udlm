@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/PowerFeed/0.8.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/PowerFeed/0.9.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31",
   "resource_type": "PowerFeed",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Power Feed",
-    "description": "A power source feeding equipment: a utility circuit, a UPS, a PDU or a generator. The root of the estate graph: hosts depend on a feed, so a reverse-topological shutdown walks everything that transitively draws from it. A Base by the Base test (CLS-002): Redfish Circuit abstracts over every feed type, so a feed with a given type, capacity and redundancy is one deliverable any power provider realizes; NUT supplies UPS telemetry by reference.",
+    "description": "A power source feeding equipment: a utility circuit, a UPS, a PDU or a generator. The root of the estate graph: hosts depend on a feed, so a reverse-topological shutdown walks everything that transitively draws from it. A Base by the Base test (CLS-002): Redfish Circuit abstracts over every feed type, so a feed with a given type, capacity and redundancy is one deliverable any power provider realizes; NUT supplies UPS telemetry by reference. outputs-exempt: a feed publishes nothing of its own; a UPS feed's status, charge and runtime are the UPS's outputs, read through `supplied_by` (row 116).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "PowerFeed",
-          "version": "0.8.0",
+          "version": "0.9.0",
           "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31"
         }
       ]
@@ -86,20 +86,7 @@
       }
     ]
   },
-  "outputs": {
-    "status": {
-      "type": "string",
-      "description": "Observed feed status — online | on-battery | low-battery | overload | off (maps from NUT ups.status). Drives the UPS shutdown trigger."
-    },
-    "battery_charge": {
-      "type": "integer",
-      "description": "Battery charge percent for a UPS feed (NUT battery.charge)."
-    },
-    "runtime_seconds": {
-      "type": "integer",
-      "description": "Estimated runtime remaining on battery, seconds (NUT battery.runtime)."
-    }
-  },
+  "outputs": {},
   "relationships": [
     {
       "edge_type": "depends_on",
