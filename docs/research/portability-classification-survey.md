@@ -59,7 +59,7 @@ Three conditions, each checkable:
 
 The three tiers are the field-level portability classes of `resource-type-hierarchy.md` §4 seen
 structurally: Base elements are `universal`, Type elements `conditional`, Provider elements
-`provider-specific` or `exclusive`. The tree names and validates; field classification plus
+`provider_specific` or `exclusive`. The tree names and validates; field classification plus
 capability advertisement (ADR-PROV-002) compute the portability of a given request. Neither
 replaces the other.
 

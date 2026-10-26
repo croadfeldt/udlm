@@ -108,7 +108,7 @@ this provider for placement.
 | Identity (name, version, health endpoint) | The system needs to reach you and know you're alive | `provider-contract.md` §1 |
 | Capabilities — which resource types you realize, which operations you support | The system needs to match requests to providers who can fulfill them | `provider-contract.md` §8–10 §2.1 |
 | Required inputs per resource type — the fields you need beyond the portable base (e.g., `namespace`, `storage_class`) | The system and policies need to know what must be present before dispatching to you — policies determine where each value comes from | `provider-contract.md` §1a.2 |
-| Provider-Class element schema — the JSON Schema for your provider-specific elements (ADR-038) | The system validates the enriched request before dispatch; consumers who pin provider-specific elements get validation at intent time | `provider-contract.md` §1a.3 |
+| Provider-Class element schema — the JSON Schema for your provider_specific elements (ADR-038) | The system validates the enriched request before dispatch; consumers who pin provider_specific elements get validation at intent time | `provider-contract.md` §1a.3 |
 | Sovereignty zones | The system enforces sovereignty constraints at placement | `provider-contract.md` §2 (`sovereignty_declaration`) |
 | Capacity (optional but recommended) | The system uses capacity data for placement decisions — without it, placement is capability-match only | UC-17 |
 
@@ -169,7 +169,7 @@ available.
 | What | Why |
 |------|-----|
 | Resource type + version | Which portable type this offering realizes |
-| Consumer fields | What the consumer fills in at intent time — business-level choices, plus optionally provider-specific fields |
+| Consumer fields | What the consumer fills in at intent time — business-level choices, plus optionally provider_specific fields |
 | Spec defaults | Sensible defaults for the portable fields the consumer doesn't specify |
 | Constituents + dependencies (for composites) | How a multi-tier offering decomposes and in what order |
 | Bindings (composites only) | How one constituent's output wires into another's input |
@@ -302,8 +302,8 @@ applies.
 
 ### Single-stage intent
 
-The consumer supplies everything — portable fields and provider-specific fields — in one submission.
-The catalog UI shows all fields upfront, with provider-specific fields clearly marked as optional
+The consumer supplies everything — portable fields and provider_specific fields — in one submission.
+The catalog UI shows all fields upfront, with provider_specific fields clearly marked as optional
 and as narrowing placement. This works for power users who know their environment, scripted/API
 consumers, and IaC pipelines where the provider is already known.
 
@@ -339,7 +339,7 @@ consumers, and IaC pipelines where the provider is already known.
 └─────────────────────────────────────────────────────────────┘
 ```
 
-The provider-specific sections are **grouped by provider** and collapsed by default (the ▸
+The provider_specific sections are **grouped by provider** and collapsed by default (the ▸
 disclosure). Expanding a provider group and filling a field narrows placement to that provider.
 Filling fields in two provider groups is a contradiction — the UI prevents it (expanding one
 collapses the others, or a radio-select at the group level picks the target provider). Drop-downs
@@ -350,7 +350,7 @@ on the selected cluster.
 ### Two-stage intent
 
 The consumer submits portable intent only. The system runs placement and selects a provider. Then
-the system comes back with the provider-specific fields that still need values, pre-populated with
+the system comes back with the provider_specific fields that still need values, pre-populated with
 valid options the consumer can choose from (or accept defaults). This is the natural model for GUI
 portal users, first-time users, and compliance-heavy environments where the system should show what's
 allowed.
@@ -373,7 +373,7 @@ allowed.
 
 **System runs placement → selects the Kubernetes provider (k8s-prod-east)**
 
-**Stage 2 — provider-specific refinement:**
+**Stage 2 — provider_specific refinement:**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -403,7 +403,7 @@ allowed.
 
 Key UX principles for Stage 2:
 
-- **Drop-downs, not free text.** Every provider-specific field is populated from the provider's
+- **Drop-downs, not free text.** Every provider_specific field is populated from the provider's
   registered resources (KubernetesNamespace, StorageClass, KubernetesNodePool) filtered to
   what the consumer's tenant has access to. The consumer picks from valid options, not from memory.
 - **Policy defaults pre-selected.** The enrichment policy selects a default before the consumer
@@ -433,7 +433,7 @@ The fill strategy is data about data — declared per field in the catalog item'
 or in the enrichment policy configuration. It is not a new architectural primitive.
 
 ```yaml
-# Example: catalog item declaring fill strategies for provider-specific fields
+# Example: catalog item declaring fill strategies for provider_specific fields
 consumer_fields:
   # Portable fields — always shown
   - name: cpu.count
@@ -472,11 +472,11 @@ consumer_fields:
 
 The provider does nothing in this phase. The system handles:
 
-1. **Intent** — a consumer submits a request. In single-stage, it may include provider-specific
+1. **Intent** — a consumer submits a request. In single-stage, it may include provider_specific
    fields. In two-stage, it contains only portable fields. Either way, the flow proceeds the same.
 2. **Assembly** — data layers fill in defaults (profile, tenant, platform layers)
 3. **Placement** — policies narrow to eligible providers based on capability match, sovereignty,
-   cost, capacity, and consumer constraints. If the consumer pinned provider-specific fields, only
+   cost, capacity, and consumer constraints. If the consumer pinned provider_specific fields, only
    providers that accept those values are eligible.
 4. **Enrichment** — policies determine how to fill any of the provider's `required_inputs` the
    consumer did not already supply. Per field, the fill strategy determines the behavior:
@@ -497,7 +497,7 @@ provider is passive until dispatch.
 
 ## Phase 4 — Dispatch: receive a complete request and build it
 
-The provider receives a **fully enriched request** — portable base fields plus all provider-specific
+The provider receives a **fully enriched request** — portable base fields plus all provider_specific
 fields filled in. It never receives an incomplete request; the system's validation (Phase 3) guarantees
 that.
 

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.8
+$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.9
 conforms_to: udlm/0.1
 uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
 record_type: class
 class: base
 resource_type: Job
-version: 1.2.8
+version: 1.2.9
 family: Process
 status: active
 metadata:
@@ -214,7 +214,7 @@ adopts:
       CronJob schedule/concurrencyPolicy/startingDeadlineSeconds ≈ schedule.expression/overlap_policy/missed_run_policy)
     source: https://kubernetes.io/docs/concepts/workloads/controllers/job/
     license: Apache-2.0
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
   - standard: Ansible
     version: 2.x
@@ -222,5 +222,5 @@ adopts:
     role: playbook process_type vocabulary
     source: https://docs.ansible.com/ansible/latest/playbook_guide/
     license: GPL-3.0
-    license_compatibility: reference-only
+    license_compatibility: reference_only
     disposition: tier1_value

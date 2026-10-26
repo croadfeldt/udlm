@@ -17,11 +17,11 @@ it governs.
 - `handle` is ADVISORY human identity; mutable/rebindable. Every cross-entity reference is
   `{target_uuid: authoritative, target_handle: advisory}` — **never name alone**. Handle
   disagreement at resolution is drift, not failure.
-- `correlation_ids` carry stable natural keys (smbios-uuid, mac, provider-id, …) for entity
+- `correlation_ids` carry stable natural keys (smbios_uuid, mac, provider_id, …) for entity
   resolution across discovery sources: one real resource, one uuid.
 - Boundary translation: external systems that reference by name (e.g. control-plane control-plane
   catalog's `requires_resources` name-edges) map name↔uuid at the Provider/catalog boundary;
-  the external name is recorded as a `correlation_ids` entry (`scheme: provider-id`).
+  the external name is recorded as a `correlation_ids` entry (`scheme: provider_id`).
 
 *Governs:* `docs/spec/contracts/identifier-scheme.md`, reference fields in both schemas, REF-001/002.
 
@@ -59,7 +59,7 @@ it governs.
   Requested; **the Provider writes Realized — a receipt, never hand-authored**; discovery
   observes) and brownfield greening (reverse: Discovered-first/unclaimed → provider
   claim/adoption writes Realized, uuid preserved → Requested/Intent backfilled with
-  `origin: backfilled|discovered-derived`).
+  `origin: backfilled|discovered_derived`).
 - **[D7] Processes do not overload lifecycle_state.** Their run dynamics are a separate
   **`execution_state`** axis (`REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED`); a
   Process entity still carries the universal lifecycle_state (a playbook that exists and is
@@ -126,7 +126,7 @@ it governs.
 
 - All instants are **RFC 3339 normalized to UTC (`Z`)**, pattern-enforced (`format:` alone is
   not enforcement); snapshots carry **`time_source`** (required on realized/discovered) and
-  **`origin`** (declared | discovered-derived | backfilled). No fabricated precision.
+  **`origin`** (declared | discovered_derived | backfilled). No fabricated precision.
 - **E4 field-level provenance holds in every profile** (homelab = derivable-carrier/git;
   standard/prod = materialized; fsi/sovereign = + audit chain). Provenance `source.kind`
   vocabulary: `layer | policy | actor | provider | discovery | rehydration | override` (the
@@ -174,7 +174,7 @@ One definition each; everything else defers here:
 | drift severity | minor, significant, critical | §3 [D6] |
 | edge_type | depends_on, contained_by, binds_to, references | §4 |
 | depends_on strength | hard, soft | §4 |
-| snapshot origin | declared, discovered-derived, backfilled | §6 |
+| snapshot origin | declared, discovered_derived, backfilled | §6 |
 | provenance source.kind | layer, policy, actor, provider, discovery, rehydration, override | §6 |
 | stake strength | required, preferred, optional | ownership doc (events defer) |
 | record kind | universal-groups closed set + cross_tenant_authorization | §5 |

@@ -23,7 +23,7 @@ scenario:
       payload
     - The placement engine selects the OSAC-backed provider from the eligible set by declared capability
       and capacity
-    - The request is dispatched to OSAC through the ordinary provider contract, and provider-specific
+    - The request is dispatched to OSAC through the ordinary provider contract, and provider_specific
       fields are added at enrichment from OSAC's Provider Class
     - The realized record carries provider provenance identifying OSAC
     - The provisioned VM is reachable, and the intent-to-realized path is auditable end to end

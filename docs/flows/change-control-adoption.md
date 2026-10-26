@@ -82,7 +82,7 @@ requires a surface that is neither present nor already on the build list.
   clauses of a declared policy object the orchestration evaluates — never tribal process. The
   human decision is made once, in the policy, not once per change.
 - **A window must *fit*, not just be open.** The provider gives an implementation time-to-complete
-  estimate (its own duration is provider-specific); the window gate proceeds only if
+  estimate (its own duration is provider_specific); the window gate proceeds only if
   `estimate + margin ≤ window_remaining`. A 2-hour window cannot hold a 4-hour implementation — a
   job that won't finish is not started; it defers, batch-fits, or expedites (ADR-053 §8; the
   estimate reuses the RTO/T6 validated-time-bound machinery).

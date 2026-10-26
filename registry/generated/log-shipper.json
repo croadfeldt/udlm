@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper/0.10.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper/0.10.1",
   "conforms_to": "udlm/0.1",
   "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922",
   "resource_type": "LogShipper",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "LogShipper",
-          "version": "0.10.0",
+          "version": "0.10.1",
           "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922"
         }
       ]
@@ -131,7 +131,7 @@
       "role": "the attribute names in `labels`, the identity the provider stamps (`host.name`), and the log record fields a `filter` criterion addresses",
       "source": "https://opentelemetry.io/docs/specs/semconv/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

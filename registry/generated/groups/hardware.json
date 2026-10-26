@@ -4,42 +4,42 @@
   "classes": [
     {
       "class": "BMC",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/bmc/_base.yaml",
       "types": []
     },
     {
       "class": "GPU",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/gpu/_base.yaml",
       "types": []
     },
     {
       "class": "NetworkInterface",
-      "version": "0.17.0",
+      "version": "0.17.1",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/network-interface/_base.yaml",
       "types": []
     },
     {
       "class": "NetworkSwitch",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "instantiable": true,
       "path": "registry/classes/resource/network/network-switch/_base.yaml",
       "types": []
     },
     {
       "class": "Processor",
-      "version": "0.7.2",
+      "version": "0.7.3",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/processor/_base.yaml",
       "types": []
     },
     {
       "class": "StorageDevice",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/storage-device/_base.yaml",
       "types": []

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/VLAN/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/VLAN/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426",
   "resource_type": "VLAN",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "VLAN",
-          "version": "0.7.0",
+          "version": "0.7.1",
           "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426"
         }
       ]
@@ -92,7 +92,7 @@
       "role": "The overlay realization of the same segment identity 802.1Q gives on-prem — a VNI under VXLAN or Geneve. Adopted so `encapsulation` is honest about what this class actually is: a SEGMENT, of which a VLAN is one encapsulation.",
       "source": "https://www.rfc-editor.org/rfc/rfc8926.html",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -102,7 +102,7 @@
       "role": "The public-cloud realization of segment identity. A cloud exposes no VLAN, so \"which logical network\" there is a subnet within a VPC, and `Subnet` is where that lands. Adopted by reference (T5): the three clouds converged on the subnet shape independently, and re-expressing it would invent a fourth. THE VPC ITSELF HAS NO CLASS, stated rather than implied. VirtualNetwork is an ATTACHMENT POINT — its own description reads \"the network a VM's or pod's NIC attaches to: a libvirt network, a NetworkAttachmentDefinition, an OVN logical switch\". A VPC is a tenant-scoped CONTAINER with its own address space, holding many subnets, route tables and gateways. Treating one as the other would make a container and an attachment point the same thing, and a subnet is useful without its container — so the container half is left open rather than guessed at.",
       "source": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html",
       "license": "vendor-documentation",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     },
     {
@@ -112,7 +112,7 @@
       "role": "segment id + tagging vocabulary",
       "source": "https://standards.ieee.org/ieee/802.1Q/",
       "license": "IEEE",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

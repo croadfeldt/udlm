@@ -13,9 +13,9 @@ record:
   handle: cexample/compositions/phantom-promotion
   conforms_to: udlm/0.1
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-  state: CANONICAL
+  state: canonical
   promoted_to: udlm://class/Template.Application.NeverMinted
-  provenance: {arrival: ingested_likec4, origin: discovered-derived}
+  provenance: {arrival: ingested_likec4, origin: discovered_derived}
   metadata:
     display_name: Phantom promotion
     origination_timestamp: '2026-08-10T00:00:00Z'

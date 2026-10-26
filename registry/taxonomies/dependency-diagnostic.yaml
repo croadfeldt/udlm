@@ -3,12 +3,12 @@
 # THIS COMPOSES WITH DEP-017; IT DOES NOT DUPLICATE IT. The two answer different questions about the
 # same stuck member, and they share no term:
 #
-#   DEP-017 `status.conditions[].type`   the PROPAGATION class — blocked-transient, blocked-permanent,
-#                                        refused, dependency-cancelled. What a DEPENDENT should do
+#   DEP-017 `status.conditions[].type`   the PROPAGATION class — blocked_transient, blocked_permanent,
+#                                        refused, dependency_cancelled. What a DEPENDENT should do
 #                                        about it (wait, refuse, inherit).
 #   this vocabulary                      the DIAGNOSIS — what is actually wrong with the edge.
 #
-# So a member is `blocked-permanent` BECAUSE `capability_mismatch`, or `blocked-transient` BECAUSE
+# So a member is `blocked_permanent` BECAUSE `capability_mismatch`, or `blocked_transient` BECAUSE
 # `unrealized`. Collapsing them would force a choice between telling a dependent how to behave and
 # telling an operator what to fix.
 #

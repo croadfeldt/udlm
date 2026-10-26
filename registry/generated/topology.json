@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "34b1a133-4377-4bd6-b089-2345e8e80aab",
   "resource_type": "Topology",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Topology",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "34b1a133-4377-4bd6-b089-2345e8e80aab"
         }
       ]
@@ -132,7 +132,7 @@
       "version": "1.30",
       "source": "https://kubernetes.io/docs/reference/labels-annotations-taints/",
       "license": "CC-BY-4.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "standard_name": "topology.kubernetes.io",
       "disposition": "tier1_value"
     }

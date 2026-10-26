@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StorageClass/0.10.2
+$id: https://udlm.dev/registry/udlm/0.1/class/StorageClass/0.10.3
 conforms_to: udlm/0.1
 uuid: 8bca0919-e6b1-483a-8b46-841cea6e4b6f
 record_type: class
 class: base
 resource_type: StorageClass
-version: 0.10.2
+version: 0.10.3
 family: Resource
 status: active
 filed_under:
@@ -155,7 +155,7 @@ adopts:
     role: named storage provisioning policy (provisioner, reclaimPolicy, volumeBindingMode, parameters)
     source: https://kubernetes.io/docs/concepts/storage/storage-classes/
     license: CC-BY-4.0
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
 context:
   purpose: Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes

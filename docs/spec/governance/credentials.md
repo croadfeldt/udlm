@@ -518,6 +518,7 @@ A conformant Credential Provider MUST implement the following endpoint contract.
 ### 8.1 Issue Credential
 
 ```
+# illustrative: shape of the record, not schema-checked
 POST {issue_endpoint}
 
 Request:
@@ -550,7 +551,7 @@ Response 201 Created:
   "expires_at": "<ISO 8601>",
   "value_retrieval_endpoint": "<url>",
   "value_retrieval_auth": "step_up_mfa",
-  "metadata": {}   # provider-specific additional metadata
+  "metadata": {}   # provider_specific additional metadata
 }
 
 Response 422:  unsupported credential type

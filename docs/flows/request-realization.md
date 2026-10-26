@@ -16,13 +16,13 @@ Every request starts from a **vendor-agnostic base**. A portable `Machine.VM` ca
 true of *any* VM — `guest_os`, size, disks, networks — and deliberately leaves out one provider's mechanics
 like Kubernetes' `namespace`. Keeping those off the base is what makes the type portable: another provider
 can still read it ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md) — the type models
-the graph and audit surface; provider-specific config is stored separately).
+the graph and audit surface; provider_specific config is stored separately).
 
 Provider-specific details get added *on top* of that base, and there are two ways in:
 
 - **The system adds them** after it picks a provider — the usual path, and the flow below.
 - **The consumer adds them at intent time** — a consumer *may* pin a `namespace`, a vendor QoS class, any
-  provider-specific element, right in the request. That's allowed and honored; it's simply **flagged as
+  provider_specific element, right in the request. That's allowed and honored; it's simply **flagged as
   breaking portability** so the trade is explicit (the realized record's `portability` block).
 
 So the base is always portable, and going beyond it is a choice made with eyes open. The running example
@@ -92,14 +92,14 @@ Step by step, with `namespace` threaded through. The numbering is what each step
 that each runs once: steps 2–4 plus policy are the re-entrant block above.
 
 **1. Intent — the user asks for what they want.** The **required** part is the portable base — the user is
-never *forced* to supply anything provider-specific. They *may* add provider-specific extensions (even the
+never *forced* to supply anything provider_specific. They *may* add provider_specific extensions (even the
 `namespace`) if they want; those are honored and flagged as non-portable. How much they pin down is their
 choice, from vague to exact — see [the specificity scale](#the-specificity-scale). In the common case they
 leave the provider-specifics to the system.
 
 **2. Assemble — fill in the defaults.** The data layers (platform, profile, tenant, then the user's own
 values on top) resolve the fields, and every field remembers where its value came from. The request now has
-cpu, memory, guest_os — still no `namespace`, because no layer on a portable type carries a provider-specific
+cpu, memory, guest_os — still no `namespace`, because no layer on a portable type carries a provider_specific
 field.
 
 **3. Enrich — add what a provider will need.** The system fills what the portable request does not carry
@@ -297,7 +297,7 @@ of it, and no earlier moment could have produced the address.
 ## It converges — the flow isn't one straight pass
 
 The line above is the *shape*, not a promise of a single pass. The policy and assembly engines are
-**re-entrant**: once a provider is chosen, the provider-specific data enrichment adds can change what the
+**re-entrant**: once a provider is chosen, the provider_specific data enrichment adds can change what the
 policies see, so they re-evaluate — and reserve is a **reconciliation loop** of its own, landing reserved
 facts (a placement, an address, a hold) and re-running the participating policies until the whole picture is
 stable. The engine loops around *place → enrich → evaluate → reserve* until it reaches a fixed point, then
@@ -354,8 +354,8 @@ FQDN" is the same idea one level down.)
 
 Whatever engine runs this flow:
 
-- **The required data is portable** — the user is never *required* to supply anything provider-specific; the
-  portable base is always enough. They *may* add provider-specific elements at intent time — that's allowed
+- **The required data is portable** — the user is never *required* to supply anything provider_specific; the
+  portable base is always enough. They *may* add provider_specific elements at intent time — that's allowed
   and honored, and flagged as breaking portability ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); the realized record's `portability` block).
 - **How much to pin down is the user's dial, and it only narrows** — every request from abstract to finite
   is valid; more detail means fewer providers fit, never more.
@@ -382,7 +382,7 @@ The performance: [dcm-project/dcm `docs/flows/request-realization.md`](https://g
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
-- **Data (UDLM):** the portable request, the four states, Provider-Class elements (ADR-038) for provider-specific
+- **Data (UDLM):** the portable request, the four states, Provider-Class elements (ADR-038) for provider_specific
   values, and the provenance behind every field.
 - **Policy (DCM/org):** which provider gets chosen, and how the provider-required fields get filled.
 - **Provider:** declares what it needs ("enough"), and checks the request at reserve.

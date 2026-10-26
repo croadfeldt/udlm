@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/LogStore/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/LogStore/0.3.1
 conforms_to: udlm/0.1
 uuid: 89fb33fa-ebf2-4b38-bf74-2e163ea8033b
 record_type: class
 class: base
 resource_type: LogStore
-version: 0.3.0
+version: 0.3.1
 family: Resource
 status: active
 filed_under:
@@ -145,7 +145,7 @@ adopts:
     role: the `syslog` intake protocol
     source: https://www.rfc-editor.org/rfc/rfc5424
     license: IETF Trust
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
   - standard: OpenTelemetry
     version: '>=1.0'
@@ -153,7 +153,7 @@ adopts:
     role: the `otlp` intake protocol
     source: https://opentelemetry.io/docs/specs/otlp/
     license: Apache-2.0
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
 coverage:
   use_cases:

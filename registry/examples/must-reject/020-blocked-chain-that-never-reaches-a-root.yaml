@@ -21,7 +21,7 @@ record:
   status:
     state: pending
     conditions:
-    - type: blocked-permanent
+    - type: blocked_permanent
       status: 'True'
       reason: blocked on something that was deleted
       blocked_on: udlm://estate/cexample/storage/deleted-volume

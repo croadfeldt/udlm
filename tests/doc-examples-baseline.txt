@@ -99,7 +99,6 @@ docs/spec/contracts/policy-contract.md f13a6634392077e4
 docs/spec/contracts/policy-contract.md f360910c3fa37563
 docs/spec/contracts/provider-callback-auth.md e5742fa8bb7d6015
 docs/spec/contracts/provider-callback-auth.md ee362e669680aba3
-docs/spec/contracts/provider-contract.md 0b6627f82f44cd5a
 docs/spec/contracts/provider-contract.md 0de275c2e8bfd706
 docs/spec/contracts/provider-contract.md 41c19569857fdfe1
 docs/spec/contracts/provider-contract.md 66bc757413f9dff6
@@ -232,7 +231,6 @@ docs/spec/governance/authority-tier-model.md e9ed5aae4a43785a
 docs/spec/governance/authority-tier-model.md f631c560f8ffd96b
 docs/spec/governance/credentials.md 07421a5f905475a6
 docs/spec/governance/credentials.md 392aaa6107cca830
-docs/spec/governance/credentials.md 496d13a4e7f20472
 docs/spec/governance/credentials.md 552aeb45b9f1f831
 docs/spec/governance/credentials.md 596290c95fcdea20
 docs/spec/governance/credentials.md 968a181b44f7ed64

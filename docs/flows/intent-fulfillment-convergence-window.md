@@ -13,7 +13,7 @@ case) and stages the window axis of
 
 **In one breath.** A container's PVC has no capacity yet — a transient shortfall. The window `w`
 decides how long the member may converge before it is given up. At `w=0` it is given up now
-(fail-fast) and its operational dependents are dependency-cancelled. At `w=N` it waits and converges
+(fail-fast) and its operational dependents are dependency_cancelled. At `w=N` it waits and converges
 if capacity frees within the bound, else is given up when the window expires. At `w=∞` it is held
 pending and converges whenever capacity frees, with no deadline. The status stays **transient**
 throughout — the window governs *how long* it may converge, not *whether* it can. A **permanent**
@@ -24,7 +24,7 @@ member would be refused immediately under every `w`; the window is inert for it.
 ```mermaid
 flowchart TD
     M["Transient member (PVC no capacity yet)"] --> W{"Convergence window w"}
-    W -->|"w = 0 (fail-fast)"| Z0["Give up now → member cancelled;\noperational dependents dependency-cancelled"]
+    W -->|"w = 0 (fail-fast)"| Z0["Give up now → member cancelled;\noperational dependents dependency_cancelled"]
     W -->|"w = N"| ZN{"Blocker clears within N?"}
     ZN -->|yes| ZNy["Converge → Realized"]
     ZN -->|no| ZNn["Window expires → give up (as w=0)"]
@@ -39,7 +39,7 @@ flowchart TD
 - **It modulates transient members only.** A permanent member is refused immediately regardless of
   `w`; the six permanent matrix cells collapse across the window.
 - **Give-up cascades.** When a member is given up (at `w=0` or window expiry), its operational
-  dependents become `dependency-cancelled`; a request unit cancels all.
+  dependents become `dependency_cancelled`; a request unit cancels all.
 - **`w=∞` is convergence.** Deferring indefinitely is the k8s-style "hold desired state and
   reconcile" behavior — the member persists as intent until it can realize.
 

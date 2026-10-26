@@ -1,4 +1,4 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.17.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.17.1
 conforms_to: udlm/0.1
 uuid: 7196d55a-d584-40e5-8b47-5247dad7d421
 record_type: class
@@ -6,7 +6,7 @@ class: type
 resource_type: Machine.BareMetalHost
 short_name: Machine.BMH
 parent: Machine
-version: 0.17.0
+version: 0.17.1
 family: Resource
 status: active
 metadata:
@@ -265,7 +265,7 @@ adopts:
       into `outputs.observed_run_state` (On = running, Off = stopped, PoweringOn and PoweringOff = transitioning)
     source: https://www.dmtf.org/standards/redfish
     license: DMTF
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
   - standard: Metal3
     version: 1.x
@@ -275,7 +275,7 @@ adopts:
       referenced boot interface
     source: https://book.metal3.io/
     license: Apache-2.0
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
 context:
   purpose: Models a physical machine as a managed asset — the box itself, whether or not anything is running on

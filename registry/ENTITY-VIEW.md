@@ -57,7 +57,7 @@ Two lifecycles populate the same record shape — what differs is *order* and *a
 
 | State | Greenfield (forward, ADR-003) | Brownfield greening (reverse, dcm ADR-017) |
 |---|---|---|
-| `intent` | 1st — consumer declares | 4th — synthesized (`origin: discovered-derived`/`backfilled`), provider-agnostic, for DR/rehydration |
+| `intent` | 1st — consumer declares | 4th — synthesized (`origin: discovered_derived`/`backfilled`), provider-agnostic, for DR/rehydration |
 | `requested` | 2nd — the control plane assembly (layers + policy) | 4th — backfilled with `origin: backfilled` |
 | `realized` | 3rd — **the Provider's receipt** | 3rd — written at **claim/adoption** from the owning provider's discovered statement; never hand-authored |
 | `discovered` | 4th — ongoing observation → drift | **1st** — attributed observation (`provider`, `at`, `time_source`); the record may live Discovered-only (unclaimed) until claimed |

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/UPS/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/UPS/0.2.1",
   "conforms_to": "udlm/0.1",
   "uuid": "db585146-41b2-4cd9-86e6-c90d086df2cf",
   "resource_type": "UPS",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "UPS",
-          "version": "0.2.0",
+          "version": "0.2.1",
           "uuid": "db585146-41b2-4cd9-86e6-c90d086df2cf"
         }
       ]
@@ -228,17 +228,17 @@
       "role": "the topology vocabulary — double-conversion, line-interactive, standby — reference by name only (IEC text is copyrighted)",
       "source": "https://webstore.iec.ch/publication/67147",
       "license": "IEC",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     },
     {
       "standard": "NUT",
       "version": "2.8",
       "standard_name": "ups.* / battery.* / input.* / output.* variables",
-      "role": "telemetry variable namespace the outputs map from (status, charge, runtime, load, voltages) and the low-battery thresholds (battery.charge.low / battery.runtime.low) — reference-only: NUT is GPL",
+      "role": "telemetry variable namespace the outputs map from (status, charge, runtime, load, voltages) and the low-battery thresholds (battery.charge.low / battery.runtime.low) — reference_only: NUT is GPL",
       "source": "https://networkupstools.org/docs/developer-guide.chunked/apas01.html",
       "license": "GPL-2.0-or-later",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     },
     {
@@ -248,7 +248,7 @@
       "role": "identity and rating vocabulary (Manufacturer, Model, SerialNumber, FirmwareVersion, capacity ratings)",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

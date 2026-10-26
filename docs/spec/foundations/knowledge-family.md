@@ -125,7 +125,7 @@ Capability / dependency / spec element — so any implementation carries decisio
 anchor is architecture;** process/enablement decisions are DecisionRecords too.
 - **Fields:** title (handle, e.g. `DCM ADR-017`-style within an owning scope), **`rationale` / body (the prose ADR
   narrative — kept first-class; the structure is an *envelope* around it, never a replacement)**, question/finding
-  refs, options_considered, decision, action (`answer | clarify | change-spec | defer | wontfix`),
+  refs, options_considered, decision, action (`answer | clarify | change_spec | defer | wontfix`),
   validation_evidence *(optional — see Note)*, supersedes, provenance (proposed_by: human + model/prompt version),
   **`abstraction_decomposition` (required: the `Data · Policy · Provider` aspects of the decision — the three
   foundational abstractions; SPEC-DESIGN-REQUIREMENTS §29). A record that can't name all three (or mark one

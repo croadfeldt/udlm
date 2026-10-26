@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.4.1",
   "conforms_to": "udlm/0.1",
   "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366",
   "resource_type": "SoftwarePackage",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SoftwarePackage",
-          "version": "0.4.0",
+          "version": "0.4.1",
           "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366"
         }
       ]
@@ -63,7 +63,7 @@
       "role": "the canonical package identifier this type's identity fields carry",
       "source": "https://github.com/package-url/purl-spec",
       "license": "MIT",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -73,7 +73,7 @@
       "role": "SBOM interchange alignment; license identifiers use the SPDX license list",
       "source": "https://spdx.dev/",
       "license": "Community-Spec-1.0 (license list data CC0-1.0)",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     },
     {
@@ -83,7 +83,7 @@
       "role": "SBOM interchange alignment (component identity and references)",
       "source": "https://cyclonedx.org/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

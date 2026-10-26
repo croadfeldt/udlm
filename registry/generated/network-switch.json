@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkSwitch/0.11.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkSwitch/0.11.1",
   "conforms_to": "udlm/0.1",
   "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac",
   "resource_type": "NetworkSwitch",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "NetworkSwitch",
-          "version": "0.11.0",
+          "version": "0.11.1",
           "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac"
         }
       ]
@@ -130,7 +130,7 @@
       "role": "switch-as-asset vocabulary (chassis identity, ports collection)",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -140,7 +140,7 @@
       "role": "discovered chassis identity (Chassis ID / System Name / System Description TLVs) — how a switch enters as a Discovered resource",
       "source": "https://standards.ieee.org/ieee/802.1AB/",
       "license": "IEEE",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     },
     {
@@ -150,7 +150,7 @@
       "role": "topology vocabulary — a switch is a node whose termination points (ports) anchor links",
       "source": "https://www.rfc-editor.org/rfc/rfc8345",
       "license": "IETF-Trust-TLP",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

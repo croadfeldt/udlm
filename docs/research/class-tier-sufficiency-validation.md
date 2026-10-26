@@ -21,11 +21,11 @@ Stated so it can fail, as three separate claims:
   contract are folders, not base classes.
 - **H3 — binding depth.** A provider can advertise support at **Base or Type** directly, without
   authoring a Provider Class. A Provider Class is required only when the provider has
-  provider-specific *data* to add.
+  provider_specific *data* to add.
 
 H3 matters most for H1. If a provider must author a Provider Class to be listed, then every
 supported type creates a class, and depth pressure follows mechanically. If a provider can bind at
-Type, the third tier stays reserved for genuine provider-specific structure.
+Type, the third tier stays reserved for genuine provider_specific structure.
 
 ## Why it matters
 

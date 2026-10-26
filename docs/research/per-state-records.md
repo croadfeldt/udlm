@@ -138,7 +138,7 @@ dependencies:
   - {edge_type: depends_on, target_uuid: a1c3e5f7-9b0d-4c2e-8f6a-0c2d4e6a8b93, target_handle: lab/net/ip/192.0.2.55, target_field: address, bound_field: outputs.primary_ip, strength: hard}
 
 correlation_ids:
-  - {scheme: libvirt-domain-uuid, value: 4e2a7c19-6b3d-4f8e-a1c5-9d0b2e7f3a64}
+  - {scheme: libvirt_domain_uuid, value: 4e2a7c19-6b3d-4f8e-a1c5-9d0b2e7f3a64}
   - {scheme: mac, value: "52:54:00:ab:12:34"}
 
 status:
@@ -152,7 +152,7 @@ provenance:
   outputs.ip_addresses: [{source: {kind: provider, id: lab/providers/libvirt-host-a}, operation_type: set, timestamp: "2026-09-03T14:03:40Z"}]
   outputs.mac_addresses: [{source: {kind: provider, id: lab/providers/libvirt-host-a}, operation_type: set, timestamp: "2026-09-03T14:03:40Z"}]
 
-integrity: {head: "sha256:8b2d…2b4d", previous: null, algorithm: sha256-jcs}
+integrity: {head: "sha256:8b2d…2b4d", previous: null, algorithm: sha256_jcs}
 ```
 
 Everything the consumer or policy decided lives in the order and approved records, one pointer

@@ -6,7 +6,7 @@ scenario:
     The same transiently-unsatisfiable member (a container whose PVC has no capacity yet) under
     three settings of the convergence window w — the only converge-versus-fail-fast dial in the
     model. At w=0 (fail-fast) the member is given up immediately: it does not wait for the
-    transient blocker, it is refused now, and its operational dependents are dependency-cancelled.
+    transient blocker, it is refused now, and its operational dependents are dependency_cancelled.
     At w=N (converge-then-give-up) the member waits and converges if the blocker clears within the
     bound; if the window expires first, it is given up like w=0. At w=infinity (defer) the member
     waits indefinitely, held pending, converging whenever the blocker clears. The member status is
@@ -27,7 +27,7 @@ scenario:
     defer indefinitely at w=infinity — the window being the sole dial over how long a transient
     member may converge
   success_criteria:
-  - At w=0 the transient member is given up immediately (fail-fast) and its operational dependents are dependency-cancelled
+  - At w=0 the transient member is given up immediately (fail-fast) and its operational dependents are dependency_cancelled
   - At w=N the member converges if its transient blocker clears within the bound, else is given up when the window expires
   - At w=infinity the member is held pending and converges whenever the blocker clears — no deadline
   - The member status stays transient across all three; the window governs how long it may converge, not whether it can

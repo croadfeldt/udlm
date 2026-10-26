@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.2.8",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.2.9",
   "conforms_to": "udlm/0.1",
   "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242",
   "resource_type": "Job",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "family": "Process",
   "status": "active",
   "metadata": {
@@ -18,7 +18,7 @@
       "sources": [
         {
           "class": "Job",
-          "version": "1.2.8",
+          "version": "1.2.9",
           "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242"
         }
       ]
@@ -190,7 +190,7 @@
       "role": "run-to-completion and scheduled-job vocabulary (activeDeadlineSeconds ≈ max_execution_time, terminal states; CronJob schedule/concurrencyPolicy/startingDeadlineSeconds ≈ schedule.expression/overlap_policy/missed_run_policy)",
       "source": "https://kubernetes.io/docs/concepts/workloads/controllers/job/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -200,7 +200,7 @@
       "role": "playbook process_type vocabulary",
       "source": "https://docs.ansible.com/ansible/latest/playbook_guide/",
       "license": "GPL-3.0",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     }
   ],

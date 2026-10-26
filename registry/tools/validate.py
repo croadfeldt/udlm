@@ -476,13 +476,13 @@ _UUID_V4_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{
 
 
 def check_provider_extensions(doc):
-    """provider_extensions is RETIRED (removed 2026-07-23, executing #202): provider-specific
+    """provider_extensions is RETIRED (removed 2026-07-23, executing #202): provider_specific
     data is a Provider-Class `SharedDataElement` (ADR-038; schema realization #199). Any
     instance still carrying the field is rejected so the retirement cannot silently regress.
     The enduring obligations (additive-only, portability degradation, consumer notification)
     live on the `portability` block and the Transparency principle."""
     if "provider_extensions" in doc:
-        return ["carries the retired `provider_extensions` field — provider-specific data is a "
+        return ["carries the retired `provider_extensions` field — provider_specific data is a "
                 "Provider-Class SharedDataElement (ADR-038; schema realization #199); re-home "
                 "the values and record portability on the `portability` block"]
     return []

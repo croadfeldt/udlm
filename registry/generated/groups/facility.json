@@ -4,21 +4,21 @@
   "classes": [
     {
       "class": "Location",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "instantiable": true,
       "path": "registry/classes/resource/facility/location/_base.yaml",
       "types": []
     },
     {
       "class": "PowerFeed",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "instantiable": true,
       "path": "registry/classes/resource/power/power-feed/_base.yaml",
       "types": []
     },
     {
       "class": "Topology",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "instantiable": true,
       "path": "registry/classes/resource/facility/topology/_base.yaml",
       "types": []

@@ -20,13 +20,13 @@ The **convergence window** `w` is the only other dial — `w=0` fail-fast, `w=N`
 `w=∞` defer — governing how long a **transient** member (converges when it can) may converge. A
 **permanent** member is refused immediately regardless of `w`. A member blocked by a dependency
 inherits the dependency's status transitively (transient→waits, permanent→refused,
-cancelled→dependency-cancelled).
+cancelled→dependency_cancelled).
 
 ## The cases
 
 - **Operational nature** (001, 002): a container operationally depends on a PVC. Transient PVC →
-  container **blocked-transient**, waits, converges (001); permanently-refused PVC →
-  **blocked-permanent** propagating up the chain to the app, surfaced together with the root (002).
+  container **blocked_transient**, waits, converges (001); permanently-refused PVC →
+  **blocked_permanent** propagating up the chain to the app, surfaced together with the root (002).
 - **Request nature** (003): ten request-coupled peer VMs — one unsatisfiable holds the whole unit
   (hold-all), and a permanent shortfall cancels the whole unit (cancel-all); both from one binding.
 - **The distinction** (004): the same two members under an operational edge (directional cascade,
@@ -36,7 +36,7 @@ cancelled→dependency-cancelled).
   and `w=∞` (defer) — the sole converge-vs-fail-fast dial.
 - **Soft never blocks** (006): a soft operational dependency (DNS) unrealized → the container
   converges degraded and surfaced, not blocked — the hard/soft strength read through the nature.
-- **Persistence** (007): a blocked-transient member and its operational dependents converge later
+- **Persistence** (007): a blocked_transient member and its operational dependents converge later
   via reconciliation, no re-request, traceable to the original intent.
 - **Surfacing is mandatory** (008, 009 — must-reject): a chain failure that names only the
   immediate member and not the root dependency + chain is refused (008); a silent partial

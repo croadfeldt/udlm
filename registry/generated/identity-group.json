@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/IdentityGroup/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/IdentityGroup/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd",
   "resource_type": "IdentityGroup",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "IdentityGroup",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd"
         }
       ]
@@ -93,7 +93,7 @@
       "role": "group-of-subjects vocabulary (displayName, members)",
       "source": "https://www.rfc-editor.org/rfc/rfc7643",
       "license": "IETF Trust (BCP 78)",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

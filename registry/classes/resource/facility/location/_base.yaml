@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Location/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Location/0.6.1
 conforms_to: udlm/0.1
 uuid: 545ae44a-fa98-4e7c-a0d6-1cbabaa4903b
 record_type: class
 class: base
 resource_type: Location
-version: 0.6.0
+version: 0.6.1
 family: Resource
 status: active
 filed_under:
@@ -66,7 +66,7 @@ adopts:
     role: physical-placement vocabulary (site/rack/row/unit, coordinates) — referenced, not restated
     source: https://www.dmtf.org/standards/redfish
     license: DMTF
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
 context:
   purpose: Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment

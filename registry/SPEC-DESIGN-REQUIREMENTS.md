@@ -59,16 +59,16 @@ Each hard constraint cites the UDLM contract it derives from.
 15. The spec is the contract **any** provider of the type MUST satisfy; providers
     naturalize → realize → denaturalize (`docs/spec/contracts/provider-contract.md`).
 16. **Any deviation from full portability MUST be explicitly declared** via `portability`. **[enforced: enum]**
-17. **No provider-specific (vendor-exclusive) data in the universal spec** — those ride declared
+17. **No provider_specific (vendor-exclusive) data in the universal spec** — those ride declared
     extension points (`portability` + `provider_hints` / the provider surface). **This binds adoption
     too:** a type MUST NOT pull a standard's *vendor-exclusive* elements into its portable spec. A
     standard that is itself vendor-exclusive is adopted only at the provider/extension surface
-    (`portability: provider-specific`), never in the base contract — the portable spec stays the
+    (`portability: provider_specific`), never in the base contract — the portable spec stays the
     neutral subset every provider can satisfy.
 
 ### Relationships
 18. Relationships are **first-class and typed** (`depends_on`/`binds_to`/`references`/`contained_by`),
-    target **resource types** (never provider-specific refs), and form **acyclic** composite DAGs
+    target **resource types** (never provider_specific refs), and form **acyclic** composite DAGs
     (`docs/spec/foundations/service-dependencies.md`, `docs/spec/foundations/template-composition-model.md`). **[enforced: shape]**
 18a. **One authoritative direction — no stored inverse.** A relationship is declared **once**, on the
     **dependent/subordinate side** (the resource that `depends_on` / is `contained_by` / `binds_to` /
@@ -281,13 +281,13 @@ Each hard constraint cites the UDLM contract it derives from.
     (`tests/check_single_source.py`) To find the home before you write, use the file
     index (`docs/file-index.md`) — it names what each document owns.
 
-34. **A resource type's base is the resource's *portable definition*; provider-specific config is stored
+34. **A resource type's base is the resource's *portable definition*; provider_specific config is stored
     extra** (ADR-016). The **base spec** carries the resource's **portable, standard-grounded config** — the
     fields every provider of the type accepts (a container's `image`/`resources`/`command`/`args`/`ports`/
     `mounts`) — plus its **graph-bearing** (`data_reference` / relationship / service-graph),
     **audit/provenance/identity**, and **docs/spec/contracts/drift** elements. The line is **portable vs
-    provider-specific**, not config-vs-not: portable config that defines the resource is base;
-    **provider-specific** config is declared by the provider, projected as a config interface the
+    provider_specific**, not config-vs-not: portable config that defines the resource is base;
+    **provider_specific** config is declared by the provider, projected as a config interface the
     implementation offers
     (`docs/spec/contracts/provider-contract.md` §1a.3), and its **values stored** as Provider-Class
     `SharedDataElement`s (ADR-038; schema implementation #199) across Requested/Realized, portability-flagged. **The implementation stores the config
@@ -303,7 +303,7 @@ Each hard constraint cites the UDLM contract it derives from.
     Concrete providers appear only as **examples** ("e.g. …") or reference implementations — never as the type's
     grounding, its normative text, or an adopted "the model." And **no estate/deployment-specific references
     in the portable spec** (host names, a site's tool choice, `group_vars`, generator scripts) — those live
-    in the estate's own repo. Extends §17 (no provider-specific data in the universal spec).
+    in the estate's own repo. Extends §17 (no provider_specific data in the universal spec).
     **Product-name neutrality (the diplomatic tightening):** a product or vendor name appears ONLY
     (a) in `adopts[]` / `aliases[]` entries and the standards-adoption register — attribution of an
     adopted standard or vocabulary cross-walk is not endorsement, and an adoption stripped of its
@@ -450,7 +450,7 @@ Each hard constraint cites the UDLM contract it derives from.
     type that mirrors one platform's configuration surface inherits that platform's API, release
     cadence, and semantics — T9 inverted (the substrate never translates into a provider's native
     spec). The guard is not a depth limit; it is §35 (model the fact, never the mechanism) and §17
-    (no provider-specific data in the portable spec). Provider-specific depth belongs on a Provider
+    (no provider_specific data in the portable spec). Provider-specific depth belongs on a Provider
     Class, where it is scoped and its portability position is explicit — not on the portable type,
     where it would be everyone's.
 

@@ -6,13 +6,13 @@ authored by a consumer for themselves. It becomes an offer by being PROMOTED int
 governed process. This gate checks the three things that make that promotion real rather than
 asserted:
 
-  ING-017  a CANONICAL record names the class it became (`promoted_to`), and that class names the
+  ING-017  a `canonical` record names the class it became (`promoted_to`), and that class names the
            record it came from (`promoted_from`). BOTH halves. A one-way pointer is how a promotion
            that never happened still looks like one from whichever side you read first.
   ING-018  the record SURVIVES promotion — a class whose `promoted_from` resolves to nothing has
            either consumed its source or is citing a record that was deleted, and both make a
            re-ingest of the same diagram look like a brand-new composition.
-  ING-019  a composition synthesized from an external artifact is `discovered-derived`, never
+  ING-019  a composition synthesized from an external artifact is `discovered_derived`, never
            `declared`. An importer is not a human, however clean the mapping was.
 
 **Not checked here, and why.** ING-016 ("never offered") needs no gate: the schema sets
@@ -80,12 +80,12 @@ def evaluate(record, index):
         who = record.get("handle") or (record.get("uuid") or "?")[:8]
         state, target = record.get("state"), record.get("promoted_to")
 
-        # ING-017 — the far half. (The near half, promoted_to present iff CANONICAL, is a schema
+        # ING-017 — the far half. (The near half, promoted_to present iff canonical, is a schema
         # conditional; re-checking it here would be a second home for one rule.)
-        if state == "CANONICAL" and target:
+        if state == "canonical" and target:
             cls = classes.get(_tail(target))
             if cls is None:
-                errs.append(f"ING-017 {who}: CANONICAL and promoted_to names {_tail(target)!r}, "
+                errs.append(f"ING-017 {who}: canonical and promoted_to names {_tail(target)!r}, "
                             f"which resolves to no class — a promotion into something that does "
                             f"not exist is an outcome nobody can verify")
             else:
@@ -101,10 +101,10 @@ def evaluate(record, index):
 
         # ING-019 — an importer is not a human.
         prov = record.get("provenance") or {}
-        if prov.get("arrival") in ("ingested_likec4", "converted_calm") and prov.get("origin") != "discovered-derived":
+        if prov.get("arrival") in ("ingested_likec4", "converted_calm") and prov.get("origin") != "discovered_derived":
             errs.append(f"ING-019 {who}: arrival {prov.get('arrival')!r} with origin "
                         f"{prov.get('origin')!r} — content synthesized from an external artifact is "
-                        f"discovered-derived; presenting it as declared claims a human wrote it")
+                        f"discovered_derived; presenting it as declared claims a human wrote it")
 
     elif record.get("record_type") == "class":
         src = record.get("promoted_from")
@@ -134,11 +134,11 @@ def main():
              "classes": {"T.A": {"resource_type": "T.A", "record_type": "class"}}}
     arms = {
         "ING-017": evaluate({"record_type": "composition", "uuid": "c1", "handle": "h",
-                             "state": "CANONICAL", "promoted_to": "udlm://class/T.A"}, probe),
+                             "state": "canonical", "promoted_to": "udlm://class/T.A"}, probe),
         "ING-018": evaluate({"record_type": "class", "resource_type": "T.B",
                              "promoted_from": "udlm://composition/ghost"}, probe),
         "ING-019": evaluate({"record_type": "composition", "uuid": "c2", "handle": "h2",
-                             "state": "PROPOSED",
+                             "state": "proposed",
                              "provenance": {"arrival": "ingested_likec4", "origin": "declared"}}, probe),
     }
     for rule, got in arms.items():

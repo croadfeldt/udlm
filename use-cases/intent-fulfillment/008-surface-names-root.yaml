@@ -8,7 +8,7 @@ scenario:
     This is REFUSED as insufficient surfacing. The surfacing contract requires naming the ROOT
     unsatisfied dependency (the PVC and its violated rule) and the chain it took down, so the
     consumer can act on the actual cause instead of chasing the symptom. Telling the consumer the
-    container failed, without naming that the container was blocked-permanent because its PVC was
+    container failed, without naming that the container was blocked_permanent because its PVC was
     refused, sends them to fix the wrong thing. A surface that stops at the immediate member and
     does not name the root dependency plus the chain does not satisfy the contract, even though it
     did emit a warning. Naming the proximate failure is not the same as naming the root.

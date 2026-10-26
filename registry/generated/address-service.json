@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/AddressService/0.8.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/AddressService/0.8.1",
   "conforms_to": "udlm/0.1",
   "uuid": "2d2100a1-3813-4f01-8b55-12389cec51cc",
   "resource_type": "AddressService",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "AddressService",
-          "version": "0.8.0",
+          "version": "0.8.1",
           "uuid": "2d2100a1-3813-4f01-8b55-12389cec51cc"
         }
       ]
@@ -84,7 +84,7 @@
       "role": "DHCP protocol concepts (lease/scope) — the neutral vocabulary; concrete servers (Kea/dnsmasq/...) are providers",
       "source": "https://www.rfc-editor.org/rfc/rfc2131",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -94,7 +94,7 @@
       "role": "name-resolution vocabulary",
       "source": "https://www.rfc-editor.org/rfc/rfc1035",
       "license": "IETF Trust",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

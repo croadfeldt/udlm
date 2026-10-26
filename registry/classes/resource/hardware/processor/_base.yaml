@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Processor/0.7.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Processor/0.7.3
 conforms_to: udlm/0.1
 uuid: 418c9acb-3cd8-4e73-817d-8be2bdf13442
 record_type: class
 class: base
 resource_type: Processor
-version: 0.7.2
+version: 0.7.3
 family: Resource
 status: active
 filed_under:
@@ -33,10 +33,10 @@ elements:
     scope: Processor
     optional: true
     state: canonical
-    description: 'How a partition is carved, when `device_class` is partition: `cpu-pinning` or `cpu-set`.'
+    description: 'How a partition is carved, when `device_class` is partition: `cpu_pinning` or `cpu_set`.'
     schema:
       $ref: ../../../../common-elements.schema.json#/$defs/partition_mechanism
-      description: 'How a partition is carved, when `device_class` is partition: `cpu-pinning` or `cpu-set`.'
+      description: 'How a partition is carved, when `device_class` is partition: `cpu_pinning` or `cpu_set`.'
   - element: identity
     scope: Processor
     optional: true
@@ -114,7 +114,7 @@ adopts:
     role: processor component vocabulary (cores, threads, architecture, speed, socket)
     source: https://www.dmtf.org/standards/redfish
     license: DMTF
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
 context:
   purpose: Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when
     the host rollup is not enough.

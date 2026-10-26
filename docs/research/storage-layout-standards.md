@@ -180,7 +180,7 @@ what must survive. Same-vocabulary tiers + recorded bindings; no lineage, no rep
   - *LUKS:* Ignition `luks[]` vocabulary (+Clevis tang/tpm2) — as an encryption block on the filesystem/
     device rather than a new type.
 - **Curtin → PRIOR-ART** in the register: the completeness yardstick the composite is measured against,
-  with the rejection grounds recorded (AGPL → `license_compatibility` fails `compatible-reference`;
+  with the rejection grounds recorded (AGPL → `license_compatibility` fails `compatible_reference`;
   no schema; YAML; single-vendor). Not adopted, but its type inventory is the checklist.
 - **Realized side → no adoption possible; record the finding.** Estate records keep the UDLM shape;
   `lsblk --json` / `sfdisk --json` / `zpool status -j` are *ingestion sources* a provider may emit
@@ -319,6 +319,6 @@ same fields from lsblk/zpool JSON. One vocabulary, three duties — which was th
   [OpenTofu](https://github.com/opentofu/opentofu/blob/main/LICENSE) (Linux Foundation fork) is MPL-2.0
   and genuinely open — but license aside, neither defines a storage-layout vocabulary: core/HCL are
   engine + syntax, and ["every resource type is implemented by a
-  provider"](https://opentofu.org/docs/language/providers/) — storage resources are provider-specific
+  provider"](https://opentofu.org/docs/language/providers/) — storage resources are provider_specific
   and volume-opaque (size/attachment altitude, same as TOSCA BlockStorage; no partition/filesystem/LUKS
   surface). Nothing to adopt.

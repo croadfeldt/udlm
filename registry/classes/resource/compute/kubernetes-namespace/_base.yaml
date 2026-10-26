@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNamespace/1.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNamespace/1.2.1
 conforms_to: udlm/0.1
 uuid: ae8d0510-221a-4500-b201-3b3e429c34e8
 record_type: class
 class: base
 resource_type: KubernetesNamespace
 short_name: K8sNamespace
-version: 1.2.0
+version: 1.2.1
 family: Resource
 status: active
 filed_under:
@@ -100,7 +100,7 @@ spec_examples:
 outputs:
   name:
     type: string
-    description: The realized namespace name — the string value provider-specific namespace references resolve to
+    description: The realized namespace name — the string value provider_specific namespace references resolve to
       (Provider-Class `SharedDataElement` references, ADR-038).
   uid:
     type: string
@@ -118,7 +118,7 @@ adopts:
     role: cluster-scoped isolation boundary for workloads and resource quotas
     source: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
     license: CC-BY-4.0
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
   - standard: Kubernetes
     version: core/v1
@@ -126,7 +126,7 @@ adopts:
     role: namespace-scoped aggregate resource limits and usage tracking
     source: https://kubernetes.io/docs/concepts/policy/resource-quotas/
     license: CC-BY-4.0
-    license_compatibility: compatible-reference
+    license_compatibility: compatible_reference
     disposition: tier1_value
 context:
   purpose: Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.

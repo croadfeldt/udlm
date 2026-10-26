@@ -38,7 +38,7 @@ sequenceDiagram
 ## Invariants
 
 - **Soft never blocks.** The dependent converges regardless of the soft dependency's state; it is
-  never `blocked-transient` or `blocked-permanent` on a soft edge.
+  never `blocked_transient` or `blocked_permanent` on a soft edge.
 - **The window is inert for the dependent.** A soft dependent does not wait, so `w` does not gate it;
   the soft target's own fate follows the ordinary operational rows.
 - **Degraded is surfaced, not silent.** Realized-degraded carries a warning naming the missing

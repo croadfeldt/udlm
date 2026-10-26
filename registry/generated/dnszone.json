@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/DNSZone/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/DNSZone/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5",
   "resource_type": "DNSZone",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "DNSZone",
-          "version": "0.7.0",
+          "version": "0.7.1",
           "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5"
         }
       ]
@@ -130,7 +130,7 @@
       "role": "DNS zone + resource-record vocabulary",
       "source": "https://www.rfc-editor.org/rfc/rfc1035",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -140,7 +140,7 @@
       "role": "Kubernetes-native zone/record cross-walk",
       "source": "https://github.com/kubernetes-sigs/external-dns",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

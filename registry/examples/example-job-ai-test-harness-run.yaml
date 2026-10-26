@@ -53,7 +53,7 @@ supersedes:
 record_type: realized_record
 state: Realized
 entity_uuid: 9c4e2b7a-1d3f-4a5b-8c6d-0e1f2a3b4c5d
-record_uuid: 01a163b2-87d8-7007-8007-000000000007
+record_uuid: 01a178b9-d0f0-7006-8006-000000000006
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Job
@@ -114,7 +114,7 @@ process:
       effect_type: read
       effect_description: downloaded and ran the package in a sealed sandbox on two versions
 supersedes:
-  - 01a0f335-67f4-723c-a3fc-2e80819a837a
+  - 01a163b2-87d8-7007-8007-000000000007
 provenance:
   outputs.started_at:
     - source:
@@ -250,9 +250,9 @@ provenance:
       sequence: 1
       timestamp: '2026-09-13T13:17:27Z'
 integrity:
-  head: sha256:aa05d7257583f49feb8b63beb2b728c7a3bdf5f0570f743f9fc3db4240f3c348
-  previous: sha256:c1906bc736607f427b46105c3cd47af881e15e73218c2491ffa7c08592572c8b
-  algorithm: sha256-jcs
+  head: sha256:ea016cfeba215db0daefaa827ade0718306e4f6d17f23c14c347b20fa1611525
+  previous: sha256:aa05d7257583f49feb8b63beb2b728c7a3bdf5f0570f743f9fc3db4240f3c348
+  algorithm: sha256_jcs
 ---
 record_type: intent_record
 state: Intent

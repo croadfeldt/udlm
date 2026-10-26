@@ -230,7 +230,7 @@ Response 202 Accepted:
 
 The **Resource Type Authority** is the team responsible for defining and maintaining the Resource Type Specification — the vendor-neutral contract all providers must implement. The authority may be a UDLM project maintainer (Tier 1), a named community maintainer (Tier 2), or an organization's domain team (Tier 3).
 
-A **Service Provider** implements that specification in their Catalog Item and publishes provider-specific extensions and Service Layers on top of it. A provider is the publisher of their catalog item — not necessarily the author of the underlying Resource Type Spec.
+A **Service Provider** implements that specification in their Catalog Item and publishes provider_specific extensions and Service Layers on top of it. A provider is the publisher of their catalog item — not necessarily the author of the underlying Resource Type Spec.
 
 In many cases they are the same team: a networking team may both define `VLAN` as the Resource Type Authority AND register as the Service Provider that realizes VLANs. In other cases they are different: a platform team defines `Machine.VM` as the Resource Type Authority, and multiple compute providers each independently register Catalog Items implementing that specification.
 

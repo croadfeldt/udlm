@@ -237,11 +237,11 @@
     },
     "curation_state": {
       "title": "Curation state",
-      "description": "The vocabulary-intake ladder (ADR-039). A term enters as `proposed`, is examined `under-review`, and becomes `canonical` when the curation ladder promotes it; `deprecated` marks one on the way out that still resolves. How strictly an estate binds an unpromoted term is a PROFILE floor (ADR-007), not a field here — homelab may mint on write, sovereign refuses anything but canonical. Declared once here; Knowledge.TaxonomyTerm and Knowledge.Capability still carry literal copies pending the SharedDataElement that lets them narrow (#520).",
+      "description": "The vocabulary-intake ladder (ADR-039). A term enters as `proposed`, is examined `under_review`, and becomes `canonical` when the curation ladder promotes it; `deprecated` marks one on the way out that still resolves. How strictly an estate binds an unpromoted term is a PROFILE floor (ADR-007), not a field here — homelab may mint on write, sovereign refuses anything but canonical. Declared once here; Knowledge.TaxonomyTerm and Knowledge.Capability still carry literal copies pending the SharedDataElement that lets them narrow (#520).",
       "type": "string",
       "enum": [
         "proposed",
-        "under-review",
+        "under_review",
         "canonical",
         "deprecated"
       ]
@@ -492,14 +492,14 @@
       "title": "Partition mechanism",
       "type": "string",
       "enum": [
-        "sr-iov",
+        "sr_iov",
         "mediated",
         "mig",
         "vlan",
         "macvlan",
         "ipvlan",
-        "cpu-pinning",
-        "cpu-set",
+        "cpu_pinning",
+        "cpu_set",
         "namespace",
         "lun",
         "other"

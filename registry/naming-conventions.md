@@ -217,7 +217,7 @@ composability). Normative rules:
 4. **The formal `extends` mechanism** is **RESOLVED** — Provider-Class `SharedDataElement`s
    (ADR-038). A provider extends an instance **additively** at its Provider Class,
    never by modifying the closed base spec. **No-override is structural**: the base type-spec is
-   `additionalProperties: false`, and an element may not shadow a base field. Any provider-specific
+   `additionalProperties: false`, and an element may not shadow a base field. Any provider_specific
    data **computes a portability degradation** (`portability_breaking: true`, classification
    narrowed, the elements + bound provider recorded) that **MUST be surfaced to the consumer** —
    silent non-portability is prohibited. A Tier-2 `Vendor.Type` fork remains the path

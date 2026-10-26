@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkInterface/0.17.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkInterface/0.17.1",
   "conforms_to": "udlm/0.1",
   "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23",
   "resource_type": "NetworkInterface",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "NetworkInterface",
-          "version": "0.17.0",
+          "version": "0.17.1",
           "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23"
         }
       ]
@@ -33,7 +33,7 @@
       },
       "partition_mechanism": {
         "$ref": "../common-elements.schema.json#/$defs/partition_mechanism",
-        "description": "How a partition is carved, when `device_class` is partition: `sr-iov`, `vlan`, `macvlan`, `ipvlan`."
+        "description": "How a partition is carved, when `device_class` is partition: `sr_iov`, `vlan`, `macvlan`, `ipvlan`."
       },
       "aggregation": {
         "type": "object",
@@ -230,7 +230,7 @@
       "role": "the bond `mode` values, verbatim (the Linux bonding driver names NMstate carries)",
       "source": "https://nmstate.io/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -240,7 +240,7 @@
       "role": "network-interface component vocabulary (NetworkAdapter/NetworkPort/NetworkDeviceFunction: MAC, speed, MTU)",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -250,7 +250,7 @@
       "role": "interface-stacking vocabulary — a composite interface (bond/bridge) references its member interfaces via lower_layer (RFC 8343 lower-layer-if)",
       "source": "https://www.rfc-editor.org/rfc/rfc8343",
       "license": "IETF-Trust-TLP",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -260,7 +260,7 @@
       "role": "bond / LACP link-aggregation vocabulary (device_class=aggregate, aggregation.mode=802.3ad)",
       "source": "https://standards.ieee.org/ieee/802.1AX/",
       "license": "IEEE",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     },
     {
@@ -270,7 +270,7 @@
       "role": "software L2 bridge + VLAN vocabulary (device_class=bridge, bridge.vlan_filtering, vlan_id)",
       "source": "https://standards.ieee.org/ieee/802.1Q/",
       "license": "IEEE",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     },
     {
@@ -280,7 +280,7 @@
       "role": "relation vocabulary — connects_to peer-adjacency relation name (common-elements §9)",
       "source": "https://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html",
       "license": "OASIS",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -290,7 +290,7 @@
       "role": "connects_to peer-discovery vocabulary (host NIC <-> switch port adjacency)",
       "source": "https://standards.ieee.org/ieee/802.1AB/",
       "license": "IEEE",
-      "license_compatibility": "reference-only",
+      "license_compatibility": "reference_only",
       "disposition": "tier1_value"
     }
   ],

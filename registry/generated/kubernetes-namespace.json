@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesNamespace/1.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesNamespace/1.2.1",
   "conforms_to": "udlm/0.1",
   "uuid": "ae8d0510-221a-4500-b201-3b3e429c34e8",
   "resource_type": "KubernetesNamespace",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "KubernetesNamespace",
-          "version": "1.2.0",
+          "version": "1.2.1",
           "uuid": "ae8d0510-221a-4500-b201-3b3e429c34e8"
         }
       ]
@@ -104,7 +104,7 @@
   "outputs": {
     "name": {
       "type": "string",
-      "description": "The realized namespace name — the string value provider-specific namespace references resolve to (Provider-Class `SharedDataElement` references, ADR-038)."
+      "description": "The realized namespace name — the string value provider_specific namespace references resolve to (Provider-Class `SharedDataElement` references, ADR-038)."
     },
     "uid": {
       "type": "string",
@@ -128,7 +128,7 @@
       "role": "cluster-scoped isolation boundary for workloads and resource quotas",
       "source": "https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
       "license": "CC-BY-4.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
     {
@@ -138,7 +138,7 @@
       "role": "namespace-scoped aggregate resource limits and usage tracking",
       "source": "https://kubernetes.io/docs/concepts/policy/resource-quotas/",
       "license": "CC-BY-4.0",
-      "license_compatibility": "compatible-reference",
+      "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     }
   ],

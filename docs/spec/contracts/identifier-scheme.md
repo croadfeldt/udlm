@@ -181,7 +181,7 @@ A test suite for these rules is part of the conformance specification
 ## 8. Related contracts
 
 - [`time-and-clock.md`](time-and-clock.md) — timestamps embedded in identifiers (UUIDv7)
-- **RFC 9562** (https://www.rfc-editor.org/rfc/rfc9562) — the adopted UUID standard (IETF Trust, compatible-reference)
+- **RFC 9562** (https://www.rfc-editor.org/rfc/rfc9562) — the adopted UUID standard (IETF Trust, compatible_reference)
 - [`schema-sharing.md`](schema-sharing.md) — how peers exchange the type definitions identifiers point to
 - [`error-model.md`](error-model.md) — error codes raised on identifier violations
 - [`event-catalog.md`](event-catalog.md) — identifiers used in event envelopes

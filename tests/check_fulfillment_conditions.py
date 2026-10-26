@@ -4,8 +4,8 @@
 **The problem this closes.** A request that is not finished could not say whether it was stuck.
 Three situations were recorded identically: waiting on something that is coming (fine, wait),
 waiting on something that is not moving (someone may need to act), and never going to finish (stop
-waiting). The use-case corpus has designed all of this — `blocked-transient` converges when it can,
-`blocked-permanent` is refused window-independently, a dependent inherits transitively — and one
+waiting). The use-case corpus has designed all of this — `blocked_transient` converges when it can,
+`blocked_permanent` is refused window-independently, a dependent inherits transitively — and one
 flow states outright that *"UDLM owns the refused/blocked-permanent vocabulary, the
 transitive-inheritance semantics, and the root-naming obligation."* None of it was in a schema.
 `status.conditions[].type` was an unconstrained string, so two implementations could spell the same
@@ -17,7 +17,7 @@ blocked state differently and neither would be wrong.
            stem, or a near-miss of a governed term) rather than by closing the whole condition
            vocabulary, which stays open for health, recovery and provider conditions.
   FUL-002  an inherited condition names its immediate blocker. "Blocked" without a blocker is not
-           actionable, and the root-naming obligation depends on it: a blocked-permanent app three
+           actionable, and the root-naming obligation depends on it: a blocked_permanent app three
            hops from the refused volume is only useful if the volume is reachable by walking.
            `refused` is exempt — it IS the root.
   FUL-003  the walk terminates. A blocked chain that cycles, or that points at a record which does
@@ -47,7 +47,7 @@ SCAN_ROOTS = [os.path.join(ROOT, "registry", "examples"),
               os.path.join(ROOT, "registry", "instances")]
 
 # The closed family (DEP-017). `refused` is the root of a chain; the other three are links in one.
-INHERITED = {"blocked-transient", "blocked-permanent", "dependency-cancelled"}
+INHERITED = {"blocked_transient", "blocked_permanent", "dependency_cancelled"}
 FULFILLMENT = INHERITED | {"refused"}
 
 
@@ -66,7 +66,7 @@ def _looks_like_fulfillment(t):
     low = t.lower().replace("_", "-")
     if low.startswith("blocked-"):
         return True
-    return low in {"refuse", "refused", "dependency-cancel", "dependency-cancelled",
+    return low in {"refuse", "refused", "dependency-cancel", "dependency_cancelled",
                    "dependency-canceled", "cancelled-dependency"}
 
 
@@ -154,16 +154,16 @@ def main():
 
     # self-test: each arm must fire on a planted violation, or this only proves the walk ran.
     probe = {"R": {"uuid": "R", "handle": "root",
-                   "status": {"conditions": [{"type": "blocked-transient", "blocked_on": "S"}]}},
+                   "status": {"conditions": [{"type": "blocked_transient", "blocked_on": "S"}]}},
              "S": {"uuid": "S", "handle": "s",
-                   "status": {"conditions": [{"type": "blocked-transient", "blocked_on": "R"}]}}}
+                   "status": {"conditions": [{"type": "blocked_transient", "blocked_on": "R"}]}}}
     arms = {
         "FUL-001": evaluate({"uuid": "A", "handle": "a", "status": {"conditions": [
-            {"type": "blocked_transient"}]}}, probe),
+            {"type": "blocked-transient"}]}}, probe),  # the pre-#657 hyphen spelling is now the near-miss
         "FUL-002": evaluate({"uuid": "B", "handle": "b", "status": {"conditions": [
-            {"type": "blocked-permanent"}]}}, probe),
+            {"type": "blocked_permanent"}]}}, probe),
         "FUL-003": evaluate({"uuid": "C", "handle": "c", "status": {"conditions": [
-            {"type": "blocked-transient", "blocked_on": "ghost"}]}}, probe),
+            {"type": "blocked_transient", "blocked_on": "ghost"}]}}, probe),
     }
     for rule, got in arms.items():
         if not any(rule in e for e in got):

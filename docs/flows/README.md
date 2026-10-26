@@ -55,13 +55,13 @@ member-status × window) and the corpus family
 
 | Flow | What it stages |
 |---|---|
-| [Operational dependency cascade](intent-fulfillment-operational-dependency-cascade.md) | container hard-depends on PVC; transient PVC → container blocked-transient, waits, converges; independents proceed; root surfaced |
-| [Operational transitive refusal](intent-fulfillment-operational-transitive-refusal.md) | permanently-refused PVC → blocked-permanent propagates up the chain (container, app); one rooted refusal |
+| [Operational dependency cascade](intent-fulfillment-operational-dependency-cascade.md) | container hard-depends on PVC; transient PVC → container blocked_transient, waits, converges; independents proceed; root surfaced |
+| [Operational transitive refusal](intent-fulfillment-operational-transitive-refusal.md) | permanently-refused PVC → blocked_permanent propagates up the chain (container, app); one rooted refusal |
 | [Request dependency, atomic](intent-fulfillment-request-dependency-atomic.md) | ten request-coupled peer VMs — hold-all until all can, cancel-all on permanent shortfall; both from one binding |
 | [Request vs operational, the distinction](intent-fulfillment-request-vs-operational-distinction.md) | the same two members under an operational edge (directional) vs a request edge (mutual) — the nature is what differs |
 | [The convergence window](intent-fulfillment-convergence-window.md) | the same transient member at `w=0` fail-fast, `w=N` converge-then-give-up, `w=∞` defer — the sole converge dial |
 | [Soft operational does not block](intent-fulfillment-soft-operational-does-not-block.md) | soft DNS unrealized → container converges degraded, not blocked; strength is the switch |
-| [Pending converges later](intent-fulfillment-pending-converges-later.md) | a blocked-transient member + operational dependents converge later via reconciliation, no re-request |
+| [Pending converges later](intent-fulfillment-pending-converges-later.md) | a blocked_transient member + operational dependents converge later via reconciliation, no re-request |
 | [Surface names the root](intent-fulfillment-surface-names-root.md) (must-reject) | a chain failure naming only the proximate member, not the root + chain, is refused |
 | [Surfacing is mandatory](intent-fulfillment-surfacing-mandatory.md) (must-reject) | a silent partial expressed only as a missable field, with no warning, is refused |
 

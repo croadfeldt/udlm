@@ -7,7 +7,7 @@ scenario:
     operational dependency: a hard, directional, Realized-layer coupling — the container cannot
     function without the volume). The PVC cannot realize now for a transient reason (no eligible
     storage capacity). Because the dependency nature is operational, the container is blocked
-    while its dependency is unsatisfied — classified blocked-transient, not failed and never
+    while its dependency is unsatisfied — classified blocked_transient, not failed and never
     realized dangling against a volume that is not there. The convergence window is open (w>0),
     so the container waits and converges the moment the PVC realizes. Independent members of the
     same intent (a ConfigMap, an unrelated service) proceed and realize — the operational block
@@ -23,11 +23,11 @@ scenario:
     - sre
     - provider-owner
   intent: >-
-    Hold a container blocked-transient while its operational PVC dependency is unrealized, let
+    Hold a container blocked_transient while its operational PVC dependency is unrealized, let
     independent members proceed, and converge the container when the PVC realizes — surfacing the
     root dependency as an actionable warning
   success_criteria:
-  - The container is classified blocked-transient while the PVC is unrealized — not failed, not realized dangling
+  - The container is classified blocked_transient while the PVC is unrealized — not failed, not realized dangling
   - The PVC is classified as the root unsatisfied dependency, transiently unrealizable (converges later)
   - Independent members with no dependency on the PVC realize (the operational block is scoped to the directional chain)
   - When the PVC realizes, the container converges automatically via the reconciliation loop — no re-request
@@ -48,7 +48,7 @@ scenario:
   - domain: provider
     interaction: no eligible storage now; the reconciliation loop re-attempts the PVC, then the container
   - domain: audit
-    interaction: the blocked-transient container, the root PVC, and the convergence are recorded
+    interaction: the blocked_transient container, the root PVC, and the convergence are recorded
 generated_by:
   mode: authoring
   source: human-authored

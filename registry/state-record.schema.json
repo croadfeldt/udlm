@@ -93,7 +93,7 @@
     "origin": {
       "enum": [
         "declared",
-        "discovered-derived",
+        "discovered_derived",
         "backfilled"
       ],
       "description": "How this record came to exist: declared by its author; derived from a discovery (brownfield adoption); backfilled after the fact."
@@ -624,7 +624,7 @@
       ],
       "correlation_ids": [
         {
-          "scheme": "libvirt-domain-uuid",
+          "scheme": "libvirt_domain_uuid",
           "value": "4e2a7c19-6b3d-4f8e-a1c5-9d0b2e7f3a64"
         },
         {
@@ -700,7 +700,7 @@
       "integrity": {
         "head": "sha256:73554999e7dd2b597cb30e8dd9836450613158b3b4a64a169ce6c34a3e1f1d93",
         "previous": "sha256:e8889df6cff24766f2dc1697342d6f7949a23c1a1364b45e6fdfb2f3eaa6b264",
-        "algorithm": "sha256-jcs"
+        "algorithm": "sha256_jcs"
       }
     },
     {
@@ -715,7 +715,7 @@
       "type_ref": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0",
       "handle": "lab/vm/app-01",
       "generation": 1,
-      "origin": "discovered-derived",
+      "origin": "discovered_derived",
       "at": "2026-09-03T14:18:00Z",
       "time_source": "discovery-sweep",
       "provider": "lab/providers/libvirt-host-a",
@@ -740,7 +740,7 @@
       },
       "correlation_ids": [
         {
-          "scheme": "libvirt-domain-uuid",
+          "scheme": "libvirt_domain_uuid",
           "value": "4e2a7c19-6b3d-4f8e-a1c5-9d0b2e7f3a64"
         },
         {
@@ -749,7 +749,7 @@
         }
       ],
       "matched_by": [
-        "libvirt-domain-uuid"
+        "libvirt_domain_uuid"
       ],
       "dependencies": [
         {
@@ -757,7 +757,7 @@
           "target_uuid": "8a4d1e6f-2b3c-4d5e-9f0a-1b2c3d4e5f60",
           "target_handle": "lab/host/host-a",
           "target_key": {
-            "scheme": "smbios-uuid",
+            "scheme": "smbios_uuid",
             "value": "3f6b1a2c-9d4e-4b7f-8a1c-2e5d7f9b0c43"
           },
           "resolved_at": "2026-09-03T14:18:00Z"
@@ -765,7 +765,7 @@
         {
           "edge_type": "depends_on",
           "target_key": {
-            "scheme": "provider-id",
+            "scheme": "provider_id",
             "value": "libvirt-host-a/pool-a/app-01-root.qcow2"
           },
           "resolved_at": "2026-09-03T14:18:00Z"
@@ -912,7 +912,7 @@
             "properties": {
               "type": {
                 "type": "string",
-                "description": "The condition being reported. Open by design (K8s convention) — health, recovery and provider-specific conditions all live here. ONE FAMILY IS CLOSED: the fulfillment conditions `blocked-transient` | `blocked-permanent` | `refused` | `dependency-cancelled` (service-dependencies DEP-017), which say why a member has not reached Realized yet. That family is closed because its members carry PROPAGATION semantics — a dependent inherits transitively, and transient waits where permanent refuses — so a fifth spelling is not a new condition, it is a member of this family nobody can act on."
+                "description": "The condition being reported. Open by design (K8s convention) — health, recovery and provider_specific conditions all live here. ONE FAMILY IS CLOSED: the fulfillment conditions `blocked_transient` | `blocked_permanent` | `refused` | `dependency_cancelled` (service-dependencies DEP-017), which say why a member has not reached Realized yet. That family is closed because its members carry PROPAGATION semantics — a dependent inherits transitively, and transient waits where permanent refuses — so a fifth spelling is not a new condition, it is a member of this family nobody can act on."
               },
               "status": {
                 "enum": [
@@ -927,7 +927,7 @@
               "blocked_on": {
                 "type": "string",
                 "format": "udlm-ref-url",
-                "description": "WHAT this member is waiting on — a reference to the blocking record. REQUIRED on a fulfillment condition (DEP-017): 'blocked' without a blocker is not actionable, and the root-naming obligation is the whole point of the family — a blocked-permanent app three hops from the refused volume is only useful if the volume is reachable from it. On an inherited condition this names the IMMEDIATE blocker, not the root; the root is found by walking, never by copying it down the chain (DRV-001)."
+                "description": "WHAT this member is waiting on — a reference to the blocking record. REQUIRED on a fulfillment condition (DEP-017): 'blocked' without a blocker is not actionable, and the root-naming obligation is the whole point of the family — a blocked_permanent app three hops from the refused volume is only useful if the volume is reachable from it. On an inherited condition this names the IMMEDIATE blocker, not the root; the root is found by walking, never by copying it down the chain (DRV-001)."
               },
               "message": {
                 "type": "string"
@@ -945,9 +945,9 @@
                   "properties": {
                     "type": {
                       "enum": [
-                        "blocked-transient",
-                        "blocked-permanent",
-                        "dependency-cancelled"
+                        "blocked_transient",
+                        "blocked_permanent",
+                        "dependency_cancelled"
                       ]
                     }
                   },
@@ -1047,21 +1047,21 @@
           "scheme": {
             "type": "string",
             "enum": [
-              "smbios-uuid",
-              "machine-id",
-              "serial-number",
-              "libvirt-domain-uuid",
+              "smbios_uuid",
+              "machine_id",
+              "serial_number",
+              "libvirt_domain_uuid",
               "mac",
               "wwn",
-              "lldp-chassis-id",
-              "ceph-fsid",
-              "provider-id",
-              "segment-id",
-              "subnet-prefix",
-              "gateway-mac"
+              "lldp_chassis_id",
+              "ceph_fsid",
+              "provider_id",
+              "segment_id",
+              "subnet_prefix",
+              "gateway_mac"
             ],
             "x-extensible-enum": true,
-            "description": "The kind of natural key. provider-id = the owning provider's own resource identifier (Avenue-1 discovery). A key that is unique only within a scope carries the scope in its value, rooted at the isolation domain the probe observed it in (four-states §2.4, row 118): segment-id = `<observer>/<domain>/<id>`, the observing device's own key (a chassis id, a machine id), the bridge domain, VRF, bridge or overlay it sits in, and the 802.1Q tag or VNI, an OBSERVATION that resolves to a VLAN record only when that record lists it; a VLAN's identity is its owning provider's identifier, provider-id, and UDLM never infers that two observer keys name one VLAN (row 119); subnet-prefix = `<segment-id value>#<cidr>`, or the bare CIDR where no segment is known; gateway-mac = the MAC that answers the subnet's gateway address, a second key that tells deliberate duplicates apart. A record may carry several keys; resolution matches on what it has and refuses a tie as ambiguous rather than merging on a guess."
+            "description": "The kind of natural key. provider_id = the owning provider's own resource identifier (Avenue-1 discovery). A key that is unique only within a scope carries the scope in its value, rooted at the isolation domain the probe observed it in (four-states §2.4, row 118): segment_id = `<observer>/<domain>/<id>`, the observing device's own key (a chassis id, a machine id), the bridge domain, VRF, bridge or overlay it sits in, and the 802.1Q tag or VNI, an OBSERVATION that resolves to a VLAN record only when that record lists it; a VLAN's identity is its owning provider's identifier, provider_id, and UDLM never infers that two observer keys name one VLAN (row 119); subnet_prefix = `<segment_id value>#<cidr>`, or the bare CIDR where no segment is known; gateway_mac = the MAC that answers the subnet's gateway address, a second key that tells deliberate duplicates apart. A record may carry several keys; resolution matches on what it has and refuses a tie as ambiguous rather than merging on a guess."
           },
           "value": {
             "type": "string"
@@ -1079,31 +1079,31 @@
     "portability": {
       "type": "object",
       "additionalProperties": false,
-      "description": "INSTANCE portability: the realized entity's actual portability, DEGRADED from the type's declared classification when the entity carries provider-specific data (Provider-Class `SharedDataElement`s — ADR-038; schema realization #199; the retired `provider_extensions` carrier is removed per #202). Base-type-declared, instance-degraded — never silently presented as fully portable. When degraded, the consumer MUST be notified before/at realization (class-tiers.md §7 Transparency principle); a portability-degradation event is emitted.",
+      "description": "INSTANCE portability: the realized entity's actual portability, DEGRADED from the type's declared classification when the entity carries provider_specific data (Provider-Class `SharedDataElement`s — ADR-038; schema realization #199; the retired `provider_extensions` carrier is removed per #202). Base-type-declared, instance-degraded — never silently presented as fully portable. When degraded, the consumer MUST be notified before/at realization (class-tiers.md §7 Transparency principle); a portability-degradation event is emitted.",
       "properties": {
         "classification": {
           "enum": [
             "portable",
             "partial",
-            "provider-specific",
+            "provider_specific",
             "exclusive"
           ],
-          "description": "Effective instance classification. Narrows from the type's declared value when provider-specific data is present (e.g. portable -> provider-specific). COMPUTED by the control plane, not provider-declared."
+          "description": "Effective instance classification. Narrows from the type's declared value when provider_specific data is present (e.g. portable -> provider_specific). COMPUTED by the control plane, not provider-declared."
         },
         "portability_breaking": {
           "type": "boolean",
-          "description": "true iff this entity cannot be moved to another provider of the same type without loss — i.e. it carries provider-specific data. COMPUTED: any provider-specific (Provider-Class) element ⇒ true."
+          "description": "true iff this entity cannot be moved to another provider of the same type without loss — i.e. it carries provider_specific data. COMPUTED: any provider_specific (Provider-Class) element ⇒ true."
         },
         "portability_notes": {
           "type": "string",
-          "description": "Human-readable explanation surfaced to the consumer: which provider-specific elements make it non-portable and which provider(s) it is thereby bound to. Where a hard `provider_preference` is in force, say so here and say what it costs: a hard pin makes rehydration PROVIDER-DEPENDENT, which is a different failure from lossy movement — replaying the intent against a provider that no longer exists does not degrade, it fails. Whether it counts as degradation at all is policy's call; what the record owes is the fact and the distinction."
+          "description": "Human-readable explanation surfaced to the consumer: which provider_specific elements make it non-portable and which provider(s) it is thereby bound to. Where a hard `provider_preference` is in force, say so here and say what it costs: a hard pin makes rehydration PROVIDER-DEPENDENT, which is a different failure from lossy movement — replaying the intent against a provider that no longer exists does not degrade, it fails. Whether it counts as degradation at all is policy's call; what the record owes is the fact and the distinction."
         },
         "bound_providers": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "Provider handles this entity is bound to via provider-specific data. Moving to a provider not in this set would drop that data."
+          "description": "Provider handles this entity is bound to via provider_specific data. Moving to a provider not in this set would drop that data."
         },
         "consumer_notified": {
           "type": "object",
@@ -1333,7 +1333,7 @@
         "algorithm": {
           "type": "string",
           "enum": [
-            "sha256-jcs"
+            "sha256_jcs"
           ],
           "description": "How `head` was computed: SHA-256 over the RFC 8785 canonical form. Stated rather than assumed so a future algorithm is a declared migration and not a silent reinterpretation of existing heads — a verifier reading an old record must know which rule produced it."
         },

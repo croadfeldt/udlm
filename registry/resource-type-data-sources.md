@@ -76,7 +76,7 @@ UDLM has the hooks to encode this without new machinery:
 - **`spec` field annotations** — a field carries an `x-standard` pointer (e.g.
   `x-standard: "metal3:BareMetalHost.status.hardware.cpu"`) so validation + provenance resolve to the
   canonical element. Tier-1 codelists are referenced as field constraints, never enumerated.
-- **`portability: portable|partial|provider-specific`** + an OSAC-style `provider_hints` block = the
+- **`portability: portable|partial|provider_specific`** + an OSAC-style `provider_hints` block = the
   **vendor-extension slot**. Vendor-specific elements live here, marked portability-affecting, surfaced
   to policy — the model stays referenceable AND extensible (ties to the vendor/custom extension model).
 
@@ -100,11 +100,11 @@ schemas unless noted), to be merged into a new "Resource Domain Standards" secti
 ## 7. Source provenance & license compatibility (per SPEC-DESIGN-REQUIREMENTS §22–23)
 
 Every adopted source carries its license + a compatibility verdict against UDLM's **Apache-2.0**.
-Verdicts: `compatible-vendor` = Apache-2.0-compatible, text may even be vendored (absorb-safe);
-`compatible-reference` = permissive doc/standard, reference its vocabulary freely;
-`reference-only` = copyleft / file-scoped — **reference names only, do NOT vendor text/files**.
+Verdicts: `compatible_vendor` = Apache-2.0-compatible, text may even be vendored (absorb-safe);
+`compatible_reference` = permissive doc/standard, reference its vocabulary freely;
+`reference_only` = copyleft / file-scoped — **reference names only, do NOT vendor text/files**.
 Because adoption references vocabulary (field names = facts) and never restates a source's schema, even
-`reference-only` sources are safe to adopt — the verdict guards against *copying*.
+`reference_only` sources are safe to adopt — the verdict guards against *copying*.
 
 **Authority note.** The single authoritative home for each source's license verdict is
 [`standards-adoption-register.md`](standards-adoption-register.md) (`ADOPT-001`, normative). The table
@@ -114,24 +114,24 @@ it, not a second verdict.
 
 | Source | License | Verdict | Note |
 |---|---|---|---|
-| OSAC `fulfillment-service` protos | **verify** (expected Apache-2.0) | compatible-vendor *(pending verify)* | confirm before vendoring any proto text |
-| dcm-project `control-plane` | Apache-2.0 (sibling project) | compatible-vendor | |
-| heatmiser `dcm-site-ui` / appliance roles | **verify** (repo license) | compatible-reference *(pending verify)* | our own ecosystem; confirm |
-| DMTF Redfish schemas | DMTF permissive doc license | compatible-reference | implementation/reference permitted |
-| Metal3 `BareMetalHost` | Apache-2.0 | compatible-vendor | |
-| Rook `CephCluster` | Apache-2.0 | compatible-vendor | Ceph `-s` JSON keys are facts |
-| ISC Kea config schema | **MPL-2.0** | **reference-only** | reference field names; don't vendor Kea source/docs |
-| IETF DNS (RFC 1035 / 3596) | IETF Trust (BSD-like reuse) | compatible-reference | |
-| **NUT** variable namespace | **GPL-2.0+** | **reference-only** | variable *names* are facts; don't copy NUT docs/text |
-| Kubernetes Gateway API | Apache-2.0 | compatible-vendor | |
-| IETF LDAP RFC 4511/4512 | IETF Trust | compatible-reference | already cataloged |
-| IETF RFC 8343 (ietf-interfaces) | IETF Trust (BSD-like reuse) | compatible-reference | `lower-layer-if`/`higher-layer-if` stacking terms — facts (NetworkInterface aggregate/bridge) |
-| IEEE 802.1AX (Link Aggregation) | **IEEE (copyright)** | **reference-only** | bond/LACP *term names* only; don't copy IEEE standard text |
-| IEEE 802.1Q (Bridges & Bridged Networks) | **IEEE (copyright)** | **reference-only** | bridge/VLAN *term names* only; don't copy IEEE standard text |
-| IEEE 802.1AB (LLDP) | **IEEE (copyright)** | **reference-only** | Chassis ID / Port ID / System Name *TLV names* only — connects_to discovery + NetworkSwitch identity |
-| IETF RFC 8345 (ietf-network-topology) | IETF Trust (BSD-like reuse) | compatible-reference | node / termination-point / link vocabulary — facts (NetworkSwitch, connects_to) |
-| k8snetworkplumbingwg NetworkAttachmentDefinition | Apache-2.0 | compatible-reference | attachable-network concept (VirtualNetwork) |
-| libvirt network XML docs | **LGPL-2.1+** | **reference-only** | forward-mode *vocabulary* only; don't vendor libvirt docs/text |
+| OSAC `fulfillment-service` protos | **verify** (expected Apache-2.0) | compatible_vendor *(pending verify)* | confirm before vendoring any proto text |
+| dcm-project `control-plane` | Apache-2.0 (sibling project) | compatible_vendor | |
+| heatmiser `dcm-site-ui` / appliance roles | **verify** (repo license) | compatible_reference *(pending verify)* | our own ecosystem; confirm |
+| DMTF Redfish schemas | DMTF permissive doc license | compatible_reference | implementation/reference permitted |
+| Metal3 `BareMetalHost` | Apache-2.0 | compatible_vendor | |
+| Rook `CephCluster` | Apache-2.0 | compatible_vendor | Ceph `-s` JSON keys are facts |
+| ISC Kea config schema | **MPL-2.0** | **reference_only** | reference field names; don't vendor Kea source/docs |
+| IETF DNS (RFC 1035 / 3596) | IETF Trust (BSD-like reuse) | compatible_reference | |
+| **NUT** variable namespace | **GPL-2.0+** | **reference_only** | variable *names* are facts; don't copy NUT docs/text |
+| Kubernetes Gateway API | Apache-2.0 | compatible_vendor | |
+| IETF LDAP RFC 4511/4512 | IETF Trust | compatible_reference | already cataloged |
+| IETF RFC 8343 (ietf-interfaces) | IETF Trust (BSD-like reuse) | compatible_reference | `lower-layer-if`/`higher-layer-if` stacking terms — facts (NetworkInterface aggregate/bridge) |
+| IEEE 802.1AX (Link Aggregation) | **IEEE (copyright)** | **reference_only** | bond/LACP *term names* only; don't copy IEEE standard text |
+| IEEE 802.1Q (Bridges & Bridged Networks) | **IEEE (copyright)** | **reference_only** | bridge/VLAN *term names* only; don't copy IEEE standard text |
+| IEEE 802.1AB (LLDP) | **IEEE (copyright)** | **reference_only** | Chassis ID / Port ID / System Name *TLV names* only — connects_to discovery + NetworkSwitch identity |
+| IETF RFC 8345 (ietf-network-topology) | IETF Trust (BSD-like reuse) | compatible_reference | node / termination-point / link vocabulary — facts (NetworkSwitch, connects_to) |
+| k8snetworkplumbingwg NetworkAttachmentDefinition | Apache-2.0 | compatible_reference | attachable-network concept (VirtualNetwork) |
+| libvirt network XML docs | **LGPL-2.1+** | **reference_only** | forward-mode *vocabulary* only; don't vendor libvirt docs/text |
 
 **TODO when defining the types:** verify the three `**verify**` licenses (OSAC, heatmiser repos) and
 record the confirmed value in each type's `adopts[]` entry.

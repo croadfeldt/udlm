@@ -238,13 +238,13 @@ for engineers** — each is what makes the substrate a reliable, legible source 
 naturalizes *from*. A vague or drifting substrate hands providers ambiguous intent; a rigorous one hands them
 ground truth.
 
-**Caveat — carrying provider-specific data is not translating it.** Declining to *translate* is not the same as
-declining to *carry* provider-specific data. The substrate holds such data as a **Provider Class element** — a
+**Caveat — carrying provider_specific data is not translating it.** Declining to *translate* is not the same as
+declining to *carry* provider_specific data. The substrate holds such data as a **Provider Class element** — a
 provider-authored `SharedDataElement` scoped to that provider (ADR-038): the provider owns its definition, and
 UDLM **custodies** it like any other state (identity, provenance, versioning, tenancy) and passes it to the
 provider to apply. What UDLM never does is render it into a native spec — naturalization stays at the provider
 edge (DCM ADR-023). Because provider-scoped data does not carry to another provider, an entity that depends on it is
-flagged as portability-degraded and the consumer is notified. So: **carry provider-specific data = allowed**
+flagged as portability-degraded and the consumer is notified. So: **carry provider_specific data = allowed**
 (custody; the provider owns the definition); **translate or render a native spec = forbidden** (above).
 
 ---
