@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5460,
-    "mutations_rejected": 5460,
+    "mutations_attempted": 5497,
+    "mutations_rejected": 5497,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -128,8 +128,8 @@
         "rejected": 65
       },
       "KubernetesNodePool": {
-        "attempted": 145,
-        "rejected": 145
+        "attempted": 182,
+        "rejected": 182
       },
       "Location": {
         "attempted": 24,

@@ -597,7 +597,7 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 
 ## KubernetesNodePool
 
-### KubernetesNodePool (1.1.4)
+### KubernetesNodePool (1.2.0)
 
 **Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
 
@@ -708,7 +708,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.4.0)
+### Machine (2.4.1)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 

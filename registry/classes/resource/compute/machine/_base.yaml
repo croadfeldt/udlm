@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.4.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.4.1
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Machine
-version: 2.4.0
+version: 2.4.1
 family: Resource
 status: active
 filed_under:
@@ -128,39 +128,14 @@ elements:
       governed `storage_tier` and a `role` (`boot` for the disk that carries the OS, `data`, `log`). The name is the
       join key a realized Volume binds to through its `disk_entry`, surviving reorder and resize. Embedded here, not
       a record of its own: every platform declares a machine''s disk list on the machine and keeps the volumes
-      separate (row 112; formerly StorageLayout).'
+      separate (row 112; formerly StorageLayout). The entry shape is the shared `disk` (common-elements §2.6).'
     schema:
       type: array
       minItems: 1
       description: 'The machine''s disks as portable intent, in order; each entry''s `name` is the join key a realized
         Volume binds to through its `disk_entry`.'
       items:
-        type: object
-        additionalProperties: false
-        required:
-          - name
-          - size
-        properties:
-          name:
-            type: string
-            pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$
-            description: Stable disk identity, unique within the machine. Lowercase DNS-label shape.
-          size:
-            $ref: ../../../../common-elements.schema.json#/$defs/quantity
-            description: Requested disk size, quantity form (100Gi, 500GB).
-          storage_tier:
-            type: string
-            description: 'Optional storage performance class for this disk, a governed `storage_tier` term; absent,
-              the machine''s `storage_tier` applies. The class the provider chose is recorded per disk as
-              `storage_backing` in `outputs.realized_volumes`.'
-          role:
-            type: string
-            x-extensible-enum:
-              - boot
-              - data
-              - log
-            description: 'What the disk is for. `boot` marks the disk that carries the OS; a machine declares at most
-              one. Boot *order* is the machine''s `boot_order`, not a property of a disk.'
+        $ref: ../../../../common-elements.schema.json#/$defs/disk
   - element: boot_order
     scope: Machine
     optional: true
