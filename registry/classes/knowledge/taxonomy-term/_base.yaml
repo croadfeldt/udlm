@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/TaxonomyTerm/0.4.2
+$id: https://udlm.dev/registry/udlm/0.1/class/TaxonomyTerm/0.5.0
 conforms_to: udlm/0.1
 uuid: 0874c1b7-94c4-4682-a7a9-a29270c1ba17
 record_type: class
 class: base
 resource_type: TaxonomyTerm
-version: 0.4.2
+version: 0.5.0
 family: Knowledge
 status: active
 metadata:
@@ -17,14 +17,6 @@ metadata:
   origination_timestamp: '2026-07-11T00:00:00Z'
 entity_type: TaxonomyTerm
 elements:
-  - element: term
-    scope: TaxonomyTerm
-    optional: false
-    state: canonical
-    description: The canonical handle items normalize onto, unique within its root.
-    schema:
-      type: string
-      description: The canonical handle items normalize onto, unique within its root.
   - element: definition
     scope: TaxonomyTerm
     optional: false
@@ -51,14 +43,6 @@ elements:
       type: string
       description: The term's domain. For a provider-capability term, the class, family or usage group the capability
         operates over (TRI-003).
-  - element: root
-    scope: TaxonomyTerm
-    optional: true
-    state: canonical
-    description: The vocabulary root this term belongs to. Derivable by walking `parent`; recorded for query convenience.
-    schema:
-      type: string
-      description: The vocabulary root this term belongs to. Derivable by walking `parent`; recorded for query convenience.
   - element: normalization_rules
     scope: TaxonomyTerm
     optional: true
@@ -86,12 +70,10 @@ elements:
       description: 'Position in the curation lifecycle: `canonical` when seeded from an authority or adopted, `proposed`
         for a candidate a catalog surfaced. Promotion is a curation act applied by policy.'
 spec_examples:
-  - term: workload-placement
-    definition: The capability to schedule a workload onto a suitable host or node according to declared placement
+  - definition: The capability to schedule a workload onto a suitable host or node according to declared placement
       constraints.
     pillar: Operate
     domain: Machine
-    root: architecture-capability
     normalization_rules: Map free-text mentions of scheduling, bin-packing, affinity/anti-affinity, and node selection
       onto this term.
     category: dcm-capability-taxonomy

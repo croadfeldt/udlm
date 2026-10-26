@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e44193cc-a41f-4bf6-bfcf-aa70029dc10e",
   "resource_type": "SovereigntyZone",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SovereigntyZone",
-          "version": "0.1.2",
+          "version": "0.2.0",
           "uuid": "e44193cc-a41f-4bf6-bfcf-aa70029dc10e"
         }
       ]
@@ -46,10 +46,6 @@
           "pattern": "^[A-Z][A-Z0-9-]{1,15}$"
         },
         "description": "Supranational regimes the zone sits under (`EU`). Separate from `jurisdictions` because a regime does not subsume the way a country does: an accreditation scoped `EU` is not one scoped `DE`, and §3.8 matches a regime exactly. Absent means none applies."
-      },
-      "description": {
-        "type": "string",
-        "description": "What the zone is for, in the operator's words: the sentence that makes a coined name legible to someone who did not coin it."
       }
     },
     "required": [
@@ -63,8 +59,7 @@
         ],
         "regimes": [
           "EU"
-        ],
-        "description": "Western European zone — customer data stays inside the EU."
+        ]
       }
     ]
   },

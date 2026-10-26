@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Database/0.9.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Database/0.10.0",
   "conforms_to": "udlm/0.1",
   "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337",
   "resource_type": "Database",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Database",
-          "version": "0.9.0",
+          "version": "0.10.0",
           "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337"
         }
       ]
@@ -58,15 +58,6 @@
           }
         },
         "description": "Resource request in the shared compute shape: `cpu` as a quantity string (500m, 2), `memory`, `storage`."
-      },
-      "metadata": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        },
-        "description": "Free labels for the instance (environment, owner)."
       }
     },
     "required": [
@@ -81,9 +72,6 @@
           "cpu": "2",
           "memory": "16GB",
           "storage": "200GB"
-        },
-        "metadata": {
-          "name": "orders-db"
         }
       }
     ]

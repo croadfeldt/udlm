@@ -112,7 +112,7 @@ The always-on management controller inside a server that answers even when the h
 
 ## Capability
 
-### Capability (0.4.1)
+### Capability (0.5.0)
 
 **Purpose:** Names one discrete platform capability so architecture analysis can track, normalize, and gap-score it.
 
@@ -237,7 +237,7 @@ One DNS zone — its required `zone_name`, e.g. example.com — with its authori
 
 ## Database
 
-### Database (0.9.0)
+### Database (0.10.0)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -428,11 +428,11 @@ A range of addresses that individual address records are carved from: the requir
 
 ## Identity
 
-### Identity (1.2.1)
+### Identity (1.3.0)
 
-**Purpose:** Declares a subject the control plane authenticates and authorizes — a person or a service account — with the handle, actor type, authentication source and credential reference every identity provider serves.
+**Purpose:** Declares a subject the control plane authenticates and authorizes — a person or a service account — with the login, authentication source and credential reference every identity provider serves.
 
-Who can act. An identity has a `handle`, an `actor_type` (`human` or `service_account`, which its two forms narrow to one), where it is `authenticated_by`, an optional `credential_ref` to the secret that proves it, and a `status`. It is the subject side of the RBAC bridge: a Grouping's subject bindings name identities, and the function-capability matrix says what those identities may do. Modelled on SCIM's User so a directory, an IdP and a cloud IAM all fill it the same way.
+Who can act. An identity has a `login`, where it is `authenticated_by`, an optional `credential_ref` to the secret that proves it, and a `status`. It is the subject side of the RBAC bridge: a Grouping's subject bindings name identities, and the function-capability matrix says what those identities may do. Modelled on SCIM's User so a directory, an IdP and a cloud IAM all fill it the same way.
 
 **Use when:**
 - You need a person or a service account as a first-class subject that groupings can bind and audit records can name.
@@ -449,11 +449,11 @@ Who can act. An identity has a `handle`, an `actor_type` (`human` or `service_ac
 - CredentialRef — the credential that authenticates it.
 - DirectoryService — the directory that authenticates it.
 
-### Identity.Person (0.6.7)
+### Identity.Person (0.7.0)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
-One human's identity: its `handle` (the login name) and its `actor_type` — always `human`, and required alongside the handle — plus display name, email, status, and how they authenticate (the built-in provider by default, or a directory/IdP when federated). It carries no secret material — a password or key is referenced through a CredentialRef, never stored. Every audited action and role assignment points back at this record's stable actor id.
+One human's identity: its `login`, plus email, status, and how they authenticate (the built-in provider by default, or a directory/IdP when federated). It carries no secret material — a password or key is referenced through a CredentialRef, never stored. Every audited action and role assignment points back at this record's stable actor id.
 
 **Use when:**
 - You need human accounts as records that role assignments and audit trails reference.
@@ -469,11 +469,11 @@ One human's identity: its `handle` (the login name) and its `actor_type` — alw
 - CredentialRef — the person's credentials, by reference.
 - DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.6.7)
+### Identity.ServiceAccount (0.7.0)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
-An account for something that is not a person: a pipeline, an agent, an integration holding an API key. Like a person it has a required `handle` and `actor_type` (always `service_account`), an authenticator, and referenced-only credentials; unlike a person it declares an `owner_ref` — the person or group accountable for it. Its stable actor id is what role assignments and audit records bind to.
+An account for something that is not a person: a pipeline, an agent, an integration holding an API key. Like a person it has a required `login`, an authenticator, and referenced-only credentials; unlike a person it declares an `owner_ref` — the person or group accountable for it. Its stable actor id is what role assignments and audit records bind to.
 
 **Use when:**
 - You need automation to authenticate with its own identity instead of borrowing a person's.
@@ -514,7 +514,7 @@ Some machines are routinely wiped and rebuilt, but parts of their identity must 
 
 ## IdentityGroup
 
-### IdentityGroup (0.5.1)
+### IdentityGroup (0.6.0)
 
 **Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
 
@@ -617,7 +617,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 
 ## Location
 
-### Location (0.5.1)
+### Location (0.6.0)
 
 **Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
 
@@ -922,7 +922,7 @@ One container image, identified by its content digest (one observed `tag` is rec
 
 ## SoftwarePackage
 
-### SoftwarePackage (0.3.1)
+### SoftwarePackage (0.4.0)
 
 **Purpose:** Records a software package or library as one shared fact per package URL, so every image containing it points at the same record.
 
@@ -942,7 +942,7 @@ One package at one version — identified by its purl (Package URL), the portabl
 
 ## SovereigntyZone
 
-### SovereigntyZone (0.1.2)
+### SovereigntyZone (0.2.0)
 
 **Purpose:** Give a coined zone name a declared meaning, so that "is this entity's placement covered by that accreditation?" is a question the model can answer.
 
@@ -1076,7 +1076,7 @@ The IP side of a network — the address range, the way out of it, and how hosts
 
 ## TaxonomyTerm
 
-### TaxonomyTerm (0.4.2)
+### TaxonomyTerm (0.5.0)
 
 **Purpose:** Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.
 

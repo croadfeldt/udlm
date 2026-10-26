@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Location/0.5.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Location/0.6.0
 conforms_to: udlm/0.1
 uuid: 545ae44a-fa98-4e7c-a0d6-1cbabaa4903b
 record_type: class
 class: base
 resource_type: Location
-version: 0.5.1
+version: 0.6.0
 family: Resource
 status: active
 filed_under:
@@ -36,14 +36,6 @@ elements:
         - bench
         - other
       description: 'The granularity: site, room, rack, bench, slot.'
-  - element: label
-    scope: Location
-    optional: true
-    state: canonical
-    description: Human name (server rack, workbench).
-    schema:
-      type: string
-      description: Human name (server rack, workbench).
   - element: position
     scope: Location
     optional: true
@@ -54,7 +46,6 @@ elements:
       description: Placement within the parent (rack units U20-U21, a grid cell).
 spec_examples:
   - kind: rack
-    label: Lab compute rack A
     position: Row 2, Grid C7
 outputs:
   occupant_count:

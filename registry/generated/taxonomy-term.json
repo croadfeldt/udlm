@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.4.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "0874c1b7-94c4-4682-a7a9-a29270c1ba17",
   "resource_type": "TaxonomyTerm",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "TaxonomyTerm",
-          "version": "0.4.2",
+          "version": "0.5.0",
           "uuid": "0874c1b7-94c4-4682-a7a9-a29270c1ba17"
         }
       ]
@@ -27,10 +27,6 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-      "term": {
-        "type": "string",
-        "description": "The canonical handle items normalize onto, unique within its root."
-      },
       "definition": {
         "type": "string",
         "description": "What the term means; the definition items are normalized against."
@@ -42,10 +38,6 @@
       "domain": {
         "type": "string",
         "description": "The term's domain. For a provider-capability term, the class, family or usage group the capability operates over (TRI-003)."
-      },
-      "root": {
-        "type": "string",
-        "description": "The vocabulary root this term belongs to. Derivable by walking `parent`; recorded for query convenience."
       },
       "normalization_rules": {
         "type": "string",
@@ -61,16 +53,13 @@
       }
     },
     "required": [
-      "definition",
-      "term"
+      "definition"
     ],
     "examples": [
       {
-        "term": "workload-placement",
         "definition": "The capability to schedule a workload onto a suitable host or node according to declared placement constraints.",
         "pillar": "Operate",
         "domain": "Machine",
-        "root": "architecture-capability",
         "normalization_rules": "Map free-text mentions of scheduling, bin-packing, affinity/anti-affinity, and node selection onto this term.",
         "category": "dcm-capability-taxonomy",
         "curation_state": "canonical"

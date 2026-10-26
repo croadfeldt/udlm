@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5591,
-    "mutations_rejected": 5591,
+    "mutations_attempted": 5460,
+    "mutations_rejected": 5460,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -36,8 +36,8 @@
         "rejected": 71
       },
       "Capability": {
-        "attempted": 43,
-        "rejected": 43
+        "attempted": 27,
+        "rejected": 27
       },
       "ConnectionProfile": {
         "attempted": 25,
@@ -60,8 +60,8 @@
         "rejected": 142
       },
       "Database": {
-        "attempted": 65,
-        "rejected": 65
+        "attempted": 54,
+        "rejected": 54
       },
       "DirectoryService": {
         "attempted": 56,
@@ -96,24 +96,24 @@
         "rejected": 70
       },
       "Identity": {
-        "attempted": 44,
-        "rejected": 44
+        "attempted": 29,
+        "rejected": 29
       },
       "Identity.Person": {
-        "attempted": 57,
-        "rejected": 57
+        "attempted": 42,
+        "rejected": 42
       },
       "Identity.ServiceAccount": {
-        "attempted": 50,
-        "rejected": 50
+        "attempted": 35,
+        "rejected": 35
       },
       "IdentityEscrow": {
         "attempted": 130,
         "rejected": 130
       },
       "IdentityGroup": {
-        "attempted": 42,
-        "rejected": 42
+        "attempted": 28,
+        "rejected": 28
       },
       "Job": {
         "attempted": 85,
@@ -132,8 +132,8 @@
         "rejected": 145
       },
       "Location": {
-        "attempted": 30,
-        "rejected": 30
+        "attempted": 24,
+        "rejected": 24
       },
       "LogShipper": {
         "attempted": 39,
@@ -192,12 +192,12 @@
         "rejected": 47
       },
       "SoftwarePackage": {
-        "attempted": 40,
-        "rejected": 40
+        "attempted": 21,
+        "rejected": 21
       },
       "SovereigntyZone": {
-        "attempted": 46,
-        "rejected": 46
+        "attempted": 40,
+        "rejected": 40
       },
       "StorageClass": {
         "attempted": 88,
@@ -220,8 +220,8 @@
         "rejected": 58
       },
       "TaxonomyTerm": {
-        "attempted": 61,
-        "rejected": 61
+        "attempted": 47,
+        "rejected": 47
       },
       "Template": {
         "attempted": 41,

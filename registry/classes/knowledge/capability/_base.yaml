@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Capability/0.4.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Capability/0.5.0
 conforms_to: udlm/0.1
 uuid: 1d8e581f-71a1-4023-aaba-2d581a02da0e
 record_type: class
 class: base
 resource_type: Capability
-version: 0.4.1
+version: 0.5.0
 family: Knowledge
 status: active
 metadata:
@@ -16,22 +16,6 @@ metadata:
   origination_timestamp: '2026-06-18T00:58:56Z'
 entity_type: Capability
 elements:
-  - element: name
-    scope: Capability
-    optional: false
-    state: canonical
-    description: Canonical name, the single handle aliases converge onto.
-    schema:
-      type: string
-      description: Canonical name, the single handle aliases converge onto.
-  - element: description
-    scope: Capability
-    optional: false
-    state: canonical
-    description: What the capability is and the architectural concern it addresses.
-    schema:
-      type: string
-      description: What the capability is and the architectural concern it addresses.
   - element: pillar
     scope: Capability
     optional: true
@@ -59,10 +43,7 @@ elements:
       description: Position in the curation lifecycle, the Knowledge reading of the four states. Promotion to canonical
         is a curation act applied by policy, not by a provider.
 spec_examples:
-  - name: workload-placement
-    description: Schedule a workload onto a suitable host or node according to declared placement constraints (affinity,
-      topology, resource fit).
-    pillar: Operate
+  - pillar: Operate
     domain: Scheduling
     curation_state: canonical
 outputs:
