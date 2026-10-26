@@ -1,0 +1,87 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/VolumeSnapshot/0.1.0
+conforms_to: udlm/0.1
+uuid: 828f157d-67ef-4dfe-a6a2-d74673f720dc
+record_type: class
+class: base
+resource_type: VolumeSnapshot
+version: 0.1.0
+family: Resource
+status: active
+filed_under:
+  - storage
+metadata:
+  display_name: Volume Snapshot
+  description: 'A point-in-time copy of one Volume''s data, that a new Volume can be restored from. A Base by the
+    Base test (CLS-002): Kubernetes VolumeSnapshot, CSI CreateSnapshot and the snapshot of every block and file
+    provisioner (ZFS, Ceph RBD, LVM, cloud disks) abstract to the same thing, so an order for a snapshot of a volume
+    is fillable by whatever provisions the volume. The provisioner is the provider.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-10-26T00:00:00Z'
+elements:
+  - element: source
+    scope: VolumeSnapshot
+    optional: false
+    state: proposed
+    description: 'The Volume this snapshot copies, the Kubernetes VolumeSnapshot `source`. Read by the provider to
+      take the snapshot, and by a restore to know whose data it is. Set at creation and never changed; the matching
+      edge is `snapshot_of`.'
+    schema:
+      $ref: ../../../../common-elements.schema.json#/$defs/Reference
+      description: The Volume this snapshot copies.
+  - element: deletion_policy
+    scope: VolumeSnapshot
+    optional: true
+    state: proposed
+    description: 'What happens to the snapshot''s data when the record is released: Delete removes it, Retain keeps
+      it. Kubernetes `deletionPolicy` (VolumeSnapshotClass / VolumeSnapshotContent), copied verbatim like StorageClass
+      `reclaim_policy` (row 111: an x-standard field keeps its standard''s spelling). Read by the provider on release.'
+    schema:
+      type: string
+      x-standard: "Kubernetes:snapshot.storage.k8s.io/v1 VolumeSnapshotClass.deletionPolicy"
+      enum:
+        - Delete
+        - Retain
+      description: 'What happens to the snapshot''s data when the record is released: Delete or Retain.'
+spec_examples:
+  - source: volume/db-data
+    deletion_policy: Retain
+outputs:
+  snapshot_handle:
+    type: string
+    description: The provider's snapshot id once Realized (CSI snapshot_id, a ZFS `dataset@snapshot` name). Read by
+      the provider to restore or delete it.
+  restore_size:
+    type: string
+    description: A quantity (common-elements), the smallest capacity a Volume restored from this snapshot needs (Kubernetes status.restoreSize).
+      Read when a restore is ordered, to refuse a target smaller than the data.
+relationships:
+  - edge_type: references
+    target: Volume
+    name: snapshot_of
+    cardinality: 1..1
+    description: The volume this snapshot copies (spec.source names it).
+adopts:
+  - standard: Kubernetes
+    version: snapshot.storage.k8s.io/v1
+    standard_name: VolumeSnapshot / CSI CreateSnapshot
+    role: point-in-time copy vocabulary (source, deletionPolicy, restoreSize, snapshotHandle), names mirrored in
+      snake_case
+    source: https://kubernetes.io/docs/concepts/storage/volume-snapshots/
+    license: Apache-2.0
+    license_compatibility: compatible_reference
+    disposition: tier1_value
+context:
+  purpose: Declares a point-in-time copy of a volume's data that a new volume can be restored from.
+  plain_description: 'A snapshot of one volume, taken at one moment. It names the volume it copies (`source`) and
+    what happens to its data when the record is released (`deletion_policy`). Once realized, the provider reports its handle and
+    how large a volume restored from it must be. Whether it is ready to restore from is a `Ready` status condition,
+    not a field. A new Volume restores from it by naming it in `data_source`.'
+  use_when:
+    - You need a point-in-time copy of a volume to restore, clone or move its data from.
+    - You need a restored volume's lineage, which snapshot of which volume it came from, kept in the graph.
+  not_for:
+    - Continuous replication of a volume to another site, which is a different relationship (a stream, not a copy).
+    - A backup held outside the provisioner, which is not restorable by the provisioner alone.
+    - The volume itself — Volume.
+  works_with:
+    - Volume — the volume it copies (`source`), and the volumes restored from it (their `data_source`).

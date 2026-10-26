@@ -39,12 +39,19 @@
     },
     {
       "class": "Volume",
-      "version": "0.14.1",
+      "version": "0.15.0",
       "instantiable": true,
       "path": "registry/classes/resource/storage/volume/_base.yaml",
       "types": [
         "Volume.ZFS"
       ]
+    },
+    {
+      "class": "VolumeSnapshot",
+      "version": "0.1.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/storage/volume-snapshot/_base.yaml",
+      "types": []
     }
   ]
 }

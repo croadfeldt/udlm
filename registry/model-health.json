@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 65,
+    "types": 66,
     "by_family": {
       "Access": 9,
       "Knowledge": 9,
       "Process": 3,
-      "Resource": 44
+      "Resource": 45
     }
   },
   "discrimination": {
-    "mutations_attempted": 5497,
-    "mutations_rejected": 5497,
+    "mutations_attempted": 5533,
+    "mutations_rejected": 5533,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -260,12 +260,16 @@
         "rejected": 57
       },
       "Volume": {
-        "attempted": 52,
-        "rejected": 52
+        "attempted": 58,
+        "rejected": 58
       },
       "Volume.ZFS": {
-        "attempted": 64,
-        "rejected": 64
+        "attempted": 70,
+        "rejected": 70
+      },
+      "VolumeSnapshot": {
+        "attempted": 24,
+        "rejected": 24
       },
       "Vulnerability": {
         "attempted": 67,
@@ -278,8 +282,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 65,
-    "total": 65
+    "strict_specs": 66,
+    "total": 66
   },
   "outputs": {
     "per_type": {
@@ -344,8 +348,9 @@
       "VLAN": 1,
       "VexStatement": 0,
       "VirtualNetwork": 1,
-      "Volume": 2,
-      "Volume.ZFS": 3,
+      "Volume": 3,
+      "Volume.ZFS": 4,
+      "VolumeSnapshot": 2,
       "Vulnerability": 0,
       "Workload": 1
     },
@@ -398,13 +403,13 @@
     ]
   },
   "context": {
-    "with_context": 65,
-    "total": 65,
+    "with_context": 66,
+    "total": 66,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 52,
-    "total": 65,
+    "with_relationships": 53,
+    "total": 66,
     "missing": [
       "Access.Grouping",
       "Automation",
@@ -490,7 +495,8 @@
       "TestEvidence",
       "TestEvidence.VulnerabilityCheck",
       "UPS",
-      "VexStatement"
+      "VexStatement",
+      "VolumeSnapshot"
     ]
   },
   "consumer_coverage": {
@@ -577,10 +583,11 @@
       "VexStatement",
       "VirtualNetwork",
       "Volume.ZFS",
+      "VolumeSnapshot",
       "Vulnerability",
       "Workload"
     ],
-    "consumed_by_at_least_one": 65
+    "consumed_by_at_least_one": 66
   },
   "expressibility_coverage": {
     "value": null,
