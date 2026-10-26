@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/LogShipper/0.9.0
+$id: https://udlm.dev/registry/udlm/0.1/class/LogShipper/0.10.0
 conforms_to: udlm/0.1
 uuid: 1f2eadd3-1144-4962-9342-dfb7fbb1f922
 record_type: class
 class: base
 resource_type: LogShipper
-version: 0.9.0
+version: 0.10.0
 family: Resource
 status: active
 filed_under:
@@ -82,13 +82,6 @@ spec_examples:
     labels:
       deployment.environment: production
 outputs:
-  status:
-    type: string
-    description: Realized health of the shipper (e.g. running / degraded), as reported by discovery.
-  shipping_to:
-    type: string
-    description: The intake endpoint the shipper is delivering to, resolved from the store's published intake
-      (echo of realized config).
   last_shipped_at:
     type: string
     description: OBSERVED — a provider-watched liveness fact, not derivable from model records (no shipment-instance

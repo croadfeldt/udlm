@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.OSPatch/1.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.OSPatch/1.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "65a1d324-0d7e-44ef-bff6-d510ecf973e2",
   "resource_type": "Automation.OSPatch",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "family": "Process",
   "status": "active",
   "metadata": {
@@ -11,7 +11,7 @@
     "display_name": "Automation.OSPatch Type Class",
     "maintainer": "UDLM maintainers",
     "origination_timestamp": "2026-07-27T22:00:00Z",
-    "description": "The portable OS-patching process: the definition every engine shares. It names no engine; it is what policy gates, schedules reference and compliance reports against, and what a provider must satisfy to declare `execute_workflows / Automation.OSPatch`.",
+    "description": "The portable OS-patching process: the definition every engine shares. It names no engine; it is what policy gates, schedules reference and compliance reports against, and what a provider must satisfy to declare `execute_workflows / Automation.OSPatch`. outputs-exempt: each run is a Job whose `results` and `completed_at` carry the outcome; the latest run is read from the Job records, never copied up (row 116).",
     "prompt_version": "class-p1-process-pilot-2026-07-27",
     "generated": true,
     "compilation_provenance": {
@@ -24,7 +24,7 @@
         },
         {
           "class": "Automation.OSPatch",
-          "version": "1.3.0",
+          "version": "1.4.0",
           "uuid": "65a1d324-0d7e-44ef-bff6-d510ecf973e2"
         }
       ]
@@ -159,20 +159,7 @@
       }
     ]
   },
-  "outputs": {
-    "last_run_status": {
-      "type": "string",
-      "description": "Outcome of the most recent patch run (succeeded | failed | partial) — the readiness signal schedules and compliance reports consume."
-    },
-    "last_run_timestamp": {
-      "type": "string",
-      "description": "RFC 3339 UTC instant of the most recent run completion."
-    },
-    "packages_updated": {
-      "type": "integer",
-      "description": "Count of packages changed in the most recent run — the drift-facing magnitude signal."
-    }
-  },
+  "outputs": {},
   "context": {
     "purpose": "The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.",
     "plain_description": "Declares that hosts get patched: which package sets, within which maintenance windows, at which severity floor. Both engines (blue today, green tomorrow) satisfy this one definition — swapping engines never touches the declared process.",

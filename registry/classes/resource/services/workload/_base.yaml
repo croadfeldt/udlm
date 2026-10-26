@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Workload/0.10.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Workload/0.11.0
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: base
 resource_type: Workload
-version: 0.10.0
+version: 0.11.0
 family: Resource
 status: active
 filed_under:
@@ -73,24 +73,6 @@ elements:
             description: systemd unit names (form=systemd).
         required:
           - form
-  - element: endpoints
-    scope: Workload
-    optional: true
-    state: canonical
-    description: How the service is reached (a route, URL or host:port), as the provider reports it.
-    schema:
-      type: array
-      description: How the service is reached (a route, URL or host:port), as the provider reports it.
-      items:
-        type: object
-        additionalProperties: false
-        properties:
-          name:
-            type: string
-          url:
-            type: string
-          port:
-            type: integer
   - element: replicas
     scope: Workload
     optional: true
@@ -104,15 +86,13 @@ spec_examples:
     constituents:
       - form: container
         container_ref: estate/storefront-web?resource_type==Container
-    endpoints:
-      - name: https
-        url: https://storefront.svc.internal
-        port: 443
     replicas: 3
 outputs:
-  ready:
-    type: boolean
-    description: Whether the service's constituents are up and serving (Realized/Discovered).
+  endpoints:
+    type: array
+    description: 'How the service is reached, as the provider reports it once Realized: each entry a `name`, a `url` or
+      a `host` and `port`, and a `protocol`. An output, not an element: a consumer asks for exposure, the provider says
+      where (row 116).'
 relationships:
   - edge_type: references
     name: runs_on
