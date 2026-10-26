@@ -183,7 +183,16 @@ uses a scheme that names the compound). **A key that is unique only within a sco
 its value**, rooted at the isolation domain the probe observed it in, because two VLAN 100s or two
 198.51.100.0/24s coexist on purpose exactly when they sit in different domains (row 118): a segment is
 `segment-id: <observer>/<domain>/<id>`, the observing device's own key, then the bridge domain, VRF,
-bridge or overlay, then the tag or VNI, and a single-fabric estate is the path with one hop; a subnet
+bridge or overlay, then the tag or VNI. An observer-rooted key is an **observation, never an identity**:
+a VLAN trunked across three switches is seen as three keys, one per chassis, and nothing in them says
+they are one broadcast domain. Working that out from LLDP neighbours and trunk tag lists is the fabric
+controller's knowledge, and it breaks under tag translation, QinQ or a deliberate duplicate, so UDLM
+never infers that two observer keys name the same VLAN (row 119). A VLAN record's identity is its owning
+provider's own identifier, `provider-id` (a fabric controller's network id); the record lists the
+observer keys that resolve to it. A fabric with no provider reporting its VLANs has no authoritative VLAN
+identity, and an observed edge stays key-only (REF-003) until a provider-backed record claims its key,
+which is a valid state, not a failure. A bridge or overlay a host owns is keyed at the host, because
+there the host is the provider; a subnet
 is `subnet-prefix: <segment>#<cidr>`, with `gateway-mac`, the MAC that answers the gateway address, as
 a second key that separates a masqueraded test copy from the original. A record MAY carry several keys;
 resolution matches on what it has and refuses a tie as `ambiguous` rather than merging on a guess, the
