@@ -49,7 +49,7 @@ Intent carries **no** IP, vNIC, host, or volume — none exist yet. It carries *
 | `vm-app` | `Machine.VM` | `contained_by host-a` · `references fac-rack3` (placement) · `references net-dmz` (attachment) |
 | `vnic-app-eth0` | **`NetworkInterface` `device_class: virtual`**, vlan_membership→`net-vlan-20` | `contained_by vm-app` · `references net-dmz` · `parent_device br0@host-a` (rides the host bridge) |
 | `ip-app` (192.0.2.55) | `IPAddress` | `attaches_to vnic-app-eth0` — allocated by the network/IPAM provider |
-| `vol-app` (100Gi) | `Volume` | `provisioned_by pool-fast` · `attaches_to vm-app` |
+| `vol-app` (100Gi) | `Volume` | `provisioned_by pool-fast` · `realizes_disk vm-app` (disk entry `root`) |
 
 That is the **entire** graph for one VM: 4 foundational + 4 realized resources, 9 typed edges. Every one resolves to an existing resource type.
 
@@ -113,7 +113,7 @@ Every shared/foundational resource a VM touches across its whole life, and who o
 | IP address | `IPAddress` | `binds_to` (dynamic/static/byo) | IPAM | ✔ |
 | DNS record/zone | `DNSZone` | name→IP (operate; remap on rehydrate) | DNS | ✔ |
 | Storage pool | `StoragePool` / `StorageCluster` | volume source | storage | ✔ |
-| Volume | `Volume` | disk (`attaches_to`) | storage | — (consumable) |
+| Volume | `Volume` | disk (`realizes_disk`, declared on the volume) | storage | — (consumable) |
 | Hypervisor host | `Machine.BareMetalHost` | `contained_by` (placement result) | compute / hypervisor (libvirt, KubeVirt) | ✔ |
 | Realm / identity | `DirectoryService` | auth (scope-derived from `tenant_uuid`) | identity (a directory service) | ✔ |
 | Secret | `CredentialRef` | `references` (never inline) | credential / secrets | ✔ |

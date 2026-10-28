@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Volume",
-          "version": "0.16.0",
+          "version": "0.17.0",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         },
         {
@@ -132,14 +132,6 @@
       "target": "StorageCluster",
       "cardinality": "0..1",
       "description": "The StorageCluster that provisions this volume (binds its block_storage_class / file_storage_class output). A volume cannot outlive its provisioning cluster."
-    },
-    {
-      "edge_type": "references",
-      "name": "attaches_to",
-      "adopted_from": "OASIS TOSCA AttachesTo",
-      "target": "Machine.VM",
-      "cardinality": "0..n",
-      "description": "The consumer(s) this volume is attached to (RWX volumes attach to many). attaches_to is the same relation IPAddress uses for interface attachment — the consumable-resource-to-consumer edge."
     },
     {
       "edge_type": "references",

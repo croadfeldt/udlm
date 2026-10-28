@@ -281,7 +281,7 @@ The identity directory as a running server: which `protocols` it serves — requ
 
 ## FileShare
 
-### FileShare (0.7.3)
+### FileShare (0.7.4)
 
 **Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
 
@@ -300,6 +300,7 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 - Volume — the underlying storage the shares expose.
 - Machine.BareMetalHost / Container — where the file service runs.
 - CredentialRef — service credentials (e.g. a keytab), by reference.
+- Machine — machines whose guest mounts an export (their `mounts`, which declare the edge).
 
 ## GPU
 
@@ -708,7 +709,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.4.2)
+### Machine (2.5.0)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -725,6 +726,7 @@ The most portable way to ask for a machine: how big, what image, which disks, wh
 **Works with:**
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
+- FileShare — the network shares its guest mounts (`mounts`).
 
 ### Machine.BareMetalHost (0.17.1)
 
@@ -1268,7 +1270,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Volume
 
-### Volume (0.16.0)
+### Volume (0.17.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1287,7 +1289,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 **Works with:**
 - StorageClass — the class declaring what kind of storage the volume gets.
 - StorageCluster — the platform provisioning it.
-- Machine.VM — the consumer(s) it attaches to.
+- Machine — the machine whose named disk it realizes (`realizes_disk`).
 - VolumeSnapshot — a point-in-time copy it can be restored from (`data_source`).
 - Database — databases whose data directory it backs.
 
