@@ -1,0 +1,80 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/BucketClass/0.1.0
+conforms_to: udlm/0.1
+uuid: 536285a2-9842-4d94-b31d-52e9d3337d50
+record_type: class
+class: base
+resource_type: BucketClass
+version: 0.1.0
+family: Resource
+status: active
+filed_under:
+  - storage
+metadata:
+  display_name: Bucket Class
+  description: 'The provisioning policy for object-storage buckets, as StorageClass is for volumes: which driver
+    creates them, what happens to their data on release, and driver parameters. A Base by the Base test (CLS-002):
+    the Kubernetes Container Object Storage Interface (COSI) BucketClass abstracts every object store (S3, Ceph RGW,
+    Azure Blob, GCS), so an order for a bucket of a class is fillable by whichever driver serves it. outputs-exempt:
+    a class is policy, not a provisioned thing; what a driver creates is a Bucket, and the Bucket carries the outputs.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-10-28T00:00:00Z'
+elements:
+  - element: driver_name
+    scope: BucketClass
+    optional: false
+    state: proposed
+    description: The COSI driver that provisions buckets of this class (COSI `driverName`). Read by the control plane
+      to route a bucket order to its provider.
+    schema:
+      type: string
+      description: The COSI driver that provisions buckets of this class.
+  - element: deletion_policy
+    scope: BucketClass
+    optional: true
+    state: proposed
+    description: 'What happens to a bucket''s data when it is released: Delete removes it, Retain keeps it. COSI
+      `deletionPolicy`, copied verbatim like StorageClass `reclaim_policy` (row 111). The default a Bucket may override.'
+    schema:
+      type: string
+      x-standard: "Kubernetes COSI:objectstorage.k8s.io/v1alpha1 BucketClass.deletionPolicy"
+      enum:
+        - Delete
+        - Retain
+      description: 'What happens to a bucket''s data when it is released: Delete or Retain.'
+  - element: parameters
+    scope: BucketClass
+    optional: true
+    state: proposed
+    description: Driver-specific provisioning parameters, passed through to the driver (COSI `parameters`), the
+      same passthrough StorageClass carries.
+    schema:
+      type: object
+      additionalProperties:
+        type: string
+      description: Driver-specific provisioning parameters, passed through to the driver.
+spec_examples:
+  - driver_name: ceph.objectstorage.k8s.io
+    deletion_policy: Retain
+    parameters:
+      placement: default
+adopts:
+  - standard: Kubernetes COSI
+    version: objectstorage.k8s.io/v1alpha1
+    standard_name: BucketClass
+    role: bucket provisioning-policy vocabulary (driverName, deletionPolicy, parameters), names mirrored in snake_case
+    source: https://kubernetes.io/docs/concepts/storage/object-storage/
+    license: Apache-2.0
+    license_compatibility: compatible_reference
+    disposition: tier1_value
+context:
+  purpose: Declares how object-storage buckets of a kind are provisioned.
+  plain_description: 'The object-storage counterpart of StorageClass: the driver that creates buckets of this
+    class, whether their data is kept or deleted on release, and the driver''s own parameters.'
+  use_when:
+    - You need buckets ordered by kind, portable across object stores.
+  not_for:
+    - Block or file storage — StorageClass.
+    - A bucket itself — Bucket.
+  works_with:
+    - Bucket — the buckets of this class.
+    - StorageCluster — the object store that serves them.
