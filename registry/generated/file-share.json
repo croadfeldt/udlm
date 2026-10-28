@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/FileShare/0.7.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/FileShare/0.7.4",
   "conforms_to": "udlm/0.1",
   "uuid": "83f66b92-ad66-4415-aa94-01327dec4f27",
   "resource_type": "FileShare",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "FileShare",
-          "version": "0.7.3",
+          "version": "0.7.4",
           "uuid": "83f66b92-ad66-4415-aa94-01327dec4f27"
         }
       ]
@@ -188,7 +188,8 @@
       "DirectoryService — authenticates the share principals.",
       "Volume — the underlying storage the shares expose.",
       "Machine.BareMetalHost / Container — where the file service runs.",
-      "CredentialRef — service credentials (e.g. a keytab), by reference."
+      "CredentialRef — service credentials (e.g. a keytab), by reference.",
+      "Machine — machines whose guest mounts an export (their `mounts`, which declare the edge)."
     ]
   }
 }

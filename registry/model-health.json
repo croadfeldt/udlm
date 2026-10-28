@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5537,
-    "mutations_rejected": 5537,
+    "mutations_attempted": 5674,
+    "mutations_rejected": 5674,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -152,20 +152,20 @@
         "rejected": 128
       },
       "Machine": {
-        "attempted": 172,
-        "rejected": 172
+        "attempted": 207,
+        "rejected": 207
       },
       "Machine.BareMetalHost": {
-        "attempted": 250,
-        "rejected": 250
+        "attempted": 284,
+        "rejected": 284
       },
       "Machine.LPAR": {
-        "attempted": 241,
-        "rejected": 241
+        "attempted": 275,
+        "rejected": 275
       },
       "Machine.VM": {
-        "attempted": 314,
-        "rejected": 314
+        "attempted": 348,
+        "rejected": 348
       },
       "NetworkGateway": {
         "attempted": 109,
@@ -408,7 +408,7 @@
     "missing": []
   },
   "relationships": {
-    "with_relationships": 53,
+    "with_relationships": 54,
     "total": 66,
     "missing": [
       "Access.Grouping",
@@ -418,7 +418,6 @@
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Identity",
-      "Machine",
       "SovereigntyZone",
       "Template",
       "Template.Application",

@@ -613,11 +613,8 @@ outputs:
   ssh_endpoint: "10.128.4.42:22"
 
 relationships_created:
-  - edge_type: binds_to
-    relation: attaches_to
-    target_type: Volume
-    target_ref: uuid/d8e9f0a1-...        # → realized Volume
-    target_native_id: "ceph/pvc-a1b2c3"   # provider's native id for correlation
+  # the disk's Volume is not listed here: the volume declares `realizes_disk` to this machine on its
+  # own record (the consumer-declares rule), joining on its `disk_entry`
   - edge_type: binds_to
     relation: connects_to
     target_type: VirtualNetwork

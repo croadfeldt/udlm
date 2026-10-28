@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.4.2",
+          "version": "2.5.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
@@ -95,6 +95,37 @@
           "type": "string"
         },
         "description": "Ordered boot devices: a `disks[].name`, or the device class `network` or `cdrom`."
+      },
+      "mounts": {
+        "type": "array",
+        "description": "Network file shares the guest mounts: a FileShare, one of its exports, a mount path, read-only.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_ref",
+            "share",
+            "mount_path"
+          ],
+          "properties": {
+            "source_ref": {
+              "$ref": "../common-elements.schema.json#/$defs/Reference",
+              "description": "Reference to the FileShare serving the export."
+            },
+            "share": {
+              "type": "string",
+              "description": "The export to mount, a `shares[].name` on that FileShare."
+            },
+            "mount_path": {
+              "type": "string",
+              "description": "Absolute path in the guest where the share is mounted."
+            },
+            "read_only": {
+              "type": "boolean",
+              "description": "Mount read-only even where the export allows writes."
+            }
+          }
+        }
       },
       "guest_os": {
         "description": "The requested operating system. Portable form: a data_reference to an `os_image` term the provider advertises. Inline `{type, version}` is the portability-breaking escape. Optional: a machine may be declared by sizing alone; a profile may require it.",
@@ -355,6 +386,13 @@
   ],
   "relationships": [
     {
+      "edge_type": "references",
+      "target": "FileShare",
+      "name": "mounts",
+      "cardinality": "0..n",
+      "description": "Declared on the machine: its guest mounts an export of this FileShare (spec.mounts names which). The consumer declares the edge, so a share never lists the machines that mount it."
+    },
+    {
       "edge_type": "depends_on",
       "target": "PowerFeed",
       "cardinality": "0..n",
@@ -369,6 +407,16 @@
       "role": "Vendor-neutral compute-system representation spanning physical, virtual and partitioned (Redfish ComputerSystem SystemType: Physical | Virtual | Composed | PhysicallyPartitioned | VirtuallyPartitioned) — the one representative standard for the Machine family, shared by Machine.VM, Machine.BareMetalHost and Machine.LPAR and declared once here. Nova with Ironic, Cluster API's Machine and TOSCA's Compute are the industry abstractions that treat the three forms as one thing (CLS-002 (a)); Redfish is the wire representation adopted. Provider-native realizations are declared on the provider support matrix, not on the substrate type.",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
+      "license_compatibility": "compatible_reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "Kubernetes Container (core/v1)",
+      "version": "core/v1",
+      "standard_name": "volumeMounts",
+      "role": "mount field names for `mounts` (mountPath, readOnly), snake_case, shared with UDLM's Container `mounts`",
+      "source": "https://kubernetes.io/docs/concepts/storage/volumes/",
+      "license": "Apache-2.0",
       "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },
