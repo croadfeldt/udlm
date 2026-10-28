@@ -39,7 +39,7 @@
     },
     {
       "class": "Volume",
-      "version": "0.15.0",
+      "version": "0.16.0",
       "instantiable": true,
       "path": "registry/classes/resource/storage/volume/_base.yaml",
       "types": [

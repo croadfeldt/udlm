@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Volume/0.15.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Volume/0.16.0
 conforms_to: udlm/0.1
 uuid: aff9e319-cfb9-44da-8c35-fa47f3ea6270
 record_type: class
 class: base
 resource_type: Volume
-version: 0.15.0
+version: 0.16.0
 family: Resource
 status: active
 filed_under:
@@ -63,14 +63,21 @@ elements:
       description: Reference to the StorageClass that provisions it; authored by handle, resolved later if the class
         is not yet defined.
       $ref: ../../../../common-elements.schema.json#/$defs/Reference
-  - element: retain_on_release
+  - element: reclaim_policy
     scope: Volume
     optional: true
     state: canonical
-    description: true keeps the data after the consumer releases the volume (Retain); false deletes it.
+    description: 'What happens to the data when the consumer releases the volume: Retain keeps it, Delete removes
+      it. Kubernetes PV `persistentVolumeReclaimPolicy`, copied verbatim with the same name as the StorageClass
+      `reclaim_policy` default it overrides (row 111: an x-standard field keeps its standard''s spelling). Recycle,
+      which Kubernetes deprecated, is left out. Read by the provider on release.'
     schema:
-      type: boolean
-      description: true keeps the data after the consumer releases the volume (Retain); false deletes it.
+      type: string
+      x-standard: "Kubernetes:core/v1 PersistentVolume.spec.persistentVolumeReclaimPolicy"
+      enum:
+        - Retain
+        - Delete
+      description: 'What happens to the data when the consumer releases the volume: Retain or Delete.'
   - element: disk_entry
     scope: Volume
     optional: true
@@ -100,7 +107,7 @@ spec_examples:
     access_mode: read_write_once
     volume_mode: filesystem
     storage_class: ceph-rbd-ssd
-    retain_on_release: true
+    reclaim_policy: Retain
 outputs:
   volume_handle:
     type: string
