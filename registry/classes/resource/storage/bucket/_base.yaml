@@ -1,0 +1,110 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Bucket/0.1.0
+conforms_to: udlm/0.1
+uuid: 14e37a32-1ed6-401c-a447-ddb8594ae3d1
+record_type: class
+class: base
+resource_type: Bucket
+version: 0.1.0
+family: Resource
+status: active
+filed_under:
+  - storage
+metadata:
+  display_name: Object Storage Bucket
+  description: 'An object-storage bucket a workload reads and writes over an object protocol (S3, Azure Blob, GCS),
+    as distinct from a Volume (attached block or file storage) and a FileShare (a mounted network share). A Base by
+    the Base test (CLS-002): the Kubernetes Container Object Storage Interface (COSI) Bucket abstracts every object
+    store, so an order for a bucket of a class with a protocol is fillable by any driver that speaks it. The object
+    store is the provider.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-10-28T00:00:00Z'
+elements:
+  - element: bucket_class
+    scope: Bucket
+    optional: false
+    state: proposed
+    description: Reference to the BucketClass that provisions it (COSI `bucketClassName`, a Reference here because the
+      class is a record, row 101). Read by the control plane to route the order to the class's driver.
+    schema:
+      $ref: ../../../../common-elements.schema.json#/$defs/Reference
+      description: Reference to the BucketClass that provisions it.
+  - element: protocols
+    scope: Bucket
+    optional: false
+    state: proposed
+    description: 'The object protocols the bucket must be reachable over: S3, Azure or GCP (COSI `protocols`, copied
+      verbatim). Read by the driver to create a bucket its consumers can speak to.'
+    schema:
+      type: array
+      minItems: 1
+      description: 'The object protocols the bucket must be reachable over: S3, Azure or GCP.'
+      items:
+        type: string
+        x-standard: "Kubernetes COSI:objectstorage.k8s.io/v1alpha1 Bucket.protocols"
+        enum:
+          - S3
+          - Azure
+          - GCP
+  - element: deletion_policy
+    scope: Bucket
+    optional: true
+    state: proposed
+    description: 'Overrides the class''s `deletion_policy` for this bucket: Delete or Retain (COSI `deletionPolicy`,
+      verbatim). Absent means the class default.'
+    schema:
+      type: string
+      x-standard: "Kubernetes COSI:objectstorage.k8s.io/v1alpha1 Bucket.deletionPolicy"
+      enum:
+        - Delete
+        - Retain
+      description: 'Overrides the class''s deletion policy: Delete or Retain.'
+spec_examples:
+  - bucket_class: bucketclass/standard
+    protocols:
+      - S3
+    deletion_policy: Retain
+outputs:
+  bucket_id:
+    type: string
+    description: The driver's bucket id once Realized (COSI `bucketID`). Read by the provider to manage the bucket and
+      by consumers that address it by name.
+  endpoint:
+    type: string
+    description: The URL consumers reach the bucket at once Realized (an S3 endpoint, for example). Read by the provider
+      that configures a consumer; credentials never ride here (a CredentialRef holds them).
+relationships:
+  - edge_type: references
+    target: BucketClass
+    name: bucket_class
+    cardinality: 1..1
+    description: The class that provisions this bucket (spec.bucket_class names it).
+  - edge_type: depends_on
+    target: StorageCluster
+    name: provisioned_by
+    cardinality: 0..1
+    description: The object store that serves the bucket. A bucket cannot outlive its object store.
+adopts:
+  - standard: Kubernetes COSI
+    version: objectstorage.k8s.io/v1alpha1
+    standard_name: Bucket / BucketClaim
+    role: bucket vocabulary (bucketClassName, protocols, deletionPolicy, bucketID), names mirrored in snake_case
+    source: https://kubernetes.io/docs/concepts/storage/object-storage/
+    license: Apache-2.0
+    license_compatibility: compatible_reference
+    disposition: tier1_value
+context:
+  purpose: Declares an object-storage bucket a workload reaches over an object protocol.
+  plain_description: 'A bucket: which class provisions it, which object protocols it must speak, and whether its data
+    is kept on release. Once realized, the driver reports its id and the endpoint consumers reach it at. Readiness is
+    a `Ready` status condition. A machine uses it by listing it in `buckets`, with the credential it reads it with;
+    many machines may share one bucket.'
+  use_when:
+    - You need object storage (S3 and the like) ordered portably and shared by the workloads that use it.
+  not_for:
+    - Attached block or file storage — Volume.
+    - A mounted network share — FileShare.
+  works_with:
+    - BucketClass — the class that provisions it.
+    - StorageCluster — the object store that serves it.
+    - Machine — machines that use it (their `buckets`, which declare the edge).
+    - CredentialRef — the access credential a consumer uses, held by reference, never inline.

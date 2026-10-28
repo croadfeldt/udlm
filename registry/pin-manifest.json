@@ -471,6 +471,20 @@
    "0.9.1": "sha256:54f1f6fb4978ea7fdf95b32fc260db365cea4666d5e90507fe57e03e7cecc91a"
   }
  },
+ "type:Bucket": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/storage/bucket/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:a4855def31911ffa5af1934a738d97632fc022ec4725a1d737de1b35ef695984"
+  }
+ },
+ "type:BucketClass": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/storage/bucket-class/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:6d9f9416110bc3bdb4f47c71217b17f9b003e127859fddb891ab96ad83c0b294"
+  }
+ },
  "type:Capability": {
   "current": "0.5.1",
   "path": "registry/classes/knowledge/capability/_base.yaml",
@@ -1114,7 +1128,7 @@
   }
  },
  "type:Machine": {
-  "current": "2.5.0",
+  "current": "2.6.0",
   "path": "registry/classes/resource/compute/machine/_base.yaml",
   "versions": {
    "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
@@ -1128,7 +1142,8 @@
    "2.4.0": "sha256:61633e944fb3b090f9eaba0a3f9318b130f0cee730d4e0111c69d2dd16939afc",
    "2.4.1": "sha256:ebf7d62f61677f40c272bdbbc9bbf7403aab939e7baa8c63bca0f916b59b30a8",
    "2.4.2": "sha256:b5b66a3aeecd855331e0a99f7e61ed56322e1156dd595dde5eae4086bc91c1bc",
-   "2.5.0": "sha256:a97cc06f72b38dec007341a5f69d24a28c9f2183466120ac9e7f9a93605d9409"
+   "2.5.0": "sha256:a97cc06f72b38dec007341a5f69d24a28c9f2183466120ac9e7f9a93605d9409",
+   "2.6.0": "sha256:a31366fd386791898ecb57fcdf5c8d05ee5fe90e1f24d12ab15e348f8316f840"
   }
  },
  "type:Machine.BareMetalHost": {

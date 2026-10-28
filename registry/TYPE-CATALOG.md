@@ -110,6 +110,46 @@ The always-on management controller inside a server that answers even when the h
 - CredentialRef — the BMC credential, by reference.
 - Machine.BareMetalHost#firmware — the portable firmware settings the host converges to; vendor attribute sets are provider data applied over this BMC's path.
 
+## Bucket
+
+### Bucket (0.1.0)
+
+**Purpose:** Declares an object-storage bucket a workload reaches over an object protocol.
+
+A bucket: which class provisions it, which object protocols it must speak, and whether its data is kept on release. Once realized, the driver reports its id and the endpoint consumers reach it at. Readiness is a `Ready` status condition. A machine uses it by listing it in `buckets`, with the credential it reads it with; many machines may share one bucket.
+
+**Use when:**
+- You need object storage (S3 and the like) ordered portably and shared by the workloads that use it.
+
+**Not for:**
+- Attached block or file storage — Volume.
+- A mounted network share — FileShare.
+
+**Works with:**
+- BucketClass — the class that provisions it.
+- StorageCluster — the object store that serves it.
+- Machine — machines that use it (their `buckets`, which declare the edge).
+- CredentialRef — the access credential a consumer uses, held by reference, never inline.
+
+## BucketClass
+
+### BucketClass (0.1.0)
+
+**Purpose:** Declares how object-storage buckets of a kind are provisioned.
+
+The object-storage counterpart of StorageClass: the driver that creates buckets of this class, whether their data is kept or deleted on release, and the driver's own parameters.
+
+**Use when:**
+- You need buckets ordered by kind, portable across object stores.
+
+**Not for:**
+- Block or file storage — StorageClass.
+- A bucket itself — Bucket.
+
+**Works with:**
+- Bucket — the buckets of this class.
+- StorageCluster — the object store that serves them.
+
 ## Capability
 
 ### Capability (0.5.1)
@@ -709,7 +749,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.5.0)
+### Machine (2.6.0)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -727,6 +767,7 @@ The most portable way to ask for a machine: how big, what image, which disks, wh
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 - FileShare — the network shares its guest mounts (`mounts`).
+- Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
 
 ### Machine.BareMetalHost (0.17.1)
 
@@ -1378,4 +1419,4 @@ The application layer: the mail service, the registry, model serving — a named
 - CredentialRef — the service's secrets, by reference.
 
 ---
-*66 types; 66 with context, 0 pending.*
+*68 types; 68 with context, 0 pending.*

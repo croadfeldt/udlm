@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.5.0",
+          "version": "2.6.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
@@ -123,6 +123,32 @@
             "read_only": {
               "type": "boolean",
               "description": "Mount read-only even where the export allows writes."
+            }
+          }
+        }
+      },
+      "buckets": {
+        "type": "array",
+        "description": "Buckets the machine's workloads use: a Bucket, the credential to reach it, read-only.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_ref",
+            "credential_ref"
+          ],
+          "properties": {
+            "source_ref": {
+              "$ref": "../common-elements.schema.json#/$defs/Reference",
+              "description": "Reference to the Bucket."
+            },
+            "credential_ref": {
+              "$ref": "../common-elements.schema.json#/$defs/Reference",
+              "description": "Reference to the CredentialRef the machine reaches the bucket with; never the secret itself."
+            },
+            "read_only": {
+              "type": "boolean",
+              "description": "The access is read-only."
             }
           }
         }
@@ -393,6 +419,20 @@
       "description": "Declared on the machine: its guest mounts an export of this FileShare (spec.mounts names which). The consumer declares the edge, so a share never lists the machines that mount it."
     },
     {
+      "edge_type": "references",
+      "target": "Bucket",
+      "name": "buckets",
+      "cardinality": "0..n",
+      "description": "Declared on the machine: its workloads use this bucket (spec.buckets names it)."
+    },
+    {
+      "edge_type": "references",
+      "target": "CredentialRef",
+      "name": "bucket_credential",
+      "cardinality": "0..n",
+      "description": "The credential a `buckets` entry reaches its bucket with (spec.buckets[].credential_ref)."
+    },
+    {
       "edge_type": "depends_on",
       "target": "PowerFeed",
       "cardinality": "0..n",
@@ -407,6 +447,16 @@
       "role": "Vendor-neutral compute-system representation spanning physical, virtual and partitioned (Redfish ComputerSystem SystemType: Physical | Virtual | Composed | PhysicallyPartitioned | VirtuallyPartitioned) — the one representative standard for the Machine family, shared by Machine.VM, Machine.BareMetalHost and Machine.LPAR and declared once here. Nova with Ironic, Cluster API's Machine and TOSCA's Compute are the industry abstractions that treat the three forms as one thing (CLS-002 (a)); Redfish is the wire representation adopted. Provider-native realizations are declared on the provider support matrix, not on the substrate type.",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
+      "license_compatibility": "compatible_reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "Kubernetes COSI",
+      "version": "objectstorage.k8s.io/v1alpha1",
+      "standard_name": "BucketClaim / BucketAccess",
+      "role": "the `buckets` claim (a BucketClaim's role) and its credential (a BucketAccess, held as a CredentialRef)",
+      "source": "https://kubernetes.io/docs/concepts/storage/object-storage/",
+      "license": "Apache-2.0",
       "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"
     },

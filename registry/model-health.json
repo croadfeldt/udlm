@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 66,
+    "types": 68,
     "by_family": {
       "Access": 9,
       "Knowledge": 9,
       "Process": 3,
-      "Resource": 45
+      "Resource": 47
     }
   },
   "discrimination": {
-    "mutations_attempted": 5674,
-    "mutations_rejected": 5674,
+    "mutations_attempted": 5855,
+    "mutations_rejected": 5855,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -34,6 +34,14 @@
       "BMC": {
         "attempted": 71,
         "rejected": 71
+      },
+      "Bucket": {
+        "attempted": 39,
+        "rejected": 39
+      },
+      "BucketClass": {
+        "attempted": 29,
+        "rejected": 29
       },
       "Capability": {
         "attempted": 27,
@@ -152,20 +160,20 @@
         "rejected": 128
       },
       "Machine": {
-        "attempted": 207,
-        "rejected": 207
+        "attempted": 236,
+        "rejected": 236
       },
       "Machine.BareMetalHost": {
-        "attempted": 284,
-        "rejected": 284
+        "attempted": 312,
+        "rejected": 312
       },
       "Machine.LPAR": {
-        "attempted": 275,
-        "rejected": 275
+        "attempted": 303,
+        "rejected": 303
       },
       "Machine.VM": {
-        "attempted": 348,
-        "rejected": 348
+        "attempted": 376,
+        "rejected": 376
       },
       "NetworkGateway": {
         "attempted": 109,
@@ -282,8 +290,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 66,
-    "total": 66
+    "strict_specs": 68,
+    "total": 68
   },
   "outputs": {
     "per_type": {
@@ -292,6 +300,8 @@
       "Automation": 0,
       "Automation.OSPatch": 0,
       "BMC": 0,
+      "Bucket": 2,
+      "BucketClass": 0,
       "Capability": 1,
       "ConnectionProfile": 2,
       "Container": 2,
@@ -359,6 +369,7 @@
       "Automation",
       "Automation.OSPatch",
       "BMC",
+      "BucketClass",
       "GPU",
       "Grouping",
       "Grouping.Authorization",
@@ -403,17 +414,18 @@
     ]
   },
   "context": {
-    "with_context": 66,
-    "total": 66,
+    "with_context": 68,
+    "total": 68,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 54,
-    "total": 66,
+    "with_relationships": 55,
+    "total": 68,
     "missing": [
       "Access.Grouping",
       "Automation",
       "Automation.OSPatch",
+      "BucketClass",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
@@ -471,6 +483,8 @@
     ],
     "uncovered": [
       "Access.Grouping",
+      "Bucket",
+      "BucketClass",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
@@ -529,6 +543,8 @@
       "Automation",
       "Automation.OSPatch",
       "BMC",
+      "Bucket",
+      "BucketClass",
       "Capability",
       "ConnectionProfile",
       "CredentialRef",
@@ -586,7 +602,7 @@
       "Vulnerability",
       "Workload"
     ],
-    "consumed_by_at_least_one": 66
+    "consumed_by_at_least_one": 68
   },
   "expressibility_coverage": {
     "value": null,

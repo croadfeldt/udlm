@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.6.0
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Machine
-version: 2.5.0
+version: 2.6.0
 family: Resource
 status: active
 filed_under:
@@ -182,6 +182,35 @@ elements:
           read_only:
             type: boolean
             description: Mount read-only even where the export allows writes.
+  - element: buckets
+    scope: Machine
+    optional: true
+    state: proposed
+    description: 'Object-storage buckets the machine''s workloads use: each a Bucket (`source_ref`), the CredentialRef
+      it reads the bucket with (`credential_ref`, COSI''s BucketAccess held by reference), and whether its access is
+      read-only. The object counterpart of `disks` and `mounts`. Like a share, a bucket is usually shared, so the
+      machine references an existing Bucket rather than claiming one of its own. Read by the provider that configures
+      the guest: it hands over the bucket''s `endpoint` and delivers the credential. Each entry is also a `buckets`
+      edge to the Bucket and a `bucket_credential` edge to the CredentialRef.'
+    schema:
+      type: array
+      description: 'Buckets the machine''s workloads use: a Bucket, the credential to reach it, read-only.'
+      items:
+        type: object
+        additionalProperties: false
+        required:
+          - source_ref
+          - credential_ref
+        properties:
+          source_ref:
+            $ref: ../../../../common-elements.schema.json#/$defs/Reference
+            description: Reference to the Bucket.
+          credential_ref:
+            $ref: ../../../../common-elements.schema.json#/$defs/Reference
+            description: Reference to the CredentialRef the machine reaches the bucket with; never the secret itself.
+          read_only:
+            type: boolean
+            description: The access is read-only.
   - element: guest_os
     scope: Machine
     optional: true
@@ -282,6 +311,7 @@ context:
     - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
     - Volume and VirtualNetwork — what the realized machine attaches to.
     - FileShare — the network shares its guest mounts (`mounts`).
+    - Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
 relationships:
   - edge_type: references
     target: FileShare
@@ -289,6 +319,16 @@ relationships:
     cardinality: 0..n
     description: 'Declared on the machine: its guest mounts an export of this FileShare (spec.mounts names which).
       The consumer declares the edge, so a share never lists the machines that mount it.'
+  - edge_type: references
+    target: Bucket
+    name: buckets
+    cardinality: 0..n
+    description: 'Declared on the machine: its workloads use this bucket (spec.buckets names it).'
+  - edge_type: references
+    target: CredentialRef
+    name: bucket_credential
+    cardinality: 0..n
+    description: The credential a `buckets` entry reaches its bucket with (spec.buckets[].credential_ref).
 spec_examples:
   - cpu:
       count: 4
@@ -307,6 +347,10 @@ spec_examples:
         share: projects
         mount_path: /srv/projects
         read_only: false
+    buckets:
+      - source_ref: bucket/app-assets
+        credential_ref: credential/app-assets-s3
+        read_only: true
 adopts:
   - standard: Redfish
     version: '2024.4'
@@ -319,6 +363,14 @@ adopts:
       realizations are declared on the provider support matrix, not on the substrate type.'
     source: https://www.dmtf.org/standards/redfish
     license: DMTF
+    license_compatibility: compatible_reference
+    disposition: tier1_value
+  - standard: Kubernetes COSI
+    version: objectstorage.k8s.io/v1alpha1
+    standard_name: BucketClaim / BucketAccess
+    role: the `buckets` claim (a BucketClaim's role) and its credential (a BucketAccess, held as a CredentialRef)
+    source: https://kubernetes.io/docs/concepts/storage/object-storage/
+    license: Apache-2.0
     license_compatibility: compatible_reference
     disposition: tier1_value
   - standard: Kubernetes Container (core/v1)

@@ -3,6 +3,20 @@
   "generated": true,
   "classes": [
     {
+      "class": "Bucket",
+      "version": "0.1.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/storage/bucket/_base.yaml",
+      "types": []
+    },
+    {
+      "class": "BucketClass",
+      "version": "0.1.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/storage/bucket-class/_base.yaml",
+      "types": []
+    },
+    {
       "class": "FileShare",
       "version": "0.7.4",
       "instantiable": true,
