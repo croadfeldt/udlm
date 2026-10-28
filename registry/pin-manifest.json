@@ -1974,7 +1974,7 @@
   }
  },
  "type:Volume": {
-  "current": "0.15.0",
+  "current": "0.16.0",
   "path": "registry/classes/resource/storage/volume/_base.yaml",
   "versions": {
    "0.12.0": "sha256:3e5b1467f4a935805834d1d916acdabdd32886a4e411038ff3067fe2767971a5",
@@ -1984,7 +1984,7 @@
    "0.13.0": "sha256:fefab850a9e9d78588c1cd64b7f62f06fe19097e351d57382b03639c88c2219b",
    "0.14.0": "sha256:53709f3bf0ba8b24c197c221ef0e4c0f4886f6bae73fee5d8b9e0028c1cfb520",
    "0.14.1": "sha256:155f5d4caf4ae9b8b65faf2f798101e53da4080005c92a9a9e515ec8ad4cd341",
-   "0.15.0": "sha256:5012c7fa28dd2c8cbc5a9929a53e8c2aeb34e94f1d4d9d7b693faeba7a89be32"
+   "0.16.0": "sha256:1e630d4f169c3e293394943cd4edc8f26928f1e7469cc1ea08dc9776720cde55"
   }
  },
  "type:Volume.ZFS": {
