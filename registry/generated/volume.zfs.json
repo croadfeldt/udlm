@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Volume",
-          "version": "0.15.0",
+          "version": "0.16.0",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         },
         {
@@ -58,9 +58,14 @@
         "description": "Reference to the StorageClass that provisions it; authored by handle, resolved later if the class is not yet defined.",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
-      "retain_on_release": {
-        "type": "boolean",
-        "description": "true keeps the data after the consumer releases the volume (Retain); false deletes it."
+      "reclaim_policy": {
+        "type": "string",
+        "x-standard": "Kubernetes:core/v1 PersistentVolume.spec.persistentVolumeReclaimPolicy",
+        "enum": [
+          "Retain",
+          "Delete"
+        ],
+        "description": "What happens to the data when the consumer releases the volume: Retain or Delete."
       },
       "disk_entry": {
         "type": "string",
