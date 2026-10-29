@@ -107,12 +107,17 @@ def bare_refs(node, prefix=""):
     for k, v in (node.get("properties") or {}).items():
         if not isinstance(v, dict):
             continue
-        if k.endswith("_ref") and v.get("type") == "string" and not is_reference_shape(v):
+        # every *_ref, whatever its declared type: an object-shaped one is the pre-URF form row 101 removed,
+        # and the regression G3 most needs to catch (#383)
+        if k.endswith("_ref") and not is_reference_shape(v):
             out.append(prefix + k)
         out += bare_refs(v, prefix + k + ".")
         if isinstance(v.get("items"), dict):
             out += bare_refs(v["items"], prefix + k + "[].")
     return out
+
+
+REFERENCE_DEFS = {"/$defs/Reference", "/$defs/data_reference", "/$defs/network_zone_ref", "/$defs/network_tier_ref"}
 
 
 def is_reference_shape(prop):
@@ -122,13 +127,34 @@ def is_reference_shape(prop):
         return False
     if prop.get("format") in ("udlm-ref-url", "udlm-filter-url", "uri", "uri-reference"):
         return True
-    blob = json.dumps(prop)
-    if "$ref" in blob or "udlm-ref-url" in blob:
-        return True
+    # a $ref counts only when it lands on a reference definition; a $ref to anything else (an object shape,
+    # a quantity) is not a reference just because it is a $ref (#383)
+    if isinstance(prop.get("$ref"), str):
+        return prop["$ref"].split("#")[-1] in REFERENCE_DEFS
+    for key in ("oneOf", "anyOf"):
+        if isinstance(prop.get(key), list) and prop[key]:
+            return all(is_reference_shape(b) for b in prop[key])
     return False
 
 
+def self_test():
+    """G3 must fire on both shapes #383 found it blind to, and pass a real reference; a lint that can't fail
+    proves only that the YAML parsed."""
+    spec = {"properties": {
+        "old_ref": {"type": "object", "properties": {"uuid": {"type": "string"}}},       # the pre-URF object form
+        "size_ref": {"$ref": "../common-elements.schema.json#/$defs/quantity"},           # a $ref, but not to a reference
+        "nested": {"type": "array", "items": {"properties": {"inner_ref": {"type": "string"}}}},  # bare string in items
+        "good_ref": {"$ref": "../common-elements.schema.json#/$defs/Reference"},
+        "url_ref": {"type": "string", "format": "udlm-ref-url"},
+        "either_ref": {"oneOf": [{"$ref": "#/$defs/Reference"}, {"type": "string", "format": "udlm-ref-url"}]}}}
+    got = sorted(bare_refs(spec))
+    want = ["nested[].inner_ref", "old_ref", "size_ref"]
+    if got != want:
+        sys.exit(f"self-test: G3 flagged {got}, expected {want}")
+
+
 def main():
+    self_test()
     types = load_types()
     registered = {d.get("resource_type") for d in types.values() if isinstance(d, dict)}
     # Class names of ANY tier are legal relationship targets: an edge to a category base
