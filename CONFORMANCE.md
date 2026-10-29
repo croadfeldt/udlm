@@ -419,34 +419,41 @@ error vocabulary in [`error-model.md`](docs/spec/contracts/error-model.md).
 ---
 ## 8. Test suite
 
-Conformance is verified by the udlm conformance test suite. The suite:
+Conformance is verified by the udlm conformance test suite, `tests/conformance.py`. **Suite 1.0.0 is
+record level**: it judges the records an implementation writes, against the rules a record can be judged
+by alone or with the records beside it. Run it against a directory of your records (YAML, multi-document
+allowed, or JSON):
 
-- Is executable: it issues operations against an implementation's interop surfaces
-  and validates responses against the contracts.
-- Is versioned with the udlm spec — test suite version maps to udlm version.
-- Covers every checklist item in §6.
+```bash
+python3 tests/conformance.py path/to/records --report conformance-report.json
+```
 
-> **Status — the suite is under construction, and this section states a commitment rather than
-> a shipped artifact.** Read it as what an implementation will be asked to run, not as something
-> it can run today.
->
-> **What exists.** A corpus in `registry/examples/`, executed by CI on every change, in three
-> parts: worked records that state the rule each demonstrates (`check_example_coverage.py`);
-> a negative corpus of records that MUST be refused, which fails both when the model stops
-> refusing one and when a case stops provoking the rule it names (`check_must_reject.py`); and
-> per-rule gates the cases bind to. It validates **this repository's own records** — UDLM as its
-> own first implementation.
->
-> **What does not exist.** Anything a third party can run against their own implementation.
-> Every gate here scans this tree. So the §6 checklist below is the assertion list a conformance
-> suite must cover, and nothing yet executes it against an external implementation — which means
-> `conformance_test_suite_version` in §4.1 cannot be populated honestly yet.
->
-> This section previously cited `tests/test-framework-specification.md` as the suite's
-> specification. That document specifies a different thing — an architecture fuzzer generating
-> scenarios against DCM's pipeline, naming DCM's own tables — and mentions none of the seven wire
-> contracts §6 draws from. The citation is removed rather than repointed: pointing a reader at an
-> artifact that answers a different question is worse than pointing at nothing. Tracked at #417.
+It applies, to every state record (intent, requested, realized, discovered):
+
+- **schema:** a stream head validates against `registry/state-record.schema.json`, which binds
+  CLS-010, DEP-015, RHY-007 and WIR-001/002/003/007 among others. A superseded record is history,
+  judged by its chain.
+- **Integrity** (INT-001, INT-002): a declared integrity head recomputes, and a superseding record's
+  `previous` is its predecessor's head.
+- **Transition provenance** (TRN-001..003): a transition from a referenced record is attributed,
+  carries the referenced head, and resolves.
+- **Fulfillment** (FUL-001..003): a fulfillment condition is governed, names its blocker, and its
+  blocker chain reaches a root.
+- **Dispatch** (DSP-002..004): a requested record carries a dispatch receipt admitting only execution
+  elements or grants.
+- **payload:** a head's fields, and a realized or discovered head's outputs, validate at the class
+  version it pins. A version this registry does not serve is reported, not failed.
+
+Exit 0 means every rule held. The report records the suite version and the udlm commit, for the
+declaration's `conformance_test_suite_version` (§4.1).
+
+The suite tests itself on every change (`--self-test`): this repository's worked records in
+`registry/examples/` must pass, and every case in `registry/examples/must-reject/` bound to one of these
+rules must be refused for the rule it names. A rule that stopped refusing would turn CI red.
+
+**What is not in 1.0.0.** The wire-level checklist of §6 (operations issued against an implementation's
+interop surfaces) is the 1.x half of the suite. Until it exists, a declaration states suite 1.0.0 and the
+record level it covers.
 
 Implementations MUST run the test suite as part of self-certification. The test
 suite version is recorded in the conformance declaration

@@ -20,6 +20,9 @@ jobs:
           python-version: "3.12"
       - run: pip install jsonschema pyyaml
       - run: python3 tests/validate_registry.py
+      # The conformance suite (record level, suite 1.0.0): this repository's worked records must pass it and
+      # every bound must-reject case must be refused for its rule (CONFORMANCE.md §8)
+      - run: python3 tests/conformance.py --self-test
       # Instance/catalog valid-by-construction gate (realized entities, DCMGroups, catalog
       # items) + semantic checks JSON Schema can't express (process-axis family match,
       # component_id uniqueness, depends_on cycles, binding⊆depends_on). Was authored to be
