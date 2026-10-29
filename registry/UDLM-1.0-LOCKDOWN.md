@@ -1,6 +1,6 @@
 # UDLM 1.0 — Lockdown plan
 
-**Normative** — the committed path from `udlm/0.1` to the `udlm/1.0` tag (register row 126).
+**Normative** — the committed path from `udlm/0.1` to the `udlm/1.0` tag (register row 127).
 **What this settles:** what 1.0 promises, what must change before the cut because it would cost a
 2.0 afterwards, what waits for 1.x because it only adds, and the order the work lands in. It
 succeeds [`UDLM-0.1-SCOPE.md`](UDLM-0.1-SCOPE.md) §5, whose exit criteria it replaces.
