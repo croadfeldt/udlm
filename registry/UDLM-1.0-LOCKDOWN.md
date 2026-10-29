@@ -152,7 +152,7 @@ Order is by what unblocks what; WP1–WP6 can run in parallel across sessions.
 | WP4 ADR-082 closeout | network zone/tier prune; adopts holes | #614 #612 #646 |
 | WP5 profiles out | profiles and per-profile values to `udlm-profiles`; picked numbers removed | #488 #489 #490 |
 | WP6 spec text | implementation names, dot grammar, MUST/SHOULD, audits, the four cheap rulings | #503 #491 #416 #460 #428 #382 #328 #392 #401 |
-| WP7 conformance | suite 1.0.0: `tests/conformance.py <record-tree>`, must-reject widened, G3 holes, merge check | #417 #442 #434 #383 #424 |
+| WP7 conformance | suite 1.0.0: one runner that takes a record tree (added by this WP), must-reject widened, G3 holes, merge check | #417 #442 #434 #383 #424 |
 | WP8 realization | every Accepted ADR realized, superseded or narrowed; catalog-item retirement finished | #645 #394 #407 #385 #321 #474 #477 |
 | WP9 the cut | `VERSIONING.md` procedure: re-stamp `conforms_to` and `$id`, meta-schema `$id`, `CONFORMANCE.md` Draft → binding, tag `udlm/1.0` | #217 |
 
@@ -163,7 +163,7 @@ to them:
 
 1. Every §4.1 issue is closed or re-binned by a register row.
 2. `check_adr_realization` reports no Accepted record without a surface.
-3. `tests/conformance.py` runs against the estate's record tree and passes; `CONFORMANCE.md` §8
+3. The suite runner runs against the estate's record tree and passes; `CONFORMANCE.md` §8
    names suite `1.0.0` and no longer says "under construction".
 4. The profile set is out of the repo and `conforms_to: udlm/1.0` is the only spec version in
    `registry/`.
