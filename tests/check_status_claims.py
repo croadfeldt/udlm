@@ -51,7 +51,7 @@ ADR_ONLY = re.compile(r"^[\s✅*_]*(?:DONE|SHIPPED|COMPLETE)?[\s—:-]*"
 # to prescribe how a real artifact is spelled.
 RESOLVABLE = re.compile(r"(`[^`]+`|§\s?[\w.]+|\b\d+\.\d+\.\d+\b)")
 
-SCAN = ("registry/UDLM-0.1-SCOPE.md",)
+SCAN = ("registry/UDLM-0.1-SCOPE.md", "registry/UDLM-1.0-LOCKDOWN.md")
 FILE_TOKEN = re.compile(r"`([A-Za-z0-9_./-]+\.(?:json|yaml|yml|md|py))`")
 BASES = ["", "registry", "docs", "registry/taxonomies", "docs/spec"]
 

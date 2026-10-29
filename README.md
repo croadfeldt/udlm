@@ -75,6 +75,10 @@ milestone — cut when the surface is complete, the conformance suite passes, an
 commits to backward compatibility. See [`registry/VERSIONING.md`](registry/VERSIONING.md) for
 the two version axes (SPEC vs ENTITY) and the full positioning.
 
+The path to the tag is [`registry/UDLM-1.0-LOCKDOWN.md`](registry/UDLM-1.0-LOCKDOWN.md): the
+surface is frozen, the open issues are binned into blockers and 1.x, and the cut follows the
+exit criteria there.
+
 Post-1.0, UDLM follows semver: two implementations conformant to the same major version are
 wire-compatible, and cross-major interop requires a peer to support multiple majors
 concurrently. See [`CONFORMANCE.md`](CONFORMANCE.md) §9.
