@@ -96,6 +96,11 @@ by the merged spec (ADR-010 / §8.1a / state-record) or are control-plane-runtim
 
 ## 5. Exit criteria to tag `udlm/1.0`
 
+> **Superseded 2026-10-28** by [`UDLM-1.0-LOCKDOWN.md`](UDLM-1.0-LOCKDOWN.md) (row 127): the three
+> rulings there (maintainer cuts, suite = gates + corpus packaged, class versions keep) replace
+> criteria 1 and 3 below; the mechanical re-stamp (4) is unchanged. Kept as the record of what
+> 0.1 set out to do.
+
 The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "Cutting the spec 0.1→1.0"):
 
 1. **Ratify the decisions.** 49 records in `docs/adr/` and 3 in `docs/dr/`, numbered to ADR-083 (ADR-076..081 are register rows without files). All
