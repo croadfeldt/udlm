@@ -5,6 +5,9 @@ on:
   pull_request:
   push:
     branches: [main]
+  # a merge queue runs this on the prospective merge result: two branches green on their own can
+  # still make main red together (#424)
+  merge_group:
 jobs:
   validate-registry:
     runs-on: ubuntu-latest
@@ -189,3 +192,19 @@ jobs:
         with:
           name: model-validation-attestation
           path: model-validation-attestation.json
+
+  # Main went red once after two green PRs merged (#424). When it happens again, say so where people look:
+  # an issue naming the commit, instead of a red badge nobody watches.
+  main-is-red:
+    needs: validate-registry
+    if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --repo "${{ github.repository }}" \
+            --title "main is red after ${GITHUB_SHA::8}" \
+            --body "The validate workflow failed on main at ${{ github.sha }}: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}. Each merged branch was green on its own, so two changes conflict in what the gates see (#424). Fix forward on a branch."
