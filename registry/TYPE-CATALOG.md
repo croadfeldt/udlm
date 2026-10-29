@@ -1311,7 +1311,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Volume
 
-### Volume (0.17.0)
+### Volume (0.18.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1332,9 +1332,10 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - StorageCluster — the platform provisioning it.
 - Machine — the machine whose named disk it realizes (`realizes_disk`).
 - VolumeSnapshot — a point-in-time copy it can be restored from (`data_source`).
+- Volume — the volume it replicates (`replica_of`), or the replicas that follow it.
 - Database — databases whose data directory it backs.
 
-### Volume.ZFS (0.8.1)
+### Volume.ZFS (0.8.2)
 
 **Purpose:** Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host workloads use.
 

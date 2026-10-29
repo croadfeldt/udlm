@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 5855,
-    "mutations_rejected": 5855,
+    "mutations_attempted": 5865,
+    "mutations_rejected": 5865,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -268,12 +268,12 @@
         "rejected": 57
       },
       "Volume": {
-        "attempted": 60,
-        "rejected": 60
+        "attempted": 65,
+        "rejected": 65
       },
       "Volume.ZFS": {
-        "attempted": 72,
-        "rejected": 72
+        "attempted": 77,
+        "rejected": 77
       },
       "VolumeSnapshot": {
         "attempted": 24,
