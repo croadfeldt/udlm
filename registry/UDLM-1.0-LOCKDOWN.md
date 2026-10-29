@@ -142,7 +142,10 @@ New classes, optional fields, outputs, edges and capabilities. Each lands as a M
 ## 5. Work packages and order
 
 Each is one PR of ≤3k lines, spec first, every derived surface in the same PR, a register row.
-Order is by what unblocks what; WP1–WP6 can run in parallel across sessions.
+Order is by what unblocks what; WP1–WP6 can run in parallel across sessions. Ownership as of
+2026-10-28: the estate session carries WP4, WP7 and WP3, in that order; the udlm session carries
+WP1, WP2, WP5, WP6, WP8 and WP9. Additive work raised during the freeze is parked as a draft PR
+flagged under §3 until the maintainer rules on it (first case: volume replication, #689).
 
 | WP | Carries | Closes |
 |---|---|---|
