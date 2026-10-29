@@ -1991,7 +1991,7 @@
   }
  },
  "type:Volume": {
-  "current": "0.17.0",
+  "current": "0.18.0",
   "path": "registry/classes/resource/storage/volume/_base.yaml",
   "versions": {
    "0.12.0": "sha256:3e5b1467f4a935805834d1d916acdabdd32886a4e411038ff3067fe2767971a5",
@@ -2003,18 +2003,20 @@
    "0.14.1": "sha256:155f5d4caf4ae9b8b65faf2f798101e53da4080005c92a9a9e515ec8ad4cd341",
    "0.15.0": "sha256:5012c7fa28dd2c8cbc5a9929a53e8c2aeb34e94f1d4d9d7b693faeba7a89be32",
    "0.16.0": "sha256:1e630d4f169c3e293394943cd4edc8f26928f1e7469cc1ea08dc9776720cde55",
-   "0.17.0": "sha256:40269c22ec5a52d67fd9ed1f42400caee02e2a83df364ada952b546a95079817"
+   "0.17.0": "sha256:40269c22ec5a52d67fd9ed1f42400caee02e2a83df364ada952b546a95079817",
+   "0.18.0": "sha256:88925abe1df3b9a1d8e13f64fd0c18ed6fa09287be154683c155f4331ec2d34c"
   }
  },
  "type:Volume.ZFS": {
-  "current": "0.8.1",
+  "current": "0.8.2",
   "path": "registry/classes/resource/storage/volume/zfs.yaml",
   "versions": {
    "0.6.0": "sha256:57a6f528b74a7ae69b5757a16f6420270964d8aedbd5f7ea8cf488c542f33f03",
    "0.6.1": "sha256:b70071f0fb36bdafc012ce0e23d032a75a67ac75d4f8e6c8a3edbe92d95faf46",
    "0.7.0": "sha256:71f3668118597b4bbf729060d602392459ca691a4714dc172f55026f9ed6ed71",
    "0.8.0": "sha256:53d46f7d57a95c034614e1e253b045c618c20b387d22991b83cad9f339bfb4f8",
-   "0.8.1": "sha256:fedf7cd81caf72aa62717c191e07727679524dcdb2fdbef8bd118bbbf63952b5"
+   "0.8.1": "sha256:fedf7cd81caf72aa62717c191e07727679524dcdb2fdbef8bd118bbbf63952b5",
+   "0.8.2": "sha256:9256ca86a2e5bbbec64b2c1c71f51a4e57671b73c1009d89a4ff86fc8275a6c9"
   }
  },
  "type:VolumeSnapshot": {
