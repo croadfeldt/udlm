@@ -156,12 +156,13 @@ WP8, WP9.
 | WP6 spec text | remove implementation names, state the dot grammar, audit MUST/SHOULD, cut stale text, four short rulings | #503 #491 #416 #460 #428 #382 #328 #392 #401 |
 | WP7 conformance | suite 1.0.0: a runner that takes a record tree, a must-reject case for every checked rule, the lint blind spots, a merge check | #417 #442 #434 #383 #424 |
 | WP8 built as decided | every accepted ADR is built, superseded or narrowed; the catalog-item retirement finished | #645 #394 #407 #385 #321 #474 #477 |
-| WP9 the tag | the procedure in `VERSIONING.md`: re-stamp `conforms_to` and `$id`, the meta-schema `$id`, `CONFORMANCE.md` from Draft to binding, tag `udlm/1.0` | #217 |
+| WP9 the tag | first make the cut ready: the re-stamp in `VERSIONING.md` (`conforms_to`, `$id`, the meta-schema `$id`, `CONFORMANCE.md` from Draft to binding) as a script with a dry run on a branch; then, on the maintainer's go, one PR and the tag `udlm/1.0` | #217 |
 
 ## 6. Exit criteria
 
-The tag is cut when all of these hold. `tests/check_status_claims.py` checks this document
-against them.
+The tag is cut when all of these hold **and the maintainer says go**. Meeting the criteria
+means ready, not tagged (maintainer, 2026-10-29). `tests/check_status_claims.py` checks this
+document against them.
 
 1. Every issue in §4.1 is closed, or moved to another bin by a register row.
 2. `check_adr_realization` finds no accepted ADR with nothing built behind it.
