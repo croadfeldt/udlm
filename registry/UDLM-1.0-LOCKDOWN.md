@@ -19,7 +19,37 @@ It replaces the exit criteria in [`UDLM-0.1-SCOPE.md`](UDLM-0.1-SCOPE.md) §5.
    spec major, so `Machine 2.4.1` promises the same under `udlm/1.0` as it did under `0.1`.
    `VERSIONING.md` gets one sentence saying so. No `type_ref`, pin or estate record changes.
 
-## 2. What 1.0 promises
+Three more, from the research in [`docs/research/udlm-1.0-research.md`](../docs/research/udlm-1.0-research.md)
+(maintainer, 2026-10-29). These set up the framework; none of them says we are there yet.
+
+4. **Every part is marked stable or experimental.** Seven of nine specs studied declare stability
+   per component, and ship 1.0 with the unsettled parts marked experimental rather than waiting for
+   them. UDLM does the same: each schema, class and contract carries a `stability` marker, and only
+   stable parts carry the 1.0 promise. WP0 adds the marker, the gate and the list of what is stable.
+5. **One production deployment, stated honestly.** The estate runs the model end to end and passes
+   suite 1.0.0; the conformance declaration says it is the authors' own deployment. Two independent
+   implementations is the IETF and W3C floor; UDLM does not claim that level and says so.
+6. **A release candidate with a 30-day hold.** When the exit criteria hold, the repo is tagged
+   `udlm/1.0-rc1`. 1.0 is tagged only after 30 days with no breaking change and the suite green;
+   a breaking change restarts the clock (OCI's rule). The maintainer's go is recorded as a register
+   row. We are not at this stage; this is the rule for when we are.
+
+## 2. What 1.0 means
+
+**The definition.** UDLM 1.0 is the point where the record contracts and the class grammar become
+a promise: within 1.x nothing stable is removed, renamed or narrowed; additions are minor bumps; a
+breaking change is 2.0. Every schema, class and contract is marked stable or experimental; only
+stable parts carry the promise, and experimental parts may change without notice. 1.0 is reached
+from a release candidate that has held with no breaking change for 30 days, has passed conformance
+suite 1.0.0 against at least one production deployment, and is ratified by the maintainer in the
+register. A stable element is removed only in a major, after at least one minor as deprecated;
+peers get six months' notice before an old major is dropped.
+
+This matches what the field does: 1.0 is a compatibility promise, not a completeness claim (8 of
+9 specs shipped with parts left out); stability is per component (7 of 9); a candidate stage with
+a minimum hold is near-universal (8 of 9); nobody promises compatibility across majors (9 of 9).
+Where UDLM is stricter: a conformance suite is a gate (3 of 9). Where it is weaker, and says so:
+one deployment by the authors, where the IETF and W3C floor is two independent implementations.
 
 From the tag, any two implementations on the same spec major can exchange records
 (`VERSIONING.md`, `CONFORMANCE.md` §9). To keep that true:
@@ -35,8 +65,8 @@ From the tag, any two implementations on the same spec major can exchange record
   identifier scheme (v7 record ids, v4 entity ids) do not change.
 - Breaking any of these means `udlm/2.0`.
 
-Not promised at 1.0: the HTTP binding (§6), the profile set (moving out, #488), and everything
-in §4.2.
+Not promised at 1.0: anything marked experimental, the HTTP binding (§6), the profile set (moving
+out, #488), and everything in §4.2.
 
 ## 3. The freeze
 
@@ -44,9 +74,11 @@ From the day this document merges:
 
 - Nothing new lands in 0.1 except the blockers in §4.1. A new idea becomes an issue labelled
   `1.x` and waits.
-- A blocker is anything that would be a breaking change after the tag: a rename; a field removed,
-  narrowed or made required; a closed list of values that is not settled; a wrong default; a rule
-  the spec states that no schema carries; a decision the spec claims that nothing implements.
+- A blocker is anything that would be a breaking change after the tag **in a part that will be
+  stable**: a rename; a field removed, narrowed or made required; a closed list of values that is
+  not settled; a wrong default; a rule the spec states that no schema carries; a decision the spec
+  claims that nothing implements. A part that is not settled can instead ship marked experimental
+  (ruling 4); WP0 decides that per row and records it.
 - Adding things (an optional field, a class, an edge, an output) is never a blocker. Adding is no
   harder after 1.0, so it waits.
 - Until the tag, breaking changes still take a minor bump (the pre-1.0 rule). That rule ends at
@@ -57,6 +89,8 @@ From the day this document merges:
 ## 4. The open issues (90 on 2026-10-28), sorted
 
 One decision per kind of problem, the way the field sweep worked (row 108). Each row says why.
+WP0 revisits §4.1 once the stability marker exists: a row stays a blocker if its part must be
+stable at 1.0, and moves to §4.2 with the part marked experimental if not.
 
 ### 4.1 Blockers — must land before the tag
 
@@ -143,11 +177,12 @@ loses nothing by waiting:
 
 Each package is one PR of at most 3k lines: spec first, every derived file in the same PR, one
 register row. Order is by what unblocks what; WP1–WP6 can run in parallel. Owners on 2026-10-28:
-the estate session has WP4, WP7, WP3 in that order; the udlm session has WP1, WP2, WP5, WP6,
-WP8, WP9.
+the estate session has WP4, WP7, WP3 in that order; the udlm session has WP0, WP1, WP2, WP5, WP6,
+WP8, WP9. WP0 comes first because it changes what counts as a blocker.
 
 | Package | What it does | Closes |
 |---|---|---|
+| WP0 stability | a `stability: stable \| experimental` marker on every schema, class and contract; a gate; the stable list; §4.1 re-sorted by it | — |
 | WP1 vocabulary | fixes casing and settles the four open lists of values | #641 #678 #472 #346 #410 #466 |
 | WP2 schema homes | every field the spec mentions gets a schema, or the mention goes | #351 #352 #353 #559 #562 #445 #412 #415 #469 #406 #189 |
 | WP3 provider contract | a provider-registration schema; entity-relationships matched to the schema | #634 #632 |
@@ -164,6 +199,7 @@ The tag is cut when all of these hold **and the maintainer says go**. Meeting th
 means ready, not tagged (maintainer, 2026-10-29). `tests/check_status_claims.py` checks this
 document against them.
 
+0. Every schema, class and contract carries a `stability` marker, and the stable list is published.
 1. Every issue in §4.1 is closed, or moved to another bin by a register row.
 2. `check_adr_realization` finds no accepted ADR with nothing built behind it.
 3. The suite runner passes against the estate's records, and `CONFORMANCE.md` §8 names suite
@@ -171,3 +207,6 @@ document against them.
 4. The profiles are out of the repo, and `conforms_to: udlm/1.0` is the only spec version in
    `registry/`.
 5. Every validate.yml step passes on the tagged commit.
+
+When all six hold, the repo is tagged `udlm/1.0-rc1` (ruling 6). `udlm/1.0` follows after 30 days
+with no breaking change to a stable part and the suite still green, on the maintainer's go.

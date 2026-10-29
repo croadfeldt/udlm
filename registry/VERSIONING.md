@@ -64,8 +64,12 @@ declaring 1.0 is a **repo-wide, mechanical re-stamp** — not a redesign:
    A class version is meaningful only within its spec major: `Machine 2.4.1` under `udlm/0.1` promises
    nothing beyond `0.1`, and the same number under `udlm/1.0` enters the strict regime from the tag
    (ruling 2026-10-28, #645). Rename-driven MAJOR bumps before the tag are history, not a stability claim.
-5. **Tag the repo `udlm/1.0`.** From this tag, "same SPEC-MAJOR = wire-compatible" becomes a binding
-   promise; the next breaking spec change is `udlm/2.0`.
+5. **Tag `udlm/1.0-rc1`, hold 30 days.** A release candidate first (ruling 2026-10-29): 1.0 follows
+   only after 30 days with no breaking change to a stable part and the conformance suite green; a
+   breaking change restarts the clock.
+6. **Tag the repo `udlm/1.0`** on the maintainer's go, recorded as a register row. From this tag,
+   "same SPEC-MAJOR = wire-compatible" becomes a binding promise for stable parts; the next breaking
+   spec change is `udlm/2.0`.
 
 This is deliberately deferred until the exit criteria pass — re-stamping early would spend the 1.0
 compatibility promise on an unfinished surface.
@@ -86,8 +90,10 @@ A definition has two orthogonal signals; don't conflate them into one field:
   §3). It is **not** a `status` value: a definition only appears in the validated registry once accepted
   (`status: active`). Don't put review states in `status`.
 
-An explicit per-type `stability` field (for when one type is battle-tested while the spec is still
-`0.x`) is a deferred candidate — see SPEC-DESIGN-REQUIREMENTS *Candidate / deferred data points*.
+- **Stability marker = `stability`** (`stable | experimental`), on every schema, class and contract
+  (ruling 2026-10-29, `UDLM-1.0-LOCKDOWN.md` §1 ruling 4). Only stable parts carry the 1.0 promise;
+  an experimental part may change in a minor without deprecation. Seven of the nine specs studied
+  declare stability this way. Added by WP0 of the lockdown plan.
 
 ## Entity semver — what bumps what
 

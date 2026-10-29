@@ -446,7 +446,9 @@ Conformance is verified by the udlm conformance test suite. The suite:
 > `1.0.0` is these gates and this corpus, packaged: one command a peer runs against a tree of its
 > own records, versioned with the spec. A 1.0 declaration certifies the record contracts. The §6
 > wire-level checklist (HTTP paths, retries, rate limits) is a 1.x deliverable and a 1.0
-> declaration says so in `exclusions`.
+> declaration says so in `exclusions`. The first run is the authors' own deployment, and the
+> declaration says so (ruling 2026-10-29): UDLM 1.0 claims one production deployment, not the two
+> independent implementations the IETF and W3C require for their top level.
 >
 > This section previously cited `tests/test-framework-specification.md` as the suite's
 > specification. That document specifies a different thing — an architecture fuzzer generating
