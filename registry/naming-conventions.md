@@ -130,11 +130,10 @@ an **export adapter** at that domain boundary (not native consumption).
   copied verbatim from an adopted standard keeps that standard's casing (`NoSchedule`, `balance-rr`,
   `http/protobuf`); the element marks it with `x-standard: "<standard>:<where>"`, naming a standard the
   class adopts. `tests/check_type_standard.py` G9 refuses any other non-snake value in a class.
-  The record schemas follow the same rule (row 134, `tests/check_schema_enum_casing.py`), with two
-  more markers for values that are not words UDLM minted: `x-value-form: name` when the values are
-  names in the PascalCase name grammar (`Resource`, `Intent`, a class name used as a value) and
-  `x-value-form: notation` when they are a notation (`0..n`). An `x-standard` on a schema names a
-  standard the adoption register lists.
+  The record schemas follow the same rule (row 134). A value that is not a word UDLM made up says
+  why it keeps its spelling: `x-standard` when it is copied from a standard the adoption register
+  lists; `x-value-form: name` when the values are names (`Resource`, `Intent`, a class name);
+  `x-value-form: notation` when they are a notation (`0..n`). Gate: `tests/check_schema_enum_casing.py`.
 - **Quantities** carry an explicit unit via the `Quantity` pattern; timestamps are RFC 3339.
 - **Outputs** are `snake_case` typed keys naming the capability, not the implementation
   (`block_storage_class`, `connection_string`) — the cross-entity binding surface (E2).
