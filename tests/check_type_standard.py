@@ -163,8 +163,11 @@ def main():
         # G1
         outputs = d.get("outputs")
         n_out = len(outputs) if isinstance(outputs, dict) else (len(outputs) if isinstance(outputs, list) else 0)
-        if fam in ("Resource", "Process") and n_out == 0 and "outputs-exempt:" not in desc_all:
-            found.append(("G1", rt, "outputs", "realizable type declares no outputs and no outputs-exempt note"))
+        exempt = d.get("outputs_exempt")
+        if fam in ("Resource", "Process") and n_out == 0 and not exempt:
+            found.append(("G1", rt, "outputs", "realizable type declares neither outputs nor outputs_exempt (row 136)"))
+        if n_out and exempt:
+            found.append(("G1", rt, "outputs", "declares outputs and outputs_exempt; it is one or the other"))
 
         # G2
         for r in d.get("relationships", []) or []:

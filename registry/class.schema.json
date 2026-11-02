@@ -398,7 +398,7 @@
     },
     "outputs": {
       "type": "object",
-      "description": "Typed Realized-state outputs this Class publishes (E2), keyed by output name — a JSON-Schema fragment per output, same shape as the flat spec's `outputs`. Scoped like elements: any tier may declare (a Provider Class declaring provider_specific outputs is exactly the intended use, #323); the declaring Class IS the scope. Compile: merged down the chain, nearer Class overrides by name; a redeclare MUST refine (the Liskov gate applies element refinement rules to outputs). An output whose value differs between two realizations of the same intent declares `volatile: true` — the promotion diff excludes it by that declaration, never ad hoc (ADR-046).",
+      "description": "Typed Realized-state outputs this Class publishes (E2), keyed by output name — a JSON-Schema fragment per output, same shape as the flat spec's `outputs`. Scoped like elements: any tier may declare (a Provider Class declaring provider_specific outputs is exactly the intended use, #323); the declaring Class IS the scope. Compile: merged down the chain, nearer Class overrides by name; a redeclare MUST refine (the Liskov gate applies element refinement rules to outputs). An output whose value differs between two realizations of the same intent declares `volatile: true` — the promotion diff excludes it by that declaration, never ad hoc (ADR-046). Declared outputs are the contract a realized or discovered record's outputs are checked against; an undeclared output is allowed by default and unpromised (see `outputs_closed`); an exempt class (`outputs_exempt`) has nothing to check.",
       "additionalProperties": {
         "type": "object",
         "properties": {
@@ -474,6 +474,15 @@
     "publicly_allocatable": {
       "$ref": "resource-type-spec.schema.json#/properties/publicly_allocatable",
       "description": "IS the flat spec's `publicly_allocatable` ($ref — one shape, single source). Type tier, with `publicly_stakeable`."
+    },
+    "outputs_exempt": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Declares, permanently, that this class publishes no outputs of its own, and why: its observable facts are another entity's outputs (a BMC's run state is the host's; a feed's charge is the UPS's). A realizable class declares either `outputs` or this; the gate refuses neither and both. A record of an exempt class may carry outputs, and the checker ignores them: nothing may bind to them."
+    },
+    "outputs_closed": {
+      "type": "boolean",
+      "description": "When true, a record of this class may carry only the outputs the class declares; an undeclared output is refused. Default false: undeclared outputs are kept but unpromised — nothing may bind to them, they carry no 1.0 promise, and they are counted per class so a recurring one is promoted into the class rather than left as a stray (row 136)."
     }
   },
   "allOf": [
@@ -643,6 +652,15 @@
         },
         "description": "The ownership declaration is type-tier (or a childless instantiable base). A Provider Class may not restate it and may not widen it — who ends up owning a realized entity is a property of the type, not of the provider that realized it."
       }
+    },
+    {
+      "not": {
+        "required": [
+          "outputs",
+          "outputs_exempt"
+        ]
+      },
+      "$comment": "A class declares outputs or declares it has none, never both (row 136)."
     }
   ],
   "$defs": {

@@ -21,7 +21,7 @@
           "component_id": {
             "type": "string",
             "pattern": "^[a-z][a-z0-9_]*$",
-            "description": "Stable local identifier for the constituent within this composite — unique within the item (validate.py-enforced). Used in depends_on references, runtime constituent_status, and transparent-mode uuid derivation (CMP-007)."
+            "description": "Stable local identifier for the constituent within this composite — unique within the item (validate.py-enforced). Used in depends_on references, runtime constituent_status, and transparent-mode uuid derivation (CMP-007). Name a constituent when you include it; nested templates refer to a constituent by path or by uuid, and because CMP-007 derives uuids from parent plus component_id, two inclusions of the same template never collide (maintainer ruling 2026-08-10, #412)."
           },
           "resource_type": {
             "type": "string",

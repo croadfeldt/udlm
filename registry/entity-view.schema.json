@@ -155,6 +155,27 @@
     "entity_uuid": {
       "$ref": "common-elements.schema.json#/$defs/uuid_v4",
       "description": "The same identity as `uuid`, under the name the per-state records use (state-record.schema.json). Present when the view was assembled from records."
+    },
+    "reduction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fields_withheld",
+        "governing_rule"
+      ],
+      "properties": {
+        "fields_withheld": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "How many fields policy withheld from this view."
+        },
+        "governing_rule": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The rule or policy that reduced it — a rule id or a policy reference, so the serve is auditable."
+        }
+      },
+      "description": "Reduction disclosure (governance-matrix GMX-012): present when policy withheld fields from this view, so a reader never mistakes a withheld field for an absent one. A count and the governing rule only — never the withheld paths or values, because listing what is protected is the disclosure the reduction prevents. Absent means the view is complete."
     }
   },
   "$defs": {
@@ -389,7 +410,13 @@
                 "vlan": "lab/net/vlan-20"
               }
             ],
-            "disks": [{"name": "root", "size": "100Gi", "role": "boot"}],
+            "disks": [
+              {
+                "name": "root",
+                "size": "100Gi",
+                "role": "boot"
+              }
+            ],
             "run_state": {
               "desired_state": "running"
             }
@@ -424,7 +451,13 @@
                 "network_ref": "lab/net/dmz"
               }
             ],
-            "disks": [{"name": "root", "size": "100Gi", "role": "boot"}],
+            "disks": [
+              {
+                "name": "root",
+                "size": "100Gi",
+                "role": "boot"
+              }
+            ],
             "placement": {
               "location_ref": "lab/facility/rack-3"
             },
@@ -475,7 +508,13 @@
                 "network_ref": "lab/net/dmz"
               }
             ],
-            "disks": [{"name": "root", "size": "100Gi", "role": "boot"}],
+            "disks": [
+              {
+                "name": "root",
+                "size": "100Gi",
+                "role": "boot"
+              }
+            ],
             "placement": {
               "location_ref": "lab/facility/rack-3"
             },

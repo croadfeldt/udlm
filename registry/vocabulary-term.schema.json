@@ -27,8 +27,7 @@
       "description": "Frozen identity (ADR-051). A content change bumps `version`; the uuid never moves."
     },
     "handle": {
-      "type": "string",
-      "pattern": "^([a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)*[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
+      "$ref": "common-elements.schema.json#/$defs/handle",
       "description": "The authoring name. A reference is AUTHORED by handle and RESOLVED to the uuid form (WIR-004) — never resolved by name alone."
     },
     "conforms_to": {

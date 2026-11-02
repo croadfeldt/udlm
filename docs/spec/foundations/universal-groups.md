@@ -608,10 +608,21 @@ cross_tenant_authorization:
       source_pool_uuid: <ippool-uuid>
       permitted_operations: [allocate]
 
-  # Duration
+  # Ending criteria (CTX-009). expires_at is required: no grant is open-ended by omission.
   valid_from: <ISO 8601>
-  expires_at: <ISO 8601|null>       # null = perpetual until revoked
-  auto_renew: false
+  expires_at: <ISO 8601>
+  ends_when:                        # optional; threshold and scores are stated, never defaulted
+    threshold: 1                    # ends when the held scores reach this; 1 = any one
+    criteria:
+      - kind: bound                 # the grant serves one request, order or system
+        to: <system-uuid>
+        score: 1
+      - kind: uses                  # at most this many relationships formed under it
+        max: 20
+        score: 1
+      - kind: bound                 # a negative score is an exception: keeps the grant
+        to: <system-uuid>           # alive while the system it serves is still realized
+        score: -100
 
   # Who created this
   granted_by_actor_uuid: <uuid>
@@ -663,6 +674,7 @@ Authorization revoked (by granting Tenant admin, platform admin, or expiry)
 | `CTX-005` | The **required-grant set** for a request or catalog offering is DERIVED from its edge graph — each cross-tenant edge resolved to its target's owning Tenant and diffed against the requesting Tenant's active authorizations — and surfaced to the requesting Tenant **before admission**. A cross-tenant relationship whose authorization is missing is refused at request validation, never first discovered at dispatch. The set is computed, never stored (DRV-001). |
 | `CTX-006` | **Structural release.** The existence of a cross-tenant edge, its relation and nature, its target's owning authority and resource type, and the grant's status are releasable to the requesting Tenant. The target's spec, configuration, and realized outputs are NOT. A tenant boundary governs what a subject may *do*, not what a subject may *know*; a profile may narrow what is released but may not withhold the existence of a required grant. |
 | `CTX-007` | A cross-tenant act is audited to **both** the granting and the receiving Tenant. A `platform_managed` authorization (CTX-004) is visible to the Tenant on whose behalf it was created, not only to the platform administrator — a grant made in a Tenant's name is auditable by that Tenant. |
+| `CTX-009` | A grant ends by criteria, not by omission: `expires_at` is required, and `ends_when` lists further criteria (`bound`, `uses`, `quota`, `time`), each with a score. The grant ends when the scores of the criteria that hold reach the stated `threshold` (1 means any one ends it; the threshold and every score are written by the author, never defaulted); a negative score is an exception that keeps it alive; list order breaks ties. Use counts are derived from the relationships formed under the grant, never stored on it. What happens at the end is CTX-002's path. `auto_renew` is withdrawn: a renewal is a new grant. (#406) |
 | `CTX-008` | A resource type declaring `publicly_stakeable` / `publicly_allocatable` satisfies CTX-001 as a **standing declaration**. The required-grant set reports it as *satisfied by standing declaration* rather than omitting it, so the relationship stays visible. The declaration waives the per-grant authorization, never the boundary: ownership, revocation, and decommission behave exactly as for a granted stake. |
 
 **Conformance targets (ADR-066; the discipline is #419).** Each rule above names the class of product

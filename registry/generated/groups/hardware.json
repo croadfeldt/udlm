@@ -4,14 +4,14 @@
   "classes": [
     {
       "class": "BMC",
-      "version": "0.9.1",
+      "version": "0.9.2",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/bmc/_base.yaml",
       "types": []
     },
     {
       "class": "GPU",
-      "version": "0.8.2",
+      "version": "0.8.3",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/gpu/_base.yaml",
       "types": []
@@ -32,7 +32,7 @@
     },
     {
       "class": "Processor",
-      "version": "0.7.3",
+      "version": "0.7.4",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/processor/_base.yaml",
       "types": []

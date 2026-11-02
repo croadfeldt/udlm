@@ -42,7 +42,7 @@ Consumer Tenant owns: VM-B (another distinct entity)
 ```
 There is no relationship between VM-A and the infrastructure Tenant — the consumer simply used a Service Provider to provision a resource. Once provisioned, the entity belongs to the consumer's Tenant entirely. The platform Tenant has no visibility into the consumer's entity unless an explicit Information Provider or cross-tenant relationship is established.
 
-**Examples:** VM, Container, StorageVolume, NetworkInterface, DNSRecord.
+**Examples:** VM, Container, NetworkInterface, DNSRecord. (A Volume is an allocation from a StoragePool — §2.2, #469.)
 
 **Resource Type Spec declaration:**
 ```yaml
@@ -73,7 +73,7 @@ NetworkOps Tenant owns: IPAddressPool 198.51.100.0/24 (pool entity)
 
 The IPAddress entities are not pointers to the pool — they are real entities owned by their Tenants. If AppTeam decommissions 198.51.100.45/32, it is released back to the pool. The pool capacity increases. No other Tenant's allocation is affected.
 
-**Examples:** IPAddress (from IPAddressPool), Subnet (from SubnetPool), VLAN ID (from VLANIDPool), StorageVolume (from StoragePool), PublicCertificate (from CertificateAuthorityPool).
+**Examples:** IPAddress (from IPAddressPool), Subnet (from SubnetPool), VLAN ID (from VLANIDPool), Volume (from StoragePool), PublicCertificate (from CertificateAuthorityPool).
 
 **Resource Type Spec declarations (both pool and allocation):**
 ```yaml
@@ -277,6 +277,7 @@ model guarantees, not runtime governance policy.
 | `OWN-005` | Allocation entity decommission releases the allocation back to the source pool. The pool entity is never decommissioned by an allocation decommission. |
 | `OWN-006` | Cost attribution for shareable resources defaults to the resource owner Tenant. A cost attribution policy may redistribute costs to stakeholders. |
 | `OWN-007` | The ownership model for a resource type is declared in the Resource Type Specification and cannot be changed at the entity level. Ownership model is a type-level invariant. |
+| `OWN-009` | `ownership_model` is optional on a class and stays optional at 1.0 (maintainer ruling 2026-11-02, #415). Absent means undeclared: nothing is inferred, and a composite constituent of an undeclared class cannot be ownership-checked. A profile that enforces tenancy may require it as a floor; anywhere else it would only get in the way. |
 | `OWN-008` | Cross-tenant AllocationRecord and stake relationships require that the requesting Tenant has either an active cross-tenant authorization or the resource type is declared as publicly allocatable/stakeable in its Resource Type Spec. |
 
 ---

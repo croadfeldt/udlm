@@ -52,7 +52,7 @@ The thing that hands out addresses and answers name lookups, as a single, thin s
 
 ## Automation
 
-### Automation (1.3.0)
+### Automation (1.3.1)
 
 **Purpose:** Declares an automation — what a run is, portable across engines — so any engine that exposes run, status and cancel can execute it.
 
@@ -70,7 +70,7 @@ The definition of something that can be run: what it takes in, what it gives bac
 - Job — the receipt of running it.
 - Automation.OSPatch — a Type that narrows it.
 
-### Automation.OSPatch (1.4.0)
+### Automation.OSPatch (1.4.1)
 
 **Purpose:** The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.
 
@@ -91,7 +91,7 @@ Declares that hosts get patched: which package sets, within which maintenance wi
 
 ## BMC
 
-### BMC (0.9.1)
+### BMC (0.9.2)
 
 **Purpose:** Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.
 
@@ -133,7 +133,7 @@ A bucket: which class provisions it, which object protocols it must speak, and w
 
 ## BucketClass
 
-### BucketClass (0.1.0)
+### BucketClass (0.1.1)
 
 **Purpose:** Declares how object-storage buckets of a kind are provisioned.
 
@@ -344,7 +344,7 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 
 ## GPU
 
-### GPU (0.8.2)
+### GPU (0.8.3)
 
 **Purpose:** Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.
 
@@ -382,7 +382,7 @@ A named set of things with a rule for what belongs in it. A tenant is a grouping
 - Grouping.Tenant and Grouping.Authorization — the Types that narrow it.
 - Any resource — a member by criterion.
 
-### Grouping.Authorization (0.1.2)
+### Grouping.Authorization (0.2.0)
 
 **Purpose:** One grouping permitting another to use something it holds. The grant is a record with its own identity and lifecycle, so it can be found, audited, time-bounded, and withdrawn.
 
@@ -904,7 +904,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 
 ## PowerFeed
 
-### PowerFeed (0.9.1)
+### PowerFeed (0.9.2)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
@@ -925,7 +925,7 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 
 ## Processor
 
-### Processor (0.7.3)
+### Processor (0.7.4)
 
 **Purpose:** Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when the host rollup is not enough.
 
@@ -1139,7 +1139,7 @@ A term with an authoritative definition, living in a named vocabulary tree (its 
 
 ## Template
 
-### Template (0.2.1)
+### Template (0.2.2)
 
 **Purpose:** Declares a consumable composition — the mechanism by which an orderable unit is assembled from other classes and references, declared once and realized many times.
 

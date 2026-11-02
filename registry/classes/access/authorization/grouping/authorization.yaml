@@ -17,7 +17,7 @@
 # selects WHICH resources are in scope and `authorized_operations` says WHAT may be done with them;
 # resources needing different operations are different grants. Simpler, and it costs nothing a second
 # grant does not buy.
-$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Authorization/0.1.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Authorization/0.2.0
 uuid: 9d41c8e2-05b7-4a36-b8f9-1c7e3a604b52
 record_type: class
 resource_type: Grouping.Authorization
@@ -25,7 +25,7 @@ class: type
 parent: Grouping
 family: Access
 entity_type: Grouping
-version: 0.1.2
+version: 0.2.0
 conforms_to: udlm/0.1
 status: active
 context:
@@ -101,17 +101,83 @@ elements:
       description: When the grant takes effect; absent means on creation.
   - element: expires_at
     scope: Grouping.Authorization
-    optional: true
+    optional: false
     state: proposed
-    description: 'When the grant lapses. Expiry is treated exactly as explicit revocation (CTX-003): dependents
-      enter review, nothing is seized. Absent means until revoked; #406 argues a bounded default and this element
-      is where that lands.'
+    description: 'When the grant lapses; required, so no grant is open-ended by omission (#406). Expiry is treated
+      exactly as explicit revocation (CTX-003): dependents enter review, nothing is seized. A grant meant to outlive
+      its project says so with a far date, on purpose.'
     schema:
       type: string
       pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$
-      description: 'When the grant lapses. Expiry is treated exactly as explicit revocation (CTX-003): dependents
-        enter review, nothing is seized. Absent means until revoked; #406 argues a bounded default and this element
-        is where that lands.'
+      description: 'When the grant lapses; required, so no grant is open-ended by omission (#406). Expiry is treated
+        exactly as explicit revocation (CTX-003): dependents enter review, nothing is seized.'
+  - element: ends_when
+    scope: Grouping.Authorization
+    optional: true
+    state: proposed
+    description: 'Ending criteria beyond expiry (CTX-009): a threshold and a list of criteria, each with a kind and a
+      score, both stated by the author — UDLM ships no default. The grant ends when the scores of the criteria that
+      hold add up to the threshold or more: scores of 1 and a threshold of 1 mean any one ends it; a threshold equal
+      to the count means all must hold. A negative score is an exception that keeps the grant alive while it holds.
+      List order is the tie-break when two fire together. `expires_at` always counts as a criterion with score 1.
+      Use counts are derived from the relationships formed under the grant, never stored on it.'
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - threshold
+        - criteria
+      properties:
+        threshold:
+          type: integer
+          minimum: 1
+          description: The score the held criteria must reach for the grant to end.
+        criteria:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required:
+              - kind
+              - score
+            properties:
+              kind:
+                type: string
+                enum:
+                  - bound
+                  - uses
+                  - quota
+                  - time
+                description: 'bound: the grant serves one request, order or realized system, named in `to`. uses: at
+                  most `max` relationships may be formed under it. quota: at most `limit` of `measure` may be
+                  allocated under it. time: an instant in `at`, a second time bound with its own score.'
+              score:
+                type: integer
+                description: Weight of this criterion when it holds; negative means an exception that keeps the grant alive.
+              to:
+                $ref: ../../../../common-elements.schema.json#/$defs/uuid_v4
+                description: For kind bound — the request, order or system the grant serves.
+              max:
+                type: integer
+                minimum: 1
+                description: For kind uses — the most relationships that may be formed under the grant.
+              measure:
+                type: string
+                description: For kind quota — what is counted (an allocation count, or a Quantity's unit).
+              limit:
+                type: string
+                description: For kind quota — the most of `measure` the grant allows, as a Quantity string.
+              at:
+                type: string
+                pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$
+                description: For kind time — the instant.
+              why:
+                type: string
+                description: One line for the reader.
+          description: The criteria, in tie-break order.
+      description: 'Ending criteria beyond expiry (CTX-009): a threshold and scored criteria, both stated by the
+        author. The grant ends when the held scores reach the threshold; a negative score is an exception.'
   - element: platform_managed
     scope: Grouping.Authorization
     optional: true
@@ -141,3 +207,17 @@ spec_examples:
       - stake
       - read
     expires_at: '2027-01-01T00:00:00Z'
+    ends_when:
+      threshold: 1
+      criteria:
+        - kind: bound
+          to: 4f0b7a1e-3c2d-4e5f-8a9b-0c1d2e3f4a5b
+          score: 1
+          why: issued for one application stack; ends with it
+        - kind: uses
+          max: 20
+          score: 1
+        - kind: bound
+          to: 4f0b7a1e-3c2d-4e5f-8a9b-0c1d2e3f4a5b
+          score: -100
+          why: while the stack it serves is still realized, nothing else ends the grant

@@ -23,10 +23,7 @@
     "uuid": {
       "$ref": "common-elements.schema.json#/$defs/uuid_v4"
     },
-    "handle": {
-      "type": "string",
-      "description": "e.g. 'DCM ADR-017'-style within an owning scope; advisory. Deliberately NOT held to the entity-handle grammar (WIR-003, identifier-scheme §3): that grammar is lowercase and governs estate handles, and a DecisionRecord is a Knowledge-family record whose identity convention is the ADR number the industry already reads. Patterning it would force adr-066 and buy nothing."
-    },
+    "handle": {"$ref": "common-elements.schema.json#/$defs/handle", "description": "e.g. 'DCM ADR-017'-style within an owning scope; advisory. Deliberately NOT held to the entity-handle grammar (WIR-003, identifier-scheme §3): that grammar is lowercase and governs estate handles, and a DecisionRecord is a Knowledge-family record whose identity convention is the ADR number the industry already reads. Patterning it would force adr-066 and buy nothing."},
     "conforms_to": {
       "type": "string",
       "pattern": "^udlm/[0-9]+\\.[0-9]+$"
