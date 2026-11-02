@@ -64,7 +64,7 @@ supersedes:
 record_type: realized_record
 state: Realized
 entity_uuid: 4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44
-record_uuid: 01a0f335-6813-7708-9a75-57e7635cadb4
+record_uuid: 01a19cfd-2c00-7000-8000-000000000000
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Job
@@ -90,13 +90,13 @@ outputs:
 requested_ref: 01a0f335-6813-7708-9a75-57e6d9a7eb05
 provider: estate/control-plane
 process:
-  execution_state: COMPLETED
+  execution_state: completed
   affected_entities:
     - entity_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
       effect_type: read
       effect_description: snapshotted the database
 supersedes:
-  - 01a0eb4f-c375-7492-b86f-ade8925f9587
+  - 01a0f335-6813-7708-9a75-57e7635cadb4
 provenance:
   targets:
     - source:

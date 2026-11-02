@@ -130,6 +130,11 @@ an **export adapter** at that domain boundary (not native consumption).
   copied verbatim from an adopted standard keeps that standard's casing (`NoSchedule`, `balance-rr`,
   `http/protobuf`); the element marks it with `x-standard: "<standard>:<where>"`, naming a standard the
   class adopts. `tests/check_type_standard.py` G9 refuses any other non-snake value in a class.
+  The record schemas follow the same rule (row 134, `tests/check_schema_enum_casing.py`), with two
+  more markers for values that are not words UDLM minted: `x-value-form: name` when the values are
+  names in the PascalCase name grammar (`Resource`, `Intent`, a class name used as a value) and
+  `x-value-form: notation` when they are a notation (`0..n`). An `x-standard` on a schema names a
+  standard the adoption register lists.
 - **Quantities** carry an explicit unit via the `Quantity` pattern; timestamps are RFC 3339.
 - **Outputs** are `snake_case` typed keys naming the capability, not the implementation
   (`block_storage_class`, `connection_string`) — the cross-entity binding surface (E2).
@@ -139,7 +144,7 @@ an **export adapter** at that domain boundary (not native consumption).
 - **`state` has two meanings, fixed by the document it is on.** On a state record it is the lifecycle
   position: `Intent`, `Requested`, `Realized` or `Discovered`. On a definition (a class element, a
   decision record, a composition record) it is how far the definition has got through review:
-  `proposed`/`canonical` on an element, `PROPOSED` through `DEPRECATED` on a record. `record_type`, or
+  `proposed`/`canonical` on an element, `proposed` through `deprecated` on a record (row 134). `record_type`, or
   the class element it sits in, always says which. The field keeps its name (maintainer ruling
   2026-10-22, row 104): renaming the review meaning would touch every class element for no gain a
   reader cannot already get from the document type.

@@ -575,7 +575,7 @@ A named set of person and service-account identities, keyed by its required `han
 
 ## Job
 
-### Job (1.2.9)
+### Job (1.2.10)
 
 **Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
 
