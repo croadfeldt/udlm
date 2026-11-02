@@ -1031,7 +1031,7 @@
   }
  },
  "type:KubernetesCluster": {
-  "current": "2.0.6",
+  "current": "2.0.7",
   "path": "registry/classes/resource/compute/kubernetes-cluster/_base.yaml",
   "versions": {
    "1.0.0": "sha256:63ac01bc1f59283bbca00463f1854007cc80dca120f820a24d348b3e94cd379d",
@@ -1043,7 +1043,8 @@
    "2.0.3": "sha256:a3cf42b4328ce293ca6c05036c5832dd190ef9c98e6ac87bb25419a4f4dea101",
    "2.0.4": "sha256:ecd16a296fff6246ee8c1abb8993783a8618a11345109732972b75ceb67f4d96",
    "2.0.5": "sha256:2d3b8a593e9c41540bd49646ccd531bc21a7bf7bbf335d26fd54354a98c3365c",
-   "2.0.6": "sha256:14746038a28085cd6d577184a62c34b247679fe850b01199ef70e36adea5bb3d"
+   "2.0.6": "sha256:14746038a28085cd6d577184a62c34b247679fe850b01199ef70e36adea5bb3d",
+   "2.0.7": "sha256:6525b525424a1e43119afdd5c707eb9fa471d4ac3b631508f04f552b11f5b37e"
   }
  },
  "type:KubernetesNamespace": {
@@ -1128,7 +1129,7 @@
   }
  },
  "type:Machine": {
-  "current": "2.6.0",
+  "current": "2.6.1",
   "path": "registry/classes/resource/compute/machine/_base.yaml",
   "versions": {
    "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
@@ -1143,7 +1144,8 @@
    "2.4.1": "sha256:ebf7d62f61677f40c272bdbbc9bbf7403aab939e7baa8c63bca0f916b59b30a8",
    "2.4.2": "sha256:b5b66a3aeecd855331e0a99f7e61ed56322e1156dd595dde5eae4086bc91c1bc",
    "2.5.0": "sha256:a97cc06f72b38dec007341a5f69d24a28c9f2183466120ac9e7f9a93605d9409",
-   "2.6.0": "sha256:a31366fd386791898ecb57fcdf5c8d05ee5fe90e1f24d12ab15e348f8316f840"
+   "2.6.0": "sha256:a31366fd386791898ecb57fcdf5c8d05ee5fe90e1f24d12ab15e348f8316f840",
+   "2.6.1": "sha256:2903f01699b9d7a4923d8332cc697cfcabeb8edf605da5bebd29702c3aef111a"
   }
  },
  "type:Machine.BareMetalHost": {
