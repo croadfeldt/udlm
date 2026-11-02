@@ -277,7 +277,7 @@ model guarantees, not runtime governance policy.
 | `OWN-005` | Allocation entity decommission releases the allocation back to the source pool. The pool entity is never decommissioned by an allocation decommission. |
 | `OWN-006` | Cost attribution for shareable resources defaults to the resource owner Tenant. A cost attribution policy may redistribute costs to stakeholders. |
 | `OWN-007` | The ownership model for a resource type is declared in the Resource Type Specification and cannot be changed at the entity level. Ownership model is a type-level invariant. |
-| `OWN-009` | `ownership_model` is optional on a class and stays optional at 1.0 (maintainer ruling 2026-11-02, #415). Absent means undeclared: nothing is inferred, and a composite constituent of an undeclared class cannot be ownership-checked. A profile that enforces tenancy may require it as a floor; anywhere else it would only get in the way. |
+| `OWN-009` | `ownership_model` is optional on a class. Absent means undeclared: nothing is inferred, and a constituent of an undeclared class cannot be ownership-checked. A profile that enforces tenancy may require it. (Ruling 2026-11-02, #415.) |
 | `OWN-008` | Cross-tenant AllocationRecord and stake relationships require that the requesting Tenant has either an active cross-tenant authorization or the resource type is declared as publicly allocatable/stakeable in its Resource Type Spec. |
 
 ---

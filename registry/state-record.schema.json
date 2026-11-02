@@ -217,14 +217,14 @@
       "properties": {
         "source_record_uuid": {
           "$ref": "common-elements.schema.json#/$defs/uuid_v7",
-          "description": "The record this entity was rebuilt from — the last record of the entity it replaces."
+          "description": "The last record of the entity this one replaces."
         },
         "source_store": {
           "type": "string",
-          "description": "Where that record lives when it is not this store: a peer, an archive, an export. Absent means this store."
+          "description": "Where that record lives if not here: a peer, an archive, an export."
         }
       },
-      "description": "Set on the Intent of a REBUILD (four-states §5.2, RHY-005): the original is gone and this is a new entity with a new uuid, kept traceable to what it replaced. Never set on a restore in place, which keeps the uuid and records the provider-side change in `provider_entity_id_history`."
+      "description": "Set on the Intent of a rebuild (four-states §5.2, RHY-005): the original is gone, this is a new entity with a new uuid, and this says what it replaced. A restore in place keeps the uuid and uses `provider_entity_id_history` instead."
     },
     "provider_entity_id_history": {
       "type": "array",
@@ -238,16 +238,16 @@
         "properties": {
           "provider_entity_id": {
             "type": "string",
-            "description": "The provider-side identifier this entity had before."
+            "description": "The identifier the provider used before."
           },
           "replaced_at": {
             "type": "string",
             "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-            "description": "RFC 3339 UTC instant the provider stopped knowing it by that identifier."
+            "description": "When the provider stopped using it (RFC 3339 UTC)."
           }
         }
       },
-      "description": "Set on a RESTORE IN PLACE (four-states §5.2, RHY-005): the entity keeps its uuid and only the provider-side identifier changed. Oldest first. The current identifier is in `correlation_ids`, not here."
+      "description": "Set on a restore in place (four-states §5.2, RHY-005): the entity kept its uuid and only the provider's identifier for it changed. Oldest first. The current identifier is in `correlation_ids`."
     }
   },
   "allOf": [

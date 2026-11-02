@@ -167,15 +167,15 @@
         "fields_withheld": {
           "type": "integer",
           "minimum": 1,
-          "description": "How many fields policy withheld from this view."
+          "description": "How many fields were withheld."
         },
         "governing_rule": {
           "type": "string",
           "minLength": 1,
-          "description": "The rule or policy that reduced it — a rule id or a policy reference, so the serve is auditable."
+          "description": "The rule or policy that withheld them."
         }
       },
-      "description": "Reduction disclosure (governance-matrix GMX-012): present when policy withheld fields from this view, so a reader never mistakes a withheld field for an absent one. A count and the governing rule only — never the withheld paths or values, because listing what is protected is the disclosure the reduction prevents. Absent means the view is complete."
+      "description": "Present when policy withheld fields from this view (GMX-012), so a reader never mistakes a withheld field for an absent one. It says how many and under which rule, never which fields: naming them would reveal what the rule protects. Absent means the view is complete."
     }
   },
   "$defs": {

@@ -103,24 +103,18 @@ elements:
     scope: Grouping.Authorization
     optional: false
     state: proposed
-    description: 'When the grant lapses; required, so no grant is open-ended by omission (#406). Expiry is treated
-      exactly as explicit revocation (CTX-003): dependents enter review, nothing is seized. A grant meant to outlive
-      its project says so with a far date, on purpose.'
+    description: 'When the grant lapses. Required: a grant is never open-ended by omission (#406). Expiry works like
+      revocation (CTX-003): dependents go to review, nothing is seized. A long-lived grant says so with a far date.'
     schema:
       type: string
       pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$
-      description: 'When the grant lapses; required, so no grant is open-ended by omission (#406). Expiry is treated
-        exactly as explicit revocation (CTX-003): dependents enter review, nothing is seized.'
+      description: 'When the grant lapses. Required. Expiry works like revocation (CTX-003): dependents go to review,
+        nothing is seized.'
   - element: ends_when
     scope: Grouping.Authorization
     optional: true
     state: proposed
-    description: 'Ending criteria beyond expiry (CTX-009): a threshold and a list of criteria, each with a kind and a
-      score, both stated by the author — UDLM ships no default. The grant ends when the scores of the criteria that
-      hold add up to the threshold or more: scores of 1 and a threshold of 1 mean any one ends it; a threshold equal
-      to the count means all must hold. A negative score is an exception that keeps the grant alive while it holds.
-      List order is the tie-break when two fire together. `expires_at` always counts as a criterion with score 1.
-      Use counts are derived from the relationships formed under the grant, never stored on it.'
+    description: 'Criteria that end the grant before it expires (CTX-009): a threshold and a list of scored criteria. The grant ends when the scores of the criteria that hold reach the threshold. A negative score is an exception that keeps the grant alive. List order breaks ties. The author states every score and the threshold.'
     schema:
       type: object
       additionalProperties: false
@@ -149,9 +143,8 @@ elements:
                   - uses
                   - quota
                   - time
-                description: 'bound: the grant serves one request, order or realized system, named in `to`. uses: at
-                  most `max` relationships may be formed under it. quota: at most `limit` of `measure` may be
-                  allocated under it. time: an instant in `at`, a second time bound with its own score.'
+                description: 'bound: the grant serves the one request, order or system in `to`. uses: at most `max`
+                  relationships under it. quota: at most `limit` of `measure` under it. time: the instant in `at`.'
               score:
                 type: integer
                 description: Weight of this criterion when it holds; negative means an exception that keeps the grant alive.
@@ -176,8 +169,8 @@ elements:
                 type: string
                 description: One line for the reader.
           description: The criteria, in tie-break order.
-      description: 'Ending criteria beyond expiry (CTX-009): a threshold and scored criteria, both stated by the
-        author. The grant ends when the held scores reach the threshold; a negative score is an exception.'
+      description: 'Criteria that end the grant before it expires (CTX-009): a threshold and scored criteria. The
+        grant ends when the scores of the criteria that hold reach the threshold.'
   - element: platform_managed
     scope: Grouping.Authorization
     optional: true
