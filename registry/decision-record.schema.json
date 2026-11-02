@@ -173,7 +173,7 @@
         "observed",
         "deprecated"
       ],
-      "description": "Curation lifecycle = ADR status: proposed → under_review → canonical (the authoritative WHY) → re-observed if premises drift; deprecated when superseded. Spelled snake_case like every value UDLM mints (row 134; row 103 for the rule)."
+      "description": "Curation lifecycle = ADR status: proposed → under_review → canonical (the authoritative WHY) → re-observed if premises drift; deprecated when superseded."
     },
     "provenance": {
       "type": "object",
