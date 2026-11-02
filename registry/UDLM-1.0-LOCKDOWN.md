@@ -89,8 +89,8 @@ From the day this document merges:
 ## 4. The open issues (90 on 2026-10-28), sorted
 
 One decision per kind of problem, the way the field sweep worked (row 108). Each row says why.
-WP0 revisits §4.1 once the stability marker exists: a row stays a blocker if its part must be
-stable at 1.0, and moves to §4.2 with the part marked experimental if not.
+WP0 sorted §4.1 by the stability manifest: a row stays a blocker if its part is stable at 1.0;
+eleven rows moved to §4.2 because their part is experimental.
 
 ### 4.1 Blockers — must land before the tag
 
@@ -98,23 +98,18 @@ stable at 1.0, and moves to §4.2 with the part marked experimental if not.
 |---|---|---|---|
 | #641 | 36 enum values are not snake_case | renaming later is breaking; adopted code lists keep their spelling and say so | WP1 |
 | #678 | the decision-record ladder is uppercase; composition and curation_state are not | one ladder with two spellings; renaming later is breaking | WP1 |
-| #472 | `sovereignty.classification` is free text with no list of values | adding a closed list later narrows the field | WP1 |
-| #346 | the request status ladder is not settled | a closed list cannot grow later without a major bump | WP1 |
-| #410 | two isolation vocabularies that do not match, neither recordable | settle on one before it is frozen | WP1 |
-| #466 | the rehydration policy has four values and nowhere to record them | a list with no field cannot be promised | WP1 |
 | #351 | rebuild lineage: RHY-005 names fields no schema has | a rule no schema carries cannot be certified | WP2 |
 | #352 | reduction disclosure: the portable element (listing the paths waits for 1.x) | same | WP2 |
 | #353 | zero-output classes are exempted by a hand-kept list, not a marker in the schema | the marker changes the grammar; add it before the grammar freezes | WP2 |
 | #559 | fill strategy (`auto`, `prompt`, `auto_with_override`) is documented but has no field | give it a field or delete the text | WP2 |
-| #562 | `cohesion: same_zone` exists and nothing refuses a violation | add a check or remove the element; removing later is breaking | WP2 |
 | #445 | two of six identifier rules do not hold (WIR-003 is unenforced; one describes a removed design) | adding a pattern later narrows the field; confirm `$defs/handle` covers WIR-003, drop the dead one | WP2 |
 | #412 | `component_id` has no scope, so nested templates collide | scoping a key later is breaking | WP2 |
 | #415 | `ownership_model` is declared on 9 of 71 classes | declare it everywhere or never require it; requiring it later is breaking | WP2 |
 | #469 | StorageVolume is listed under two ownership models | the contradiction behind #415 | WP2 |
 | #406 | cross-tenant grants have no use limit and default to never expiring | changing a default is breaking | WP2 |
 | #189 | `reference_data` is still a `layer_type`; `applies_on` and `from_layers` are not built (ADR-038) | removing an enum value is breaking | WP2 |
-| #634 | provider registration has no schema (115 of 173 keys in the contract) | a contract with no schema cannot be in a 1.0 claim | WP3 |
-| #632 | entity-relationships describes fields no schema has; four rules depend on them | model each field or move the text to the control plane | WP3 |
+| #634 | provider registration has no schema (115 of 173 keys in the contract) | the provider contract is experimental at 1.0 (`registry/stability.yaml`); WP3 continues, but the tag does not wait for it | WP3 |
+| #632 | entity-relationships describes fields no schema has; four rules depend on them | the document is experimental at 1.0; the rows become control-plane obligations in WP3; the tag does not wait for it | WP3 |
 | #614 | every network class declares zone and tier, even where they do not apply | removing fields is breaking | WP4 |
 | #612 | ADR-082 follow-ups | the udlm side is done; what remains is estate work; close here | WP4 |
 | #646 | LogShipper names OpenTelemetry but adopts nothing; KubernetesNodePool adopts nothing | the standards register must be true at the tag | WP4 |
@@ -124,24 +119,37 @@ stable at 1.0, and moves to §4.2 with the part marked experimental if not.
 | #503 | the spec names an implementation (57 lines in 21 files left, from 482) | "independent of any implementation" has to be true at the tag | WP6 |
 | #491 | a dot means three things and the spec says two | a grammar statement; it already caused one wrong design | WP6 |
 | #416 | 319 MUST against 9 SHOULD | partial conformance (§3.2) means nothing without levels | WP6 |
-| #460 | template-composition-model: about 60 lines to cut, 37 belong to the control plane | text about a construct the model moved past | WP6 |
 | #428 | ADR-059's record test has no written reason | the rule exists; a reader needs the why | WP6 |
 | #382 | reference aliases: the rule for resolving an unpinned name was never written | a resolution rule added later changes behaviour | WP6 |
 | #328 | identity is not address | one paragraph: UDLM never says how a provider reaches a thing | WP6 |
-| #392 | does the assembly engine own its own conditions, as the policy engine does (ADR-065)? | a cheap ruling; leaving it open freezes the ambiguity | WP6 |
 | #401 | does the model carry GUI layout? | ruling: no; close | WP6 |
 | #417 / #442 / #434 | no conformance suite exists; must-reject covers 24 cases | ruling 2: package the checks and examples as suite 1.0.0; give every checked rule a must-reject case | WP7 |
 | #383 | the reference lint has two blind spots | a suite with known blind spots is not a 1.0 suite | WP7 |
 | #424 | nothing checks the merged result | a required check on `main` or a merge queue; two green branches once made a red main | WP7 |
 | #645 | class versions overstate stability | ruling 3: keep them; one sentence in `VERSIONING.md` | WP8 |
-| #394 | ADR-059's typed chains have no schema | build them or narrow the ADR; an accepted ADR with nothing behind it cannot stand at the tag | WP8 |
-| #407 | ADR-066 A–E: the tenant boundary is operational | the same test | WP8 |
-| #385 | the residency rule in §3.8 cannot be evaluated (ISO 3166 vs `sovereignty.zone`) | a rule that cannot be evaluated is fixed or dropped, not frozen | WP8 |
 | #321 | the control plane flattens the class graph; UDLM's generator is the reference | ruling made; confirm the spec says it, close | WP8 |
-| #474 / #477 | a catalog item is a provider class; retire the record kind; catalog metadata has no home | renames are breaking; `composition.schema.json` still names `catalog_item` | WP8 |
 | #217 | ratification pass | closes with the tag (ruling 1) | WP9 |
 
-### 4.2 1.x — only adds, waits for the tag
+### 4.2 Experimental at 1.0 — no longer blocking (WP0, `registry/stability.yaml`)
+
+The part each of these touches is marked experimental, so it carries no 1.0 promise and can
+change in a minor. The work stays open; the tag does not wait for it.
+
+| # | Problem | Experimental part |
+|---|---|---|
+| #472 | `sovereignty.classification` is free text with no list of values | `SovereigntyZone`; the classification vocabulary |
+| #346 | the request status ladder is not settled | `lifecycle/scheduled-requests.md` |
+| #410 | two isolation vocabularies that do not match, neither recordable | the isolation vocabularies (grouping obligations) |
+| #466 | the rehydration policy has four values and nowhere to record them | the rehydration policy vocabulary |
+| #562 | `cohesion: same_zone` exists and nothing refuses a violation | `Template` (cohesion) |
+| #460 | template-composition-model: about 60 lines to cut, 37 belong to the control plane | `foundations/template-composition-model.md` |
+| #392 | does the assembly engine own its own conditions, as the policy engine does (ADR-065)? | `evaluation-context.schema.json` |
+| #394 | ADR-059's typed chains have no schema | the ledger schemas (audit-leaf, audit-record, log-checkpoint, commit-log-entry) |
+| #407 | ADR-066 A–E: the tenant boundary is operational | `governance/accreditation-and-authorization-matrix.md` and the grant surface |
+| #385 | the residency rule in §3.8 cannot be evaluated (ISO 3166 vs `sovereignty.zone`) | `governance/accreditation-and-authorization-matrix.md` |
+| #474 / #477 | a catalog item is a provider class; retire the record kind; catalog metadata has no home | `Template`, `Template.Application`, `Template.Application.AcmeThreeTier` |
+
+### 4.3 1.x — only adds, waits for the tag
 
 New classes, optional fields, outputs, edges and capabilities. Each is a minor bump after 1.0 and
 loses nothing by waiting:
@@ -164,7 +172,7 @@ loses nothing by waiting:
   estate.
 - Conformance, second half: the HTTP-level runner (§6).
 
-### 4.3 Closed by this plan or by checks that already run
+### 4.4 Closed by this plan or by checks that already run
 
 - #194 and #198 (is every stored field derivable? is it used?): the field sweep (rows 100–119,
   #664) asked both of every element; row 108 is the standing rule. Close.
@@ -182,7 +190,7 @@ WP8, WP9. WP0 comes first because it changes what counts as a blocker.
 
 | Package | What it does | Closes |
 |---|---|---|
-| WP0 stability | a `stability: stable \| experimental` marker on every schema, class and contract; a gate; the stable list; §4.1 re-sorted by it | — |
+| WP0 stability | `registry/stability.yaml`: every class, record schema and spec document marked stable, experimental or reference; gate `tests/check_stability.py`; §4.1 re-sorted by it (row 133) | — |
 | WP1 vocabulary | fixes casing and settles the four open lists of values | #641 #678 #472 #346 #410 #466 |
 | WP2 schema homes | every field the spec mentions gets a schema, or the mention goes | #351 #352 #353 #559 #562 #445 #412 #415 #469 #406 #189 |
 | WP3 provider contract | a provider-registration schema; entity-relationships matched to the schema | #634 #632 |
@@ -199,7 +207,7 @@ The tag is cut when all of these hold **and the maintainer says go**. Meeting th
 means ready, not tagged (maintainer, 2026-10-29). `tests/check_status_claims.py` checks this
 document against them.
 
-0. Every schema, class and contract carries a `stability` marker, and the stable list is published.
+0. Every class, record schema and spec document has a row in `registry/stability.yaml` (gate STB-001).
 1. Every issue in §4.1 is closed, or moved to another bin by a register row.
 2. `check_adr_realization` finds no accepted ADR with nothing built behind it.
 3. The suite runner passes against the estate's records, and `CONFORMANCE.md` §8 names suite
