@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine/2.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine/2.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9",
   "resource_type": "Machine",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -12,7 +12,7 @@
     "maintainer": "UDLM maintainers",
     "origination_timestamp": "2026-07-27T21:00:00Z",
     "title": "Machine Base Class",
-    "description": "An OS-bearing machine ordered as one deliverable: an image booted onto cpu, memory, disk and network. A Base by the Base test (CLS-002): OpenStack Nova with Ironic, Cluster API's Machine and TOSCA's Compute node already treat a VM, a bare-metal host and a logical partition as one thing, so an order placed here is fillable by any provider offering one of the three forms. Every element here is honoured by every form. A container or a Kubernetes cluster is not a machine (rows 068, 069).",
+    "description": "An OS-bearing machine ordered as one deliverable: an image booted onto cpu, memory, disk and network. A Base by the Base test (CLS-002): Redfish ComputerSystem (one representation for physical, virtual and partitioned systems), OpenStack Nova with Ironic, Cluster API's Machine and TOSCA's Compute node already treat a VM, a bare-metal host and a logical partition as one thing, so an order placed here is fillable by any provider offering one of the three forms. Every element here is honoured by every form. A container or a Kubernetes cluster is not a machine (rows 068, 069).",
     "prompt_version": "class-p0-keystone-2026-07-27",
     "generated": true,
     "compilation_provenance": {
@@ -20,7 +20,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.6.0",
+          "version": "2.6.1",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         }
       ]

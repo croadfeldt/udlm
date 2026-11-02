@@ -135,13 +135,16 @@ def main():
     # (e.g. Job -> Automation) is POLYMORPHIC — "any member of the category" (the
     # executes_definition case). Bases aren't served specs, but they are addressable targets.
     standards = set()  # every standard some class adopts: naming one in prose is an adoption claim (G5)
+    adopted_by = {}    # class -> standards it or any Type beneath it adopts (a Type's adoption serves its Base)
     for cp in glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"), recursive=True):
         cd = yaml.safe_load(open(cp, encoding="utf-8")) or {}
         if cd.get("record_type") == "class":
             registered.add(cd.get("resource_type"))
-            for adoption in cd.get("adopts") or []:
-                if adoption.get("standard"):
-                    standards.add(adoption["standard"])
+            mine = {a["standard"] for a in cd.get("adopts") or [] if a.get("standard")}
+            standards |= mine
+            rt_name = cd.get("resource_type") or ""
+            for i in range(len(rt_name.split("."))):
+                adopted_by.setdefault(".".join(rt_name.split(".")[:i + 1]), set()).update(mine)
     adopted_names = re.compile("|".join(r"\b" + re.escape(n) + r"\b" for n in sorted(standards, key=len, reverse=True)) or r"(?!)")
     baseline = {}
     if os.path.exists(BASELINE):
@@ -191,6 +194,15 @@ def main():
         named = ADOPT_TOKENS.search(meta_desc) or adopted_names.search(meta_desc)
         if named and not (d.get("adopts") or []) and "adopts-exempt:" not in meta_desc:
             found.append(("G5", rt, "adopts[]", f"prose names {named.group(0)!r}; adopts[] is empty"))
+        # G5, widened (#646): the Base-test sentence names the standards the Base stands on (CLS-002); at least
+        # one of them must be adopted, by the class or a Type beneath it. A class that adopts something else
+        # (KubernetesCluster adopted only cost standards) passed the empty-adopts check above.
+        bt = re.search(r"Base test \(CLS-002\):(.*?\.)(?:\s+[A-Z]|$)", meta_desc, re.S)
+        if bt and "adopts-exempt:" not in meta_desc:
+            cited = {m.group(0) for m in adopted_names.finditer(bt.group(1))}
+            held = adopted_by.get(rt, set())
+            if cited and not any(c == a or c in a or a in c for c in cited for a in held):
+                found.append(("G5", rt, "base-test", f"Base test cites {sorted(cited)}; none is adopted by the class or its Types"))
 
         # G7 — plain-English context present (rule 36(l))
         if not d.get("context"):
