@@ -2,7 +2,7 @@ record_type: decision_record
 uuid: 1bd1f415-eb6f-4d04-8a9f-c39ef2df1377
 supersedes:
 - 7d3e180f-dec2-4e0a-9f2d-809c49256431
-handle: ADR-EXAMPLE-001
+handle: adr-example-001
 conforms_to: udlm/0.1
 title: Adopt RFC 9562 UUIDv4 as the universal identity primitive
 version: 1.0.1

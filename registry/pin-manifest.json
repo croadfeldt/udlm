@@ -47,11 +47,10 @@
   }
  },
  "decision_record:ADR-EXAMPLE-001": {
-  "current": "1.0.1",
+  "current": "1.0.0",
   "path": "registry/examples/example-decision-record.yaml",
   "versions": {
-   "1.0.0": "sha256:987e9a90db4d5ac1c855ad1f5600da0069b30469f55e672d1038f0a000ac2acd",
-   "1.0.1": "sha256:be08625f1e43e8904d29fa92d5f8674d5b83e6cc1e7f2568ebc2f05d8b99c1d3"
+   "1.0.0": "sha256:987e9a90db4d5ac1c855ad1f5600da0069b30469f55e672d1038f0a000ac2acd"
   }
  },
  "decision_record:ADR-PROV-001": {
@@ -100,6 +99,13 @@
   "stranded": true,
   "versions": {
    "1.0.0": "sha256:5612aea8fb0a5c72387a455b960fd09b69cc98dfb62578bea8e395a8800fefbc"
+  }
+ },
+ "decision_record:adr-example-001": {
+  "current": "1.0.1",
+  "path": "registry/examples/example-decision-record.yaml",
+  "versions": {
+   "1.0.1": "sha256:70f786e31eb06fed3385e540e8a031fdc0898efc5619546269862c95cc9ffbe3"
   }
  },
  "layer:base-virtual-machine": {
