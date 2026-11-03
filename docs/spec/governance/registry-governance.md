@@ -382,21 +382,21 @@ Air-gapped deployment
 
 ## 6a. Class-evolution gates — what the registry refuses about its own artifacts
 
-The registry governs artifacts that other artifacts are compiled from. Under the scoped-Class
-model (defined in `docs/spec/foundations/class-tiers.md`, `CLS-*`; ADR-038 holds the why — Base,
-Type, and Provider Classes composed of shared data elements, with portability derived from where an
-element sits), one Base element serves dozens of descendants,
-so an edit to it is not a local change: it is a change to every flat spec generated from it and
-every estate compiled against those. Software inheritance met this as the fragile-base-class
+The registry governs artifacts that other artifacts are compiled from. The scoped-Class model is
+defined in `docs/spec/foundations/class-tiers.md` (`CLS-*`); ADR-038 holds the why — Base, Type,
+and Provider Classes composed of shared data elements, with portability derived from where an
+element sits. Under that model one Base element serves dozens of descendants, so an edit to it
+is not a local change. It is a change to every flat spec generated from it and every estate
+compiled against those. Software inheritance met this as the fragile-base-class
 problem and never solved it in general, because behavioral compatibility is undecidable. Here it
 is decidable — classes are data contracts, descendants are compiled artifacts, and the affected
 set is computable — which is precisely why it should be gated rather than reviewed.
 
-ADR-045 (class evolution and pinning — recompilation is atomic, intra-registry references are by
-handle, organization-edge pins are `@version`/`@digest`-exact (ADR-051), and element scope is part
-of the compatibility
-contract) and ADR-046 (promotion happens on typed-output evidence, never on a version claim)
-decide the *policy*. This section states what the registry **refuses**, in the four-part refusal
+Two ADRs decide the *policy*. ADR-045 (class evolution and pinning) rules that recompilation is
+atomic, intra-registry references are by handle, organization-edge pins are
+`@version`/`@digest`-exact (ADR-051), and element scope is part of the compatibility contract.
+ADR-046 rules that promotion happens on typed-output evidence, never on a version claim. This
+section states what the registry **refuses**, in the four-part refusal
 form the rest of the model uses — typed, actionable, non-leaking, auditable
 ([`docs/spec/contracts/error-model.md`](../contracts/error-model.md) §6a).
 
@@ -451,7 +451,7 @@ same discipline already runs one plane over, on consumer manifests against type 
 messages), and generalizing it is the cheaper path than inventing new semantics.
 
 **Promotion (`REG-016`).** Retiring pin debt means moving an estate from pinned revisions to
-candidate ones, and ADR-046's ruling is that this happens on evidence: compile the organization's
+candidate ones. ADR-046's ruling is that this happens on evidence: compile the organization's
 intent corpus under both, at the same recorded corpus ref, and diff the declared typed outputs. A
 diff that is neither empty nor explicitly approved refuses the promotion outright — nothing
 partially promotes — and, because the diff contradicts the upstream compatibility claim, it
@@ -462,13 +462,14 @@ sets, the diff, per-entry approvals) and the upstream route is the finding-routi
 the filing rather than dropping it** — the rule binds regardless of carrier availability, which is
 why it was stated before the shapes existed.
 
-Two properties of the evidence are checked rather than asserted (`registry/tools/validate.py`): the
-stated `outcome` is recomputed from the diff, so a record cannot read as evidence-backed while its
-own evidence says otherwise; and an output cannot be both excluded as volatile and present in the
-diff, since claiming both hides which happened. **Volatile outputs are excluded by declaration** —
-`volatile: true` at the point the output is declared (`common-elements.schema.json`
-`$defs/volatile_output`), by the party who knows it is generated — never ad hoc at diff time, which
-would let a promotion be waved through by excluding whatever happened to differ.
+Two properties of the evidence are checked rather than asserted (`registry/tools/validate.py`).
+The stated `outcome` is recomputed from the diff, so a record cannot read as evidence-backed
+while its own evidence says otherwise. And an output cannot be both excluded as volatile and
+present in the diff, since claiming both hides which happened. **Volatile outputs are excluded
+by declaration** — `volatile: true` at the point the output is declared
+(`common-elements.schema.json` `$defs/volatile_output`), by the party who knows it is generated.
+They are never excluded ad hoc at diff time, which would let a promotion be waved through by
+excluding whatever happened to differ.
 
 **Which of these an organization may loosen.** Adoption is governed twice: by the gates above,
 which decide whether a change is *sound*, and by an organization's change policy, which decides
@@ -476,10 +477,10 @@ which decide whether a change is *sound*, and by an organization's change policy
 equivalent and should not be loosenable on the same terms. A maintenance window is the
 organization's to widen; refusing an out-of-window adoption is a scheduling decision, and its
 refusal names the policy clause, the next window, and the authorization that would permit an
-exception. An evidence gate is not the organization's to remove: a change policy amended to drop
+exception. An evidence gate is not the organization's to remove. A change policy amended to drop
 the typed-output diff before promotion, or the version-sufficiency check before adoption, is
-refused, because the gate's purpose is to protect against a claim the organization cannot
-independently verify. Loosening the schedule accepts risk knowingly; removing the evidence
+refused. The gate's purpose is to protect against a claim the organization cannot independently
+verify. Loosening the schedule accepts risk knowingly; removing the evidence
 removes the ability to know. The change-control corpus
 ([`use-cases/change-control/`](../../../use-cases/change-control/README.md) cases 004 and 016) measures
 both halves.

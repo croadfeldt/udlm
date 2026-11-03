@@ -26,6 +26,7 @@ The control plane manages the lifecycle of resources it provisions. But resource
 
 Without a formal model for referencing external data, organizations face two bad choices:
 - **Copy the data into the control plane** — creating duplication, staleness, and an ownership conflict with the authoritative system
+
 - **Ignore the data** — losing business context, cost attribution, and compliance traceability
 
 Information Providers solve this by giving the control plane a standard, stable, governed interface to external data without requiring ownership transfer.
@@ -34,7 +35,7 @@ Information Providers solve this by giving the control plane a standard, stable,
 
 ## 3. The `serve_data` Capability in the Provider Ecosystem
 
-All providers implement one unified base contract and declare **capabilities** rather than belonging to a fixed type (the capability vocabulary — `realize_resources`, `serve_data`, `authenticate`, `federate`, `execute_workflows` — is defined in [provider-contract.md](provider-contract.md); legacy type names remain as convenience labels for common capability profiles). The `serve_data` capability contrasts with the others by data direction and ownership:
+All providers implement one unified base contract and declare **capabilities** rather than belonging to a fixed type. The capability vocabulary — `realize_resources`, `serve_data`, `authenticate`, `federate`, `execute_workflows` — is defined in [provider-contract.md](provider-contract.md); legacy type names remain as convenience labels for common capability profiles. The `serve_data` capability contrasts with the others by data direction and ownership:
 
 | Capability (legacy label) | Purpose | Data Direction | Implementation Owns Result? |
 |--------------|---------|---------------|-----------------|
@@ -173,8 +174,11 @@ external_entity_reference:
 
 The control-plane-generated UUID is the stable internal anchor. This means:
 - All relationship declarations inside the control plane reference the control-plane UUID
+
 - If the external system changes its UUID (migration, system upgrade), only the `external_entity_reference` record needs updating
+
 - All relationships pointing to the control plane UUID remain valid without modification
+
 - The provenance chain tracks the change via the `UUID_CHANGED` lifecycle event
 
 ---
@@ -400,11 +404,17 @@ All Information Providers must implement these endpoints as part of their provid
 When an organization decides to manage business context data in the control plane rather than reference an external system, they define it as a control plane Resource Type in the `Business.*` or custom category. Internally owned business data follows the **standard resource entity model** exactly:
 
 - Has a UUID
+
 - Has a Resource Type (`Business.BusinessUnit`, `Business.CostCenter`, etc.)
+
 - Has provenance
+
 - Has versioning
+
 - Has relationships to other entities
+
 - Follows the universal lifecycle (active → deprecated → retired)
+
 - Can be grouped under Tenants and Resource Groups
 
 The relationship model is identical whether the related entity is internal or external — the `related_entity_type` field (`internal` vs `external`) is the only difference from the consuming entity's perspective.
@@ -428,10 +438,15 @@ This means an organization can start with an external Information Provider refer
 ## 13. Related Concepts
 
 - **External Entity Reference** — the stable pointer record the control plane uses to reference external data
+
 - **Entity Relationships** — the universal relationship model that uses Information Provider references
+
 - **Service Provider** — counterpart provider type for resource provisioning
+
 - **Resource Type Registry** — the unified registry containing both Resource Types and Information Types
+
 - **Trust Contract** — the provider trust model shared across all provider types
+
 - **Naturalization/Denaturalization** — translation between external native format and the control plane unified format
 
 ---

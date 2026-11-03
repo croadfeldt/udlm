@@ -416,9 +416,10 @@ contributor:
 ```
 
 **Who actually submitted it, how, and who approved it** is on the submission's audit record
-(`audit-record.schema.json`): the acting identity, the tenant, the method (API, GUI, source-control
-pull request, federation push), the pull request if there is one, and the approving reviewers. That
-record is immutable, so attribution cannot be rewritten after the fact.
+(`audit-record.schema.json`). The record carries the acting identity, the tenant, the method
+(API, GUI, source-control pull request, federation push), the pull request if there is one, and
+the approving reviewers. That record is immutable, so attribution cannot be rewritten after the
+fact.
 
 ---
 

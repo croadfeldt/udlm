@@ -21,9 +21,9 @@ orders implementation, and sovereignty governs where each state may live. (`docs
 
 ## P1 — Auditability by construction
 **control-plane requirement:** `AUD-001` (every modification produces a synchronous Commit Log entry *before*
-success; a write failure aborts — no silent unaudited change), `AUD-002` (append-only, immutable
-while retention is live), a tamper-evident **Merkle tree** (RFC 9162 / CT v2.0), and audit
-records that **survive at least as long as any referenced resource**.
+success; a write failure aborts — no silent unaudited change) and `AUD-002` (append-only, immutable
+while retention is live). Also required: a tamper-evident **Merkle tree** (RFC 9162 / CT v2.0), and
+audit records that **survive at least as long as any referenced resource**.
 
 - **Reproducible validation.** Every artifact pins the exact type-version it validated against — the
   JSON Schema `$id` encodes both version axes — and there is **no runtime late-binding**
@@ -56,8 +56,8 @@ order, compensation in reverse.
 - **M:N, cross-scope.** Support real topologies — including edges that cross tenant/sovereignty
   scope, so they are visible and governable rather than hidden.
 - **Integrity propagation.** Maturity/stability propagates across edges — a maturity mismatch (a stable
-  entity depending on an alpha one) is **surfaced** across the edge; whether it gates is the estate's declared
-  policy (surface → decide → enable, `docs/design/operational-response-matrix.md`) — a knowing dependence on an
+  entity depending on an alpha one) is **surfaced** across the edge. Whether it gates is the estate's declared
+  policy (surface → decide → enable, `docs/design/operational-response-matrix.md`). A knowing dependence on an
   experimental component is a legitimate, priced choice.
 - **Acyclic, validated at submission** — not discovered at realization time.
 
@@ -96,9 +96,10 @@ boundaries.
 - **G2 — No embedded expressions; the contract layer is deterministic.** The
   determinism-is-structural principle is `core-tenets.md` T2/T3 (the portable model carries no embedded
   expression language). Its cross-cutting force here: a single impure expression would break
-  tamper-evident audit (`AUD-002`) and sovereignty (P4), so definition and validation use only
-  *declarative* constructs (JSON Schema `if/then` · `dependentSchemas` · `enum` · bounds + markers like
-  `createOnly`), and **transformation/enrichment is Policy, applied by the control plane** and recorded in the audit log.
+  tamper-evident audit (`AUD-002`) and sovereignty (P4). So definition and validation use only
+  *declarative* constructs (JSON Schema `if/then` · `dependentSchemas` · `enum` · bounds + markers
+  like `createOnly`). **Transformation/enrichment is Policy, applied by the control plane** and
+  recorded in the audit log.
 - **G3 — Contract, not parallel implementation.** UDLM defines the *data contract* for provenance,
   dependencies, and policy inputs; **the control plane operationalizes it** (the Merkle audit log, the DAG engine,
   the Governance Matrix). One model — never a competing UDLM-side implementation.

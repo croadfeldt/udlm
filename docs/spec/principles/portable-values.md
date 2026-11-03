@@ -16,7 +16,7 @@ vocabulary or a value the name heuristic could not tell from one.
 
 | Rule | Statement |
 |---|---|
-| `PVD-001` | **Free-string vocabulary is a finding.** A value chosen from a set — provider-advertised, standardized, or requirement-satisfiable — MUST be one of: a `data_reference` to a `reference_data` kind (DCM ADR-012; layering §3.7); a bounded **codelist** (`enum`, or an adopted-standard codelist, T5); or a **requirements descriptor** the provider matches. An unconstrained string for such a value is non-conformant. *Out of scope (legitimately free):* human names/descriptions/handles; opaque provider-reported ids in `outputs` / discovered state; values already constrained to an adopted format (FQDN/RFC 1035, CPE). *Admission path:* PVD-001 is the **destination** discipline — an admission-time string reaches it via the vocabulary-intake ladder (`docs/design/vocabulary-intake-ladder.md` / ADR-039: match/mint/promote, profile-priced); strictness gates *minting*, never *matching*. |
+| `PVD-001` | **Free-string vocabulary is a finding.** A value chosen from a set — provider-advertised, standardized, or requirement-satisfiable — MUST take one of three forms. The first is a `data_reference` to a `reference_data` kind (DCM ADR-012; layering §3.7). The second is a bounded **codelist** (`enum`, or an adopted-standard codelist, T5). The third is a **requirements descriptor** the provider matches. An unconstrained string for such a value is non-conformant. *Out of scope (legitimately free):* human names/descriptions/handles; opaque provider-reported ids in `outputs` / discovered state; values already constrained to an adopted format (FQDN/RFC 1035, CPE). *Admission path:* PVD-001 is the **destination** discipline — an admission-time string reaches it via the vocabulary-intake ladder (`docs/design/vocabulary-intake-ladder.md` / ADR-039: match/mint/promote, profile-priced); strictness gates *minting*, never *matching*. |
 | `PVD-002` | **Inline re-expression is a finding.** A field MUST NOT restate, inline, the body of an **adopted standard** (adopt it by reference — T5) or the **shape of a referenceable resource type** (bind it by an DCM ADR-025 reference / relationship edge — T7). Duplicating a shape the model already owns is non-conformant even when no free string is present. |
 
 ## Selection rule (which of the three, for PVD-001)
@@ -49,7 +49,7 @@ references it. Moving an element from a codelist to a governed reference is a MI
 - **Automated** — `tests/check_portable_values.py` (`PVD-001`, CI-wired) flags (a) a `spec` string
   field matching a vocabulary signal without enum/reference/requirements (PVD-001), and (b) a `spec` object
   whose field-set substantially overlaps an adopted-standard body or a referenceable type's shape (PVD-002,
-  review-flag) — scanning type specs **and** instances, layer-contributed `fields`, and examples (the
+  review-flag). It scans type specs **and** instances, layer-contributed `fields`, and examples (the
   discipline holds in *data*, not just definitions). Until it lands, both rules are review findings.
 - **Judgment** — the review sweep checks the same, plus the generalizations recorded in ADR-038: *one canonical
   mechanism & notation* (no parallel selector/filter/query construct; identity dotted, address/selector URL),

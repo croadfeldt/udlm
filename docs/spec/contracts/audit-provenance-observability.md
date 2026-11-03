@@ -39,7 +39,7 @@ Audit queries provenance to answer its questions. Observability does not use pro
 The shape audit reads is
 [`registry/entity-view.schema.json`](../../../registry/entity-view.schema.json)
 `provenance` — per-field ordered modification chains whose entries map 1:1 to the audit
-modification records (origin = the first entry); `source.kind` is the canonical source
+modification records (origin = the first entry). `source.kind` is the canonical source
 vocabulary (`layer | policy | actor | provider | discovery | rehydration | override` — a
 consumer acts as an authenticated `actor`). Override-control metadata is the Layering §5a
 model. Neither shape is restated here — the schema binds.
@@ -90,15 +90,17 @@ The complete chain tells the full story of that field across its entire existenc
 
 ### 2.5 Transition provenance — the map from intent to realized (TRN)
 
-A resource is four records (`four-states.md` §2.7), and the question an auditor asks is not "is
-each record intact" but "what changed between them, and who did it." That is answered by three
-things already on the records, held to one rule:
+A resource is four records (`four-states.md` §2.7). The question an auditor asks is not "is each
+record intact" but "what changed between them, and who did it." Three things already on the records
+answer that, held to one rule:
 
 - the **references** — a requested record names the intent record it was assembled from
   (`intent_ref`), a realized record names the requested record it realizes (`requested_ref`) —
   point at one immutable record each;
+
 - the **per-field provenance** on the referencing record says who set every field that differs from
   the record it references, with the value it replaced;
+
 - the **reference head** (`intent_ref_head`, `requested_ref_head`) binds the reference to the bytes
   the transition consumed, when the referenced record is sealed (ADR-059).
 
@@ -111,7 +113,7 @@ transition consumed. Only provenance says who changed what. The integrity chain 
 
 | ID | Rule |
 |---|---|
-| `TRN-001` | **Every difference between a record and the record it references is attributed.** For a requested record, every leaf of `fields` that differs from the referenced intent record's `fields` (added, changed, or removed) has a `provenance` entry at that path or an ancestor or descendant of it; where the entry carries `previous_value`, it equals the referenced record's value. For a realized record, the same against the referenced requested record's `fields`, and additionally every leaf of `outputs` has an entry at `outputs.<path>`. Leaf paths are dot paths; an array of objects is indexed (`networks[0].network_ref`); an array of scalars is one leaf. Gate: `tests/check_transition_provenance.py`. |
+| `TRN-001` | **Every difference between a record and the record it references is attributed.** For a requested record, every leaf of `fields` that differs from the referenced intent record's `fields` (added, changed, or removed) has a `provenance` entry at that path or an ancestor or descendant of it. Where the entry carries `previous_value`, it equals the referenced record's value. For a realized record, the same against the referenced requested record's `fields`, and additionally every leaf of `outputs` has an entry at `outputs.<path>`. Leaf paths are dot paths; an array of objects is indexed (`networks[0].network_ref`); an array of scalars is one leaf. Gate: `tests/check_transition_provenance.py`. |
 | `TRN-002` | **A reference to a sealed record carries its head.** When the referenced record carries `integrity`, the referencing record carries `intent_ref_head` (requested) or `requested_ref_head` (realized) equal to the referenced record's `integrity.head`, so the transition is bound to bytes and verifiable with no other record in hand. When the referenced record is unsealed the head field is absent. |
 | `TRN-003` | **A reference resolves to the right record.** `intent_ref` names an `intent_record` and `requested_ref` a `requested_record`, each with the same `entity_uuid` as the referencing record, and each present in the store the referencing record is in. A reference that resolves to nothing, to another kind, or to another entity is a broken map. |
 
@@ -144,7 +146,7 @@ operates on **event streams and metrics**, not on provenance or the audit trail.
 Observability is almost entirely **implementation architecture**: the metrics surface (metric names, labels),
 the collection pipeline, the dashboards, and the telemetry backends are owned by control-plane architecture docs,
 not by the data model. The one durable data-model point is the **audit-vs-observability distinction**,
-stated canonically in [universal-audit.md](universal-audit.md) §11 — audit is the tamper-evident record of
+stated canonically in [universal-audit.md](universal-audit.md) §11. Audit is the tamper-evident record of
 *what changed and who authorized it* (retained for years, compliance-grade, authoritative); observability is
 *operational health signal* (retained for weeks, non-authoritative, rebuildable). They are different
 concerns with different stores, retention, and integrity requirements; conflating them is the error this
@@ -161,7 +163,7 @@ in control-plane architecture docs.
 |----|--------|
 | `APO-001` | The audit store is a specialized store contract — append-only, RFC 9162 Merkle integrity ([D2]/AUD-006), reference-based retention, compliance-grade queries. The event stream is the delivery channel only, not the compliance destination. |
 | `APO-002` | Audit records are replicated by live sync (regional peers) or signed-bundle export (sovereign peers); sovereignty checks are required before any replication, and Merkle integrity ([D2]) is preserved across transport. A fully isolated sovereign peer keeps a local-only audit store with manual export. |
-| `APO-003` | Store failures are themselves recorded via the synchronous commit-log entry (a consensus-durable store independent of all data stores); an audit-store self-failure produces `pending_forward` records, and on recovery a gap record (`AUDIT_STORE_UNAVAILABLE`) with the outage window is inserted, so the audit-tree gap is explicit and auditable. |
+| `APO-003` | Store failures are themselves recorded via the synchronous commit-log entry (a consensus-durable store independent of all data stores). An audit-store self-failure produces `pending_forward` records. On recovery a gap record (`AUDIT_STORE_UNAVAILABLE`) with the outage window is inserted, so the audit-tree gap is explicit and auditable. |
 | `APO-004` | An implementation ships a default observability dashboard (e.g. Grafana-based) for homelab/dev/standard profiles; standard+ may substitute enterprise platforms, FSI requires enterprise observability, and a sovereign peer uses a local dashboard only with no external connections. |
 | `APO-005` | Observability artifacts — dashboards, reporting, alerting, and their management — are scoped to the appropriate business/operational groups (grouping) by entity attribution alone, with no side-channel scoping configuration. |
 
@@ -171,7 +173,8 @@ in control-plane architecture docs.
 
 - The **audit record, action vocabulary, actor, retention, and Merkle contract** →
   [universal-audit.md](universal-audit.md).
+
 - The **audit store architecture, the audit query API / API gateway, the two-stage write pipeline,
   cross-site audit replication, and the observability metrics surface + collection pipeline + dashboards**
-  → control-plane architecture docs (implementation architecture; a peer implements them differently and still
-  conforms).
+  → control-plane architecture docs. These are implementation architecture; a peer implements them
+  differently and still conforms.
