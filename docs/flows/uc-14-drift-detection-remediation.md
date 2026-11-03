@@ -1,29 +1,34 @@
 # UC-14 · Drift detection and remediation — the stage
 
-**What this settles:** the steady-state loop that keeps *realized* honest — compare what the provider actually
-has (**discovered** state) against what DCM provisioned (**realized** state), record any divergence as a
-classified drift record, and remediate per the recovery policy. A **lighter** flow — it **builds on
-[request-realization](request-realization.md)**; this is what runs *after* commit, on a timer, not a new
-request.
+**What this settles:** the steady-state loop that keeps *realized* honest. Compare what the provider actually
+has (**discovered** state) against what the control plane provisioned (**realized** state), record any
+divergence as a classified drift record, and remediate per the recovery policy. A **lighter** flow: it
+**builds on [request-realization](request-realization.md)**; this is what runs *after* commit, on a timer,
+not a new request.
 
 > **Use Case:** `observability/drift-detection-remediation`. **Persona:** platform-engineer · **Profile:** standard.
 
 **In one breath.** On the profile's reconciliation cadence, the system probes what the provider really has and
-diffs it against the realized record. A divergence becomes a drift record — field by field, with a severity of
-info, warning, or critical — and the recovery policy decides what to do about it. The remediation runs, its
-result is recorded and verified, and the cycle stays inside the profile's reconciliation window.
+diffs it against the latest realized record. A divergence becomes a drift record, field by field, with a
+severity of `minor`, `significant` or `critical`, and the recovery policy decides what to do about it. The
+remediation runs, its result is recorded and verified, and the cycle stays inside the profile's
+reconciliation window.
 
 ## What this adds over request-realization
-- **A fifth read: discovered state.** Implementation ends at realized. This loop introduces *discovered* — the
-  provider's actual current state, probed live — and makes realized-vs-discovered the thing under watch.
+- **The fourth state: discovered.** Implementation ends at realized. This loop introduces *discovered*, the
+  provider's actual current state probed live, and makes realized-versus-discovered the thing under watch.
+  Drift is a comparison of the latest discovered record against the latest realized one
+  ([four-states §2.7](../spec/foundations/four-states.md)), not a field on a record.
 - **Drift is a first-class record.** A divergence is not just a log line: it is a record with a field-by-field
-  comparison and a **severity classification** (info / warning / critical) that the recovery policy keys on.
-- **Recovery is policy, not a fixed reaction.** What to do about drift — re-converge, alert, quarantine — is a
+  comparison and a **severity classification** the recovery policy keys on. Severity uses the model's enum
+  `minor | significant | critical` (four-states §6.1): the highest tier across field criticality, profile
+  thresholds, and provider or consumer injection.
+- **Recovery is policy, not a fixed reaction.** What to do about drift (re-converge, alert, quarantine) is a
   recovery policy decision, so different severities and resources can be handled differently.
 - **Remediation is verified, not fire-and-forget.** After the action runs, its result is recorded and checked,
   closing the loop rather than assuming success.
 - **It is bounded in time.** The whole detect-classify-remediate cycle must complete within the
-  profile-governed reconciliation window — a timing guarantee implementation itself never makes.
+  profile-governed reconciliation window, a timing guarantee implementation itself never makes.
 
 ## The flow — only what's different
 ```mermaid
@@ -41,14 +46,17 @@ The remediating build, where one is needed, is request-realization.
 ## Success criteria (from the UC)
 - Discovered state is probed and compared against realized state.
 - Divergences produce drift records with a field-by-field comparison.
-- Drift records include a severity classification (info, warning, critical).
+- Drift records include a severity classification (`minor`, `significant`, `critical`).
 - The recovery policy triggers the appropriate remediation actions.
 - Remediation results are recorded and verified.
 - The drift detection cycle completes within the profile-governed reconciliation window.
 
+The corpus record names the severities info, warning and critical; the model's enum is
+`minor | significant | critical` (four-states §6.1), and this flow uses the model's.
+
 ## Data · Policy · Provider
-- **Data:** discovered and realized states are compared; the drift record (comparison + severity) and the
-  verified remediation result are stored.
+- **Data:** the latest discovered and realized records are compared; the drift record (comparison plus
+  severity) and the verified remediation result are stored.
 - **Policy:** the recovery policy governs which remediation runs for a given drift, keyed on severity.
 - **Provider:** probed for discovered state, and executes the remediation when one is required.
 
@@ -65,3 +73,4 @@ request existed, exactly as the lifecycle answer describes.
 
 ## Pointers
 - Base flow: [request-realization](request-realization.md). UC source: `observability/drift-detection-remediation`.
+- Drift severity and unsanctioned changes: [four-states §6](../spec/foundations/four-states.md).
