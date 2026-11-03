@@ -75,12 +75,14 @@ Run these in order:
 > **In one line:** *use wide standards where they cleanly fit, otherwise roll our own; don't force, adopt if
 > clean, don't repeat; if it doesn't fit cleanly, adopt the principles and format to supersede while adopting.*
 
-**Worked example (DecisionRecord / ADR).** The decision-record need → adopt the **ADR / MADR** standard (don't coin
-a new term); it is *complementary* to UDLM audit/provenance/versioning (reuse, step 1); it cleanly *consolidates*
-two homegrown forms an implementation built twice — its self-improvement `improvement_proposals` and its architecture
-resolutions — into **one target-parameterized Resolution/Decision Record** (step 3, net-negative); **SARIF** does not
-cleanly fit architecture findings → adopt its principles only (step 4); the Knowledge-family `Antipattern` is related
-but not the same → don't force. Defined as a Knowledge entity type in `../foundations/knowledge-family.md` §4.5.
+**Worked example (DecisionRecord / ADR).** The decision-record need → adopt the **ADR / MADR**
+standard (don't coin a new term). It is *complementary* to UDLM audit/provenance/versioning (reuse,
+step 1). It cleanly *consolidates* two homegrown forms an implementation built twice — its
+self-improvement `improvement_proposals` and its architecture resolutions — into **one
+target-parameterized Resolution/Decision Record** (step 3, net-negative). **SARIF** does not cleanly
+fit architecture findings → adopt its principles only (step 4). The Knowledge-family `Antipattern`
+is related but not the same → don't force. Defined as a Knowledge entity type in
+`../foundations/knowledge-family.md` §4.5.
 
 ## 2. What adoption carries (Data) vs delegates (Policy)
 

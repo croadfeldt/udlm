@@ -237,9 +237,9 @@ block form §9.4, JSON embedding, English renderings) — never a second parse s
 - **Names are not paths.** Dotted PascalCase (`Machine.VM`) is the type NAME and appears in
   *values* (`resource_type==Machine.VM`); the slash form is the *path* spelling of the same
   identity (`Machine/VM` — lossless bijection, since name segments never contain dots).
-  A dot means one of three things, and the reader can always tell which (#491): in
-  `PascalCase.Dotted` it separates the segments of a type name; in `snake_case.dotted` it separates
-  the steps of a field path; inside a handle or a value (`estate/acme.prod`, `10.0.90.*`) it is a
+  A dot means one of three things, and the reader can always tell which (#491). In
+  `PascalCase.Dotted` it separates the segments of a type name. In `snake_case.dotted` it separates
+  the steps of a field path. Inside a handle or a value (`estate/acme.prod`, `10.0.90.*`) it is a
   literal character and separates nothing. Selector dots address **within one record only** —
   crossing an edge is never a dot (virtual fields §9.2 are the sanctioned bridge).
 - **The class address is the URF registry subset.** ADR-038 §10's coordinate

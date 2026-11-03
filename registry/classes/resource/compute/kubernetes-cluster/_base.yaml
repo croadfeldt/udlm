@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/2.0.7
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/2.0.8
 conforms_to: udlm/0.1
 uuid: 3909934c-4b06-48ae-9431-a19083e59a6c
 record_type: class
 class: base
 resource_type: KubernetesCluster
 short_name: K8sCluster
-version: 2.0.7
+version: 2.0.8
 family: Resource
 status: active
 filed_under:
@@ -13,11 +13,10 @@ filed_under:
 metadata:
   display_name: Kubernetes cluster
   description: 'A Kubernetes cluster ordered as one deliverable: a release and its network ranges. A Base by the
-    Base test (CLS-002): its contract is the Kubernetes API, which every conformant distribution honours, so any
-    provider offering one fills an order placed here. Named for the standard; distributions (OpenShift, EKS, k3s)
-    are the Type tier, offerings the Provider tier. It carries no node pools: every pool is a KubernetesNodePool
-    record contained by the cluster, so a cluster with its pools is a composition (row 072), and a cluster may have
-    zero pools, as a hosted control plane does at creation.'
+    Base test: every conformant distribution honours the Kubernetes API, so any provider offering one fills the
+    order (CLS-002). Named for the standard; distributions (OpenShift, EKS, k3s) are Types, offerings Providers. No
+    node pools here: each is a KubernetesNodePool record the cluster contains, so cluster plus pools is a
+    composition (row 072). Zero pools is allowed, as a hosted control plane has at creation.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-17T19:57:00Z'
 elements:

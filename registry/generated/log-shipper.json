@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper/0.10.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/LogShipper/0.10.2",
   "conforms_to": "udlm/0.1",
   "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922",
   "resource_type": "LogShipper",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Log Shipper",
-    "description": "An outcome: one resource's logs reach a log store, filtered and tagged with the resource's identity. A Base by the Base test (CLS-002): RFC 9742 (the IETF syslog management model), Redfish EventDestination and the OpenTelemetry Collector each treat \"send this system's logs to a collector, filtered\" as one deliverable, and a host agent, a BMC, a switch or a cluster forwarder can all fill it. The wire protocol is the Type tier (LogShipper.Syslog, LogShipper.OTLP). The mechanism (a configuration-management role, a device setting, a cluster forwarder) is the provider's; swapping it never touches this contract. What is shipped is chosen by a criterion over the log record's fields, the same kind a LogStore uses to decide how long to keep it.",
+    "description": "An outcome: a resource's logs reach a log store, filtered and identity-tagged. A Base by the Base test: RFC 9742, Redfish EventDestination and the OpenTelemetry Collector each treat \"send this system's logs to a collector, filtered\" as one deliverable (CLS-002). A host agent, BMC, switch or cluster forwarder fills it. The wire protocol is the Type tier (LogShipper.Syslog, LogShipper.OTLP). The mechanism is the provider's (a configuration-management role, a device setting, a cluster forwarder); swapping it never touches this contract.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-18T13:14:58Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "LogShipper",
-          "version": "0.10.1",
+          "version": "0.10.2",
           "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922"
         }
       ]

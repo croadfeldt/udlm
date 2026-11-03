@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Location/0.6.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Location/0.6.2",
   "conforms_to": "udlm/0.1",
   "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b",
   "resource_type": "Location",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Location",
-    "description": "A physical place resources sit in — a site, a room, a rack, a bench — nesting into a containment hierarchy. A Base by the Base test (CLS-002): Redfish Location and Placement abstract over every granularity the same way for every facility provider, so a location of a given kind is one deliverable any of them reports or realizes. Power is not here: each host carries its own edge to the PowerFeed it draws from, which can differ within one rack.",
+    "description": "A physical place resources sit in (a site, a room, a rack, a bench), nesting into a containment hierarchy. A Base by the Base test: Redfish Location and Placement abstract over every granularity for every facility provider, so a location of a given kind is one deliverable any of them reports or realizes (CLS-002). Power is not here: each host carries its own edge to the PowerFeed it draws from, which can differ within one rack.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Location",
-          "version": "0.6.1",
+          "version": "0.6.2",
           "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b"
         }
       ]
