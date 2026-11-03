@@ -2,13 +2,9 @@
 
 **Related Documents:** [Class Tiers](../foundations/class-tiers.md) | [Resource/Service Entities](../foundations/resource-service-entities.md) | [Entity Relationships](../foundations/entity-relationships.md)
 
->
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md).
-> more of those three abstractions.
->
->
-> The Provider abstraction — Information Provider capability extension
+> [foundations.md](../foundations/foundations.md). This document details one of them:
+> the Provider abstraction — the Information Provider capability extension.
 
 ---
 
@@ -53,7 +49,7 @@ Information Providers follow the same provider contract model as Service Provide
 Same model as Service Providers. Information Providers register with the control plane declaring their endpoint, the information types they implement, their lookup capabilities, and their extended schema.
 
 ### 4.2 Health Check Contract
-Same model as Service Providers. Information Providers expose a `/health` endpoint. The control plane polls it on the same configurable interval. `Ready`/`NotReady` state machine applies. An `NotReady` Information Provider is excluded from lookups — relationships referencing it are flagged for on-demand verification fallback.
+Same model as Service Providers. Information Providers expose a `/health` endpoint. The control plane polls it on the declared interval, and the health states and responses of [provider-contract.md](provider-contract.md) §3 apply. An Information Provider whose status reaches `DEGRADED` or `UNAVAILABLE` is excluded from lookups — relationships referencing it are flagged for on-demand verification fallback.
 
 ### 4.3 Trust Contract
 Same model as Service Providers. Information Providers must be registered, validated, and certified before the control plane will accept their data. The chain of trust applies to data returned by Information Providers — provenance records the provider UUID for every field sourced from an Information Provider.
@@ -132,11 +128,12 @@ The control plane looks up external records using a stable primary key — alway
 ### 6.1 External Entity Reference Structure
 
 ```yaml
+# illustrative: the external entity reference shape; no registry schema governs it
 external_entity_reference:
-  uuid: <dcm-generated uuid — stable internal anchor>
+  uuid: <control-plane-generated uuid — stable internal anchor>
   # the control plane UUID is what gets stored in relationship declarations
   # If the external system changes its UUID, only this record changes
-  # All relationships pointing to dcm-uuid remain valid
+  # All relationships pointing to this uuid remain valid
 
   external_uuid: <stable uuid from the external system>
   information_provider_uuid: <uuid of registered Information Provider>
@@ -228,7 +225,7 @@ Policy Engine evaluates:
 
 ## 8. Information Type Registry
 
-Information types live in the same the control plane Resource Type Registry as Resource Types, distinguished by category prefix. Same versioning, same deprecation model, same governance.
+Information types live in the same Resource Type Registry as Resource Types, distinguished by category prefix. Same versioning, same deprecation model, same governance.
 
 ### 8.1 Standard Information Type Categories
 
@@ -239,7 +236,9 @@ Information types live in the same the control plane Resource Type Registry as R
 | `Compliance.*` | Regulatory and compliance data | RegulatoryScope, AuditFramework |
 | `Operations.*` | Operational reference data | Runbook, SLA, SupportContract |
 
-### 8.2 the control plane Default Information Types
+### 8.2 Example Information Types
+
+These show the shape. `Identity.Person` is a registered class (`registry/classes/access/identity/identity/person.yaml`); the `Business.*` types are not in the registry yet.
 
 ```yaml
 # Business.BusinessUnit
@@ -427,11 +426,11 @@ This means an organization can start with an external Information Provider refer
 
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
-| 1 | How are conflicting provider push events handled — two Information Providers claim authority for the same record? | Data integrity | ✅ Resolved — authority_level (primary/secondary/advisory) + authority_scope; conflict_resolution strategies; ingestion-time conflict detection; conflict records; see doc 21 (INF-001) |
-| 2 | Should Information Providers support write-back — the control plane updating external records via the provider? | Scope expansion | ✅ Resolved — optional declared capability; policy-triggered write-back; audit records produced; credentials via credential management service; see doc 21 (INF-002) |
-| 3 | How is the extended schema versioned — if a provider adds or removes extended fields, how are existing references affected? | Versioning | ✅ Resolved — semver semantics on extended schema; field removal/type change = major; new optional field = minor; migration plan required for major bumps; see doc 21 (INF-003) |
-| 4 | Should the control plane maintain a registry of well-known Information Providers (HR systems, finance systems) to simplify onboarding? | Adoption | ✅ Resolved — three-tier Information Provider Registry (Core/Community/Organization); same governance model as Resource Type Registry; separate registries; see doc 21 (INF-004) |
-| 5 | How does the verification model interact with air-gapped environments where Information Providers may be unreachable? | Sovereignty | ✅ Resolved — three air-gap modes: pre-verified signed bundle, internal mTLS, periodic online re-verification with cached tokens; profile-governed cache expiry (prod/fsi/sovereign=suspend on expiry); see doc 21 (INF-005) |
+| 1 | How are conflicting provider push events handled — two Information Providers claim authority for the same record? | Data integrity | ✅ Resolved — authority_level (primary/secondary/advisory) + authority_scope; conflict_resolution strategies; ingestion-time conflict detection; conflict records; see [information-providers-advanced.md](information-providers-advanced.md) §3 (INF-001) |
+| 2 | Should Information Providers support write-back — the control plane updating external records via the provider? | Scope expansion | ✅ Resolved — optional declared capability; policy-triggered write-back; audit records produced; credentials via credential management service; write-back execution is implementation-specific ([information-providers-advanced.md](information-providers-advanced.md) §1) |
+| 3 | How is the extended schema versioned — if a provider adds or removes extended fields, how are existing references affected? | Versioning | ✅ Resolved — semver semantics on extended schema; field removal/type change = major; new optional field = minor; migration plan required for major bumps; see [information-providers-advanced.md](information-providers-advanced.md) §4 (INF-003) |
+| 4 | Should the control plane maintain a registry of well-known Information Providers (HR systems, finance systems) to simplify onboarding? | Adoption | ✅ Resolved — three-tier Information Provider Registry (Core/Community/Organization); same governance model as Resource Type Registry; separate registries; see [information-providers-advanced.md](information-providers-advanced.md) §5 (INF-004) |
+| 5 | How does the verification model interact with air-gapped environments where Information Providers may be unreachable? | Sovereignty | ✅ Resolved — three air-gap modes: pre-verified signed bundle, internal mTLS, periodic online re-verification with cached tokens; profile-governed cache expiry (prod/fsi/sovereign=suspend on expiry); air-gapped verification orchestration is implementation-specific ([information-providers-advanced.md](information-providers-advanced.md) §1) |
 
 ---
 
@@ -451,4 +450,4 @@ This means an organization can start with an external Information Provider refer
 
 ---
 
-*Document maintained by the control plane Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../../../CONTRIBUTING.md).*

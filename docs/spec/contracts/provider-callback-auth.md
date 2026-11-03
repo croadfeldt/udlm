@@ -156,7 +156,7 @@ callback_credential:
   revocation_check_url: <substrate revocation endpoint>
 ```
 
-**Key substrate property:** The credential is scoped to the `provider_uuid` — not to specific entities or operations within that provider. Entity-level scope is enforced separately (Section 6). A provider holding the credential can call any callback endpoint in its scope, but the implementation MUST enforce entity-level ownership checks per call.
+**Key substrate property:** The credential is scoped to the `provider_uuid` — not to specific entities or operations within that provider. Entity-level scope is enforced separately (§7). A provider holding the credential can call any callback endpoint in its scope, but the implementation MUST enforce entity-level ownership checks per call.
 
 ### 5.2 Credential Lifecycle (Technology-Neutral)
 

@@ -44,7 +44,7 @@ A conformant implementation MUST distinguish three identifier types:
 
 ### 2.1 UUID — THE identifier standard (normative)
 
-the substrate and its control plane standardize on **RFC 9562** (Universally Unique IDentifiers, May 2024 — obsoletes its
+The substrate and its control plane standardize on **RFC 9562** (Universally Unique IDentifiers, May 2024 — obsoletes its
 2005 predecessor; all earlier-era formats remain valid under 9562, which additionally defines
 v6/v7/v8). Every UUID citation in this spec is RFC 9562.
 
@@ -205,7 +205,7 @@ mechanism:
 
 1. **Dereference** — every well-formed URF resolves to its target data via the resolution
    contract (§9.6). UDLM owns the denotation; serving it is implementation (ADR-008 — the
-   the substrate and its control plane boundary test).
+   boundary test between the substrate and its control plane).
 2. **Portability** — a filter moves **verbatim** between a live query, a stored criterion,
    layer targeting, and a tool argument, meaning the same set everywhere. Re-expressing a
    filter to move it between surfaces is nonconformant.
@@ -434,7 +434,7 @@ graph, and the subject is not in it (URF-013).
 ### 9.8 What URF deliberately does not replace
 
 **Graph diagnostics** — blast radius, reachability. Edge traversal is never in the filter
-grammar; `member_of` is the one sanctioned bridge.
+grammar; the virtual fields of §9.2 (`member_of`, `filed_under`, `via`) are the only sanctioned bridges.
 
 **The ADR-041 firewall** — URF is the *addressing*; PROJ is the *policy* at the address.
 

@@ -244,4 +244,4 @@ The `on_expiry` action vocabulary (`escalate`, `reject`) is closed at the substr
 
 ---
 
-*UDLM substrate document. Implementation implementation details (specific thresholds, enforcement code, profile-governed runtime constraints, policy-as-code engine integration, documentation discipline) live in the consuming implementation's repository.*
+*UDLM substrate document. Implementation-specific details (specific thresholds, enforcement code, profile-governed runtime constraints, policy-as-code engine integration, documentation discipline) live in the consuming implementation's repository.*

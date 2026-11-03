@@ -370,6 +370,13 @@
    "0.2.0": "sha256:a23d2aad5cefacc877b435f9459426fbdd85efd2cb900c26b4971549bcd9b027"
   }
  },
+ "provider_registration:lab/storage/zfs-host-a": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-provider-registration.yaml",
+  "versions": {
+   "1.0.0": "sha256:6e0f742f19266e68f1fa593eaac6a86cdb288abb2de7f1ba77396209b834949c"
+  }
+ },
  "resource_grouping:org/resource-group/example-orders-deployment": {
   "current": "1.0.0",
   "path": "registry/instances/example-resource-group.yaml",

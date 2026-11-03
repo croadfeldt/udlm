@@ -7,8 +7,12 @@ three checkable conditions, replaces the "members one intent can move between" w
 derives the class roster and the plan from them. It is a research brief with a plan attached;
 the decisions it needs from the maintainer are listed at the end.
 
-**Status:** research. Nothing here is applied. The `Compute` split plan changes as listed in the
-last section.
+**Status:** applied, via the [class-tier program](class-tier-program.md) (rows 069–073). One
+part was later superseded: [ADR-082](../adr/ADR-082-classes-are-filed-under-usage-groups.md)
+dissolved the non-instantiable folder Bases proposed here into usage groups (`CLS-003`), so
+`Storage.Pool` is now `StoragePool` and so on. The survey is kept as written. The
+`resource-type-hierarchy.md` it cites no longer exists; `docs/spec/foundations/class-tiers.md` is
+the current rule.
 
 ## The question under test
 
@@ -30,8 +34,8 @@ The portability events in the use cases are not migrations. They are:
 - **provider substitution** when a vendor exits.
 
 In all three the intent stays put and a different member realizes it. Converting realized state
-from one implementation to another (a libvirt guest from a VMware one) is a provider or DCM
-operation and is outside the intent model. This homelab is the everyday case: an OpenShift
+from one implementation to another (a libvirt guest from a VMware one) is a provider or
+control-plane operation and is outside the intent model. This homelab is the everyday case: an OpenShift
 cluster whose workers came from one intent, "a worker with these resources", and are realized as
 two bare-metal hosts and two KVM guests. Nothing moved; two members satisfied one order.
 
@@ -88,15 +92,16 @@ test), and it differs by family:
 
 The normative section should say the axis is whatever carries the structure, not fix one. It
 should also say plainly that an offering can require consumer-supplied data and therefore earns a
-Provider Class; ADR-038 treats two deployments of one dialect as instances on the authority axis
-differing only by advertised capability, and ROSA versus ARO shows that is not always enough.
+Provider Class. ADR-038 treats two deployments of one dialect as instances on the authority axis
+differing only by advertised capability; ROSA versus ARO shows that is not always enough.
 
 ## The survey
 
 Each row records what a consumer asks for, the abstraction condition 1 relies on, and the
-placement. Examples span an enterprise data center and this homelab (OpenShift on a mix of bare
-metal and KVM guests on one libvirt host, Ceph on VMs, a ZFS workstation, Kea DHCP in HA on two
-Raspberry Pis, FreeIPA, a Quay registry on Ceph RGW, GPU inference under KServe).
+placement. Examples span an enterprise data center and this homelab. The homelab runs OpenShift
+on a mix of bare metal and KVM guests on one libvirt host, Ceph on VMs, and a ZFS workstation. It
+also runs Kea DHCP in HA on two Raspberry Pis, FreeIPA, a Quay registry on Ceph RGW, and GPU
+inference under KServe.
 
 ### Machines and what hosts them
 

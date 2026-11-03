@@ -133,7 +133,8 @@ by causality and prove integrity by mutual attestation:
    its chain breaks the cross-anchors its peers hold; verification against the
    embedded roots fails, and the fault is attributable to a signed identity. This
    is the Certificate-Transparency cross-witnessing pattern (no shared ledger
-   required for a known federation). See `cross-dcm-audit-data-model`.
+   required for a known federation). The cross-peer audit data model that carries it is
+   implementation architecture.
 
 ---
 
@@ -181,7 +182,7 @@ The platform mandates **no** fixed skew tolerance. Instead:
    a fact the model can act on; one asserted to clear a floor is not.
 
 3. **Providers advertise and attest** achievable sync as a capability
-   ([ADR-PROV-002](../../adr/README.md)); **placement
+   ([ADR-PROV-002](../../adr/ADR-PROV-002-provider-capabilities-and-categories.md)); **placement
    admits** a workload only where the node's attested capability meets its
    profile's declared `max_divergence`.
 4. **Skew detection.** A peer MUST detect inbound artifacts whose divergence
@@ -262,7 +263,7 @@ A conformant implementation MUST:
 - [`identifier-scheme.md`](identifier-scheme.md) — UUIDv4 identity / UUIDv7 time-ordered policy
 - [`event-catalog.md`](event-catalog.md) — events carry authoritative timestamps + causal references
 - [`universal-audit.md`](universal-audit.md) — hash-linked audit chain, total ordering
-- `cross-dcm-audit-data-model` — federated causal reconciliation + cross-signed checkpoints
-- [ADR-PROV-002](../../adr/README.md) — the capability model `TimeSync` uses
+- The control plane's cross-peer audit data model (implementation architecture) — federated causal reconciliation + cross-signed checkpoints
+- [ADR-PROV-002](../../adr/ADR-PROV-002-provider-capabilities-and-categories.md) — the capability model `TimeSync` uses
 - [`error-model.md`](error-model.md) — timestamp-related error codes
 - [`scheduled-requests.md`](../lifecycle/scheduled-requests.md) — `not_before` and recurring schedules

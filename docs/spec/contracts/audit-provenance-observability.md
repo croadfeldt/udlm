@@ -2,13 +2,9 @@
 
 **Related Documents:** [Four States](../foundations/four-states.md) | [data stores](storage-providers.md) | [Context and Purpose](../foundations/context-and-purpose.md)
 
->
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md).
-> more of those three abstractions.
->
->
-> The Data abstraction — audit records, provenance as structural data
+> [foundations.md](../foundations/foundations.md). This document details one of them:
+> the Data abstraction — audit records, and provenance as structural data.
 
 ---
 
@@ -117,8 +113,8 @@ transition consumed. Only provenance says who changed what. The integrity chain 
 | `TRN-002` | **A reference to a sealed record carries its head.** When the referenced record carries `integrity`, the referencing record carries `intent_ref_head` (requested) or `requested_ref_head` (realized) equal to the referenced record's `integrity.head`, so the transition is bound to bytes and verifiable with no other record in hand. When the referenced record is unsealed the head field is absent. |
 | `TRN-003` | **A reference resolves to the right record.** `intent_ref` names an `intent_record` and `requested_ref` a `requested_record`, each with the same `entity_uuid` as the referencing record, and each present in the store the referencing record is in. A reference that resolves to nothing, to another kind, or to another entity is a broken map. |
 
-Enforced on every record set the registry ships (`registry/examples/`, `registry/instances/`); the
-same gate is run by the estate and by the control plane over the records they write. Known debt in
+Enforced on every record set the registry ships: the gate scans `registry/examples/` and
+`registry/instances/`. The estate and the control plane run the same gate over the records they write. Known debt in
 the shipped examples is listed in `tests/transition_provenance_baseline.txt`, which only shrinks.
 
 ---

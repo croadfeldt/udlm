@@ -1,9 +1,9 @@
 # Research — is there a standard for describing storage layouts in JSON?
 
 **Status:** research (non-normative). **What it settles:** whether an external standard exists that UDLM
-can adopt-by-reference for *host storage layout* — partition tables, filesystems + mounts, LUKS — across
-the three consumers that need one vocabulary: a UDLM registry type (intent), estate records describing
-real hosts (realized), and day-0 provisioning input. **Method:** survey of the official specs/schemas of
+can adopt-by-reference for *host storage layout*: partition tables, filesystems + mounts, LUKS. Three
+consumers need one vocabulary: a UDLM registry type (intent), estate records describing real hosts
+(realized), and day-0 provisioning input. **Method:** survey of the official specs/schemas of
 five primary candidates and six secondary prior-art systems, scored against the coverage the registry is
 missing and the adoption tests in
 [`../spec/principles/adopted-standards.md`](../spec/principles/adopted-standards.md)
@@ -24,10 +24,10 @@ splits cleanly by orientation, and nothing crosses the line:
   ([#2078](https://github.com/coreos/ignition/issues/2078)), and even persistent mounts sit outside the
   storage model (raw systemd units; `with_mount_unit` is Butane sugar).
 - **Realized (what a host actually has):** no standard exists, full stop. Each tool defines its own ad-hoc
-  JSON — `lsblk --json` (default output explicitly *not* a stable API), `sfdisk --json` (output-only, can't
-  re-ingest), `zpool status -j` (OpenZFS ≥ 2.3, with a versioned envelope). udisks2 has the best *object
-  model* (Block / PartitionTable / Partition / Filesystem / Encrypted / MDRaid, + LVM2 module) but speaks
-  only D-Bus, no JSON serialization.
+  JSON. `lsblk --json` has a default output that is explicitly *not* a stable API. `sfdisk --json` is
+  output-only and can't re-ingest. `zpool status -j` (OpenZFS ≥ 2.3) has a versioned envelope. udisks2 has
+  the best *object model* (Block / PartitionTable / Partition / Filesystem / Encrypted / MDRaid, + LVM2
+  module) but speaks only D-Bus, no JSON serialization.
 - **The already-adopted standards stop above the layout.** Confirmed against the schema indexes: Redfish +
   Swordfish have **no Partition resource and no OS-mount concept anywhere** — depth ends at Drive →
   Volume/StoragePool → array-side FileSystem/FileShare. TOSCA `BlockStorage` is an opaque attachable
@@ -92,21 +92,21 @@ disk" compiled to concrete Ignition partitions+raid), subiquity autoinstall's
 (selector-not-path — already adopted), and systemd-repart's constraint sizing
 (`SizeMinBytes`/`SizeMaxBytes`/`Weight`).
 
-**Direction (maintainer ruling): intent is based on the storage config itself — not a parallel
+**Direction (maintainer ruling): intent is based on the storage config itself, not a parallel
 descriptor.** The intent tier is the *same* storage-config vocabulary with the concreteness relaxed,
-not a second vocabulary invented beside it: device **selectors** in place of device paths (the
-`rootDeviceHints` / autoinstall `match:` move), size **floors/ranges** in place of exact MiB (the
-systemd-repart `SizeMinBytes`/`Weight` move), and redundancy expressed **structurally** — a mirror vdev
-with unbound members *is* the intent "boot redundancy," no separate `redundancy_floor` field needed.
-Binding intent → Requested is then selector resolution, not translation between vocabularies — which is
-exactly what Butane's `boot_device` demonstrates mechanically.
+not a second vocabulary invented beside it. Device **selectors** stand in place of device paths (the
+`rootDeviceHints` / autoinstall `match:` move). Size **floors/ranges** stand in place of exact MiB (the
+systemd-repart `SizeMinBytes`/`Weight` move). Redundancy is expressed **structurally**: a mirror vdev
+with unbound members *is* the intent "boot redundancy," so no separate `redundancy_floor` field is
+needed. Binding intent → Requested is then selector resolution, not translation between vocabularies,
+which is exactly what Butane's `boot_device` demonstrates mechanically.
 
-This is not a new posture — it is the same move
-[ADR-036](../adr/README.md) already made for storage *selection*
-(**Proposed**, pending engineering ratification #217 — lean on it as the registry's direction, not
-settled doctrine): its requirements descriptor deliberately mirrors the provider's advertised
-capability fields "so request and advertisement speak one language," and the provider's concrete choice
-lands in `outputs.storage_backing`, never in intent. Its PVD-001 discriminator (*reference* when the
+This is not a new posture. It is the same move
+[ADR-036](../adr/ADR-036-name-selectable-requirements-authoritative.md) already made for storage
+*selection* (Accepted, ruled 2026-07-27; it still requires engineering ratification, #217). Its
+requirements descriptor deliberately mirrors the provider's advertised capability fields "so request
+and advertisement speak one language," and the provider's concrete choice lands in
+`outputs.storage_backing`, never in intent. Its PVD-001 discriminator (*reference* when the
 vocabulary is portable, *requirement* when the candidate set is inherently vendor/host-specific) sorts
 the layout fields cleanly: **topology is portable** — vdev/partition/filesystem structure may sit in
 intent as-is; **device binding is host-specific** — the analog of the vendor-native storage class — so
@@ -123,36 +123,38 @@ So the adoption below buys the field vocabulary for **all three tiers**; what re
 surface is only the *relaxation grammar* (which fields may be selectors/ranges at the Intent tier),
 not a new noun set.
 
-### Reconciliation — `Storage.Layout` exists now (disk-set altitude)
+### Reconciliation — the disk-set layout (a `Storage.Layout` type, since dissolved into `Machine`)
 
 While this research was in flight, the Compute reconciliation (PR #322) birthed a `Storage.Layout`
-type. **Naming disambiguation:** that type is **disk-set layout** — *which disks a consumer has*
-(named, sized entries with role/boot designation) — while this document's subject is **intra-disk
-arrangement** (partition tables, filesystems, LUKS). Complementary altitudes, one word. The new
-type's named `entries[]` are the natural anchor if the Ignition intra-disk vocabulary recommended
+type. That type has since dissolved: register row 112 moved the disk list onto `Machine` itself as its
+`disks` element, and a Volume joins a machine's disk through `disk_entry` and the `realizes_disk` edge.
+The distinction below still holds. **Naming disambiguation:** that type was **disk-set layout**, *which
+disks a consumer has* (named, sized entries with role/boot designation), while this document's subject
+is **intra-disk arrangement** (partition tables, filesystems, LUKS). Complementary altitudes, one word.
+A machine's named disk entries are the natural anchor if the Ignition intra-disk vocabulary recommended
 below is adopted later: an entry is a disk-shaped unit, so per-entry partition/filesystem/encryption
-sub-shape attaches there without new surface. Two rulings recorded against that type
-(2026-08-02): **`storage_tier` is the standardized entry-level intent** — providers MAY expose
-storage classes but MUST map each class back to a tier so tier-authored intent resolves
-(`Platform.StorageClass.tier`); the chosen class is a per-entry realized fact
-(`storage_backing` in the realization map). And **layout records are per-consumer** — shape reuse
-is the ADR-033 Template tier, keeping the realization map unambiguous.
+sub-shape attaches there without new surface. Two rulings were recorded against that type
+(2026-08-02). **`storage_tier` is the standardized entry-level intent.** Providers MAY expose storage
+classes but MUST map each class back to a tier so tier-authored intent resolves (the `StorageClass`
+class carries the tier). The chosen class is a per-entry realized fact (`storage_backing` in the
+realization map). And **layout records are per-consumer**: shape reuse is the ADR-033 Template tier,
+keeping the realization map unambiguous.
 
-**And the tiers must carry lineage.** A Requested layout is not merely *shaped like* its Intent — it
-must reference the Intent record it was resolved from, carrying the resolutions that bound it (which
-physical device each selector matched, which size each range settled at); Realized in turn references
+**And the tiers must carry lineage.** A Requested layout is not merely *shaped like* its Intent. It
+must reference the Intent record it was resolved from, carrying the resolutions that bound it: which
+physical device each selector matched, which size each range settled at. Realized in turn references
 Requested through the provider's populated outputs. This is what makes the tier stack operational
-rather than three disconnected documents: drift detection is comparison **along a lineage edge** (does
-Realized still satisfy the Intent it descends from?), and rehydration is **walking the lineage back**
-to the Intent tier and replaying it — against new hardware, where the same selectors bind to different
-devices, which is precisely why the intent record and the lineage, not the concrete layout alone, are
-what must survive. Same-vocabulary tiers + recorded bindings; no lineage, no replay.
+rather than three disconnected documents. Drift detection is comparison **along a lineage edge**: does
+Realized still satisfy the Intent it descends from? Rehydration is **walking the lineage back** to the
+Intent tier and replaying it against new hardware, where the same selectors bind to different devices.
+That is precisely why the intent record and the lineage, not the concrete layout alone, are what must
+survive. Same-vocabulary tiers + recorded bindings; no lineage, no replay.
 
 ## Verdict
 
-1. **The literal question — "is there a standard?" — has a negative answer**, and the doc should be
-   citable for that: intent-side the nearest thing is Ignition (standard-shaped: versioned spec, JSON
-   Schema, five independent consumer distros); realized-side there is nothing, only per-tool JSON.
+1. **The literal question, "is there a standard?", has a negative answer**, and the doc should be
+   citable for that. Intent-side the nearest thing is Ignition (standard-shaped: versioned spec, JSON
+   Schema, five independent consumer distros). Realized-side there is nothing, only per-tool JSON.
 2. **The gap decomposes along a line UDLM already draws.** Aggregation (RAID/pool) is *not* missing —
    `Storage.Pool.vdevs` covers it, and Ignition `raid[]` / Metal3-Ironic RAID / Curtin `raid` all map into
    `pool_kind: md|hardware_raid` without new surface. What is genuinely missing is exactly Ignition's
@@ -182,28 +184,29 @@ what must survive. Same-vocabulary tiers + recorded bindings; no lineage, no rep
 - **Curtin → PRIOR-ART** in the register: the completeness yardstick the composite is measured against,
   with the rejection grounds recorded (AGPL → `license_compatibility` fails `compatible_reference`;
   no schema; YAML; single-vendor). Not adopted, but its type inventory is the checklist.
-- **Realized side → no adoption possible; record the finding.** Estate records keep the UDLM shape;
+- **Realized side → no adoption possible; record the finding.** Estate records keep the UDLM shape.
   `lsblk --json` / `sfdisk --json` / `zpool status -j` are *ingestion sources* a provider may emit
-  (PRIOR-ART entries at most). udisks2's object model is corroborating vocabulary (its nouns — Partition,
-  PartitionTable, Filesystem, Encrypted, MDRaid — are the same nouns as the recommendation above).
+  (PRIOR-ART entries at most). udisks2's object model is corroborating vocabulary: its nouns (Partition,
+  PartitionTable, Filesystem, Encrypted, MDRaid) are the same nouns as the recommendation above.
 - **Redfish/Swordfish → no change**, but register the confirmed scope boundary ("no Partition resource,
   no OS mounts — verified against the 2025.3/v1.2.8 schema indexes") so the next person doesn't re-ask.
 - **Metal3/Ironic RAID → note as PATTERN** adjacent to the existing `root_device_hints` adoption: hardware
   RAID intent arrives as `Storage.Pool` (`pool_kind: hardware_raid`) `contained_by` the host, which the
   pool type already documents as the provisioning driver.
 
-**Consumer fit under this recommendation:** intent = UDLM types carrying Ignition vocabulary; provisioning
+**Consumer fit under this recommendation.** Intent = UDLM types carrying Ignition vocabulary. Provisioning
 = mechanical projection from those fields to an Ignition config (RHCOS/FCOS path; kickstart/ansible
-translation for package-mode RHEL — same fields, different emitter); realized = provider populates the
-same fields from lsblk/zpool JSON. One vocabulary, three duties — which was the requirement.
+translation for package-mode RHEL: same fields, different emitter). Realized = provider populates the
+same fields from lsblk/zpool JSON. One vocabulary, three duties, which was the requirement.
 
 ## Open questions (maintainer)
 
 1. **Anchor point:** partition/filesystem fields on `Hardware.StorageDevice` + a relaxed `Storage.Dataset`
    edge (as recommended), or a first-class `Storage.Layout` type referenced from
-   `Compute.BareMetalHost` — the "named reference anchor" from the earlier discussion? DCM ADR-013 (components
-   are host rollups, not records) pushes against layout-as-separate-record for *hardware*, but partitions
-   are arguably storage, not hardware components.
+   `Compute.BareMetalHost` (now `Machine.BareMetalHost`), the "named reference anchor" from the earlier
+   discussion? Row 112 has since answered the disk-set half: the disk list lives on `Machine`. DCM ADR-013
+   (components are host rollups, not records) pushes against layout-as-separate-record for *hardware*, but
+   partitions are arguably storage, not hardware components.
 2. **`Storage.Dataset` edge relaxation** vs a new `Storage.Filesystem` type — the OpenZFS anchoring of
    Dataset is the thing at stake.
 3. Whether the Ignition adoption should pin `3.x` as a range (its own semver-like scheme supports it:
@@ -292,7 +295,7 @@ same fields from lsblk/zpool JSON. One vocabulary, three duties — which was th
 
 - Metal3 `BareMetalHost.spec.raid`: `hardwareRAIDVolumes` (name, level 0/1/5/2/6/1+0/5+0/6+0, size,
   controller, physicalDisks, rotational), `softwareRAIDVolumes` (levels 0/1/1+0, max two, first must be
-  RAID1); `rootDeviceHints` already adopted on `Compute.BareMetalHost`. Stops at RAID + root selection —
+  RAID1); `rootDeviceHints` already adopted on `Compute.BareMetalHost` (now `Machine.BareMetalHost`). Stops at RAID + root selection —
   no partitions/filesystems. [Metal3 book](https://book.metal3.io/bmo/raid). Apache-2.0, CNCF Incubating
   (2025-08-27).
 - Ironic [`target_raid_config`](https://docs.openstack.org/ironic/latest/admin/raid.html): `logical_disks[]`
@@ -317,8 +320,8 @@ same fields from lsblk/zpool JSON. One vocabulary, three duties — which was th
   [BUSL-1.1 since 1.6.0](https://github.com/hashicorp/terraform/blob/main/LICENSE) — not OSI-approved,
   fails `license_compatibility` before any technical evaluation.
   [OpenTofu](https://github.com/opentofu/opentofu/blob/main/LICENSE) (Linux Foundation fork) is MPL-2.0
-  and genuinely open — but license aside, neither defines a storage-layout vocabulary: core/HCL are
+  and genuinely open. But license aside, neither defines a storage-layout vocabulary. Core/HCL are
   engine + syntax, and ["every resource type is implemented by a
-  provider"](https://opentofu.org/docs/language/providers/) — storage resources are provider_specific
+  provider"](https://opentofu.org/docs/language/providers/). Storage resources are provider_specific
   and volume-opaque (size/attachment altitude, same as TOSCA BlockStorage; no partition/filesystem/LUKS
   surface). Nothing to adopt.

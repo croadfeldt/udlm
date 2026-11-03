@@ -1,14 +1,21 @@
 # Research: platform fidelity — what the platforms in a homelab actually expose, and where it lands
 
 **What this settles:** the finding that a discovery sweep of a real estate already observes facts
-today's classes cannot hold, why that is (the classes stop at the Type tier; no platform has a
-Provider Class; observed facts are written as spec fields), and the program that closes it: one
-platform at a time, adopt the platform's own model by reference, and give each observed fact a home
-at the right tier. It is a research brief with a plan attached; the decisions it needs from the
+today's classes cannot hold, and why. The classes stop at the Type tier; no platform has a Provider
+Class; observed facts are written as spec fields. It also settles the program that closes the gap:
+one platform at a time, adopt the platform's own model by reference, and give each observed fact a
+home at the right tier. It is a research brief with a plan attached; the decisions it needs from the
 maintainer are at the end.
 
-**Status:** research. Nothing here is applied. Each platform below becomes one PR that carries its
-own research note and its class changes together.
+**Status:** research. The platform PRs have not been built; no platform Provider Class ships yet.
+Each platform below becomes one PR that carries its own research note and its class changes
+together. Two things have changed since this was written. Decision 3 was taken: `UPS` is a class of
+its own (`registry/classes/resource/power/ups/`). And
+[ADR-082](../adr/ADR-082-classes-are-filed-under-usage-groups.md) dissolved the folder Bases, so the
+dotted names in the table (`Storage.Pool`, `Facility.PowerFeed`, `Security.DirectoryService`,
+`Hardware.NetworkInterface`, and the rest) are now single names (`StoragePool`, `PowerFeed`,
+`DirectoryService`, `NetworkInterface`) filed under usage groups. The table keeps the names as they
+stood.
 
 ## The finding
 
@@ -23,10 +30,10 @@ things came out of it.
 2. **The sweep observes facts the classes have no field for.** Of the fields present in the estate's
    discovered snapshots, a third have no property in the current class. Some are stale spellings of
    elements that now exist (`vcpus` is `cpu.count`, `family` is `ip_family`, a pool's `topology`
-   string is `vdevs`). The rest are real: an interface's LACP partner and active members, its link
-   state and its LLDP neighbour; a VM's libvirt `autostart`; a container's platform, namespace,
-   host and observed run state; a switch's firmware and 802.1AB capabilities; a UPS behind a power
-   feed; a directory server's replication peers; a job's playbook and kind. None of these is exotic.
+   string is `vdevs`). The rest are real. An interface's LACP partner and active members, its link
+   state and its LLDP neighbour. A VM's libvirt `autostart`. A container's platform, namespace,
+   host and observed run state. A switch's firmware and 802.1AB capabilities. A UPS behind a power
+   feed. A directory server's replication peers. A job's playbook and kind. None of these is exotic.
    They are what the platforms report first.
 
 The reason is structural. **No platform in the stack has a Provider Class.** The registry has three

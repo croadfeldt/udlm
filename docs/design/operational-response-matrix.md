@@ -1,31 +1,31 @@
 # The operational response matrix — surface, decide, enable
 
-**What this settles:** the unifying doctrine behind everything versioning-shaped in this
-registry — class evolution, generated specs, provider envelopes and capabilities, knowledge
-records, and the instances realized from all of them. The platform's job is three verbs, in
-order: **surface** the blast radius and the staleness of every artifact *relative to its
-provenance*; let the **organization decide** the operational response through its declared
-policies; and **enable** whichever typed response the policy picks — automated, approved,
-delayed, or skipped — with the when, where, and why recorded. The platform never acts on its
-own initiative, and it never judges the choice: best practices and profile defaults are
-advisory overlays an organization may adopt, and a deliberate, permanent "skip" is a
-legitimate, recorded decision — visible debt, not a violation. The focus is enablement, and
-the goal behind the focus is **removal of toil**: every cell in this matrix replaces
-operational labor a human used to perform by hand — compiling impact lists, tracking staleness
-in spreadsheets, re-remembering the ceremony per change, assembling promotion evidence. An
-organization that adds ceremony, or over-complicates by this document's standards, is
-exercising exactly the control the platform exists to enable; the platform's job is that the
-complexity they choose costs them declaration, not labor.
+**What this is:** the design note that states the doctrine behind everything versioning-shaped
+in this registry: class evolution, generated specs, provider envelopes and capabilities,
+knowledge records, and the instances realized from all of them. The platform's job is three
+verbs, in order. **Surface** the blast radius and the staleness of every artifact *relative to
+its provenance*. Let the **organization decide** the operational response through its declared
+policies. **Enable** whichever typed response the policy picks (automated, approved, delayed, or
+skipped), with the when, where, and why recorded. The platform never acts on its own
+initiative, and it never judges the choice. Best practices and profile defaults are advisory
+overlays an organization may adopt. A deliberate, permanent "skip" is a legitimate, recorded
+decision: visible debt, not a violation. The focus is enablement, and the goal behind the focus
+is **removal of toil**. Every cell in this matrix replaces operational labor a human used to
+perform by hand: compiling impact lists, tracking staleness in spreadsheets, re-remembering the
+ceremony per change, assembling promotion evidence. An organization that adds ceremony, or
+over-complicates by this document's standards, is exercising exactly the control the platform
+exists to enable. The platform's job is that the complexity they choose costs them declaration,
+not labor.
 
 ## Why provenance is the reference point
 
-Staleness is meaningless without an anchor. An instance is not "behind" some abstract current
-— it is at a measurable distance from *what governed it*, which its provenance records
+Staleness is meaningless without an anchor. An instance is not "behind" some abstract current.
+It is at a measurable distance from *what governed it*, which its provenance records
 immutably (ADR-045 §7: the compiled class chain; §8: the capability revision and engine
-binding). Every distance in the matrix below is computed against provenance, which is also
-what makes the false-drift trap impossible by construction: reconciliation compares an
-instance to the revisions that produced it, never to the current tip, so an upstream release
-manufactures visibility, never phantom drift.
+binding). Every distance in the matrix below is computed against provenance. That is also what
+makes the false-drift trap impossible by construction: reconciliation compares an instance to
+the revisions that produced it, never to the current tip. So an upstream release manufactures
+visibility, never phantom drift.
 
 ## The matrix
 
@@ -80,10 +80,11 @@ these tables do not anticipate; a new disposition earns its row by arriving with
 case that measures it.
 
 A note on the ENABLE column's named mechanisms: entries like "blue/green" are **reference
-approaches, not requirements** — the information (provenance, distances, evidence records)
-lives in this model; the decision process and the mechanism that executes a response belong to
-DCM and the estate's own choices (ADR-008 boundary; ADR-046 states this for promotion
-explicitly). Any mechanism that produces and consumes the declared evidence surfaces complies.
+approaches, not requirements**. The information (provenance, distances, evidence records)
+lives in this model. The decision process and the mechanism that executes a response belong to
+the control plane and the estate's own choices (ADR-008 boundary; ADR-046 states this for
+promotion explicitly). Any mechanism that produces and consumes the declared evidence surfaces
+complies.
 
 Three invariants hold across every row:
 
@@ -111,4 +112,6 @@ Both former gaps are now cased: **cc-016** (change policies are themselves versi
 meta-policy-gated, prospective-only, with evidence gates unloosenable) and **cc-017**
 (whole-provider retirement as a governed wind-down — derived blast radius, standard-machinery
 migrations, no completion while instances remain). The matrix's coverage is complete against
-its own rows; both contracts join the pending change-control ADR's surface.
+its own rows. Both contracts are now part of
+[ADR-053](../adr/ADR-053-change-control-policy-vocabulary.md), which rules the change-control
+clause vocabulary.

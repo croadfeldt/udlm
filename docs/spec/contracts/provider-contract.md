@@ -97,154 +97,152 @@ Relationships are authored differently across the four states — where **"autho
 
 ## 2. Base Contract — Registration
 
-All providers register through the same pipeline (registration specification is implementation-specific; see DCM repo for the complete flow).
+All providers register through the same pipeline. The submission is `registry/provider-registration.schema.json`, with `registry/examples/example-provider-registration.yaml` as the worked case. The flow that carries it is implementation-specific.
 
 ```yaml
-# illustrative: shape of the record, not schema-checked
-provider_base_registration:
-  # Identity, version and status (layering-and-versioning §4b)
-  uuid: <uuid>
-  handle: "<tier>/<category>/<name>"    # e.g., "org/compute/eu-west-prod-1"
-  version: "1.0.0"
-  status: submitted                      # submitted → validating → active
+# schema: provider-registration.schema.json
+# Identity, version and status (layering-and-versioning §4b)
+uuid: <uuid>
+handle: "<tier>/<category>/<name>"    # e.g., "org/compute/eu-west-prod-1"
+version: "1.0.0"
 
-  # ONE DECLARATION, TWO PROJECTIONS (maintainer ruling 2026-08-03; ADR-038 addendum): the
-  # capability content below is a PROJECTION of the classes the provider binds to
-  # (registry/classes/). A provider binds at a Base or a Type — Machine.VM, Automation.OSPatch —
-  # and authors a Provider Class only when its offering needs data the Type does not carry
-  # (CLS-005, docs/spec/foundations/class-tiers.md). Declaring at a tier accepts orders at every
-  # tier above it: a provider bound to Machine.VM satisfies a bare Machine order (CLS-002 (c)).
-  # Registration PRESENTS those bindings as what the provider can support; the same declarations
-  # BECOME the catalog items presented for consumption. The class is the authored artifact; this
-  # payload and the catalog are two renderings of it. Wire shape unchanged.
-  capabilities: [<verb × domain>, ...]   # the declared capability set (ADR-PROV-002); the accepted
-                                         # capabilities/categories are governed by the Capability &
-                                         # Category Registry (§9). provider_type, if present, is a
-                                         # resolved convenience label derived from this set — never a
-                                         # mutually-exclusive type.
-  display_name: "<human-readable name>"
-  description: "<what this provider does>"
+# ONE DECLARATION, TWO PROJECTIONS (maintainer ruling 2026-08-03; ADR-038 addendum): the
+# capability content below is a PROJECTION of the classes the provider binds to
+# (registry/classes/). A provider binds at a Base or a Type — Machine.VM, Automation.OSPatch —
+# and authors a Provider Class only when its offering needs data the Type does not carry
+# (CLS-005, docs/spec/foundations/class-tiers.md). Declaring at a tier accepts orders at every
+# tier above it: a provider bound to Machine.VM satisfies a bare Machine order (CLS-002 (c)).
+# Registration PRESENTS those bindings as what the provider can support; the same declarations
+# BECOME the catalog items presented for consumption. The class is the authored artifact; this
+# payload and the catalog are two renderings of it. Wire shape unchanged.
+capabilities: [<verb × domain>, ...]   # the declared capability set (ADR-PROV-002); the accepted
+                                       # capabilities/categories are governed by the Capability &
+                                       # Category Registry (§9). provider_type, if present, is a
+                                       # resolved convenience label derived from this set — never a
+                                       # mutually-exclusive type.
+display_name: "<human-readable name>"
+description: "<what this provider does>"
 
-  # All providers declare these. NOTE (DCM ADR-022): the sovereignty_declaration is a CLAIM, not proof.
-  # For sovereign/restricted zones the control plane honors it for placement only when backed by a resolved
-  # sovereign_authorization / adequacy accreditation; an unattested declaration is treated at
-  # self_asserted tier (see storage-providers.md §6). Drift detection is the backstop, not the gate.
-  # SCOPE (accreditation-and-authorization-matrix.md §3.3.1): this is the provider-level DEFAULT stance. A capability MAY override it per
-  # (verb × domain) category — finest-granularity-wins — because residency differs by what is realized
-  # (e.g. Compute EU-only, Storage global). Trust requires a 1-1 match between each sovereignty claim and
-  # an accreditation attesting EXACTLY its scope; a claim at either scope with no matching accreditation
-  # is self_asserted and never honored. Claim and accreditation are reconciled, never assumed to agree.
-  sovereignty_declaration:                       # the SINGLE sovereignty shape — every capability (storage-providers §11.2, etc.) references this, none redefines it
-    # --- REQUIRED core (the matchable base) ---
-    operating_jurisdictions: [<country_codes>]   # ISO 3166 — sovereignty regime matched EXACTLY (accreditation-matrix §3.8)
-    data_residency_zones: [<zone_ids>]           # ISO 3166 subdivisions — residency SUBSUMES down the hierarchy (US covers US-MN)
-    enforcement_plane: both                      # data | control | both — WHICH plane is attested (§3.8). A data-plane
-                                                 #   requirement is only satisfied by a data|both attestation; for it the control plane conveys
-                                                 #   the requirement + execution-slice to the enforcing provider and verifies ITS attestation.
-    sub_processors: []                           # third parties with data access (name, jurisdiction, data_handled)
-    # --- OPTIONAL detail — carried on EVERY provider for conformity; REQUIRED only where a profile/policy
-    #     demands it (ADR-014 optionality-with-conformity: the field is present for a comparable vocabulary;
-    #     a `sovereign`/`fsi` profile marks which are mandatory, a homelab leaves them null). Available so
-    #     teams can test or use them on genuine need, without forcing them on everyone.
-    data_residency_guarantee: <true|false>       # data never leaves the declared jurisdictions
-    legal_frameworks: []                         # e.g. [eu_gdpr, eu_nis2]; excluded_frameworks: [] for gaps it cannot meet
-    jurisdiction_detail: []                      # per-jurisdiction enrichment: [{country, legal_system, data_center_location}]
-    external_dependencies: {}                    # air_gap_capable, external_services[] (service, jurisdiction, data_shared), opt_out_available
-    government_access_risk: {}                   # jurisdictions_with_compelled_access[], legal_challenge_policy (e.g. US CLOUD Act / FISA 702 exposure)
-    certifications: []                           # [{name, issuer, valid_from, expires_at, scope, certificate_ref}] — ISO-27001, SOC2-Type-II, …
-    audit_rights: {}                             # customer_audit_right, audit_notice_days, third_party_audit_accepted
-    change_notification: {}                      # notification_endpoint + mandatory_notification_events[] + notification_sla — a sovereignty change MUST be notified
+# All providers declare these. NOTE (DCM ADR-022): the sovereignty_declaration is a CLAIM, not proof.
+# For sovereign/restricted zones the control plane honors it for placement only when backed by a resolved
+# sovereign_authorization / adequacy accreditation; an unattested declaration is treated at
+# self_asserted tier (see storage-providers.md §6). Drift detection is the backstop, not the gate.
+# SCOPE (accreditation-and-authorization-matrix.md §3.3.1): this is the provider-level DEFAULT stance. A capability MAY override it per
+# (verb × domain) category — finest-granularity-wins — because residency differs by what is realized
+# (e.g. Compute EU-only, Storage global). Trust requires a 1-1 match between each sovereignty claim and
+# an accreditation attesting EXACTLY its scope; a claim at either scope with no matching accreditation
+# is self_asserted and never honored. Claim and accreditation are reconciled, never assumed to agree.
+sovereignty_declaration:                       # the SINGLE sovereignty shape — every capability (storage-providers §11.2, etc.) references this, none redefines it
+  # --- REQUIRED core (the matchable base) ---
+  operating_jurisdictions: [<country_codes>]   # ISO 3166 — sovereignty regime matched EXACTLY (accreditation-matrix §3.8)
+  data_residency_zones: [<zone_ids>]           # ISO 3166 subdivisions — residency SUBSUMES down the hierarchy (US covers US-MN)
+  enforcement_plane: both                      # data | control | both — WHICH plane is attested (§3.8). A data-plane
+                                               #   requirement is only satisfied by a data|both attestation; for it the control plane conveys
+                                               #   the requirement + execution-slice to the enforcing provider and verifies ITS attestation.
+  sub_processors: []                           # third parties with data access (name, jurisdiction, data_handled)
+  # --- OPTIONAL detail — carried on EVERY provider for conformity; REQUIRED only where a profile/policy
+  #     demands it (ADR-014 optionality-with-conformity: the field is present for a comparable vocabulary;
+  #     a `sovereign`/`fsi` profile marks which are mandatory, a homelab leaves them null). Available so
+  #     teams can test or use them on genuine need, without forcing them on everyone.
+  data_residency_guarantee: <true|false>       # data never leaves the declared jurisdictions
+  legal_frameworks: []                         # e.g. [eu_gdpr, eu_nis2]; excluded_frameworks: [] for gaps it cannot meet
+  jurisdiction_detail: []                      # per-jurisdiction enrichment: [{country, legal_system, data_center_location}]
+  external_dependencies: {}                    # air_gap_capable, external_services[] (service, jurisdiction, data_shared), opt_out_available
+  government_access_risk: {}                   # jurisdictions_with_compelled_access[], legal_challenge_policy (e.g. US CLOUD Act / FISA 702 exposure)
+  audit_rights: {}                             # customer_audit_right, audit_notice_days, third_party_audit_accepted
+  change_notification: {}                      # notification_endpoint + mandatory_notification_events[] + notification_sla — a sovereignty change MUST be notified
 
-  # Self-declared standards adherence (Gaia-X self-description / OSCAL SSP lineage). Each framework is a
-  # CLAIM — self_asserted until an accreditation attests it (same claim→attestation escalation as sovereignty,
-  # accreditation-matrix §3.7). Declarable per capability/category too (accreditation-and-authorization-matrix.md §3.3.1).
-  conformance_claims:
-    - framework: <framework>             # e.g. iso_27001, soc2_type2, gdpr
-      # level / statement optional
+# Self-declared standards adherence (Gaia-X self-description / OSCAL SSP lineage). Each framework is a
+# CLAIM — self_asserted until an accreditation attests it (same claim→attestation escalation as sovereignty,
+# accreditation-matrix §3.7). Declarable per capability/category too (accreditation-and-authorization-matrix.md §3.3.1).
+conformance_claims:
+  - framework: <framework>             # e.g. iso_27001, soc2_type2, gdpr
+    # level / statement optional
 
-  accreditations:
-    # Reference ONLY. status/expiry are NOT restated here — the control plane resolves currency from the registered
-    # accreditation record at evaluation time (a provider cannot assert a revoked accreditation is
-    # still active). The record is a VERIFIABLE CREDENTIAL: the control plane VERIFIES its proof + trust_anchor and
-    # currency (gate 1) BEFORE appraising the 1-1 scope match (gate 2) — accreditation-matrix §3.7.
-    # `framework` is a readability hint.
-    - accreditation_uuid: <uuid>         # reference to registered accreditation
-      framework: <framework>
+accreditations:
+  # Reference ONLY. status/expiry are NOT restated here — the control plane resolves currency from the registered
+  # accreditation record at evaluation time (a provider cannot assert a revoked accreditation is
+  # still active). The record is a VERIFIABLE CREDENTIAL: the control plane VERIFIES its proof + trust_anchor and
+  # currency (gate 1) BEFORE appraising the 1-1 scope match (gate 2) — accreditation-matrix §3.7.
+  # `framework` is a readability hint.
+  - accreditation_uuid: <uuid>         # reference to registered accreditation
+    framework: <framework>
 
-  # Roles this provider accepts (data-roles.md). Dispatch is deny-by-default (DSP-001): the provider
-  # gets the elements of the class it binds (DSP-002) and nothing else unless policy grants it
-  # (DSP-003). accepts_roles only narrows. What was delivered is on the requested record (DSP-004).
-  accepts_roles: [execution]             # e.g. [execution, assembly]
-  # Data this provider needs beyond its class (PRV-013). Declared here or not considered. Policy
-  # grants, narrows or refuses each; the grant is recorded on the requested record.
-  requests_data:
-    - path: placement.location_ref
-      reason: "places the guest on the rack the estate chose; the provider cannot derive it"
+# Roles this provider accepts (data-roles.md). Dispatch is deny-by-default (DSP-001): the provider
+# gets the elements of the class it binds (DSP-002) and nothing else unless policy grants it
+# (DSP-003). accepts_roles only narrows. What was delivered is on the requested record (DSP-004).
+accepts_roles: [execution]             # e.g. [execution, assembly]
+# Data this provider needs beyond its class (PRV-013). Declared here or not considered. Policy
+# grants, narrows or refuses each; the grant is recorded on the requested record.
+requests_data:
+  - path: placement.location_ref
+    reason: "places the guest on the rack the estate chose; the provider cannot derive it"
 
 
-  # What the provider needs FROM the implementation (optional). Matched against the implementation's
-  # own capability advertisement at registration; the provider gets a matched-capabilities
-  # response and explicitly opts in to subscriptions (§10.2 — never auto-subscribed, DISC-004).
-  needs_from_implementation:
-    - domain: cost
-      description: "Cost estimation and attribution data"
+# What the provider needs FROM the implementation (optional). Matched against the implementation's
+# own capability advertisement at registration; the provider gets a matched-capabilities
+# response and explicitly opts in to subscriptions (§10.2 — never auto-subscribed, DISC-004).
+needs_from_implementation:
+  - domain: cost
+    description: "Cost estimation and attribution data"
 
-  # Endpoints (which endpoints are required varies by type — see extensions)
-  health_endpoint: "https://<provider>/health"
+# Endpoints (which endpoints are required varies by type — see extensions)
+health_endpoint: "https://<provider>/health"
 
-  # Zero trust identity
-  certificate:
-    pem: <provider-certificate>          # provider's mTLS leaf cert (PEM)
-    ca_chain: <ca-chain>                 # issuing chain the control plane pins for this provider
-    rotation_interval: P90D              # max age before the control plane expects a rotated cert;
-                                         # a cert older than this is flagged at health check
+# Zero trust identity
+certificate:
+  pem: <provider-certificate>          # provider's mTLS leaf cert (PEM)
+  ca_chain: <ca-chain>                 # issuing chain the control plane pins for this provider
+  rotation_interval: P90D              # max age before the control plane expects a rotated cert;
+                                       # a cert older than this is flagged at health check
 
-  # NOTE: trust_posture is NOT submitted here. Trust is never self-declared (DCM ADR-022) — the provider
-  # submits attestation EVIDENCE (its certificate, accreditation references) and THE CONTROL PLANE COMPUTES the
-  # posture in the dcm_registration_verdict below. A trust_posture supplied in this block is rejected.
+# NOTE: trust_posture is NOT submitted here. Trust is never self-declared (DCM ADR-022) — the provider
+# submits attestation EVIDENCE (its certificate, accreditation references) and THE CONTROL PLANE COMPUTES the
+# posture in the dcm_registration_verdict below. A trust_posture supplied in this block is rejected.
 
-  # Declared network reachability — so onboarding a provider is a DECLARATION, not a
-  # manual firewall edit. the control plane provisions the egress/ingress policy from this block; an
-  # operator never hand-edits per-provider firewall rules (resolves the per-provider
-  # firewall concern).
-  network_reachability:
-    egress:                              # destinations the control plane must be allowed to reach
-      - host: "<provider-host>"
-        port: 443
-        protocol: https
-    ingress:                             # callbacks the provider makes back to the control plane
-      - endpoint: lifecycle              # maps to the control-plane lifecycle endpoint (§6)
-      - endpoint: telemetry              # telemetry delivery (§7)
-    provisioned_by: platform             # platform provisions policy from this declaration
+# Declared network reachability — so onboarding a provider is a DECLARATION, not a
+# manual firewall edit. the control plane provisions the egress/ingress policy from this block; an
+# operator never hand-edits per-provider firewall rules (resolves the per-provider
+# firewall concern).
+network_reachability:
+  egress:                              # destinations the control plane must be allowed to reach
+    - host: "<provider-host>"
+      port: 443
+      protocol: https
+  ingress:                             # callbacks the provider makes back to the control plane
+    - endpoint: lifecycle              # maps to the control-plane lifecycle endpoint (§6)
+    - endpoint: telemetry              # telemetry delivery (§7)
+
 ```
 
 **control-plane-assigned registration verdict** (`registry/registration-verdict.schema.json` — a record of its own, with `registry/examples/example-registration-verdict.yaml` as the worked case). Produced by the control plane *after* attestation verification; **not part of the provider's submission** — the provider cannot set these, and a submitted value is rejected. A separate record with a different author is what makes that structural rather than procedural, and it is the guarantee behind DCM ADR-022 (trust is never self-declared). The ceiling is checked, not merely stated: `validate.py` refuses an `effective_capabilities` entry that no admission approves, and refuses a capability name that resolves to no term in `provider-capability.yaml`:
 
 ```yaml
-dcm_registration_verdict:                # the control plane-OWNED — references the submission above
-  provider_uuid: <uuid>
-  trust_posture: verified | vouched | provisional   # COMPUTED by the control plane from attestation:
-                                         # verified = attestation independently checked;
-                                         # vouched  = attested by a trusted third party;
-                                         # provisional = provider self-asserted only, capability-gated (weakest)
-  effective_accepts_roles: [execution]   # INTERSECTION of the provider's requested accepts_roles and what
-                                         # the Governance Matrix permits — the control plane-computed, authoritative
-  capability_admissions:                 # ADR-PROV-003 — PLATFORM-LEVEL admin disposition of each DECLARED
-    - capability: realize_resources/Storage   # capability/category. DEFAULT-DENY: a declared capability is
-      disposition: approved              # UNUSABLE until admitted; each starts `pending` at registration.
-    - capability: realize_resources/Machine   # disposition: pending | approved | provisional | denied — COARSE,
-      disposition: denied                # platform-wide. GRANULAR approval (per tenant/zone/resource/context) is
-    - capability: serve_data/Network           # POLICY (Governance Matrix), not here. Domain granularity is inherent:
-      disposition: provisional           # a category IS verb×domain (approve /Storage, deny /Compute independently).
-  effective_capabilities: [realize_resources/Storage]   # COMPUTED intersecting CEILING (ADR-PROV-003); starts EMPTY:
-                                         # the default-deny ceiling formula (declared ∩ admitted ∩ registry-enabled
-                                         # ∩ Governance-Matrix-permitted) — this verdict block / PRV-009
-                                         # (mirrors effective_accepts_roles). A provider can never exceed this.
-                                         # Admission history is IMMUTABLE: every admin change is an explicit forward
-                                         # CAPABILITY_ADMIT audit event (actor+reason); current = LIFO-newest.
-  attestation:
-    verified_at: <timestamp>
-    method: <how the submitted evidence was checked>
+# schema: registration-verdict.schema.json
+provider_uuid: <uuid>
+trust_posture: verified | vouched | provisional   # COMPUTED by the control plane from attestation:
+                                       # verified = attestation independently checked;
+                                       # vouched  = attested by a trusted third party;
+                                       # provisional = provider self-asserted only, capability-gated (weakest)
+effective_accepts_roles: [execution]   # INTERSECTION of the provider's requested accepts_roles and what
+                                       # the Governance Matrix permits — the control plane-computed, authoritative
+capability_admissions:                 # ADR-PROV-003 — PLATFORM-LEVEL admin disposition of each DECLARED
+  - capability: realize_resources/Storage   # capability/category. DEFAULT-DENY: a declared capability is
+    disposition: approved              # UNUSABLE until admitted; each starts `pending` at registration.
+  - capability: realize_resources/Machine   # disposition: pending | approved | provisional | denied — COARSE,
+    disposition: denied                # platform-wide. GRANULAR approval (per tenant/zone/resource/context) is
+  - capability: serve_data/Network           # POLICY (Governance Matrix), not here. Domain granularity is inherent:
+    disposition: provisional           # a category IS verb×domain (approve /Storage, deny /Compute independently).
+effective_capabilities: [realize_resources/Storage]   # COMPUTED intersecting CEILING (ADR-PROV-003); starts EMPTY:
+                                       # the default-deny ceiling formula (declared ∩ admitted ∩ registry-enabled
+                                       # ∩ Governance-Matrix-permitted) — this verdict block / PRV-009
+                                       # (mirrors effective_accepts_roles). A provider can never exceed this.
+                                       # Admission history is IMMUTABLE: every admin change is an explicit forward
+                                       # CAPABILITY_ADMIT audit event (actor+reason); current = LIFO-newest.
+attestation:
+  verified_at: <timestamp>
+  method: <how the submitted evidence was checked>
+
 ```
 
 Field notes: `rotation_interval` is the maximum certificate age the control plane tolerates before flagging. `trust_posture` and `effective_accepts_roles` live in the **control-plane-assigned verdict**, not the provider submission. The provider supplies attestation **evidence** (certificate, accreditation references) and the control plane **computes** the verdict; a provider-supplied value is ignored/rejected. `capability_admissions` and `effective_capabilities` (ADR-PROV-003) are likewise verdict-side and admin-owned. A **platform admin** dispositions each *declared* capability/category at **platform level** (`pending | approved | provisional | denied` — coarse; **granular** per-tenant/zone/context approval is **policy**, not here), **default-deny** (unusable until admitted). `effective_capabilities` is the **computed intersecting ceiling** (declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted). A provider holds no authority from declaring, and can never exceed this set. The disposition is **immutable/append-only**: every change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason + resulting disposition), and the current disposition is the LIFO-newest such event — the same durability model as relationship edges (SPEC-DESIGN §18a–e). `network_reachability` is consumed by the platform to provision connectivity so no per-provider manual firewall change is required.
@@ -486,6 +484,7 @@ does not probe or guess.** The descriptor is the single source of truth for
 which signals exist, in what format, and where the control plane configures delivery:
 
 ```yaml
+# schema: provider-registration.schema.json
 telemetry:
   metrics:
     supported: true
