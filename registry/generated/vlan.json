@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/VLAN/0.7.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/VLAN/0.7.2",
   "conforms_to": "udlm/0.1",
   "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426",
   "resource_type": "VLAN",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "VLAN / Network Segment ID",
-    "description": "A fabric segment identifier: an IEEE 802.1Q VLAN or an overlay VNI (VXLAN, Geneve). A Base by the Base test (CLS-002): 802.1Q and the overlay encapsulations abstract over every fabric segment, so a segment of a given id and encapsulation is one deliverable any fabric provider realizes. A root resource: it is owned and advertised by a fabric provider or a platform data layer, and the resources that ride it (a VirtualNetwork, a NetworkInterface) select it by reference and never invent one.",
+    "description": "A fabric segment identifier: an IEEE 802.1Q VLAN or an overlay VNI (VXLAN, Geneve). A Base by the Base test: 802.1Q and the overlay encapsulations abstract over every fabric segment, so a segment of a given id and encapsulation is one deliverable any fabric provider realizes (CLS-002). A root resource: a fabric provider or a platform data layer owns and advertises it. The resources that ride it (a VirtualNetwork, a NetworkInterface) select it by reference and never invent one.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "VLAN",
-          "version": "0.7.1",
+          "version": "0.7.2",
           "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426"
         }
       ]

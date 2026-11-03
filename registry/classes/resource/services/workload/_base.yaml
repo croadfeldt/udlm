@@ -1,22 +1,21 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Workload/0.11.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Workload/0.11.2
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: base
 resource_type: Workload
-version: 0.11.1
+version: 0.11.2
 family: Resource
 status: active
 filed_under:
   - services
 metadata:
   display_name: Workload
-  description: 'A running service composed of containers and/or systemd units, with replicas and endpoints, that
-    a provider realizes and manages. A Base by the Base test (CLS-002): the Open Application Model workload, TOSCA''s
-    node and Kubernetes workload resources abstract over a running set of constituents, so an order placed here
-    is fillable by a Kubernetes provider, a podman host or a systemd host alike. Named for the thing a provider
-    yields, not the act it renders (a Service is the act). Secrets are never inline; env and mounts reference a
-    CredentialRef.'
+  description: 'A running service of containers and/or systemd units, with replicas and endpoints, realized and
+    managed by a provider. A Base by the Base test: the Open Application Model workload, TOSCA''s node and
+    Kubernetes workload resources abstract a running set of constituents (CLS-002). A Kubernetes provider, a podman
+    host or a systemd host fills an order here. Named for what a provider yields, not the act (a Service is the
+    act). Secrets are never inline; env and mounts reference a CredentialRef.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-12T00:00:00Z'
 elements:

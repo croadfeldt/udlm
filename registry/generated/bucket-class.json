@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/BucketClass/0.1.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/BucketClass/0.1.2",
   "conforms_to": "udlm/0.1",
   "uuid": "536285a2-9842-4d94-b31d-52e9d3337d50",
   "resource_type": "BucketClass",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Bucket Class",
-    "description": "The provisioning policy for object-storage buckets, as StorageClass is for volumes: which driver creates them, what happens to their data on release, and driver parameters. A Base by the Base test (CLS-002): the Kubernetes Container Object Storage Interface (COSI) BucketClass abstracts every object store (S3, Ceph RGW, Azure Blob, GCS), so an order for a bucket of a class is fillable by whichever driver serves it.",
+    "description": "The provisioning policy for object-storage buckets, as StorageClass is for volumes: which driver creates them, what happens to their data on release, and driver parameters. A Base by the Base test: the Kubernetes Container Object Storage Interface (COSI) BucketClass abstracts every object store (S3, Ceph RGW, Azure Blob, GCS) (CLS-002). An order for a bucket of a class is therefore fillable by whichever driver serves it.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-10-28T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "BucketClass",
-          "version": "0.1.1",
+          "version": "0.1.2",
           "uuid": "536285a2-9842-4d94-b31d-52e9d3337d50"
         }
       ]

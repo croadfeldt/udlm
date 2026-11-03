@@ -4,7 +4,7 @@
   "classes": [
     {
       "class": "AddressService",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "instantiable": true,
       "path": "registry/classes/resource/network/address-service/_base.yaml",
       "types": []
@@ -39,7 +39,7 @@
     },
     {
       "class": "IPAddressPool",
-      "version": "0.10.1",
+      "version": "0.10.2",
       "instantiable": true,
       "path": "registry/classes/resource/network/ipaddress-pool/_base.yaml",
       "types": []
@@ -53,14 +53,14 @@
     },
     {
       "class": "NetworkInterface",
-      "version": "0.17.1",
+      "version": "0.17.2",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/network-interface/_base.yaml",
       "types": []
     },
     {
       "class": "NetworkSwitch",
-      "version": "0.11.1",
+      "version": "0.11.2",
       "instantiable": true,
       "path": "registry/classes/resource/network/network-switch/_base.yaml",
       "types": []
@@ -74,14 +74,14 @@
     },
     {
       "class": "VLAN",
-      "version": "0.7.1",
+      "version": "0.7.2",
       "instantiable": true,
       "path": "registry/classes/resource/network/vlan/_base.yaml",
       "types": []
     },
     {
       "class": "VirtualNetwork",
-      "version": "0.9.3",
+      "version": "0.9.4",
       "instantiable": true,
       "path": "registry/classes/resource/network/virtual-network/_base.yaml",
       "types": []
