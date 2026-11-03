@@ -29,6 +29,11 @@ Three more, from the research in [`docs/research/udlm-1.0-research.md`](../docs/
 5. **One production deployment, stated honestly.** The estate runs the model end to end and passes
    suite 1.0.0; the conformance declaration says it is the authors' own deployment. Two independent
    implementations is the IETF and W3C floor; UDLM does not claim that level and says so.
+7. **Nothing is stable until it is used and validated** (maintainer, 2026-11-03). A part is stable
+   once a running implementation has used it and the conformance suite has judged its records.
+   Until then it is experimental, whatever it looks like on paper. Every part is experimental
+   today; the stable list is earned one part at a time, by a register row each. The 1.0 tag
+   covers the stable parts at that time, and the maintainer decides when that set is enough.
 6. **A release candidate with a 30-day hold.** When the exit criteria hold, the repo is tagged
    `udlm/1.0-rc1`. 1.0 is tagged only after 30 days with no breaking change and the suite green;
    a breaking change restarts the clock (OCI's rule). The maintainer's go is recorded as a register
@@ -39,7 +44,8 @@ Three more, from the research in [`docs/research/udlm-1.0-research.md`](../docs/
 **The definition.** UDLM 1.0 is the point where the record contracts and the class grammar become
 a promise: within 1.x nothing stable is removed, renamed or narrowed; additions are minor bumps; a
 breaking change is 2.0. Every schema, class and contract is marked stable or experimental; only
-stable parts carry the promise, and experimental parts may change without notice. 1.0 is reached
+stable parts carry the promise, and experimental parts may change without notice. Stable is
+earned by use and validation, never declared (ruling 7). 1.0 is reached
 from a release candidate that has held with no breaking change for 30 days, has passed conformance
 suite 1.0.0 against at least one production deployment, and is ratified by the maintainer in the
 register. A stable element is removed only in a major, after at least one minor as deprecated;
@@ -207,7 +213,9 @@ The tag is cut when all of these hold **and the maintainer says go**. Meeting th
 means ready, not tagged (maintainer, 2026-10-29). `tests/check_status_claims.py` checks this
 document against them.
 
-0. Every class, record schema and spec document has a row in `registry/stability.yaml` (gate STB-001).
+0. Every class, record schema and spec document has a row in `registry/stability.yaml` (gate STB-001),
+   and the parts the tag will promise are marked stable because they were used and validated
+   (ruling 7).
 1. Every issue in §4.1 is closed, or moved to another bin by a register row.
 2. `check_adr_realization` finds no accepted ADR with nothing built behind it.
 3. The suite runner passes against the estate's records, and `CONFORMANCE.md` §8 names suite

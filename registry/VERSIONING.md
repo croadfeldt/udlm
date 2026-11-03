@@ -100,8 +100,10 @@ A definition has two orthogonal signals; don't conflate them into one field:
 
 - **Stability marker = `stability`** (`stable | experimental`), on every schema, class and contract
   (ruling 2026-10-29, `UDLM-1.0-LOCKDOWN.md` §1 ruling 4). Only stable parts carry the 1.0 promise;
-  an experimental part may change in a minor without deprecation. Seven of the nine specs studied
-  declare stability this way. The manifest is `registry/stability.yaml`, one row per part, gated by
+  an experimental part may change in a minor without deprecation. Stable is earned, never declared:
+  a part is stable once a running implementation has used it and the conformance suite has judged
+  its records (row 144); until then it is experimental. Seven of the nine specs studied declare
+  stability this way. The manifest is `registry/stability.yaml`, one row per part, gated by
   `tests/check_stability.py`; a third value, `reference`, marks a document that states no rule.
 
 ## Entity semver — what bumps what
