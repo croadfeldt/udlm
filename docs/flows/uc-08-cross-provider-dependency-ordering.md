@@ -1,16 +1,16 @@
 # UC-08 · Cross-provider dependency ordering — the stage
 
-**What this settles:** a `depends_on` edge is honored *across provider boundaries* — a VM is realized only after the host bridge/bond/pool it needs is realized by *its* owning provider, and teardown runs in reverse. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
+**What this settles:** a `depends_on` edge is honored *across provider boundaries*. A VM is realized only after the host bridge, bond or pool it needs is realized by *its* owning provider, and teardown runs in reverse. A **lighter** flow: it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
 > **Use Case:** `compute/cross-provider-dependency-ordering`. **Persona:** platform-operator · **Profile:** standard.
 
-**In one breath.** request-realization builds one resource; UC-07 made the `depends_on` edges data. This case makes DCM *converge in topological order* over those edges even when the prerequisite lives in another provider. The libvirt VM depends on a host bridge owned by a network/host provider — the VM waits until the bridge is Realized, then builds; teardown reverses. A prerequisite that isn't realized yet **blocks**, it never silently skips.
+**In one breath.** request-realization builds one resource; UC-07 made the `depends_on` edges data. This case makes the control plane *converge in topological order* over those edges even when the prerequisite lives in another provider. The VM depends on a host bridge owned by a network or host provider: the VM waits until the bridge is Realized, then builds; teardown reverses. A prerequisite that is not realized yet **blocks** the dependent with a typed pending state; it never silently skips.
 
 ## What this adds over request-realization
 
-- **Ordering spans providers.** The `depends_on` prerequisite (a host bridge) is realized by a *different* provider than the dependent VM; DCM sequences across that boundary.
+- **Ordering spans providers.** The `depends_on` prerequisite (a host bridge) is realized by a *different* provider than the dependent VM; the control plane sequences across that boundary.
 - **Topological convergence, reverse teardown.** Prerequisites first, dependents after; on teardown, dependents first, prerequisites last.
-- **Block, never skip.** An unrealized dependency holds the dependent in place — the base flow's reserve-before-build extended to "prerequisite-realized-before-build".
+- **Block, never skip.** An unrealized dependency holds the dependent in place with a typed pending state: the base flow's reserve-before-build extended to "prerequisite realized before build".
 
 ## The flow — only what's different
 
@@ -28,15 +28,17 @@ Each node's own build is request-realization; this UC is the *ordering* between 
 
 ## Success criteria (from the UC)
 
-- A VM declares `depends_on` edges to resources owned by other providers (e.g. a host bridge).
-- DCM converges resources in topological order across providers and tears down in reverse.
-- A dependency that is not yet realized blocks (does not silently skip) the dependent VM.
+- A VM declares `depends_on` edges to resources owned by other providers, each carrying the prerequisite's identity.
+- The control plane converges in topological order across providers: the prerequisite is realized by its owning provider before the dependent is dispatched.
+- Teardown runs in reverse order: dependents first, prerequisites last.
+- A prerequisite that is not yet realized blocks the dependent with a pending state; the dependent is not skipped and not built.
+- Each provider implements only its own resource; the ordering between them belongs to the control plane, not to either provider.
 
 ## Data · Policy · Provider
 
 - **Data:** `depends_on` edges (from UC-07) pointing at resources in other providers; each carries the prerequisite's identity.
-- **Policy:** cross-domain constraint — convergence order is derived from the graph, not per-provider.
-- **Provider:** multiple eligible; each owns its own resource's implementation, DCM owns the ordering between them.
+- **Policy:** cross-domain constraint (`cross_domain_constraint`): convergence order is derived from the graph, not per provider.
+- **Provider:** multiple eligible; each owns its own resource's implementation, and the control plane owns the ordering between them.
 
 ## Who provides what, and when
 

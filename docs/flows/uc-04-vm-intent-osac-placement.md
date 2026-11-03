@@ -1,15 +1,16 @@
 # UC-04 · Intent to VM placement on OSAC — the stage
 
-**What this settles:** that an OSAC-backed provider is *just a provider* — DCM stays the governing control
-plane, OSAC is chosen at placement and dispatched to like any other, and the realized record carries
-provenance naming OSAC. A **lighter** flow — it **builds on [request-realization](request-realization.md)**
-and documents only what this case adds.
+**What this settles:** that an OSAC-backed provider is *just a provider*. The control plane stays in charge,
+OSAC is chosen at placement and dispatched to like any other, and the realized record carries provenance
+naming OSAC. A **lighter** flow: it **builds on [request-realization](request-realization.md)** and documents
+only what this case adds.
 
 > **Use Case:** `compute/vm-intent-osac-placement`. **Persona:** application-team-member · **Profile:** standard.
 
-**In one breath.** A consumer submits a VM intent through the DCM API; validation policies run; the placement
-engine selects the OSAC-backed provider; the request is dispatched to OSAC for implementation; and the `Realized`
-state records provider provenance identifying OSAC — the whole intent-to-realized path auditable end to end.
+**In one breath.** A consumer submits a VM intent through the control-plane API. Validation policies run; the
+placement engine selects the OSAC-backed provider; the request is dispatched to OSAC for implementation. The
+`Realized` record names OSAC as the realizing provider, and the whole intent-to-realized path is auditable
+end to end.
 
 ## What this adds over request-realization
 - **OSAC is a provider, not a dependency** — placement treats the OSAC-backed provider as one candidate among
@@ -69,7 +70,8 @@ flowchart TD
 lands can only be satisfied once a placement exists, and satisfying it can invalidate the placement that
 produced it. So the payload goes round again rather than through a separate post-placement stage. The
 loop is bounded — the convergence limit is an engine parameter, and failure to converge is a full conflict
-report, never a silent best-effort (see [ADR-006](../adr/ADR-006-convergence-control-model.md)).
+report, never a silent best-effort ([ADR-006](../adr/ADR-006-convergence-control-model.md): convergence is
+bounded and a non-convergence is a reported conflict).
 
 **Why reserve is per component.** A VM request is not one thing. The VM, its storage, its network
 attachment, and its IP are separate resources with separate providers and separate ways of failing.
@@ -81,8 +83,7 @@ nothing has been created ([ADR-011](../adr/ADR-011-validate-and-reserve.md)).
 ## Where the data comes from
 
 The loop above shows *when* each step runs. It does not show **where the facts come from**, and that
-is the question a placement author actually has to answer. Raised in the 2026-08-10 engineering
-review:
+is the question a placement author actually has to answer. The objection, as a placement author puts it:
 
 > *If OpenShift A reports five networks and OpenShift B another five, the person writing the
 > placement needs to know **what each network does**. On "network A" I don't know anything.*
@@ -132,8 +133,7 @@ sits inside it rather than after it.
 
 ### Worked: from "I need a network" to a reserved address
 
-The concrete path the review asked for — network identified first, address reserved *before*
-anything is built:
+The concrete path: network identified first, address reserved *before* anything is built.
 
 | # | Step | What is read | What is written |
 |---|---|---|---|
@@ -151,14 +151,11 @@ network `10G` and one calling it `high-throughput` are both candidates. Step 6 i
 component — the address is held while the VM is still hypothetical, so a request that cannot get one
 fails before anything is created.
 
-Step 5 is why reserve is per component: the address is held while the VM is still hypothetical, so a
-request that cannot get one fails before anything is created.
-
 ### What makes step 3 decidable
 
-The consumer does not name a network. **They state what they need, and the loop converges on one** —
-name-selectable but requirements-authoritative (ADR-036), the precedence `storage_tier` has followed
-since 2026-07-27. Networks now follow it too.
+The consumer does not name a network. **They state what they need, and the loop converges on one**:
+name-selectable but requirements-authoritative ([ADR-036](../adr/ADR-036-name-selectable-requirements-authoritative.md)).
+`storage_tier` follows that precedence, and the network axes follow it too.
 
 **Three independent axes**, because they are three different questions, and a consumer may state
 any, all, or none of them:
@@ -166,39 +163,37 @@ any, all, or none of them:
 | Axis | The question | The provider reports | The consumer requires |
 |---|---|---|---|
 | **segment** | *which* logical network | `VLAN`, via the `segment` edge | `networks[].vlan` |
-| **zone** | *what kind* — DMZ, management, internal | `Network.zone` → a governed **taxonomy** term | `networks[].zone` |
-| **tier** | *how good* — bandwidth, latency | `Network.tier` → a governed **floor** | `networks[].tier` |
+| **zone** | *what kind* — DMZ, management, internal | `zone` → a governed **taxonomy** term | `networks[].zone` |
+| **tier** | *how good* — bandwidth, latency | `tier` → a governed **floor** | `networks[].tier` |
 
 A DMZ segment and an internal segment may perform identically, and two networks in the same zone may
 not. One vocabulary would force an estate to choose which question it wanted the term to answer.
 
-**`zone` and `tier` sit on the Network BASE**, not on a type — they are expected to be consumable by
-every network provider, and scope IS portability (ADR-038 §3).
+**`zone` and `tier` sit on every network class** (`VLAN`, `VirtualNetwork`, `Subnet`), not on a provider
+type. Every network provider is expected to consume them, and scope is portability (ADR-038 §3).
 
 **A category is not a floor, which is why they are different artifacts.** `tier` is reference data
 because a tier denotes something a second provider can measurably *meet*. `zone` is a **taxonomy**
-because it is what a network *is* — and only a taxonomy carries `normalization_rules`, which is what
-this needs: providers report `dmz-2`, `DMZ_RESTRICTED` and `dmz restricted`, and all three must land
-on one canonical term before a policy can match on it.
+because it is what a network *is*. Only a taxonomy carries `normalization_rules`, which is what this
+needs: providers report `dmz-2`, `DMZ_RESTRICTED` and `dmz restricted`, and all three must land on one
+canonical term before a policy can match on it.
 
-**Zone is placement data, and nothing else** (maintainer ruling 2026-08-10). It is not an
-authorization, not a control, and nothing critical hangs off it directly — **anything required
-because of a zone is enforced by policy reading that zone**, never by the zone itself. That keeps
-the model on the right side of its own boundary, and on the right side of zero-trust architecture,
-which derives no trust from network location (NIST SP 800-207) — UDLM already ships a
-`zero_trust.posture` setting that a location-as-trust reading would contradict.
+**Zone is placement data, and nothing else.** It is not an authorization, not a control, and nothing
+critical hangs off it directly. **Anything required because of a zone is enforced by policy reading
+that zone**, never by the zone itself. That keeps the model on the right side of its own boundary. It
+also matches zero-trust architecture, which derives no trust from network location (NIST SP 800-207);
+UDLM's `zero_trust.posture` setting would contradict a location-as-trust reading.
 
-**The segment axis survives leaving the datacenter.** `encapsulation` already carries
+**The segment axis survives leaving the datacenter.** `VLAN.encapsulation` carries
 vlan / vxlan / geneve / flat, so the class is a segment of which 802.1Q is one form. A public cloud
-exposes no VLAN — there the segment is a **VPC subnet**, adopted by reference (T5) rather than given
-a parallel class: the VPC is the `VirtualNetwork` and the subnet is the addressed segment
-within it. The three clouds converged on that shape independently, so re-expressing it would invent
-a fourth.
+exposes no VLAN. There the segment is a **VPC subnet**, adopted by reference (core tenet T5) rather than
+given a parallel class: the VPC is the `VirtualNetwork` and the subnet is the addressed segment within
+it. The three clouds converged on that shape independently, so re-expressing it would invent a fourth.
 
-**`network_ref` is now optional.** Requiring it was the defect: it forced a consumer to name a
-network they had no basis to choose between, which is exactly the objection above. Stating nothing
-means policy decides. Stating a requirement means the loop must satisfy it. Naming a network that
-fails a stated requirement is a **conflict**, not an override.
+**`network_ref` is optional.** Requiring it would force a consumer to name a network they have no basis
+to choose between, which is exactly the objection above. Stating nothing means policy decides. Stating a
+requirement means the loop must satisfy it. Naming a network that fails a stated requirement is a
+**conflict**, not an override.
 
 And a stated requirement is still only a request — the provider validates and reserves (ADR-011).
 Nothing here lets a consumer assert past a provider that cannot deliver.
@@ -226,12 +221,12 @@ contract. If UC-04 needed a *different* answer to any of these questions, OSAC w
 provider" — and the claim this flow settles would be false.
 
 ## Success criteria (from the UC)
-- Consumer submits the VM intent through the DCM API.
+- The consumer submits a portable VM intent through the control-plane API; it names no provider, namespace, or native storage class.
 - Validation policies are evaluated **before** placement — and again after it, on the placement-informed payload.
-- The placement engine selects the OSAC-backed service provider.
-- The request is dispatched to OSAC for implementation.
-- `Realized` state is recorded with provider provenance identifying OSAC.
-- The provisioned VM is reachable and operational; the full intent-to-realized lifecycle is auditable.
+- The placement engine selects the OSAC-backed provider from the eligible set, by declared capability and capacity.
+- The request is dispatched to OSAC through the ordinary provider contract; `provider_specific` fields are added at enrichment from OSAC's Provider Class.
+- The `Realized` record carries provider provenance identifying OSAC.
+- The provisioned VM is reachable, and the intent-to-realized path is auditable end to end.
 
 ## Data · Policy · Provider
 - **Data:** the portable VM intent, the assembled payload with field-level provenance, and the `Realized`
@@ -246,3 +241,4 @@ provider" — and the claim this flow settles would be false.
 - Authoritative assembly process (steps 1–9, exact policy phases):
   [`layering-and-versioning.md` §6](../spec/foundations/layering-and-versioning.md); the rendered
   placement loop is in the [annex](../spec/foundations/layering-and-versioning-annex.md).
+- The `networks[]` element (`network_ref`, `vlan`, `subnet`, `zone`, `tier`): `registry/classes/resource/compute/machine/vm.yaml`.
