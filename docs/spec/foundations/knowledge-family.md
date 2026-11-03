@@ -1,14 +1,13 @@
 # UDLM — Knowledge Entity-Type Family
 
-**Family:** Knowledge (architecture / capability knowledge) — first exercised by the **DAV**
-implementation (a non-normative example; UDLM depends on no implementation — see `GLOSSARY.md`)
+**Family:** Knowledge (architecture / capability knowledge) — first exercised by the **DAV** implementation (a non-normative example; UDLM depends on no implementation — see `GLOSSARY.md`)
 
 > The three foundational abstractions are in [foundations.md](foundations.md);
 > the family concept in [Entity-Type Families](entity-type-families.md).
 > **This document maps to: DATA.**
 > **Universality:** these are UDLM definitions grouped here for organization. They are
 > **free to use by any implementation, regardless of family** — the control plane or any peer may use a
-> `Capability` exactly as DAV does. Constraints apply to *instances* (ownership,
+> `Capability` exactly as the first implementation does. Constraints apply to *instances* (ownership,
 > classification, scope), never to these definitions.
 > **Implementation:** `dav/docs/capability-catalog-design.md`. Case study:
 > [`../../examples/case-study-dav-knowledge-realization.md`](../../examples/case-study-dav-knowledge-realization.md).
@@ -47,7 +46,7 @@ proposed ──► under_review ──► canonical ──► deprecated
 
 **The signature operation:** the gap between `canonical` (what should be) and `observed`
 (what an assessment found) is **drift detection applied to knowledge** — identical in shape
-to the Resource family's Realized-vs-Discovered drift. This *is* DAV's gap analysis.
+to the Resource family's Realized-vs-Discovered drift. This *is* the first implementation's gap analysis.
 
 ## 3. Shared semantics
 
@@ -69,7 +68,7 @@ to the Resource family's Realized-vs-Discovered drift. This *is* DAV's gap analy
   unambiguous as "term + family". It disambiguates meaning; it does not restrict use.
 - **Ownership / scope is instance-level**, per
   [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md):
-  global / shared / domain / project tiers (DAV's tier+tags model maps onto this). The
+  global / shared / domain / project tiers (the first implementation's tier+tags model maps onto this). The
   *definitions* below are universal; only the artifacts built from them are scoped.
 
 ## 4. Entity-type definitions
@@ -236,7 +235,7 @@ whose truth is held by the party that declares it.
 ```
 
 ## 6. Future members
-`Gap`, `Assessment`, `Finding`, **`Resolution`** extend this family as DAV's UDLM-conformance
+`Gap`, `Assessment`, `Finding`, **`Resolution`** extend this family as the first implementation's UDLM-conformance
 expands beyond the capability catalog (the pilot). Each follows the curation archetype and
 the universal contracts; all remain universal definitions, free to use by any implementation.
 (`SoftwareImage` / `SoftwarePackage` / `Vulnerability` have landed — §4.6.)

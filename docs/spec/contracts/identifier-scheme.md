@@ -78,6 +78,12 @@ v6/v7/v8). Every UUID citation in this spec is RFC 9562.
 - **Portability**: handles are NOT portable across peers. On import from another peer, a handle MUST be rebound (the target keeps its UUID; the importing peer assigns its own handle if needed).
 - **Resolution**: a handle resolves to exactly one UUID within its scope. Reverse resolution (UUID → current handle) is always available.
 
+**Identity is not address** (#328). UDLM records what a thing *is* — its uuid, handle and
+correlation ids — never how a provider reaches it. An endpoint, a connection string, an API path or
+a management address is a provider-side fact: it belongs in outputs or in the provider's own
+naturalization, never in identity. An automation that needs to reach a thing reads its outputs; it
+does not expect the identifier to be reachable.
+
 ### 2.3 Reference
 
 A reference is a typed pointer to another artifact. Wire format:
@@ -231,9 +237,11 @@ block form §9.4, JSON embedding, English renderings) — never a second parse s
 - **Names are not paths.** Dotted PascalCase (`Machine.VM`) is the type NAME and appears in
   *values* (`resource_type==Machine.VM`); the slash form is the *path* spelling of the same
   identity (`Machine/VM` — lossless bijection, since name segments never contain dots).
-  Casing separates the two dot notations: `PascalCase.Dotted` = name, `snake_case.dotted` =
-  field path. Selector dots address **within one record only** — crossing an edge is never
-  a dot (virtual fields §9.2 are the sanctioned bridge).
+  A dot means one of three things, and the reader can always tell which (#491). In
+  `PascalCase.Dotted` it separates the segments of a type name. In `snake_case.dotted` it separates
+  the steps of a field path. Inside a handle or a value (`estate/acme.prod`, `10.0.90.*`) it is a
+  literal character and separates nothing. Selector dots address **within one record only** —
+  crossing an edge is never a dot (virtual fields §9.2 are the sanctioned bridge).
 - **The class address is the URF registry subset.** ADR-038 §10's coordinate
   (`https://udlm.dev/class/Machine/VM#cpu`) IS a URF; `registry/tools/resolve_class_address.py`
   is the registry half of the URF resolver.
@@ -394,6 +402,12 @@ seals, and digests.
 | `…#field` | the field projection of a **cardinality-1** resolution |
 | `//peer/…` | the same, resolved by that authority |
 
+**Pinned and unpinned** (URF-014, #382). A URF with `@pin` resolves to that version for ever. A
+URF without a pin resolves to the current version at the moment it is evaluated, and is re-resolved
+on every evaluation. A name that moves — "the current RHEL 9 server image" — is an unpinned reference
+to a lineage whose versions supersede one another: bind once, and each read follows the lineage. A
+stored criterion that must not move pins.
+
 `#` on a set resolution is **deferred** — refused at this revision; per-member projection
 (columnar reports) is a named future extension requiring its own ruling. Every dereference
 is a boundary crossing: the governance matrix evaluates the read, `#` projections cross the
@@ -441,6 +455,7 @@ not a policy predicate grammar and does not become one.
 | `URF-006` | Criterion→criterion references (`member_of` and future virtual fields) MUST be acyclic; a cycle is refused at validation. |
 | `URF-007` | Credentials or bearer material MUST NOT appear in any URF axis. |
 | `URF-009` | `via(<relation>)#<field>` traverses ONE declared relationship (`relationships[].name`, REL-001) and projects a field off a cardinality-1 resolution. An undeclared relation name is refused at validation, never resolved; a relation resolving to more than one record refuses `ambiguous` (URF-004); `via` MUST NOT be chained. The traversal is a dereference — the governance matrix evaluates the read and the projection crosses the policy information firewall (§9.6, ADR-041) — so an unauthorized target is refused, never rendered absent. |
+| `URF-014` | A URF with `@pin` resolves to that version for ever; one without resolves to the current version at evaluation and is re-resolved every time. A name that moves is an unpinned reference to a lineage. A stored criterion that must not move pins. |
 | `URF-010` | A stored `filed_under` value MUST be a canonical term of the usage-group taxonomy; a retired or renamed term is refused at validation. Gate: `tests/check_urf_conformance.py`. |
 | `URF-011` | A stored `resource_type` criterion spelled under a dissolved folder Base (`Hardware.*`, `VLAN`) is refused once the folder is gone; its replacement is `filed_under==<group>` or the renamed class (`registry/renames.yaml`). While the folder still exists the gate warns. |
 | `URF-008` | Regex metacharacters (`^ $ [ ] { } \| \`) MUST NOT appear in the value of any comparator except `=match=`; those comparators match with `*` glob, so a regex there compares as a literal and silently never matches. Refused at validation. `{self}` (§9.2) is the one exception. A pattern belongs after `=match=` (URF-012). |

@@ -1579,7 +1579,7 @@ policy:
 |--------|------|
 | `LAY-001` | Consumers may declare `layer_exclusions` in their request. Each exclusion must carry a human-readable reason recorded in provenance. Compliance-class Validation Policies may declare specific layers non-excludable. Excluded layers produce no fields in the assembled payload. |
 | `LAY-002` | Service Layers are independently versioned artifacts. Service Providers declare layer compatibility using semver constraints. Service Layer Cache entries carry the layer version and are invalidated when the registered version changes. |
-| `LAY-003` | Service Layers may declare `activation_condition` evaluated during Step 2 (Layer Resolution). Layers whose conditions evaluate false are excluded from the candidate set. Condition evaluation results are recorded in the assembly provenance. Conditions may reference request fields, tenant attributes, resource type fields, resolved core layer fields, and ingress fields. |
+| `LAY-003` | A layer applies where `covers` and `applies_on` say it does; both are declared, and the resolution records which layers were considered and which applied. There is no `activation_condition`: a condition on request data is a policy decision, and the policy engine owns its own comparison language (ADR-065; #392). |
 | `LAY-004` | Each service dependency executes its own independent layer chain during assembly. Dependencies inherit the parent's resolved placement and identity fields as declared by the Resource Type Specification. Dependencies do not inherit parent consumer declarations, resource-type-specific layers, or provider_specific layers. Layer exclusions may be declared per-dependency. |
 
 ---

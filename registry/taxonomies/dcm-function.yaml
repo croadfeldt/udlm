@@ -1,14 +1,14 @@
-# DCM-function taxonomy (seed) — the RBAC bridge (`Grouping` subject_bindings + the function-capability matrix).
+# The `dcm-function` taxonomy (seed) — the control plane's function catalog and the RBAC bridge (`Grouping` subject_bindings + the function-capability matrix).
 #
-# The governed catalog of DCM administrative FUNCTIONS (permission verbs), harvested from the
+# The governed catalog of the control plane's administrative FUNCTIONS (permission verbs), harvested from the
 # per-endpoint `Role:` gates in dcm-admin-api-spec and the prose gates (SCH-006, FCM-001, GUI-006/007,
 # ATM-005, POL-016/019). Each entry is a TaxonomyTerm; the `dcm-function` ROOT subtree is disjoint from
 # access-role / provider-capability. A role is granted a set of these functions by the
-# FunctionCapabilityMatrix, and DCM's Admin API `Role:` gates resolve to these terms. Default-deny:
+# FunctionCapabilityMatrix, and the control plane's Admin API `Role:` gates resolve to these terms. Default-deny:
 # a function is inaccessible unless a role granting it is assigned to the actor.
 #
 # Naming: `<domain>.<verb>` (domain = the object class, verb = the action) — the same (verb x domain)
-# shape as provider capabilities, applied to DCM's own operations.
+# shape as provider capabilities, applied to the control plane's own operations.
 
 conforms_to: udlm/0.1
 term_type: TaxonomyTerm
@@ -19,7 +19,7 @@ terms:
     root: dcm-function
     parent: null
     curation_state: canonical
-    definition: Root of the DCM administrative-function permission catalog.
+    definition: Root of the control plane's administrative-function permission catalog.
 
   # ---- domain groupings (parent = root) ----
   - term: provider

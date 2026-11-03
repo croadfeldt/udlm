@@ -481,7 +481,6 @@ RDB-001 docs/spec/principles/adopted-standards.md:51e3989d3c
 RDB-001 docs/spec/principles/adopted-standards.md:605344419e
 RDB-001 docs/spec/principles/adopted-standards.md:65aa1d1258
 RDB-001 docs/spec/principles/adopted-standards.md:6e9ef3a505
-RDB-001 docs/spec/principles/adopted-standards.md:9344d34447
 RDB-001 docs/spec/principles/core-tenets.md:2665703403
 RDB-001 docs/spec/principles/core-tenets.md:296d628d7c
 RDB-001 docs/spec/principles/core-tenets.md:2ede25259f
