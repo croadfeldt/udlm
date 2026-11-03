@@ -26,8 +26,9 @@
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
       "description": "When the change occurred, RFC 3339 UTC 'Z' (millisecond precision permitted; common-elements §8.1)."
     },
-    "dcm_version": {
-      "type": "string"
+    "implementation_version": {
+      "type": "string",
+      "description": "The version of the implementation that wrote this record. Named for no product: the normative tier is implementation-neutral (#723)."
     },
     "actor": {
       "type": "object",

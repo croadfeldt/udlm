@@ -23,14 +23,15 @@ events narrate.
 Every control-plane event shares a common envelope. Event-specific fields are in the `payload` object.
 
 ```yaml
+# illustrative: the event envelope has no schema yet (#723)
 # UDLM Event Envelope — all events
 event_uuid: <uuid>                  # RFC 9562 v7 (time-ordered — identifier-scheme §2.1); idempotency key; stable across retries
 event_type: <string>                # fully qualified: domain.event_name
 event_schema_version: "1.0"         # increments on breaking payload changes
 timestamp: <RFC 3339 UTC 'Z'>       # from Commit Log — authoritative source of truth (common-elements §8.1);
                                     # inherits the Commit Log's microsecond-precision instant (universal-audit §7.2)
-dcm_version: <semver>               # control-plane instance version that generated the event
-dcm_instance_uuid: <uuid>           # identifies the control-plane instance (federation context)
+implementation_version: <semver>    # version of the implementation instance that generated the event
+implementation_instance_uuid: <uuid> # identifies the implementation instance (federation context)
 
 subject:
   entity_uuid: <uuid | null>        # primary entity this event concerns
@@ -846,7 +847,7 @@ payload:
 
 | Policy | Rule |
 |--------|------|
-| `EVT-001` | Every event must include the base envelope fields (`event_uuid`, `event_type`, `event_schema_version`, `timestamp`, `dcm_version`, `dcm_instance_uuid`, `urgency`). Events omitting required envelope fields are invalid and must not be published. |
+| `EVT-001` | Every event must include the base envelope fields (`event_uuid`, `event_type`, `event_schema_version`, `timestamp`, `implementation_version`, `implementation_instance_uuid`, `urgency`). Events omitting required envelope fields are invalid and must not be published. |
 | `EVT-002` | `event_uuid` is the idempotency key. Consumers must treat duplicate `event_uuid` values as already-processed. The control plane may re-deliver events on failure; this is not a bug. |
 | `EVT-003` | `timestamp` is sourced from the Commit Log Stage 1 write and **inherits the Commit Log's RFC 3339 UTC 'Z' microsecond-precision instant** (universal-audit §7.2) — one cross-store precision, no re-stamping. It represents when the event was authoritatively recorded, not when it was delivered. |
 | `EVT-004` | `event_schema_version` must increment on any breaking change to a payload schema. Adding optional fields is not a breaking change. Removing fields, changing field types, or changing field semantics are breaking changes. |
