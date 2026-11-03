@@ -273,8 +273,8 @@ parts:
     stability: stable
     why: a record contract every peer reads
   - part: schema:profile.schema.json
-    stability: experimental
-    why: the profile mechanism stays; the six profiles move out (#488)
+    stability: stable
+    why: the profile mechanism; the postures are the UDLM Profile Set's (row 140)
   - part: schema:promotion-evidence.schema.json
     stability: experimental
     why: no consumer yet

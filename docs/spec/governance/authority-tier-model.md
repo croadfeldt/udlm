@@ -363,7 +363,7 @@ Historical approval records MUST retain their `stored_tier_weight` from time of 
 | Policy | Rule |
 |--------|------|
 | `ATM-001` | Authority tiers are identified by name, not numeric weight. Numeric weight is resolved from list position at evaluation time and is never hardcoded in configuration. |
-| `ATM-002` | The `auto` tier's `max_score` threshold may never exceed 50 in any profile (translated to the dynamic model). |
+| `ATM-002` | A profile sets the `auto` tier's `max_score` ceiling; UDLM sets none (#490). How much risk an estate auto-approves is its posture, not the model's. |
 | `ATM-003` | Custom tiers must declare `decision_gravity` consistent with their position in the ordered list. A tier with lower gravity may not be inserted after a tier with higher gravity. |
 | `ATM-004` | Custom tier contributions require `verified` tier approval. Organizations cannot add tiers unilaterally. |
 | `ATM-005` | Custom tiers cannot alter the `dcm_gate` semantics of existing UDLM substrate tiers (`auto`, `reviewed`, `verified`, `authorized`). |

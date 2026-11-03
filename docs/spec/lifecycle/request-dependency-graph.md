@@ -163,7 +163,7 @@ When a standard composite service exists as a composite service definition, cons
 | Policy | Rule |
 |--------|------|
 | `RDG-001` | Circular dependencies within a request group MUST be rejected at submission time (422 Unprocessable Entity). The implementation MUST validate the dependency graph is a DAG before acknowledging the group. |
-| `RDG-002` | Maximum group size is 50 requests by substrate default. Profile may set a lower limit; groups exceeding the limit must use composite service definition composition or be split into multiple groups. |
+| `RDG-002` | A profile sets the maximum request-group size; UDLM sets none (#490). A group over the limit uses a composite service definition or is split. |
 | `RDG-003` | Field injection (`inject_fields`) is subject to all active Transformation policies. Injected values are NOT exempt from policy evaluation. |
 | `RDG-004` | `PENDING_DEPENDENCY` requests count against the consumer's quota. Resources are reserved at group submission, not at dispatch time. |
 | `RDG-005` | Group-level `timeout` is measured from group submission. Individual requests do not have independent timeouts while in `PENDING_DEPENDENCY` status. |

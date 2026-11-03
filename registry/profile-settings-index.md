@@ -4,7 +4,7 @@
 
 **The master overview** — the shape of profile scaling (which dimension tightens across profiles) — is the Profile Scaling Table in [`docs/spec/principles/design-priorities.md`](../docs/spec/principles/design-priorities.md). It is illustrative; the **authoritative per-profile values** live in each setting's owning bundle below.
 
-**Where a profile-governed setting lives** (ADR-015 §2 — its `base`/`module`/`profile` tiers are one record kind now, the **profile**): the per-profile default set lives in its owning doc's config block, and a profile record selects among them by naming the artifact and its settings (`registry/profile.schema.json` `contains[].settings`).
+**Where a profile-governed setting lives** (ADR-015 §2 — its `base`/`module`/`profile` tiers are one record kind now, the **profile**): the setting is defined once, in its owning doc; what each standard posture requires of it is the UDLM Profile Set's (croadfeldt/udlm-profiles), and an estate's own profile is a record in its own namespace (row 140). UDLM ships no posture (`registry/profile.schema.json` `contains[].settings`).
 
 | Setting | Bundle / owning block | What it governs per profile |
 |---|---|---|
