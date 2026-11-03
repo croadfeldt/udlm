@@ -289,9 +289,12 @@ parts:
   - part: schema:regeneration-manifest.schema.json
     stability: experimental
     why: no consumer yet
+  - part: schema:provider-registration.schema.json
+    stability: experimental
+    why: new in 1.0 (#634); no implementation registers a provider through it yet
   - part: schema:registration-verdict.schema.json
     stability: experimental
-    why: provider registration schema pending (#634)
+    why: no implementation writes verdicts against a registration yet
   - part: schema:resource-type-spec.schema.json
     stability: experimental
     why: candidate — a record contract every peer reads; stable once used and validated (row 144)

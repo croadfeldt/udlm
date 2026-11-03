@@ -259,7 +259,7 @@ Within the same domain level, DENY wins over ALLOW. More-specific domain wins ov
 
 ## 5. Base Contract — Artifact Structure
 
-All policies are first-class the control plane Data artifacts. They carry the standard identity, version and status (layering-and-versioning §4b):
+All policies are first-class control-plane Data artifacts. They carry the standard identity, version and status (layering-and-versioning §4b):
 
 ```yaml
 # illustrative: shape of the record, not schema-checked
@@ -271,22 +271,23 @@ policy_artifact:
   status: active | deprecated | retired
 
   # Policy classification
-  policy_type: <type>                    # validation | transformation |
-                                         # recovery | orchestration_flow |
-                                         # governance_matrix_rule | lifecycle
+  policy_type: <type>                    # validation | transformation | recovery |
+                                         # orchestration_flow | governance_matrix_rule |
+                                         # placement | lifecycle | itsm_action | override
+                                         # (policy.schema.json)
   concern_type: <concern>                # security | compliance | operational |
                                          # recovery_posture | zero_trust_posture |
                                          # data_authorization_boundary | orchestration_flow
 
   domain: system | platform | tenant | resource_type | entity
 
-  # Match conditions (Model A or B — see Section 2)
+  # Match conditions (see §2)
   match: { ... }
 
   # Enforcement
   enforcement: hard | soft
 
-  # Output schema (varies by policy_type — see Sections 8-14)
+  # Output schema (varies by policy_type — see §10–17)
   output: { ... }
 
   # Audit
@@ -591,7 +592,7 @@ When a policy is promoted from `developing` to `proposed` (shadow mode), policy 
 1. Every `emits_constraints[].constraint_type` is a registered constraint type
 2. The emitted value structure matches the registered schema
 3. The emitting policy's type is in the constraint type's `emittable_by` list
-4. Every `match.conditions[].field` referencing `context.constraints.*` corresponds to a registered constraint type
+4. Every `match.facts[]` entry that names an evaluation-context term corresponds to a registered constraint type
 5. The consuming policy's type is in the constraint type's `consumable_by` list
 
 If any check fails, the policy cannot be activated. Vocabulary mismatches are caught at authoring time, not when a production request fails silently.
@@ -605,8 +606,9 @@ Policy templates separate reusable policy logic from instance-specific configura
 ### 9.1 Template Definition
 
 ```yaml
+# illustrative: a template definition; the reference engine is shown, not mandated (§9)
 policy_template:
-  handle: "dcm.sovereignty.zone-restriction"
+  handle: "udlm.sovereignty.zone-restriction"
   version: "1.0.0"
   tier: core
 
@@ -630,8 +632,8 @@ policy_template:
 
   # Rego logic
   rego: |
-    package dcm.sovereignty.zone_restriction
-    import data.dcm.constraint_types
+    package udlm.sovereignty.zone_restriction
+    import data.udlm.constraint_types
 
     emit_constraint[constraint] {
       input.request.data_classification == input.parameters.classification_levels[_]
@@ -653,9 +655,10 @@ policy_template:
 ### 9.2 Policy Artifact (Template Instance)
 
 ```yaml
+# illustrative: a policy artifact instantiated from the §9.1 template
 policy_artifact:
   handle: "sovereignty/eu-data-residency"
-  template: "dcm.sovereignty.zone-restriction"
+  template: "udlm.sovereignty.zone-restriction"
   version: "1.0.0"
   domain: system
   policy_type: validation
@@ -844,7 +847,7 @@ Custom steps extend this vocabulary by publishing new payload types.
 
 ## 15. Output Schema — Governance Matrix Rule
 
-**Fires on:** Any cross-boundary interaction (the control plane → Provider, the control plane → Peer the control plane, Provider → the control plane).
+**Fires on:** Any cross-boundary interaction (the control plane → Provider, the control plane → peer control plane, Provider → the control plane).
 **Produces:** A boundary control decision with optional field permissions.
 
 ```yaml
@@ -906,7 +909,7 @@ itsm_action_output:
   on_failure: log_and_continue | alert_and_continue | alert_only
 ```
 
-> **ITSM Integration** (implementation-specific; see DCM repo) covers full ITSM integration registration, capability declarations, supported ITSM systems (ServiceNow, Jira, Remedy, Freshservice, PagerDuty, generic REST), policy examples, and system policies (ITSM-001–007, ITSM-POL-001–004).
+> **ITSM Integration** (implementation-specific; see the implementation's documentation) covers full ITSM integration registration, capability declarations, supported ITSM systems (ServiceNow, Jira, Remedy, Freshservice, PagerDuty, generic REST), policy examples, and system policies (ITSM-001–007, ITSM-POL-001–004).
 
 **Key constraints:**
 - ITSM Action policies are side-effect only — they do not produce allow/deny decisions
@@ -923,6 +926,7 @@ Overrides and `route-to-review` are a **last-resort path**, not a common one. A 
 A policy artifact that explicitly overrides another policy for a defined scope. Goes through the standard policy lifecycle (developing → proposed → active) with review and shadow testing.
 
 ```yaml
+# illustrative: an override policy artifact (policy_type: override); not schema-checked
 policy_artifact:
   handle: "override/payments-team-zone-c-exception"
   policy_type: override
@@ -935,7 +939,7 @@ policy_artifact:
   justification: "Payments team DR requires zone-c replica per BCP-2026-04"
   expires_at: "2027-01-01"
   review_required_before: "2026-10-01"
-  compensating_controls: []                  # optional — see Model 5
+  compensating_controls: []                  # optional — see §18.5
 ```
 
 **Constraint:** Override policies cannot target `enforcement: hard` policies. Hard policies can only be overridden via Exception Grant or Manual Override with dual-approval. This is validated at policy activation — attempting to create an override policy targeting a hard policy is rejected.
@@ -1075,7 +1079,7 @@ When a policy blocks a request and no automatic resolution exists, the control p
 **Resolution precedence (contract).** When a policy blocks a request, automatic resolution is attempted in
 a fixed order — an active **Override Policy**, then an **Exception Grant**, then a **Compensating Control**
 covering the scope; the first that applies lets the request continue. If none applies, the request takes the
-`POLICY_BLOCKED` outcome (§7.7), carrying the resolution guidance below. *How* an implementation then surfaces
+`POLICY_BLOCKED` outcome, carrying the resolution guidance below. *How* an implementation then surfaces
 the block and drives the consumer's choice — the events it publishes, the notifications it routes, the API
 it exposes — is control-plane, specified in control-plane architecture docs, not fixed by this contract.
 
@@ -1208,7 +1212,7 @@ For a single request, all active matching policies at all domain levels evaluate
 |--------|------|
 | `POL-001` | All control-plane policy types implement the unified base contract. The output schema is the only thing that varies. |
 | `POL-002` | Every policy evaluation produces an audit record. No evaluation is silent. |
-| `POL-003` | Hard enforcement policies require dual-approval to override. Override policies (Model 1) cannot target hard policies — caught at activation. |
+| `POL-003` | Hard enforcement policies require dual-approval to override. Override policies (§18.1) cannot target hard policies — caught at activation. |
 | `POL-004` | Policies in `proposed` status execute in shadow mode — output is captured and never applied. Shadow mode is the primary mechanism for safe policy change management. |
 | `POL-005` | The policy evaluator is the sole evaluator of all policies. No component bypasses it to enforce rules directly. |
 | `POL-006` | Adding a new policy type requires defining a new output schema. The base contract, evaluation algorithm, lifecycle, and audit obligations are inherited. |
