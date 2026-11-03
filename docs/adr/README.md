@@ -180,6 +180,7 @@ fully scoped. Foundational across UDLM, the control plane, and DAV (`SPEC-DESIGN
 
 | ADR | Decision | Status |
 |-----|----------|--------|
+| 143 | **The foundations documents read plainly** (readability slice 1; row 138's gate). All 220 long sentences in the 19 `docs/spec/foundations` documents are split or trimmed; every rule id, MUST, number, name and cross-reference stays. The gate now treats a list item and a bold lead-in as their own sentences, so a tight list no longer counts as one long sentence; the baseline was rebuilt on that count. Left for the next slices: contracts, governance, principles, lifecycle, and the record-schema descriptions. |
 | 001 | `Topology` — cross-cutting failure/locality-domain type (failure domains = data within it; abstract `kind` / concrete `id`) | Ruled — row-only; applied: the served `Topology` spec carries domains/kinds/status and the intent-references-kinds discipline |
 | [002](ADR-002-capacity-utilization-served-overlay.md) | Capacity/Utilization — served observational overlay (cost pattern), **not** a UDLM type | Proposed — **content not verified as applied**; evaluate at ratification |
 | [003](ADR-003-data-mobility-and-process-validation.md) | Data mobility (requirements=data, methods=provider, mechanism=provider, permission=Policy) + process_validation — proposed common-elements, not yet schema-built | Proposed — **content not verified as applied**; evaluate at ratification |
