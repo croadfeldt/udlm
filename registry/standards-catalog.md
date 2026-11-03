@@ -59,7 +59,7 @@
 
 | RFC | Title | Use in UDLM | Obligation |
 |-----|-------|-----------|-----------|
-| **ISO 8601** | Date and Time Format | All substrate timestamps: `created_at`, `expires_at`, `not_before`, `not_after`, event timestamps; durations as ISO 8601 periods (P90D, PT8H) | Normative |
+| **RFC 3339** (the ISO 8601 internet profile) | Date and Time on the Internet: Timestamps | All substrate timestamps, UTC-normalized with `Z` (`registry/common-elements.md` §8.1): `expires_at`, `not_before`, `not_after`, event timestamps; durations as ISO 8601 periods (P90D, PT8H) | Normative |
 | **RFC 8259** | The JavaScript Object Notation (JSON) Data Interchange Format | All UDLM API request/response bodies; all entity definitions in stores | Normative |
 
 ---
@@ -190,4 +190,4 @@ UDLM maps profile security postures to NIST Authentication Assurance Levels:
 
 ---
 
-*UDLM substrate reference document. Implementation-specific implementation choices (which TLS libraries, which OAuth libraries, which Prometheus exporters, which Kubernetes CRDs, which compliance frameworks are enforced per profile, certificate and key management procedures, etc.) live in the consuming implementation's documentation.*
+*UDLM substrate reference document. Implementation choices (which TLS libraries, which OAuth libraries, which Prometheus exporters, which Kubernetes CRDs, which compliance frameworks are enforced per profile, certificate and key management procedures, etc.) live in the consuming implementation's documentation.*

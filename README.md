@@ -64,8 +64,8 @@ An implementation that claims UDLM conformance:
    [`docs/spec/contracts/schema-sharing.md`](docs/spec/contracts/schema-sharing.md).
 3. Publishes a conformance declaration at `/.well-known/udlm/conformance`
    per [`CONFORMANCE.md`](CONFORMANCE.md).
-4. Passes the conformance test suite per
-   [`tests/test-framework-specification.md`](tests/test-framework-specification.md).
+4. Runs the conformance test suite, `tests/conformance.py`, against the records it writes
+   ([`CONFORMANCE.md`](CONFORMANCE.md) §8).
 
 See [`CONFORMANCE.md`](CONFORMANCE.md) for full details.
 
@@ -101,5 +101,4 @@ there. New substrate contracts (identifier-scheme, time-and-clock, error-model,
 retry-semantics, rate-limit-and-backpressure, schema-sharing, CONFORMANCE)
 were authored fresh during the split to make wire-compatibility explicit.
 
-The split planning record lives in the DCM repo at
-architecture/00-split-manifest.md in the DCM repo.
+The split planning record is architecture/00-split-manifest.md in the DCM repo.

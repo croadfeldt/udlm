@@ -8,7 +8,7 @@ A type that needs a shared concept references the canonical shape here rather th
 ## 1. Conventions (the rules, restated)
 
 - **Field names:** `snake_case` (canonical data model + AEP-conformant; `guest_os`, `cluster_ref`, `ip_address`, `api_url`) — naming-conventions.md §4.
-- **Type names:** `Category.Type`, vendor-neutral (SPEC-DESIGN-REQUIREMENTS §6).
+- **Class names:** `Base[.Type[.Provider]]`, vendor-neutral (SPEC-DESIGN-REQUIREMENTS §6; naming-conventions.md §1).
 - **Quantities:** an explicit unit in the value, never a bare number whose unit is implied by the field
   name (so memory is `"16GB"`, not `memoryGib: 16`). One `Quantity` pattern, registry-wide.
 - **Time:** RFC 3339 / ISO 8601 strings.
@@ -27,7 +27,7 @@ Kubernetes `resource.Quantity` form: decimal SI (`K/M/G/T/P/E`), binary (`Ki/Mi/
 trailing `B` (`MB`/`GiB`), or milli (`m`). Covers every existing type's memory/storage/capacity usage.
 Use for memory, storage, bandwidth, power (`"650W"`), etc.
 
-### 2.2 `ComputeResources`  *(the keystone — currently divergent, see §3)*
+### 2.2 `ComputeResources`  *(the keystone; how each class declares it is in §3)*
 ```json
 { "instance_size": "medium",          // OR provider-neutral size class (see below)
   "cpu":    { "count": 8 },
@@ -59,7 +59,7 @@ portably, without UDLM prescribing a fixed resource math.
 
 ### 2.4 Network
 - `cidr`: a CIDR string (`"192.0.2.0/24"`).
-- `disk` (§2.6): one disk as portable intent — `name`, `size`, optional `storage_tier` and `role`. Declared once; Machine `disks` and KubernetesNodePool `node_disks` are lists of it (rows 112, 117).
+- `disk` (`common-elements.schema.json#/$defs/disk`): one disk as portable intent — `name`, `size`, optional `storage_tier` and `role`. Declared once; Machine `disks` and KubernetesNodePool `node_disks` are lists of it (rows 112, 117).
 - `ip_family`: enum `{ ipv4, ipv6 }`, the one family of an address, pool, subnet or DHCP scope (canonicalizes `network.ip-address`'s `family`). `ip_families`: enum `{ ipv4, ipv6, dual }`, for a thing that may carry both, such as a gateway (row 102).
 - `address`: an IP string (an `outputs` value, per existing `network.ip-address`).
 
@@ -68,10 +68,10 @@ A typed cross-entity pointer to another **resource**, written as a **URF referen
 (`docs/spec/contracts/identifier-scheme.md` §9): `[//authority/]path[@pin]`, resolving to exactly
 one target — more than one match refuses `ambiguous` rather than narrowing silently.
 
-Authored by handle (`cexample/orders-db` — DCM ADR-025 adopting **AEP-124 resource association**),
-resolved to the uuid form (`uuid/<v4>`) at reserve; both ends are the same grammar, and resolution
-tolerates a not-yet-existing target — the resource stays `Requested` until it resolves
-(claim-before-define). The uuid is the target's frozen **identity** (ADR-051); a consumer needing
+Authored by handle (`cexample/orders-db`; the **AEP-124 resource association** pattern, see the
+standards register), resolved to the uuid form (`uuid/<v4>`) at reserve. Both ends are the same
+grammar, and resolution tolerates a not-yet-existing target: the resource stays `Requested` until it
+resolves (claim-before-define). The uuid is the target's frozen **identity** (ADR-051); a consumer needing
 revision exactness pins with `@version` or `@sha256:<hex>` — ADR-051's grammar, carried verbatim as
 the URL's pin axis. A federated target carries its authority (`//state.mn/estate/…`, ADR-038 §10),
 and a type constraint rides as a query term (`?resource_type==Machine.VM`).
@@ -84,9 +84,8 @@ targets:
 resolved_ref:  uuid/4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44@sha256:…   # after reserve
 ```
 
-The former six-field object (`target_handle`/`target_uuid`/`resource_type`/`target_version`/
-`target_digest`/`target_authority`) is **removed** — every field became an axis of the one URL.
-Distinct from a `data_reference` (DCM ADR-012), which points at immutable reference-data.
+Distinct from a `data_reference` (`registry/data-reference.schema.json`), which points at immutable
+reference-data.
 
 ### 2.6 `Condition` (status)  *(adopt OSAC/K8s vocabulary)*
 ```json
@@ -99,33 +98,33 @@ Distinct from a `data_reference` (DCM ADR-012), which points at immutable refere
 ### 2.7 `Timestamp`
 RFC 3339 string. Standard realized fields: `create_time`, `update_time`, `last_transition_time`.
 
-## 3. Consistency sweep — current registry (2026-06-26)
+## 3. Consistency sweep — current registry
 
-How the existing types express shared concepts today, and the drift to normalize:
+How the classes express the shared compute shape today:
 
-| Type | compute sizing | naming notes |
+| Class | compute sizing | naming notes |
 |---|---|---|
-| `Machine.VM` | `vcpu` + `memory.size` (Quantity) + `disks[]` | `vcpu` ≠ canonical `cpu.count` |
-| `KubernetesNodePool` | `node_resources` — ComputeResources per pool record (the cluster carries no pools — ruling 072) | uses the shared shape |
-| `Database` | `resources` block | a *third* spelling of cpu/memory |
-| `IPAddress` | — | `family` ≠ canonical `ip_family` |
+| `Machine` (and `Machine.VM`, `Machine.BareMetalHost`) | `cpu.count` + `memory.size` (Quantity) + `disks[]` | the canonical names, declared as elements |
+| `KubernetesNodePool` | `node_resources` — `$defs/ComputeResources` per pool record (the cluster carries no pools — ruling 072) | uses the shared shape by `$ref` |
+| `Database` | `resources` — an object in the shared compute shape, declared inline | the canonical names, not a `$ref` |
+| `IPAddress` | — | `ip_family`, the canonical name |
 
-**Findings:** CPU/memory is expressed **three different ways** (`vcpu`/`memory`, the pool record's `node_resources`,
-`resources`); no shared `ComputeResources`. `family` vs the canonical `ip_family`. Outputs are already
-consistently `snake_case` (`ip_address`/`api_url`/`console_url`/`connection_string`) — good.
+**Findings:** compute sizing uses the canonical names everywhere; `Machine` and `Database` declare the
+shape inline rather than by `$ref`. Outputs are consistently `snake_case` (`ip_address`/`api_url`/
+`console_url`/`connection_string`).
 
 **Normalization plan (additive, MINOR bumps; no breaking renames until a MAJOR):**
 1. Define `ComputeResources` + `Quantity` + `ip_family` here (this doc) and as `$defs` the type specs `$ref`. **Quantity is done** (row 097): `common-elements.schema.json#/$defs/quantity` for every size and `#/$defs/cpu_quantity` for every CPU request; no class declares a size pattern of its own, except an offer that narrows one (Template.Application.AcmeThreeTier). **UUIDs are done** (row 098): every uuid field `$ref`s `#/$defs/uuid_v4` or `#/$defs/uuid_v7`, by the version rule in identifier-scheme §2.1.
-2. New types (`Machine.BareMetalHost`, `StorageCluster.Ceph`, …) use the canonical shapes from day one.
-3. Existing types add the canonical shape alongside the legacy field (deprecate the synonym), converging at the next MAJOR.
+2. New types use the canonical shapes from day one.
+3. A class that declares a shared shape inline moves to the `$ref` at its next MINOR.
 
 ## 4. New types — apply the sweep up front
 
 The infrastructure types in `resource-type-data-sources.md` MUST use these canonical elements:
-`BareMetalInstance` discovered inventory → `ComputeResources` + `Quantity` (RAM) + `StorageCapacity`
-(disks); `CephCluster` capacity → `Quantity`; `AddressService`/`Gateway` → `cidr`/`ip_family`; every
-type's status → `Condition[]`. Vendor-exclusive elements (BMC-specific extensions, vendor SNMP MIBs) stay out of the portable
-spec (SPEC-DESIGN-REQUIREMENTS §17) and live only in the extension surface.
+`Machine.BareMetalHost` discovered inventory → `ComputeResources` + `Quantity` (RAM) + `StorageCapacity`
+(disks); `StorageCluster` capacity → `Quantity`; `AddressService`/`NetworkGateway` → `cidr`/`ip_family`;
+every type's status → `Condition[]`. Vendor-exclusive elements (BMC-specific extensions, vendor SNMP MIBs)
+stay out of the portable spec (SPEC-DESIGN-REQUIREMENTS §17) and live only in the extension surface.
 
 ## 5. Component granularity — data element *and* entity (both)
 
@@ -136,34 +135,32 @@ supports **both at once** (SPEC-DESIGN-REQUIREMENTS §26):
   "64GB"`, `cpu.count: 16`) and MAY carry a structured inline inventory (`memory.modules[]`, `disks[]`).
   A consumer that only needs totals reads these; the **portable contract never requires** the component
   breakout.
-- **First-class entity (optional).** A `NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (DCM ADR-013 — the control plane is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
-  by **`composition_visibility`** (`opaque|transparent|selective`, `docs/spec/foundations/service-dependencies.md`
-  §11d): `opaque` → rollup only; `transparent` → every component an entity; `selective` → the org
-  picks which.
+- **First-class entity (optional).** A component Base `contained_by` the parent, filed under the
+  `hardware` usage group (row 084): `NetworkInterface` and `BMC`, which the control plane configures,
+  and the inventory Bases `Processor`, `GPU` and `StorageDevice`, which are observe-only
+  (SPEC-DESIGN-REQUIREMENTS §38). Memory has no component Base; its capacity is a rollup attribute of the
+  host. Whether component entities exist is governed by **`composition_visibility`**
+  (`opaque|transparent|selective`, `docs/spec/foundations/service-dependencies.md` §11d): `opaque` →
+  rollup only; `transparent` → every component an entity; `selective` → the org picks which.
 
-**The relationship (the keystone):** where a component *is* a kept entity, it is `contained_by` the
-parent and reconciles against the parent's rollup. Post-DCM ADR-013 the only such component is
-`NetworkInterface` (the control plane configures it — bond/bridge); a host's `nics[]` rollup and its
-`NetworkInterface` entities describe the same interfaces, and a mismatch is **drift** —
-surfaced with provenance, never silently reconciled away. This is the same `transparent` composition
-that registers sub-resources as control-plane entities (service-dependencies §11d), applied below the device
-boundary. For memory/CPU/disk/GPU there is **no component entity** to reconcile against: capacity is a
-rollup *attribute* of the Machine host (`memory.size: "64GB"`, `cpu.count: 16`), full stop — the sum is
-never re-derived from parts because the parts are out of scope (DCM ADR-013).
+**The relationship (the keystone):** where a component *is* an entity, it is `contained_by` the
+parent and reconciles against the parent's rollup. A host's `nics[]` rollup and its `NetworkInterface`
+entities describe the same interfaces; its `cpu` rollup and its `Processor` records describe the same
+sockets. A mismatch is **drift**, surfaced with provenance, never silently reconciled away. This is the
+same `transparent` composition that registers sub-resources as control-plane entities
+(service-dependencies §11d), applied below the device boundary. The rollup is never re-derived from the
+parts: it is the parent's own attribute (`memory.size: "64GB"`, `cpu.count: 16`), and the parts, where
+modeled, are what it is checked against.
 
 **Why the rollup is always present** — it lets a homelab and an enterprise alike declare a host with
-just its aggregate capacity, which is all placement needs. If UDLM ever needs to asset-track every
-DIMM/GPU as a lifecycle entity, that is the **deferred discovery-archetype** path (DCM ADR-013 — a
-discovered-only asset outside the request catalog, or an external DCIM information-provider), *not* a
-`provisioning` component type. The rollup still matches the adopted standards: Redfish exposes
-`ComputerSystem.MemorySummary.TotalSystemMemoryGiB` and Metal3 `status.hardware.ramMebibytes`; the
-per-DIMM `/Memory/<id>` resources those standards also expose stay on the discovery/DCIM side of that
-boundary.
+just its aggregate capacity, which is all placement needs. The rollup matches the adopted standards:
+Redfish exposes `ComputerSystem.MemorySummary.TotalSystemMemoryGiB` and Metal3
+`status.hardware.ramMebibytes`.
 
 ### 5a. Identity — distinguishing instances of the same type (SPEC-DESIGN-REQUIREMENTS §27)
 
 Two identical 32 GB DIMMs, eight same-model drives — all the same type, size, often the same use. To
-keep them individually addressable, every component (whether a `Hardware.*` entity or an inline
+keep them individually addressable, every component (whether a component entity or an inline
 `modules[]`/`disks[]` element) carries the canonical **`Identity`** block, defined once as
 `common-elements.schema.json#/$defs/identity` (row 102). A class `$ref`s it and declares its own extra
 discriminators beside it, such as `wwn` on a drive or `mac_address` on an interface:
@@ -207,20 +204,20 @@ discovered-first entry) and SPEC-DESIGN-REQUIREMENTS §28 (ingest-raw-then-adopt
 
 ## 7. `device_class` — device implementation (hardware device classes)
 
-A `Hardware.*` component is the **device/component layer** and may be physical, virtualized, passed
+A hardware component Base is the **device/component layer** and may be physical, virtualized, passed
 through to a guest, a slice carved from a physical parent, or a composite built from several interfaces.
 The canonical `device_class` discriminator (with `partition_mechanism`, `aggregation`/`bridge`, and a
-`parent_device` **or** `lower_layer` reference) keeps all of these expressible in the **same** five
-`Hardware.*` types, so the whole device tree — physical → slices, and physical → aggregate → bridge →
-sub-interface — is traversable.
+`parent_device` **or** `lower_layer` reference) keeps all of these expressible in the **same** component
+Bases (`NetworkInterface`, `Processor`, `GPU`, `StorageDevice`). So the whole device tree is traversable:
+physical → slices, and physical → aggregate → bridge → sub-interface.
 
 ```yaml
 device_class: physical          # physical | virtual | passthrough | partition | aggregate | bridge
 partition_mechanism: sr_iov     # OPTIONAL; only when device_class=partition: sr_iov | mediated | mig |
                                # vlan | macvlan | …  (the slicing mechanism; extensible)
-# parent_device: a `references` relationship to the ONE parent Hardware.* entity (1→N) —
+# parent_device: a `references` relationship to the ONE parent component entity (1→N) —
 #   REQUIRED when device_class ∈ {passthrough, partition}.
-# lower_layer:   a `references` relationship to the MANY member Hardware.* entities (N→1) —
+# lower_layer:   a `references` relationship to the MANY member component entities (N→1) —
 #   REQUIRED when device_class ∈ {aggregate, bridge}. RFC 8343 lower-layer-if.
 ```
 
@@ -233,14 +230,15 @@ partition_mechanism: sr_iov     # OPTIONAL; only when device_class=partition: sr
 | `aggregate` | a **composite of many** interfaces (N→1) | **bond / LACP LAG** (802.1AX) | `lower_layer` → the member NICs |
 | `bridge` | a **software L2 bridge over many** ports (N→1) | **Linux bridge / OVS bridge** (802.1Q) | `lower_layer` → the bridged ports |
 
-The device-partition mechanism applies to interfaces (GPU partitioning is deferred — GPU is a host capability, DCM ADR-013): an **SR-IOV VF / vETH** =
+The device-partition mechanism, worked on interfaces: an **SR-IOV VF / vETH** =
 `NetworkInterface` `device_class: partition`, `partition_mechanism: sr_iov` (or `vlan`/`macvlan`),
 `parent_device` → the physical NIC. A **bond** = `NetworkInterface` `device_class: aggregate`,
 `aggregation.mode: 802.3ad`, `lower_layer` → its member NICs; a **bridge** =
 `NetworkInterface` `device_class: bridge`, `lower_layer` → the bond (or NICs) it bridges. The
-host L2 stack is thus one chain — `eno1`+`eno2` (physical) → `bond0` (aggregate) → `br0` (bridge) →
-tenant sub-interfaces (partition) — and `parent_device` (1→N) vs `lower_layer` (N→1) are the two
-**methods that relate a derived interface to its foundational components**. Both edges are
+host L2 stack is thus one chain: `eno1`+`eno2` (physical) → `bond0` (aggregate) → `br0` (bridge) →
+tenant sub-interfaces (partition). `parent_device` (1→N) and `lower_layer` (N→1) are the two
+**methods that relate a derived interface to its foundational components**. A vGPU/MIG slice is the
+same shape on `GPU` (`device_class: partition`, `partition_mechanism: mig`). Both edges are
 self-referential `references` relationships (a device → a device of the same class); the §27 `Identity` block still
 distinguishes instances (a VF/vGPU keyed by `location`/index even with no hardware serial). Grounded in
 SR-IOV, the Linux mdev/vGPU + NVIDIA MIG frameworks, IEEE 802.1AX (aggregation), IEEE 802.1Q (bridging),
@@ -268,11 +266,11 @@ Together the three make the estate graph traversable end-to-end from ANY resourc
 `IP → bridge → (lower_layer) bond → (lower_layer) NIC → (connects_to) switch port → (contained_by)
 switch → (depends_on) power feed` — and the reverse walk answers "what goes dark if this feed drops."
 
-**Discovery & drift:** grounded in **IEEE 802.1AB (LLDP)** — the Chassis ID + Port ID TLVs name the peer,
-so `connects_to` enters as **Discovered** state from an LLDP probe (`lldpcli show neighbors`); a mismatch
+**Discovery & drift:** grounded in **IEEE 802.1AB (LLDP)**. The Chassis ID + Port ID TLVs name the peer,
+so `connects_to` enters as **Discovered** state from an LLDP probe (`lldpcli show neighbors`). A mismatch
 between declared cabling and the observed neighbor is **drift** (OBS-001), never silently merged.
 **RFC 8345** (ietf-network-topology) models the same thing as a first-class *link* between two
-*termination-points*; UDLM keeps it as a reference for minimal surface area — promote to a link entity
+*termination-points*. UDLM keeps it as a reference for minimal surface area; promote to a link entity
 only if links ever need their own attributes (cable id, patch panel, medium).
 
 ## 8. Timestamps, notes, and audit-grade recording (normative)
@@ -302,7 +300,8 @@ enforced by pattern in both schemas.
 
 `metadata.notes` is **attributed, timestamped entries** (`{at, author, text}`), never an
 anonymous mutable blob. `author` is a person, an agent+session, or a process uuid (a Process
-Resource that writes a note cites itself — the §6.4 obligation applies to notes too). Editing
+Resource that writes a note cites itself — the provenance obligation for processes,
+resource-service-entities.md §6.4, applies to notes too). Editing
 history rides the store's carrier (git or the four-state store).
 
 ### 8.3 Field-level provenance is profile-implemented, never profile-optional
@@ -346,12 +345,5 @@ Edges carry two tiers of meaning, and each tier has one authoritative field:
 `ConnectsTo`) · `attaches_to` (OASIS TOSCA `AttachesTo`) · `supporting_node` (RFC 8345
 `supporting-node`).
 
-**Prior art considered (2026-07-05):** OASIS TOSCA relationship types + derivation; IETF YANG
-RFC 8343/8345; DMTF CIM associations / Redfish named `Links`; RFC 8288 / IANA link-relation
-registry (mechanism adopted, web-document vocabulary rejected as poor domain fit); CNCF
-Backstage catalog relations (paired vocabulary); ISO/IEC 5962 SPDX + ECMA-424 CycloneDX
-(standardized dependency/relationship vocabularies); Google Zanzibar / SpiceDB (per-type
-declared relations — the model behind Red Hat Project Kessel's relations-api); Kubernetes
-ownerReferences + Service Binding for Kubernetes (grounds `binds_to`/`bound_field`). Red Hat
-OSAC's fulfillment API references objects via named `*_ref` fields with no relation vocabulary
-— UDLM's model is a superset; mapping at the Provider boundary is name↔ref-field.
+**Prior art considered** is recorded once, in `standards-adoption-register.md` § "Prior art": the
+relation-vocabulary survey behind these adoptions and rejections.

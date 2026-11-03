@@ -24,11 +24,11 @@ NUT, Kubernetes Gateway API, RFC 4512).
 
 ## 2. The disposition for a Resource Type (refining §1 of adopted-standards)
 
-A Resource Type's **Intent** (the desired-state a consumer declares + UDLM orchestrates) is genuinely
-UDLM's to custody — it is **absorbed** (that's the registry's job). But the type's **field vocabulary**
-and especially its **Discovered/Realized inventory** are frequently already modeled by a standard, and
-there UDLM **adopts** — references the standard's element names so validation + provenance point at the
-canonical definition, and a standard rev never forces a UDLM schema change.
+A Resource Type's **Intent** (the desired state a consumer declares) is genuinely UDLM's to custody:
+it is **absorbed** (that's the registry's job). But the type's **field vocabulary**, and especially its
+**Discovered/Realized inventory**, are frequently already modeled by a standard. There UDLM **adopts**:
+it references the standard's element names so validation and provenance point at the canonical
+definition, and a standard revision never forces a UDLM schema change.
 
 The clean split, worked on bare metal:
 - **Intent** (provision *this* host, image, role, power target) → **absorb** into the Machine.BareMetalHost `spec`.
@@ -62,11 +62,11 @@ and take OSAC **VM** (`ComputeInstance`) and **Cluster** (`ClusterSpec`) nearly 
 | **PowerFeed** | **NUT** variable namespace (`ups.status` OL/OB/LB, `battery.charge`,`battery.runtime`,`battery.runtime.low`,`input.voltage`,`ups.realpower`,`ups.load`) + **Redfish `PowerSubsystem`/`PowerSupply`** (`CapacityWatts`,`InputPowerWatts`,`LineInputStatus`) — Tier 2 | which hosts a feed protects (intent) | vendor-UPS SNMP |
 | **UPS** | **IEC 62040-3** topology classes + **NUT** variable namespace (`ups.status`, `battery.charge`, `battery.runtime`, `ups.load`, `input.voltage`, `battery.charge.low`/`battery.runtime.low`) + **Redfish `PowerEquipment`/`PowerSupply`** identity/ratings — Tier 1 | identity, rating, battery set, low-battery policy (intent) | vendor SNMP MIBs — provider data |
 
-**Net coverage:** reusable definitions exist for all 8 types in the table (VM, Cluster,
-BareMetalHost, Gateway, and DirectoryService have OSAC/heatmiser sibling-project sources;
-StorageCluster, AddressService, and PowerFeed reference industry standards directly). dcm-project's
+**Net coverage:** reusable definitions exist for every type in the table. VM, Cluster,
+BareMetalHost, Gateway and DirectoryService have OSAC/heatmiser sibling-project sources.
+StorageCluster, AddressService, PowerFeed and UPS reference industry standards directly. dcm-project's
 service-type scope *explicitly excludes* bare metal, storage, networking, DHCP/DNS, identity, and
-power/facility — so for those the adoption target is the **industry standard**, not a sibling project.
+power/facility, so for those the adoption target is the **industry standard**, not a sibling project.
 
 ## 5. The reference + vendor-extension mechanism (already in the registry)
 
@@ -133,7 +133,7 @@ it, not a second verdict.
 | k8snetworkplumbingwg NetworkAttachmentDefinition | Apache-2.0 | compatible_reference | attachable-network concept (VirtualNetwork) |
 | libvirt network XML docs | **LGPL-2.1+** | **reference_only** | forward-mode *vocabulary* only; don't vendor libvirt docs/text |
 
-**TODO when defining the types:** verify the three `**verify**` licenses (OSAC, heatmiser repos) and
+**TODO when defining the types:** verify the two `**verify**` licenses (the OSAC and heatmiser repos) and
 record the confirmed value in each type's `adopts[]` entry.
 
 **Volume** (2026-07-07, #271) — Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume; the consumable volume distinct from StorageCluster (the cluster provisioner) and the host-local StoragePool/Dataset layer.

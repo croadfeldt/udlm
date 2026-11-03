@@ -16,7 +16,7 @@ by its subject (e.g. "Add the Knowledge family to the meta-schema", "Adopt FOCUS
 PRs to roughly ≤2–3k lines; if a subject is larger, split it along logical boundaries into a sequence of
 independently reviewable, subject-scoped PRs rather than forcing one oversized change. Prefer logical
 boundaries over size-driven cuts, and never bundle unrelated subjects. Lead every PR description with a
-short **Why** (the rationale), linking the design note or DCM ADR when one exists.
+short **Why** (the rationale), linking the design note or register row when one exists.
 
 ## Write for a reader who wasn't there (DOC-001 — rule #1 for every document)
 
@@ -28,13 +28,13 @@ not in the room can read it cold and repeat the decision back at a whiteboard.
 The standard, concretely:
 
 - **Context sections read as narrative, not notation.** Name the problem the way the industry
-  names it (the fragile-base-class problem, a lockfile, blue/green deployment), say why the
-  question came up, and say what the stakes are — in ordinary sentences, before any rule-ID,
+  names it (the fragile-base-class problem, a lockfile, blue/green deployment). Say why the
+  question came up and what the stakes are, in ordinary sentences, before any rule-ID,
   type name, or internal shorthand appears.
-- **Decisions state the rule and what it means in practice**, in that order: the readable
-  sentence first ("organizations may pin exactly, and the cost is a visible debt list, not a
-  fork"), the precise gate-enforceable contract language with it — both are requirements, and
-  when they fight, add explanatory words; never remove precision.
+- **Decisions state the rule and what it means in practice**, in that order. The readable
+  sentence comes first ("organizations may pin exactly, and the cost is a visible debt list, not a
+  fork"), with the precise gate-enforceable contract language beside it. Both are requirements;
+  when they fight, add explanatory words and never remove precision.
 - **References carry their gist** — never a bare "see ADR-NNN"; one line on what it decided.
 - **Jargon is introduced, not assumed**: the first use of an internal term in a document gets
   a clause saying what it is.
@@ -54,11 +54,11 @@ Concretely:
 
 - **Background belongs in foundational documents, referenced — not inlined.** A definition,
   primer, or prior decision a reader needs for context lives in its home document; this one links
-  to it with a one-line gist and does not reproduce it. Every document opens with an on-ramp — a
+  to it with a one-line gist and does not reproduce it. Every document opens with an on-ramp: a
   **"Background — read first"** block (ADRs) or a *Prerequisites / read-first* pointer (other
-  docs): the foundational reading a third party needs, each cited once with what it settles,
-  labeled so a reader who already has the context skips it. Foundational material is a *denoted
-  reading path*, not inlined prose.
+  docs). The on-ramp lists the foundational reading a third party needs, each item cited once with
+  what it settles, and is labeled so a reader who already has the context skips it. Foundational
+  material is a *denoted reading path*, not inlined prose.
 - **Complete as *minimally* needed.** Include exactly what moves the decision or the task, and cut
   everything else — including a point another section already made, and rhetorical flourish.
   Precision is never cut; restatement and emphasis are.
@@ -67,8 +67,8 @@ Concretely:
   *points to* the schema, it does not reproduce it. Mode-blending is the main source of bloat.
 
 **How the standards align (so they are one, not competing):** DOC-001 (above) supplies the
-*orientation* obligation — a cold reader must be able to repeat the decision back; the *aligning
-principle* supplies the *minimality* obligation — serve that with an on-ramp and gist-carrying
+*orientation* obligation: a cold reader must be able to repeat the decision back. The *aligning
+principle* supplies the *minimality* obligation: serve the reader with an on-ramp and gist-carrying
 references, never with inlined re-teaching or restatement. MADR/Nygard supply the ADR shape
 (Context / Decision / Consequences, one decision each); Diátaxis supplies the mode discipline; and
 decision records are **immutable once Accepted** — superseded, not edited. The ADR specialization
@@ -77,19 +77,20 @@ of this standard is `docs/adr/README.md` § "How these ADRs are written."
 ## The spec is the source of truth (DOC-002 — every change starts there)
 
 The normative text under `docs/spec/` is the model. Everything else is built from it and must
-agree with it: the schemas in `registry/*.schema.json`, the gates in `tests/`, the generated
-artifacts in `registry/generated/`, the worked examples, the read models and tools, the consumer
-manifests, and the explanatory documents (`registry/*.md`, `docs/research/`, `docs/flows/`, the
-ADR register). A change is therefore made in this order, in one PR: the rule in its spec home with
-its ID; the schema that encodes it; the gate that enforces it; the examples that demonstrate it;
-the tools, generated artifacts and documents that describe it. A PR that changes a schema, a gate
+agree with it. That means the schemas in `registry/*.schema.json`, the gates in `tests/`, the
+generated artifacts in `registry/generated/`, the worked examples, the read models and tools, the
+consumer manifests, and the explanatory documents (`registry/*.md`, `docs/research/`,
+`docs/flows/`, the ADR register). A change is therefore made in this order, in one PR. First the
+rule in its spec home with its ID; then the schema that encodes it; then the gate that enforces it;
+then the examples that demonstrate it; then the tools, generated artifacts and documents that
+describe it. A PR that changes a schema, a gate
 or a tool with no spec sentence behind it is incomplete, and so is one that changes the spec and
 leaves a derived surface saying the old thing. The review sweep checks both directions.
 
 | ID | Rule |
 |---|---|
 | `DOC-002` | **The spec is the source of truth; every other surface is derived from it and kept in step.** A normative change lands in `docs/spec/` first, with a rule ID in its registered home, and the same PR brings every derived surface into line: schema, gate, generated artifact, example, tool, read model, consumer manifest, and explanatory document. A derived surface may not state a rule the spec does not, nor contradict one it does. Maintainer ruling 2026-09-27 (register row 077). |
-| `DOC-003` | **A spec example says what it is.** Every YAML example under `docs/spec/` begins with `# schema: <file>[#pointer]` — it is an instance of that schema and may use only fields the schema allows (values are not checked, so placeholders are fine) — or `# illustrative` — it shows a payload or shape no schema governs. An example that shows fields no schema carries teaches readers to write records CI rejects. Gate: `tests/check_doc_examples.py`; the examples present when it landed are baselined by content hash and the baseline only shrinks. |
+| `DOC-003` | **A spec example says what it is.** Every YAML example under `docs/spec/` begins with `# schema: <file>[#pointer]` or `# illustrative`. The first means it is an instance of that schema and may use only fields the schema allows (values are not checked, so placeholders are fine). The second means it shows a payload or shape no schema governs. An example that shows fields no schema carries teaches readers to write records CI rejects. Gate: `tests/check_doc_examples.py`; the examples present when it landed are baselined by content hash and the baseline only shrinks. |
 
 ## Terminology discipline (TERM-001)
 
@@ -105,13 +106,13 @@ copy of the check; the term list belongs upstream, where the ruling was made.
 
 | Rule | Statement |
 |---|---|
-| `TERM-001` | A term retired by a ruling MUST NOT appear in the repository's living text (tracked `.md`/`.yaml`/`.json`/`.py`/`.sh` files). It MAY appear on a line that documents the change itself — the line carries a history marker (*formerly*, *renamed*, *superseded*, *retired*, *no longer*, *deprecated*, …) — or in a file exempted **for that specific term** because recording it is the file's purpose (the rules table, the agent context file, the enforcement code that refuses the retired surface, an immutable instance revision). Exemptions are per file **and** per rule: a file that legitimately names one retired term is not thereby licensed to reintroduce another. The retired-term table is `tests/check_terminology.py`; grow it with the ruling that retires a term. |
+| `TERM-001` | A term retired by a ruling MUST NOT appear in the repository's living text (tracked `.md`/`.yaml`/`.json`/`.py`/`.sh` files). It MAY appear on a line that documents the change itself, where the line carries a history marker (*formerly*, *renamed*, *superseded*, *retired*, *no longer*, *deprecated*, …). It MAY also appear in a file exempted **for that specific term** because recording it is the file's purpose: the rules table, the agent context file, the enforcement code that refuses the retired surface, an immutable instance revision. Exemptions are per file **and** per rule: a file that legitimately names one retired term is not thereby licensed to reintroduce another. The retired-term table is `tests/check_terminology.py`; grow it with the ruling that retires a term. |
 
 ## Document the why
 
-Every non-trivial change records its rationale, not just its diff: a design note under `docs/`, an
-update to a tenet/principle in `docs/spec/principles/`, or — for a decision — a pointer to the relevant
-DCM Architecture Decision Record (`architecture/adr/` in the DCM repo). Don't land a contract change
+Every non-trivial change records its rationale, not just its diff. That is a design note under
+`docs/`, an update to a tenet/principle in `docs/spec/principles/`, or, for a decision, a row in the
+decisions register (`docs/adr/README.md`, dated, newest on top). Don't land a contract change
 without the why; a reviewer should be able to reconstruct *why* from the repo, not just *what*.
 
 ## Registry changes (valid-by-construction)
@@ -121,13 +122,14 @@ Every registry entry MUST validate against its meta-schema — run `python3 regi
 or provider matrix includes a worked example that passes the gate. Version per `registry/VERSIONING.md` — including the **publish law** (ADR-051): the uuid is frozen identity and never changes; any content change bumps the version (≥ REVISION), and a published (identity, version) is never republished with different bytes. Immutable records (layers, decision records, audit records, manifests) change by superseding, never by editing.
 `registry/tools/compat-check.py` enforces that the declared bump matches the change; `tests/check_identity_integrity.py` enforces the identity/publish rules.
 
-**A new resource type also meets the base standard** — SPEC-DESIGN rule 36, the eleven expectations
-(a–k): standards cross-walk with documented exclusions, typed Realized outputs or exempt-by-family,
-minimal required surface, references-not-strings, declared relationship surface, lifecycle
-completeness, brownfield instantiability, credential/sensitive discipline, an observability
-position, a *current* worked example, and **corpus use cases** (`use-cases/`) covering the six
-capability axes: usage, migration, rehydration, portability, sovereignty, tenancy. The type PR and
-its use-case PR travel together; a type without its UCs is not done.
+**A new resource type also meets the base standard**: SPEC-DESIGN rule 36, the twelve expectations
+(a–l). They are: a standards cross-walk with documented exclusions; typed Realized outputs or
+exempt-by-family; a minimal required surface; references-not-strings; a declared relationship
+surface; lifecycle completeness. Then: brownfield instantiability; credential/sensitive discipline; an
+observability position; a *current* worked example; a plain-English `context` block; and **corpus use
+cases** (`use-cases/`). The use cases cover the six capability axes: usage, migration, rehydration,
+portability, sovereignty, tenancy. The type PR and its use-case PR travel together; a type without
+its UCs is not done.
 
 ## The review sweep — what every PR is checked against
 
@@ -144,10 +146,10 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/gu
 **Automated (CI).**
 - **Valid by construction** — `registry/tools/validate.py` + `tests/validate_registry.py` (`ADOPT-001`,
   `$id`↔version). Every type/instance/provider matrix passes with a worked example.
-- **Rule-IDs — naming + registry (ADR-028)** — every normative rule carries a `PREFIX-NNN` ID;
-  **one prefix = one family = one home file**, and the prefix is **registered in
-  `registry/rule-id-registry.yaml` before use**; IDs are immutable once published (retire + supersede,
-  never repoint); a family that legitimately spans files uses `additional_homes` (sanctioned
+- **Rule-IDs — naming + registry (ADR-028)** — every normative rule carries a `PREFIX-NNN` ID.
+  **One prefix = one family = one home file**, and the prefix is **registered in
+  `registry/rule-id-registry.yaml` before use**. IDs are immutable once published (retire + supersede,
+  never repoint). A family that legitimately spans files uses `additional_homes` (sanctioned
   co-definition), never a duplicate ID. `check_single_source.py` (registry-backed, CI-wired) fails on an
   unregistered prefix, a definition outside its home, or a colliding ID.
 - **Single source** — `check_single_source.py` + `check_definition_single_source.py`: one rule / one
@@ -175,10 +177,11 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/gu
   non-normative (excluded from the identity digest), so refreshing it never forces a version bump.
 
 **Judgment (reviewer + author self-check).**
-- **Scope — DCM vs UDLM (the peer test, `docs/adr/ADR-008`):** *could an independent conformant peer decide
-  this differently and still be valid?* **Yes → DCM** (Policy / implementation); **No → UDLM** (the portable
-  substrate). Portable data and *declarative* constraints are UDLM; anything computed, negotiated, or
-  executed is DCM. Putting implementation mechanism into the portable model is a finding.
+- **Scope — the control plane vs UDLM (the peer test, `docs/adr/ADR-008` — the UDLM/control-plane boundary).**
+  Ask: *could an independent conformant peer decide this differently and still be valid?* **Yes → the control
+  plane** (Policy / implementation); **No → UDLM** (the portable substrate). Portable data and *declarative*
+  constraints are UDLM; anything computed, negotiated, or executed is the control plane's. Putting
+  implementation mechanism into the portable model is a finding.
 - **Reduce to existing (tenet T7):** does this coin a net-new mechanism (a "module", a new envelope, a
   parallel type)? If so, the *Why* must show that no existing mechanism — classification, profiles,
   capability declaration, conformance tier, references, edges — composes to cover it.
@@ -196,7 +199,7 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/gu
   it ships with its Use Cases, its in-spec example, and a flow. The minimums:
   - **Use Cases — 2–3:** a **positive** (happy path), a **negative** (a refusal / must-reject), and a
     **composite** where the type genuinely composes with others. Intent types get bespoke UCs; observed /
-    inventory types (Hardware.\*, Facility.\*, Identity.\*) lean on the shared *estate-observation* UC.
+    inventory types (the `hardware`, `facility` and `identity` groups) lean on the shared *estate-observation* UC.
   - **Example — 1+ in `spec.examples`** (ADR-055, gated by `check_spec_examples.py`), not a side file.
   - **Flow — 1 bespoke** lifecycle flow (failure branches shown inline) + the **shared composite** flow for
     the multi-resource story (not duplicated per spec) + a **separate negative/rollback flow only where the
@@ -207,10 +210,10 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/gu
   paraphrase a rule into a contradiction. The exemplar: `uc-10-dynamic-rehydration` once flatly said "UUIDs
   are preserved," contradicting **`RHY-005`** (UUID preserved *only* on a Faithful restore; a Provider-Portable
   rebuild mints a **new** UUID kept traceable by lineage). A claim that omits its governing rule, or restates
-  it wrongly, is a finding. The *semantic* version of this — does the corpus as a whole cohere with the model
-  — is measured by the **DAV coherence analysis** against this corpus; a per-rule-ID citation-integrity CI
-  gate is buildable once a complete rule-ID definition index exists (today ~3% of citations resolve only by
-  heuristic, too noisy to hard-gate).
+  it wrongly, is a finding. The *semantic* version of this, whether the corpus as a whole coheres with the
+  model, is measured by an assessment tool's coherence analysis against this corpus. A per-rule-ID
+  citation-integrity CI gate is buildable once a complete rule-ID definition index exists; today about 3% of
+  citations resolve only by heuristic, too noisy to hard-gate.
 - **Document the why:** the rationale lives in the repo (design note / tenet / ADR pointer), not just the
   diff.
 
