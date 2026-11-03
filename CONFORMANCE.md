@@ -449,7 +449,8 @@ declaration's `conformance_test_suite_version` (§4.1).
 
 The suite tests itself on every change (`--self-test`): this repository's worked records in
 `registry/examples/` must pass, and every case in `registry/examples/must-reject/` bound to one of these
-rules must be refused for the rule it names. A rule that stopped refusing would turn CI red.
+rules must be refused for the rule it names. A rule that stopped refusing would turn CI red. Every rule
+the suite applies has at least one such case, and the self-test fails if a rule loses its last one.
 
 **What is not in 1.0.0.** The wire-level checklist of §6 (operations issued against an implementation's
 interop surfaces) is the 1.x half of the suite. Until it exists, a declaration states suite 1.0.0 and the

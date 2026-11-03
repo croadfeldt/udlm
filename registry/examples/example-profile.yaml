@@ -1,0 +1,29 @@
+# proves: a profile is a named set of artifacts with a floor, activatable as a unit (profile.schema.json,
+# ADR-007). This is UDLM's worked example of the MECHANISM in the example namespace. The standard
+# postures (homelab, dev, standard, prod, fsi, sovereign) are not UDLM's: they are the UDLM Profile Set
+# (croadfeldt/udlm-profiles), and an estate authors its own in its own namespace (row 140).
+record_type: profile
+uuid: 3f6a9c2e-7b1d-4e8f-9a0c-5d2b4e6f8a1c
+handle: cexample/profile/baseline
+conforms_to: udlm/0.1
+name: Example baseline profile
+description: The smallest profile that exercises every required mechanic end to end. Same architecture, types
+  and wire contracts as any stricter profile; only the required floor differs.
+version: 1.0.0
+status:
+  state: active
+contains:
+- ref: estate/policy/structural-validation
+  state: required
+- ref: estate/policy/tenant-isolation
+  state: required
+- ref: estate/audit/append-only-log
+  state: required
+- ref: estate/lifecycle/four-state-tracking
+  state: required
+- ref: estate/time-sync/causal
+  state: required
+activation:
+  is_builtin: false
+  default: false
+  approved: true

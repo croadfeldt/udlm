@@ -1,0 +1,151 @@
+must_reject:
+  rule: DSP-004
+  gate: conformance
+  because: A request was dispatched with no receipt of what crossed to the provider. Dispatch is zero trust, and
+    the receipt is the only evidence of which elements left the control plane; without it nobody can show a tenant's
+    data stayed home.
+record:
+  record_type: requested_record
+  state: Requested
+  record_uuid: 01a2e7d0-0000-7000-8000-000000000029
+  intent_ref: 01a178b9-bd68-7001-8001-000000000001
+  intent_ref_head: sha256:b693a7748df16fcac9ca0b90e4e578d942e49ca5453b34ab7c078280e8d018c5
+  root_request_uuid: 01a178b9-cd08-7005-8005-000000000005
+  entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  conforms_to: udlm/0.1
+  resource_type: Machine.VM
+  type_version: 2.0.0
+  type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
+  handle: lab/vm/app-01
+  generation: 1
+  origin: declared
+  at: '2026-10-25T09:00:00Z'
+  time_source: dcm-api
+  fields:
+    cpu:
+      count: 4
+      sockets: 1
+      cores_per_socket: 4
+    memory:
+      size: 16Gi
+    guest_os:
+      type: linux-server-9
+      version: '9.6'
+    firmware:
+      type: uefi
+      secure_boot: true
+      vtpm: false
+    networks:
+    - name: eth0
+      vlan: lab/net/vlan-20
+      network_ref: lab/net/dmz
+    disks:
+    - name: root
+      size: 100Gi
+      role: boot
+    placement:
+      location_ref: lab/facility/rack-3
+    run_state:
+      desired_state: running
+  assembly:
+    applied:
+    - source:
+        kind: layer
+        id: lab/layers/tenant-location
+      version: 1.0.0
+      fields:
+      - placement.location_ref
+    - source:
+        kind: policy
+        id: lab/policy/cpu-topology-default
+      version: 1.2.0
+      fields:
+      - cpu.sockets
+      - cpu.cores_per_socket
+    - source:
+        kind: policy
+        id: lab/policy/firmware-baseline
+      version: 1.0.0
+      fields:
+      - firmware.vtpm
+    - source:
+        kind: policy
+        id: lab/policy/network-placement
+      version: 2.1.0
+      fields:
+      - networks[0].network_ref
+    unapplied: []
+    excluded_layers: []
+  dependencies:
+  - edge_type: references
+    target_uuid: 3c5e7a9b-1d2f-4e6a-8b0c-2d4f6a8b0c1e
+    target_handle: lab/facility/rack-3
+    resolved_at: '2026-09-03T14:02:14Z'
+  - edge_type: references
+    target_uuid: 5d7f9b1c-3e4a-4f6b-9c1d-4e6a8b0c2d3f
+    target_handle: lab/net/dmz
+    resolved_at: '2026-09-03T14:02:14Z'
+  provenance:
+    cpu.sockets:
+    - source:
+        kind: policy
+        id: lab/policy/cpu-topology-default
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:14Z'
+    cpu.cores_per_socket:
+    - source:
+        kind: policy
+        id: lab/policy/cpu-topology-default
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:14Z'
+    firmware.vtpm:
+    - source:
+        kind: policy
+        id: lab/policy/firmware-baseline
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:14Z'
+    networks[0].network_ref:
+    - source:
+        kind: policy
+        id: lab/policy/network-placement
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:14Z'
+    placement.location_ref:
+    - source:
+        kind: layer
+        id: lab/layers/tenant-location
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:14Z'
+  policies:
+  - policy: lab/policy/cpu-topology-default
+    version: 1.2.0
+    policy_type: transformation
+    decision: allow
+    fields:
+    - cpu.sockets
+    - cpu.cores_per_socket
+  - policy: lab/policy/firmware-baseline
+    version: 1.0.0
+    policy_type: transformation
+    decision: allow
+    fields:
+    - firmware.vtpm
+  - policy: lab/policy/network-placement
+    version: 2.1.0
+    policy_type: transformation
+    decision: allow
+    fields:
+    - networks[0].network_ref
+  - policy: lab/policy/tenant-quota
+    version: 3.0.0
+    policy_type: validation
+    decision: pass
+    reason: 4 vCPU / 16Gi within the tenant's remaining quota
+  supersedes:
+  - 01a17249-ca68-7001-8001-00d15c000001

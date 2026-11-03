@@ -158,7 +158,7 @@ The platform mandates **no** fixed skew tolerance. Instead:
    | `time.sync_tolerance` (`max_divergence`) | self-declared | self-declared | **PT0.05S** (50 ms) | **PT0.05S** (50 ms) | **PT1S / PT0.001S / PT0.0001S** by activity | per regime |
    | Adopted standard | — | — | FINRA **CAT** | FINRA **CAT** | **MiFID II RTS 25** | the regime's national time standard |
 
-   Keyed to the six canonical profiles (`registry/profiles/`), because a per-profile value table
+   Keyed to the six standard postures of the UDLM Profile Set, because a per-profile value table
    that names anything else is invisible to the reader looking for their profile and to
    `tests/check_profile_tables.py`, which resolves against that set. `homelab`/`dev` are
    self-declared rather than unbounded — a bound is always in effect (`WIR-008`); what varies is
