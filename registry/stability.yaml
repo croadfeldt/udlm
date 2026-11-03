@@ -3,9 +3,12 @@
 #   stable        carries the 1.0 promise: nothing removed, renamed or narrowed inside 1.x. Earned, never
 #                 declared: a part is stable once a running implementation has used it and the conformance
 #                 suite has judged its records (row 144). Nothing is stable yet.
+#   candidate     the paperwork is done and the clock runs: a breaking change needs a register row (GRD-002)
 #   experimental  may change in a minor without deprecation; not part of the 1.0 claim
 #   reference     a document that states no rule, so there is nothing to promise
-# `why` is one short reason, for the reader; it is not checked.
+# `why` is one short reason, for the reader; it is not checked. A candidate row carries `candidate_since`
+# (the date of its register row); a stable row also carries `stable_since` and `evidence` — the conformance
+# report that judged it and how many of its records (GRD-003, GRD-005). The gate checks the dates and the counts.
 parts:
   - part: class:Grouping
     stability: experimental
@@ -481,3 +484,6 @@ parts:
   - part: doc:registry/VERSIONING.md
     stability: experimental
     why: candidate — the versioning law the 1.0 promise rests on; stable once used and validated (row 144)
+  - part: doc:governance/graduation.md
+    stability: experimental
+    why: the ladder itself; stable when a promotion has been made under it

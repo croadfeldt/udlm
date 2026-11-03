@@ -11,9 +11,14 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.16"
+version: "1.0.17"
 
 prefixes:
+  - prefix: GRD
+    name: Graduation
+    home: docs/spec/governance/graduation.md
+    domain: How a part moves from experimental to candidate to stable, and what each stage promises
+    status: active
   - prefix: ACC
     name: Accreditation & authorization
     home: docs/spec/governance/accreditation-and-authorization-matrix.md
