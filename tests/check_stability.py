@@ -10,7 +10,10 @@ one of three words (UDLM-1.0-LOCKDOWN.md §1 ruling 4; VERSIONING.md "Stability 
 
   STB-001  a class, record schema or spec document exists and has no row       -> FAIL
   STB-002  a row names a part that does not exist, or names one twice         -> FAIL
-  STB-003  a row's value is not one of the three words                         -> FAIL
+  STB-003  a row's value is not one of the four words                          -> FAIL
+  STB-004  a candidate class has no worked record, or no `candidate_since` date   -> FAIL (GRD-002)
+  STB-005  a stable row lacks `stable_since`, 90 days as candidate, or evidence of
+           at least 10 records judged by a named conformance report               -> FAIL (GRD-003)
 
 The manifest is the single source. A new class, schema or document is not done until it has a
 row, which is how an unmarked part is kept from riding into 1.0 by accident.
@@ -23,7 +26,9 @@ import yaml
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MANIFEST = os.path.join(REPO, "registry", "stability.yaml")
-VALUES = {"stable", "experimental", "reference"}
+VALUES = {"stable", "candidate", "experimental", "reference"}
+SOAK_DAYS = 90
+MIN_RECORDS = 10
 
 
 def inventory():
@@ -42,6 +47,24 @@ def inventory():
     return parts
 
 
+def date(v):
+    import datetime
+    return datetime.date.fromisoformat(str(v))
+
+
+def worked_classes():
+    """Classes with a state record in the example corpus."""
+    out = set()
+    for f in glob.glob(os.path.join(REPO, "registry", "examples", "*.yaml")):
+        try:
+            for d in yaml.safe_load_all(open(f, encoding="utf-8")):
+                if isinstance(d, dict) and str(d.get("record_type", "")).endswith("_record") and d.get("resource_type"):
+                    out.add(d["resource_type"])
+        except Exception:
+            continue
+    return out
+
+
 def main():
     fails = []
     doc = yaml.safe_load(open(MANIFEST, encoding="utf-8")) or {}
@@ -58,6 +81,23 @@ def main():
             fails.append(f"STB-002 {key}: names nothing in the registry or docs/spec")
         if val not in VALUES:
             fails.append(f"STB-003 {key}: stability {val!r} is not one of {sorted(VALUES)}")
+    exercised = worked_classes()
+    for r in rows:
+        key, val = r.get("part"), r.get("stability")
+        if val in ("candidate", "stable"):
+            cs = r.get("candidate_since")
+            if not cs:
+                fails.append(f"STB-004 {key}: {val} without candidate_since (GRD-005)")
+            if key.startswith("class:") and key[6:] not in exercised:
+                fails.append(f"STB-004 {key}: candidate with no worked record in registry/examples (GRD-002)")
+        if val == "stable":
+            ss, ev = r.get("stable_since"), r.get("evidence") or {}
+            if not ss:
+                fails.append(f"STB-005 {key}: stable without stable_since (GRD-005)")
+            elif cs and (date(ss) - date(cs)).days < SOAK_DAYS:
+                fails.append(f"STB-005 {key}: only {(date(ss) - date(cs)).days} days as candidate; GRD-003 needs {SOAK_DAYS}")
+            if not ev.get("report") or int(ev.get("records") or 0) < MIN_RECORDS:
+                fails.append(f"STB-005 {key}: evidence needs a report and at least {MIN_RECORDS} records judged (GRD-003)")
     for key, path in parts.items():
         if key not in seen:
             fails.append(f"STB-001 {key} ({path}): no row in registry/stability.yaml")

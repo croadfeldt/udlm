@@ -34,6 +34,11 @@ Three more, from the research in [`docs/research/udlm-1.0-research.md`](../docs/
    Until then it is experimental, whatever it looks like on paper. Every part is experimental
    today; the stable list is earned one part at a time, by a register row each. The 1.0 tag
    covers the stable parts at that time, and the maintainer decides when that set is enough.
+8. **A part graduates by a ladder, not by a declaration** (maintainer, 2026-11-03; row 145). Three
+   stages: experimental, candidate, stable. Candidate needs a worked record, a must-reject case for
+   every rule it carries, readable text, no open blocker, and a register row. Stable needs 90 days
+   as a candidate with no breaking change and a conformance report from a running implementation
+   that judged at least ten of its records. The ladder is `docs/spec/governance/graduation.md`.
 6. **A release candidate with a 30-day hold.** When the exit criteria hold, the repo is tagged
    `udlm/1.0-rc1`. 1.0 is tagged only after 30 days with no breaking change and the suite green;
    a breaking change restarts the clock (OCI's rule). The maintainer's go is recorded as a register
