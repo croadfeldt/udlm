@@ -455,6 +455,13 @@ rules must be refused for the rule it names. A rule that stopped refusing would 
 interop surfaces) is the 1.x half of the suite. Until it exists, a declaration states suite 1.0.0 and the
 record level it covers.
 
+**The 1.0 bar** (maintainer rulings 2026-10-28 and 2026-10-29, `registry/UDLM-1.0-LOCKDOWN.md` §1).
+Suite 1.0.0 is the bar: one command a peer runs against a tree of its own records, versioned with
+the spec. A 1.0 declaration certifies the record contracts and lists the §6 wire-level checklist in
+`exclusions` until the 1.x half exists. The first run is the authors' own deployment, and the
+declaration says so: UDLM 1.0 claims one production deployment, not the two independent
+implementations the IETF and W3C require for their top level.
+
 Implementations MUST run the test suite as part of self-certification. The test
 suite version is recorded in the conformance declaration
 (`conformance_test_suite_version`).
