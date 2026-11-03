@@ -1,10 +1,10 @@
 # UC-20 · Profile resolution and tenant onboarding (DR-B) — the stage
 
-**What this settles:** where a request's profile *comes from* — an instance declares an **approved list plus a
-default**, and (near-term) the default applies instance-wide — and how a tenant is **onboarded atomically**
-against it: identity boundary, profile binding, quotas, and auth claims all persist together or not at all. A
-**lighter** flow — it **builds on [request-realization](request-realization.md)** by supplying the profile
-that flow later resolves policies from. Validation UC for **DR-B**.
+**What this settles:** where a request's profile *comes from*, and how a tenant is bound to it. An instance
+declares an **approved list plus a default**; near-term, the default applies instance-wide. A tenant is
+**onboarded atomically** against it: identity boundary, profile binding, quotas, and auth claims all persist
+together or not at all. A **lighter** flow: it **builds on [request-realization](request-realization.md)** by
+supplying the profile that flow later resolves policies from. Validation UC for **DR-B**.
 
 > **Use Case:** `cross-domain/profile-resolution-capability`. **Persona:** platform-engineer · **Profile:** fsi.
 
@@ -12,17 +12,18 @@ that flow later resolves policies from. Validation UC for **DR-B**.
 from that list (near-term, the default applies instance-wide). Onboarding a tenant binds it to the resolved
 profile and stands up its identity boundary, quotas, and auth claims as a single all-or-nothing transaction. A
 compliance or sovereignty overlay is *composed with* the profile, not folded into it, and profiles are
-compared as capability sets by set-containment — never ranked.
+compared as capability sets by set-containment, never ranked.
 
 ## What this adds over request-realization
-- **Supplies the profile the base flow assumes.** Request-implementation resolves policies from a profile; this
-  UC is where that profile is *resolved* — from the instance's approved list and default.
+- **Supplies the profile the base flow assumes.** request-realization resolves policies from a profile; this
+  UC is where that profile is *resolved*, from the instance's approved list and default. A profile definition
+  carries `approved` and `default` flags (`registry/profile.schema.json`).
 - **Profiles are capability sets, compared by containment.** One profile is "more" than another only if its
-  capability set contains the other's — there is no numeric rank. Comparison is by content, not by tier.
-- **Onboarding is atomic.** Identity boundary, profile binding (a `policy_profile` grouping), quotas, and auth
-  claims either all persist or none do. A partial tenant is never left behind.
+  capability set contains the other's; there is no numeric rank. Comparison is by content, not by tier.
+- **Onboarding is atomic.** Identity boundary, profile binding (a universal group of kind `policy_profile`),
+  quotas, and auth claims either all persist or none do. A partial tenant is never left behind.
 - **Overlays compose, they don't merge in.** A compliance/sovereignty overlay is layered *with* the profile so
-  it stays separable and auditable — not baked into the profile where it would be invisible.
+  it stays separable and auditable, not baked into the profile where it would be invisible.
 
 ## The flow — only what's different
 ```mermaid
@@ -38,15 +39,15 @@ flowchart TD
 Requests from this tenant then run request-realization under the bound profile.
 
 ## Success criteria (from the UC)
-- DCM resolves the instance profile from the platform approved list and default.
-- Tenant onboarding binds the tenant to the resolved profile via a `policy_profile` grouping.
-- Onboarding is atomic — either all steps persist or none do.
+- The control plane resolves the instance profile from the platform approved list and default.
+- Tenant onboarding binds the tenant to the resolved profile via a `policy_profile` group.
+- Onboarding is atomic: either all steps persist or none do.
 - A compliance/sovereignty overlay is composed with the profile, not folded into it.
 - Profiles are capability sets compared by content set-containment, not by rank.
 
 ## Data · Policy · Provider
 - **Data:** the tenant is bound to the instance profile; the compliance overlay is stored composed-but-separate.
-- **Policy:** profile resolution from approved-list + default; an orchestration-flow policy enforces onboarding atomicity.
+- **Policy:** profile resolution from approved list plus default; an orchestration-flow policy enforces onboarding atomicity.
 - **Provider:** the auth provider is configured with the tenant's claims-mapping reference as part of the atomic step.
 
 ## Who provides what, and when
@@ -62,3 +63,4 @@ request existed, exactly as the lifecycle answer describes.
 
 ## Pointers
 - Base flow: [request-realization](request-realization.md). Companion policy-resolution UC: [UC-19](uc-19-policy-resolution-capability.md). UC source: `cross-domain/profile-resolution-capability`.
+- Groups, including the `policy_profile` kind: [`docs/spec/foundations/universal-groups.md`](../spec/foundations/universal-groups.md).

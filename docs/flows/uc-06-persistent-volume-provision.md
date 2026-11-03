@@ -1,47 +1,39 @@
-# UC-06 · Persistent volume provision and attach — the stage
+# UC-06 · Persistent volume bound to a pool — the stage
 
-**What this settles:** the first case with a **dependency in the payload** — a block volume that must attach
-to an existing VM — plus tenant-plane isolation, data residency, and quota accounting. A **lighter** flow —
-it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
+**What this settles:** the first case whose request names another resource. A `Volume` declares its capacity, access mode and reclaim policy, and binds to the capacity source it draws from. The storage provider carves it out, and the realized record publishes what was built. A **lighter** flow: it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `storage/provision-volume-bound-to-pool`. **Persona:** application-team-member · **Profile:** dev.
+> **Use Case:** `storage/provision-volume-bound-to-pool`. **Persona:** platform-engineer · **Profile:** standard.
 
-**In one breath.** A dev team asks for a persistent block volume attached to a VM they already own. The
-storage provider allocates it from a storage class the tenant is authorized to use, attaches it to the target
-VM without cross-tenant exposure, decrements the tenant's quota, and records both the provisioning and the
-attachment — all in the dev profile.
+**In one breath.** A platform engineer requests a persistent volume, the PVC-like unit an application consumes, with a size, an access mode and a reclaim policy. The volume names the pool it binds to; that pool is its single capacity source. The storage provider carves the requested size from it, honors the access mode and reclaim policy, and the volume reaches Realized with those properties readable from its record. The binding edge is first-class data, so the volume rehydrates by replaying the same request against the same pool.
 
 ## What this adds over request-realization
-- **A cross-resource dependency** — the request references an *existing* `Machine.VM`. Placement
-  and reserve must resolve and honor that reference, not just stand up an isolated resource.
-- **Tenant isolation at the storage plane** — a validation policy checks the request against the tenant's storage
-  class eligibility before allocation, and the attach must not expose the volume across tenants.
-- **Quota is state that moves** — the tenant's quota is decremented to reflect consumed capacity; the volume
-  record carries the tenancy and the VM reference.
-- **Two provider interactions, not one** — the storage provider allocates the volume, then attaches it to the
-  target VM. Reserve checks both are satisfiable before either is committed.
+- **A reference in the payload.** The request binds to an existing capacity source. Placement and reserve must resolve and honor that reference, not just stand up an isolated resource.
+- **Declared properties are the build instruction.** `capacity`, `access_mode` and `reclaim_policy` (`Retain` or `Delete`) are typed elements of `Volume`; the provider builds to them.
+- **One capacity source.** In the class, the source is the `provisioned_by` edge (a `depends_on`) to the `StorageCluster` that provisions the volume; a volume cannot outlive it. The use case names a `StoragePool` as the bound source.
+- **Read from the record, not the client.** The bound source and provisioned size are readable from the realized record and its outputs (`volume_handle`, `attached`, `accessible_from`), not inferred client-side.
 
 ## The flow — only what's different
 ```mermaid
 flowchart TD
-  I["Volume intent + reference<br/>to an existing VM"] --> G{"Tenant-isolation gate:<br/>storage-class eligibility"}
-  G -- pass --> AL["Allocate volume in<br/>an eligible storage class"]
-  G -- fail --> X["Stop — not authorized<br/>for that class"]
-  AL --> AT["Attach to target VM<br/>(no cross-tenant exposure)"]
-  AT --> Q["Decrement tenant quota,<br/>record tenancy + VM reference"]
+  I["Volume intent<br/>capacity · access_mode · reclaim_policy<br/>+ bound capacity source"] --> R{"Source resolves and<br/>has the capacity?"}
+  R -- no --> X["Stop — reference unmet<br/>(nothing allocated)"]
+  R -- yes --> AL["Carve the volume<br/>from the bound source"]
+  AL --> REC["Realized record<br/>bound source · provisioned size · outputs"]
+  REC -. "replay the same request" .-> I
 ```
 Everything else (assemble, place, enrich, reserve, commit, converge) is request-realization.
 
 ## Success criteria (from the UC)
-- Volume is created in a storage class the tenant is authorized to consume.
-- Volume is attached to the target VM without cross-tenant exposure.
-- Tenant quota is updated to reflect the new consumption.
-- Provisioning and attachment are recorded in the audit trail.
+- The volume declares a member reference to the pool it binds to; the pool is its single capacity source.
+- The provider carves the requested size from the bound pool and the volume reaches Realized.
+- The declared access mode and retain policy are the realized properties, published on the volume's outputs.
+- The bound-pool identity and provisioned size are readable from the volume's declared outputs, not inferred client-side.
+- The volume rehydrates by replaying the same request against the same pool.
 
 ## Data · Policy · Provider
-- **Data:** the volume record with tenancy and the VM reference; the tenant quota it decrements.
-- **Policy:** tenant-isolation gating on storage-class eligibility, and any data-residency constraint.
-- **Provider:** the storage provider allocates the volume; a service provider attaches it to the VM.
+- **Data:** the `Volume` record (`capacity`, `access_mode`, `volume_mode`, `storage_class`, `reclaim_policy`), its binding edge, and the outputs on its realized record.
+- **Policy:** system defaults only (`system_defaults_only`); no governance overlay in this case.
+- **Provider:** the one eligible storage provider (`single_eligible`) carves the volume and reports the realized record.
 
 ## Who provides what, and when
 
@@ -50,9 +42,10 @@ The lifecycle answer — the personas, what a request contains, what data is add
 [request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
 It holds for every use case.
 
-**This case's delta:** the driving persona is **`application-team-member`**. Everything that persona relies on —
+**This case's delta:** the driving persona is **`platform-engineer`**. Everything that persona relies on —
 layers, tenant binding, policies, provider capability — was declared by the others *before* this
 request existed, exactly as the lifecycle answer describes.
 
 ## Pointers
 - Base flow: [request-realization](request-realization.md). UC source: `storage/provision-volume-bound-to-pool`.
+- The `Volume` class: `registry/classes/resource/storage/volume/_base.yaml`.

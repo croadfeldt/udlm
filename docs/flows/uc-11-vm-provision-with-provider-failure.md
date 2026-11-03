@@ -1,52 +1,64 @@
-# UC-11 · Provider-failure recovery — the stage
+# UC-11 · Provider fails mid-provision — the stage
 
-**What this settles:** what happens when reserve and commit both start but the provider **goes unreachable
-partway through** — how the partial state is classified, decided on (requeue / hold / fail), and never left
-orphaned. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents
-only the recovery this case adds after commit.
+**What this settles:** what happens when a request validates and dispatches, and the chosen provider then
+fails after accepting the work. The failure is **surfaced, typed and actionable**: the request reaches a
+terminal failure state with a resolution, never sits Pending forever, and is never reported Realized over a
+half-built VM. A **lighter** flow: it **builds on [request-realization](request-realization.md)** and
+documents only what this case adds after commit begins.
 
-> **Use Case:** `compute/vm-provision-provider-failure-refused`. **Persona:** application-team-member · **Profile:** standard.
+> **Use Case:** `compute/vm-provision-provider-failure-refused`. **Persona:** platform-engineer · **Profile:** standard.
 
-**In one breath.** Policy passes and the provider accepts the dispatch, but mid-implementation the provider
-becomes unreachable. A recovery policy detects it within the dispatch timeout, classifies the partial state,
-and decides — requeue against another eligible provider, hold pending recovery, or fail and release what was
-allocated — with the decision recorded and no orphaned partial state left behind.
+**In one breath.** Policy passes and the one eligible compute provider accepts the dispatch. Mid-provision the
+backend errors, before the VM reaches Realized. The control plane drives the request to a typed terminal
+failure: a *provider failure*, distinct from a capability mismatch (the provider was eligible and accepted)
+and from a policy denial. The failure names the provider and the stage it failed at, carries a resolution the
+requester can act on, and any partial artifact is reconciled, not left dangling.
 
 ## What this adds over request-realization
 - **The base assumes commit succeeds; this doesn't.** Everything up to and including dispatch is
-  request-realization. The new surface is *after* commit begins and the provider drops.
-- **Bounded failure detection** — unreachability is caught within the **dispatch timeout**, not left pending
-  indefinitely.
-- **A recovery policy with an explicit decision** — it classifies the partial-implementation state and picks one
-  of **requeue / hold / fail**; the decision is audit-recorded.
-- **Multiple eligible providers** — because more than one provider qualifies, requeue onto an alternate is a
-  real option when policy permits.
-- **No orphaned state** — partial allocations are reconciled to complete or cleanly released; the tenant's
-  requested state never shows an indeterminate resource without a matching recovery record.
+  request-realization. The new surface is after commit begins and the provider errors.
+- **Bounded, not indefinite.** The request is never left Pending waiting on a provider that will not finish.
+  The recovery conditions of [four-states §2.5](../spec/foundations/four-states.md) (`TIMEOUT_PENDING`,
+  `INDETERMINATE_REALIZATION`, `COMPENSATION_IN_PROGRESS`, `COMPENSATION_FAILED`) are a `status.conditions`
+  overlay; the lifecycle state itself never changes.
+- **A typed failure, with a resolution.** The terminal state says *provider failure*, names the failing
+  provider and the stage, and offers a resolution. A retryable transient is distinguishable from an
+  unsatisfiable placement.
+- **A recovery policy decides.** The recovery output of
+  [policy-contract §13](../spec/contracts/policy-contract.md) picks the action (`RETRY`,
+  `DISCARD_AND_REQUEUE`, `COMPENSATE_AND_FAIL`, `ESCALATE`, among others); the first matching recovery policy
+  wins.
+- **No orphaned state.** A partial provider artifact is reconciled or released (the release half of
+  [ADR-011](../adr/ADR-011-validate-and-reserve.md)); the intent is never reported Realized when nothing
+  usable exists.
 
 ## The flow — only what's different
 ```mermaid
 flowchart TD
-  C["Commit dispatched<br/>(request-realization)"] --> F{"Provider unreachable<br/>within dispatch timeout?"}
+  C["Commit dispatched<br/>(request-realization)"] --> F{"Provider errors<br/>after accepting?"}
   F -- no --> OK["Realized — normal path"]
-  F -- yes --> R{"Recovery policy<br/>classifies partial state"}
-  R -- requeue --> ALT["Dispatch to another<br/>eligible provider"]
-  R -- hold --> H["Hold pending<br/>provider recovery"]
-  R -- fail --> REL["Release partial<br/>allocations, fail request"]
+  F -- yes --> T["Typed failure: provider failure<br/>provider + stage named"]
+  T --> R{"Recovery policy<br/>(policy-contract §13)"}
+  R -- "RETRY / requeue" --> AGAIN["Try again<br/>(transient)"]
+  R -- "COMPENSATE_AND_FAIL" --> REL["Release partial artifact<br/>terminal failure + resolution"]
+  R -- "ESCALATE" --> H["Hand to a person<br/>with the typed reason"]
 ```
 Everything up to commit (assemble, place, enrich, reserve) is request-realization.
 
 ## Success criteria (from the UC)
-- Provider unreachability is detected within the dispatch timeout, not left indefinitely pending.
-- Partially-allocated resources are either reconciled to a completed state or cleanly released.
-- The recovery-policy decision is explicit and audit-recorded (requeue / hold / fail).
-- If another eligible provider exists and policy permits, the request is requeued automatically.
-- The tenant's requested state never shows a resource in an indeterminate state without a matching recovery record.
+- The request reaches a typed terminal failure state; it is never left Pending indefinitely awaiting a provider that will not finish.
+- The failure is typed as a provider failure, distinct from a capability mismatch and from a policy denial.
+- The intent is never reported Realized over a half-built VM; any partial provider artifact is reconciled, not left dangling.
+- The failure names the failing provider and the stage it failed at, so a retryable transient is distinguishable from an unsatisfiable placement, and carries an actionable resolution.
+- An audit record of the dispatch, the provider failure, and the offered resolution exists.
 
 ## Data · Policy · Provider
-- **Data:** the partial-implementation state, tracked and then reconciled or released; the recovery record.
-- **Policy:** the recovery policy — classify the partial state, choose requeue / hold / fail.
-- **Provider:** the primary accepts dispatch then goes unreachable; an alternate eligible provider may take the requeue.
+- **Data:** the typed terminal failure on the request (provider, stage, resolution), the `status.conditions`
+  overlay while it is in flight, and the audit record.
+- **Policy:** one validation before dispatch (`single_validation`); afterwards the recovery policy classifies
+  the failure and chooses the action.
+- **Provider:** the one eligible provider (`single_eligible`) accepts the dispatch and then fails; the failure
+  mode is `provider_failure`.
 
 ## Who provides what, and when
 
@@ -55,7 +67,7 @@ The lifecycle answer — the personas, what a request contains, what data is add
 [request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
 It holds for every use case.
 
-**This case's delta:** the driving persona is **`application-team-member`**. Everything that persona relies on —
+**This case's delta:** the driving persona is **`platform-engineer`**. Everything that persona relies on —
 layers, tenant binding, policies, provider capability — was declared by the others *before* this
 request existed, exactly as the lifecycle answer describes.
 
