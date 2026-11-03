@@ -1,11 +1,11 @@
 # The convergence lifecycle — one loop under everything
 
-**What this settles:** the single lifecycle model beneath every entity — Resource, Process, Credential, Inventory, Knowledge. There is one **state** (Intent vs Realized), one **act** (Converge — close the gap between them), and two **trigger-classes** (the intent moved, or the target moved). Everything else — provisioning, drift, reconfigure, rehydrate, teardown, day-0/1/2, the familiar entity types — is that model *parameterized*. This is the **stage** telling (croadfeldt/udlm); the engine it runs on is [request-realization](request-realization.md) generalized, and the loop itself is **ADR-006 (convergence control), completed**.
+**What this settles:** the single lifecycle model beneath every entity: Resource, Process, Credential, Inventory, Knowledge. There is one **state** (Intent vs Realized), one **act** (Converge, which closes the gap between them), and two **trigger classes** (the intent moved, or the target moved). Everything else is that model *parameterized*: provisioning, drift, reconfigure, rehydrate, teardown, day-0/1/2, the familiar entity types. This is the **stage** telling (croadfeldt/udlm). The engine it runs on is [request-realization](request-realization.md) generalized, and the loop itself is **ADR-006 (convergence control), accepted**.
 
 The three primitives:
 
 - **Intent** — the declared desired state. Mutable; its values include *exists-as-X* and *absent* (decommission). *(Intent = `absent` reclaims the realized resource; the entity record is retained as `Decommissioned` for audit — the record does not vanish.)*
-- **Realized** — the actual state. `Realized` = reality with an intent behind it; `Discovered` = observed reality with *no* intent.
+- **Realized** — the actual state. `Realized` = reality with an intent behind it; `Discovered` = observed reality with *no* intent. Between Intent and Realized sits `Requested`, the converged request the control plane sends the provider ([request-realization](request-realization.md)); this flow folds it into the act.
 - **Converge** — the one act (a Data · Policy · Provider loop) that drives Realized toward Intent. A **gap** (Intent ≠ Realized) is what it closes.
 
 ---
@@ -31,9 +31,9 @@ stateDiagram-v2
 
 ---
 
-## 2 · Flow through DCM — one convergence pipeline
+## 2 · Flow through the control plane — one convergence pipeline
 
-DCM runs **one** pipeline. Realize and Reconcile share every stage; only the trigger differs. There is no separate "provision" vs "day-2" subsystem — that distinction is a reading, not a mechanism.
+The control plane runs **one** pipeline. Realize and Reconcile share every stage; only the trigger differs. There is no separate "provision" vs "day-2" subsystem — that distinction is a reading, not a mechanism.
 
 ```mermaid
 flowchart TD
@@ -105,7 +105,7 @@ flowchart LR
 | **Process** (backup) | work-product | no | requested | Realized (executed) | completion | bounded |
 | **Knowledge** (Capability) | curated | — | curated | Canonical | deprecation | — |
 
-*The blue rows are one nature (maintained-state) at three timelines — Credential and Inventory are Resource-nature, not their own species. `reconcile` hangs off `nature = maintained-state`, never off duration. (Process `no` is DCM's **1.0 orchestration** view — given enough observability and control levers a running process could be reconciled mid-flight, which softens the work-product/maintained-state line; **post-1.0 follow-up**.)*
+*The blue rows are one nature (maintained-state) at three timelines — Credential and Inventory are Resource-nature, not their own species. `reconcile` hangs off `nature = maintained-state`, never off duration. (Process `no` is the control plane's **1.0 orchestration** view. Given enough observability and control levers a running process could be reconciled mid-flight, which softens the work-product/maintained-state line; a **post-1.0 follow-up**, ADR-032.)*
 
 ---
 

@@ -1,11 +1,11 @@
 # Storage-array maintenance with dependent applications — the stage
 
 **What this settles:** the full operational flow for disruptive maintenance on a shared
-storage array that ten client applications depend on — the decisions, the policies that gate
-each one, the DR preparation and cutover, the ordered quiesce and shutdown, and the recovery
+storage array that ten client applications depend on. It covers the decisions, the policies that
+gate each one, the DR preparation and cutover, the ordered quiesce and shutdown, and the recovery
 paths when something fails mid-way. This is the change-control stage
-([change-control-adoption](change-control-adoption.md) — policy decides the calendar, evidence
-decides the outcome) composed with the dependency machinery the estate already has: the same
+([change-control-adoption](change-control-adoption.md): policy decides the calendar, evidence
+decides the outcome) composed with the dependency machinery the estate already has. The same
 edges that derive shutdown order derive who must move, in what order, before the array may.
 
 > **Use Cases:** `change-control/storage-array-maintenance-ordered`,
@@ -13,13 +13,13 @@ edges that derive shutdown order derive who must move, in what order, before the
 > **Persona:** platform-engineer · **Profile:** prod.
 
 **In one breath.** A breaking change must be adopted on a storage array whose file shares
-serve ten applications; the impact set is *derived* from the dependency graph, not hand-listed;
-each client's own availability policy sorts it into tolerate-the-window or needs-continuity;
-the continuity clients are cut over to a verified DR replica first — a re-bind to the replica's
-declared outputs, the same binding surface everything else uses — the window-tolerant clients
-quiesce in reverse dependency order in batches; only then does the array take its maintenance,
-inside the window, with every step verified; and if verification fails mid-way the flow halts
-resumably with DR still carrying the continuity clients — the failure mode is a recorded,
+serve ten applications. The impact set is *derived* from the dependency graph, not hand-listed.
+Each client's own availability policy sorts it into tolerate-the-window or needs-continuity.
+The continuity clients are cut over to a verified DR replica first: a re-bind to the replica's
+declared outputs, the same binding surface everything else uses. The window-tolerant clients
+quiesce in reverse dependency order, in batches. Only then does the array take its maintenance,
+inside the window, with every step verified. If verification fails mid-way, the flow halts
+resumably with DR still carrying the continuity clients. The failure mode is a recorded,
 recoverable state, never an outage discovered by users.
 
 ## The stage — what this composes (by contract)
@@ -30,10 +30,10 @@ recoverable state, never an outage discovered by users.
 - **The clients:** ten applications (`Container` / `Machine.VM`
   workloads), each carrying its **own availability policy** — the per-client tolerance class
   (window-tolerant or continuity-required) is policy data, not an operator's recollection.
-- **The replica:** a DR-paired array whose shares publish the *same typed outputs* — which is
+- **The replica:** a DR-paired array whose shares publish the *same typed outputs*, which is
   precisely what makes cutover a re-bind rather than a reconfiguration.
 - **The order:** the estate's dependency edges, from which quiesce order (reverse), restart
-  order (forward), and the impact set itself are derived — the shutdown-order machinery,
+  order (forward), and the impact set itself are derived: the shutdown-order machinery,
   reused unchanged.
 
 ## The sequence
@@ -69,9 +69,9 @@ Each phase's contract, in order:
    tolerance classes — is computed from the graph and attached to the plan. Nothing is
    hand-listed; a hand-list would already be wrong.
 2. **DR gate.** *Before:* a plan requires continuity for three clients. *After:* maintenance
-   may not even be *scheduled* until the replica is verified healthy, current, and sized —
-   the fault-domain rule: never take the primary into maintenance while the failover target is
-   unproven.
+   may not even be *scheduled* until the replica is verified healthy, current, and sized.
+   That is the fault-domain rule: never take the primary into maintenance while the failover
+   target is unproven.
 3. **Cutover.** *Before:* replica verified. *After:* the continuity clients consume the
    replica's share outputs; because binding is to declared typed outputs, cutover is a
    re-bind with verification, and rollback is the same operation in reverse.
@@ -84,33 +84,32 @@ Each phase's contract, in order:
    *policy* (not a habit) decides failback vs. adopt-replica-as-primary; the trail records
    the derived orders and every gate verdict end to end.
 
-## What informs each decision — model surfaces, validated 2026-07-25
+## What informs each decision — the model surfaces
 
-The key validation item: every decision below names the exact UDLM surface that informs it,
-resolved against the current registry here and now. Two decisions found real today-gaps —
-filed as issues, not hand-waved. The **policy role** column separates policies that *decide*
-(gate, refuse, select) from policies that *enrich* (supply data other steps read).
+Every decision below names the exact UDLM surface that informs it, as the registry carries it
+today. Two decisions have real gaps, filed as issues rather than hand-waved. The **policy
+role** column separates policies that *decide* (gate, refuse, select) from policies that
+*enrich* (supply data other steps read).
 
 | Decision / step | Model surface read | Status | Policy role — decides or enriches what |
 |---|---|---|---|
-| Impact set (the ten clients) | the entities' `dependencies[]` edges (state records) targeting the shares | **EXISTS** — validated: the estate's edge surface, same as shutdown order | Enriches: none needed — structure supplies the set; a policy may only widen review, never shrink the set |
-| Tolerance split (7 window / 3 continuity) | each client's availability policy (a Policy object `match`ed to the client) | Policy object + match **EXIST**; the tolerance-class vocabulary **PENDING-ADR** | Enriches (`transformation`): stamps each client's class; then Decides which path each takes |
-| DR gate (replica healthy, current, sized) | replica pool's declared outputs: `redundancy_status`, `degraded`, `fault_tolerance_remaining`, `spares_available` — **and the DR-pairing edge naming which pool is the replica** | Health outputs **EXIST** (StoragePool 0.3.x); the DR-pairing relationship **MISSING — issue #250** | Decides (`gating`): maintenance may not be scheduled until the gate passes |
-| Cutover re-bind | replica shares' declared outputs (the [D8.3] binding surface) | Mechanism **EXISTS**; FileShare's surface is **THIN — `mount_uri` only, issue #251** (re-bind possible, share-side verification is not) | Decides (`validation`): cutover verified or rolled back |
-| Client health post-cutover | client types' `run_state` / status outputs | **EXISTS** (VM/Container declared outputs) | Decides: proceed to window or roll back |
-| Window + ceremony | change policy clauses (window, approval, expedite) | **PENDING-ADR** (temporal clause vocabulary — validated absent from policy schema) | Decides: when execution may occur and under what authority |
-| Quiesce / restart order | the same `dependencies[]` edges, reverse and forward | **EXISTS** — derived, batched | Enriches: order derivation; Decides (`validation`) per batch verdict |
-| Post-maintenance verification | array + share declared outputs vs expected | Pool outputs **EXIST**; share-side limited by #251 | Decides (`gating`): nothing restarts onto an unverified array |
-| Failback decision | a declared failback policy (`policy_type: recovery`) | Policy type **EXISTS** in the vocabulary; the failback clause shape **PENDING-ADR** | Decides: return to primary vs promote replica; either outcome recorded |
-| Trail | audit records | **EXISTS** | Enriches: one reconstructible history |
+| Impact set (the ten clients) | the entities' `dependencies[]` edges (state records) targeting the shares | **EXISTS**: the estate's edge surface, the same one shutdown order reads | Enriches: none needed; structure supplies the set. A policy may only widen review, never shrink the set |
+| Tolerance split (7 window / 3 continuity) | each client's availability policy (a Policy object `match`ed to the client) | Policy object and `match` **EXIST** (`registry/policy.schema.json`); the tolerance-class vocabulary has no schema home yet | Enriches (`transformation`): stamps each client's class; then decides which path each takes |
+| DR gate (replica healthy, current, sized) | the replica pool's declared outputs (`usable_capacity`, `redundancy_status`, `fault_tolerance_remaining`, `spares_available`) **and the DR-pairing edge naming which pool is the replica** | Health outputs **EXIST** (StoragePool 0.7.2); the DR-pairing relationship is **MISSING** (issue #250; `Volume.ZFS` has `replica_of`, a pool has nothing) | Decides (`validation`): maintenance may not be scheduled until the gate passes |
+| Cutover re-bind | the replica shares' declared outputs (the [D8.3] binding surface) | Mechanism **EXISTS**; FileShare's surface is **THIN**: `mount_uri` only (issue #251), so a re-bind is possible but share-side verification is not | Decides (`validation`): cutover verified or rolled back |
+| Client health post-cutover | Machine `run_state` and the `observed_run_state` output; Container `endpoint`; the realized record's `status` | **EXISTS** | Decides: proceed to window or roll back |
+| Window + ceremony | the change policy's `schedule` clauses (`window`, `expedite`, `approval`) | **EXISTS** (`registry/policy.schema.json`, ADR-053) | Decides: when execution may occur and under what authority |
+| Quiesce / restart order | the same `dependencies[]` edges, reverse and forward | **EXISTS**: derived, batched | Enriches: order derivation; decides (`validation`) per batch verdict |
+| Post-maintenance verification | array and share declared outputs vs expected | Pool outputs **EXIST**; share-side limited by #251 | Decides (`validation`): nothing restarts onto an unverified array |
+| Failback decision | a declared failback policy (`policy_type: recovery`) | Policy type **EXISTS**; the recovery output (policy-contract §13) has no failback action yet | Decides: return to primary vs promote replica; either outcome recorded |
+| Trail | audit records | **EXISTS** (`registry/audit-record.schema.json`) | Enriches: one reconstructible history |
 
-Summary of the validation: the flow's structural core — edges, orders, pool health outputs,
-binding mechanics, client status, policy and audit machinery — **exists today**. Two
-resource-type gaps are real and filed (#250 the DR-pairing edge, #251 FileShare's thin
-outputs); the remaining pendings are the same change-control vocabulary the corpus family
-demands, already the pending ADR's decision surface. UC 009's success criteria map onto this
-table row-for-row — which is exactly what makes the use case analyzable: when the gaps close,
-the analysis run flips, and the scoreboard shows it.
+The flow's structural core **exists today**: edges, orders, pool health outputs, binding
+mechanics, client status, the window and ceremony clauses, and the policy and audit machinery.
+Two resource-type gaps are real and filed: #250, the DR-pairing edge, and #251, FileShare's
+thin outputs. Two vocabulary gaps remain: the per-client tolerance class and the failback
+clause. UC 009's success criteria map onto this table row for row, which is what makes the use
+case analyzable. When the gaps close, the analysis run flips, and the scoreboard shows it.
 
 ## The invariants
 
@@ -119,11 +118,11 @@ the analysis run flips, and the scoreboard shows it.
 - **Per-client tolerance is policy data.** The split into window-tolerant and
   continuity-required comes from each application's declared availability policy — the plan
   reads it, no one remembers it.
-- **The DR gate precedes scheduling.** An unverified replica doesn't delay the maintenance —
-  it *refuses* it, typed, with the debt staying visibly windowed.
+- **The DR gate precedes scheduling.** An unverified replica doesn't delay the maintenance.
+  It *refuses* it, typed, with the debt staying visibly windowed.
 - **Cutover is a re-bind on declared outputs.** No client reconfiguration, no
-  provider-internal knowledge — which is also why thin output surfaces would make this flow
-  impossible (output adequacy is a prerequisite, per ADR-046).
+  provider-internal knowledge. That is also why thin output surfaces would make this flow
+  impossible: output adequacy is a prerequisite (ADR-046).
 - **Quiesce reverse, restart forward, always batched, always verified.** Order is derived;
   verification gates each batch; failure halts resumably with DR still carrying the
   continuity clients.
@@ -132,10 +131,10 @@ the analysis run flips, and the scoreboard shows it.
 
 ## What UDLM does not decide
 
-How the quiesce/restart jobs execute (DCM Process-family orchestration), how replica sync is
-implemented (provider-native), and how client health is probed (per-application). UDLM
-supplies the graph, the typed outputs, the policies, the debt states, and the trail; DCM and
-the providers execute against them.
+How the quiesce and restart jobs execute (the control plane's Process-family orchestration),
+how replica sync is implemented (provider-native), and how client health is probed
+(per-application). UDLM supplies the graph, the typed outputs, the policies, the debt states,
+and the trail. The control plane and the providers execute against them.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
@@ -153,6 +152,6 @@ the providers execute against them.
 |---|---|
 | Dependency edges → derived order | data-model-core §4 (edge model; ordering edge types) |
 | Typed outputs as the binding/cutover surface | data-model-core §2 [D8.3]; ADR-046 (adequacy prerequisite) |
-| Windows, ceremony, expedite, debt states | change-control family + walkthrough (ADR pending) |
+| Windows, ceremony, expedite, debt states | ADR-053 (change-control policy vocabulary); `registry/policy.schema.json` `schedule`; `docs/examples/change-control-walkthrough.md` |
 | Evidence and promotion/refusal | ADR-046 |
 | Corpus cases | `use-cases/change-control/009`, `/010` |

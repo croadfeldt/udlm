@@ -1,11 +1,11 @@
 # Governed automation, end to end — the consumer journey
 
 **What this settles:** the complete path from a consumer logging in to kick off automation to the audited
-result — showing how **RBAC, policies, and metadata** (role · team · group memberships), a **pre-scan +
-approval-matrix** categorization, **just-in-time credentials**, a **conditional approval / change-window**
-branch, a **pre-flight reservation**, placement + execution, and **post-run reconciliation** all combine.
-It **builds on [request-realization](request-realization.md)** and extends
-[uc-22 (governed automation)](uc-22-governed-automation.md) — where uc-22 is the *govern-the-effect* core,
+result. It shows how these combine: **RBAC, policies, and metadata** (role, team, group memberships), a
+**pre-scan and approval-matrix** categorization, **just-in-time credentials**, a **conditional approval or
+change-window** branch, a **pre-flight reservation**, placement and execution, and **post-run
+reconciliation**. It **builds on [request-realization](request-realization.md)** and extends
+[uc-22 (governed automation)](uc-22-governed-automation.md). Where uc-22 is the *govern-the-effect* core,
 this is the *whole journey* around it.
 
 > **Use Case:** `docs/spec/governance/governed-automation-journey`. **Persona:** application-team-member (consumer) ·
@@ -13,15 +13,16 @@ this is the *whole journey* around it.
 
 **In one breath.** A consumer logs in; their identity resolves to a role, team, and group memberships.
 Policy combines that with each automation's pre-scan **category** and the **approval matrix** the consumer
-belongs to, so they **see only the automation they're entitled to run** — and a parallel policy decides
-**which server groups** they may run it on. They select an automation, target group(s), and parameters; a
+belongs to, so they **see only the automation they're entitled to run**. A parallel policy decides
+**which server groups** they may run it on. They select an automation, target groups, and parameters. A
 second **validation policy** re-checks automation, targets, parameters, quota, sovereignty, and governance,
-and branches: **auto-run · needs approval (SoD) · needs a change window**. Once cleared, a **just-in-time
-credential** is issued — scoped to this consumer and these targets, transient, never exposed; a
-**pre-flight** validates-and-reserves the targets (optionally dry-runs) *before anything is touched*;
-**placement** routes to the right automation platform; it runs (async), returns status + artifacts; a
-**post-run reconciliation** checks the *actual* effect against the *approved* effect and updates the model;
-the credential is released. **Every decision, path, input, and validation is recorded on the audit chain.**
+and branches: **auto-run, needs approval (separation of duties), or needs a change window**. Once cleared,
+a **just-in-time credential** is issued, scoped to this consumer and these targets, transient, never
+exposed. A **pre-flight** validates and reserves the targets (optionally a dry run) *before anything is
+touched*. **Placement** routes to the right automation platform; it runs (async) and returns status and
+artifacts. A **post-run reconciliation** checks the *actual* effect against the *approved* effect and
+updates the model; the credential is released. **Every decision, path, input, and validation is recorded
+on the audit chain.**
 
 ## The flow
 ```mermaid
@@ -57,17 +58,18 @@ flowchart TD
 ```
 
 ## What this adds over request-realization / uc-22
-- **Discovery is policy-gated.** What a consumer can *see* is itself a policy verdict — role + team + groups
+- **Discovery is policy-gated.** What a consumer can *see* is itself a policy verdict: role, team and groups
   (metadata) combined with each automation's **pre-scan category** and the consumer's **approval matrix**.
   You never see what you can't run.
-- **Two policy passes.** Visibility/eligibility at *discovery*, then a full **validation pass** at
-  *submission* (automation + targets + parameters + quota + sovereignty + governance) — declared intent is
+- **Two policy passes.** Visibility and eligibility at *discovery*, then a full **validation pass** at
+  *submission* (automation, targets, parameters, quota, sovereignty, governance). Declared intent is
   re-checked against current policy, not trusted from the menu.
-- **Entitlement ≠ auto-run.** Validation branches to **auto-run / approval (SoD) / change-window** — a
-  bank's elevated actions get a human and a schedule, not silent execution ([uc-16](uc-16-policy-override-approval.md); ADR-053 windows).
+- **Entitlement ≠ auto-run.** Validation branches to **auto-run, approval (separation of duties), or a
+  change window**. A bank's elevated actions get a human and a schedule, not silent execution
+  ([uc-16](uc-16-policy-override-approval.md); ADR-053, windows).
 - **JIT, scoped credentials.** The run authenticates to targets with a **just-in-time** credential bound to
-  *this* consumer and *these* targets, transient and never materialized in the model — least privilege on the
-  *execution*, not a standing account.
+  *this* consumer and *these* targets, transient and never materialized in the model. That is least
+  privilege on the *execution*, not a standing account.
 - **Pre-flight before prod.** Validate-and-reserve the targets (optionally dry-run/simulate) *before* any
   side effect (ADR-011; T6 pre-validated outcomes).
 - **Post-run reconciliation.** The **actual** effect is compared to the **approved** effect; the realized

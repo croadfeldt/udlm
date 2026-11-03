@@ -39,7 +39,7 @@ flowchart TD
 
 ## What UDLM does not decide
 
-The presentation medium and channel of the surface, and any localization — DCM/runtime concerns over
+The presentation medium and channel of the surface, and any localization — the control plane's concerns over
 the surfacing contract UDLM declares (ADR-008). UDLM owns the obligation: root dependency + chain,
 always.
 
@@ -58,6 +58,5 @@ always.
 |---|---|
 | The surfacing constraint over the matrix | [`intent-fulfillment-model.md`](../design/intent-fulfillment-model.md) |
 | The chain it surfaces | [operational-transitive-refusal](intent-fulfillment-operational-transitive-refusal.md) |
-| The silent-partial sibling | [surfacing-mandatory](intent-fulfillment-surfacing-mandatory.md) (UC-009) |
+| The silent-partial sibling | [surfacing-mandatory](intent-fulfillment-surfacing-mandatory.md) (case 009 of the family) |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
-| DCM counterpart | dcm-project/dcm `docs/flows/` |

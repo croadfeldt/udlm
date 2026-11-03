@@ -1,11 +1,11 @@
 # Change-control adoption — the stage
 
 **What this settles:** the operational flow that carries an upstream class change into an
-estate under that estate's own change-management policy — who decides, what gates, and when
-things actually move. The mechanics of *what* changes are settled elsewhere (ADR-045 — atomic
-recompilation, pins, visible debt) and the evidence standard by ADR-046 (blue/green
-typed-output diff); this flow is the calendar and the ceremony around them. It builds on
-[request-realization](request-realization.md); the new twist is that the "request" is the
+estate under that estate's own change-management policy: who decides, what gates, and when
+things actually move. The mechanics of *what* changes are settled elsewhere (ADR-045: atomic
+recompilation, pins, visible debt), and the evidence standard by ADR-046 (the blue/green
+typed-output diff). This flow is the calendar and the ceremony around them. It builds on
+[request-realization](request-realization.md). The new twist is that the "request" is the
 estate's own decision to move forward in time.
 
 > **Use Cases:** `change-control/additive-auto-adopted-continuous`,
@@ -15,11 +15,11 @@ estate's own decision to move forward in time.
 > **Persona:** platform-engineer · **Profiles:** dev / prod / fsi (the regimes vary by profile).
 
 **In one breath.** An upstream change arrives already classified (additive or breaking) with
-its blast radius computed; the estate's change policy — a declared artifact, not a wiki page —
+its blast radius computed. The estate's change policy, a declared artifact and not a wiki page,
 branches on that class and decides the ceremony: adopt automatically, wait for a window, or run
-the full evidence-approval-window-verify sequence; waiting is always visible as typed debt
-(queued, windowed, frozen), scheduling gates decide *when* but never *whether* (no clause can
-waive blue/green evidence for a breaking change), and the adoption itself propagates through
+the full evidence-approval-window-verify sequence. Waiting is always visible as typed debt
+(queued, windowed, frozen). Scheduling gates decide *when* but never *whether*; no clause can
+waive blue/green evidence for a breaking change. The adoption itself propagates through
 downstream records in dependency-derived order, batch by verified batch, leaving one recorded
 trail from classification to closed debt.
 
@@ -47,34 +47,30 @@ flowchart TD
     J -->|fail| I1
 ```
 
-## What informs each decision — model surfaces, validated 2026-07-25
+## What informs each decision — the model surfaces
 
-Each decision node reads a named UDLM surface. Every row below was resolved against the
-current registry (validated here, not assumed); the status column is honest about what exists
-today versus what the pending change-control ADR and the class-implementation P0 phase must
-supply. The **policy role** column states whether a policy *decides* (gates, refuses, selects)
-or *enriches* (adds data other steps read) at that node, and which `policy_type` from the
-policy schema's existing vocabulary carries it.
+Each decision node reads a named UDLM surface. The table names the file that carries each one.
+The **policy role** column states whether a policy *decides* (gates, refuses, selects) or
+*enriches* (adds data other steps read) at that node, and which `policy_type` from the policy
+schema's vocabulary carries it.
 
-| Decision / step | Model surface read | Status | Policy role — decides or enriches what |
+| Decision / step | Model surface read | Where it lives | Policy role — decides or enriches what |
 |---|---|---|---|
-| Change classified additive/breaking | the upstream change record's classification | **PENDING-P0** — the regeneration-manifest record schema | Enriches (`transformation`): stamps the change class every later gate branches on |
-| Blast radius known | class graph + ADR-044 consumer manifests | Manifests **EXIST** (`registry/consumers/`); class graph **PENDING-P0** | Enriches: attaches the affected-artifact set to the change record |
-| Adoption mode chosen per class | the estate's change policy (`policy_type: validation` / `orchestration_flow`) | Policy object **EXISTS** (`policy.schema.json`); the clause vocabulary (window/freeze/expedite/precondition) **PENDING-ADR** | Decides: automatic vs windowed vs full ceremony |
-| Freeze suspends adoption | a dated freeze clause | **PENDING-ADR** — no temporal clause surface exists in the policy schema today (validated: no window/schedule/freeze field anywhere) | Decides: refuse-and-queue vs proceed |
-| Evidence gate | the blue/green typed-output diff record | **PENDING-P1** — the promotion-evidence record shape (ADR-046) | Decides (`gating`): promotion may proceed only on clean/approved diff |
-| Approval gate | named approver sign-off on the diff | **PENDING-ADR** — approval record shape | Decides (`override`-class): a human authority accepts the evidence |
-| Window gate | window clause + expedite clause — **or** change-calendar Knowledge records supplied by an information provider and referenced by the policy (multi-source; authority declared per scope; stale knowledge fails closed — see docs/design/change-control-knowledge-sources.md, UC 013–015) | **PENDING-ADR** (temporal clauses; knowledge type proposed) | Decides: execute now, defer, or expedite under elevated approval |
-| Propagation order | the entity's `dependencies[]` edges (state records) (`edge_type`, ordering semantics) | **EXISTS** — the shutdown-order machinery's own surface | Enriches: derives batch order; no policy overrides structure |
-| Batch verification | target types' declared outputs vs realized values | **EXISTS** ([D8.3] outputs; per-type adequacy varies) | Decides (`validation`): batch passes or propagation halts |
-| Debt states (windowed/queued/frozen) | typed debt entries in estate validation output | **PENDING-ADR** — today's debt is untyped pin-lag only | Enriches: makes waiting legible and auditable |
-| Adoption trail | audit records | **EXISTS** (audit-record model) | Enriches: the reconstructible history every retrospective reads |
+| Change classified additive/breaking | the upstream change record's `classification` | `registry/regeneration-manifest.schema.json` (the durable change record, ADR-045) | Enriches (`transformation`): stamps the change class every later gate branches on |
+| Blast radius known | the class graph plus the consumer manifests | `registry/class.schema.json` and `registry/tools/generate_class_specs.py`; `registry/consumers/` (register row 044); the manifest's `affected_artifacts` and `consumer_debt` | Enriches: attaches the affected-artifact set to the change record |
+| Adoption mode chosen per class | the estate's change policy (`policy_type: validation` or `orchestration_flow`) with its `schedule` clauses | `registry/policy.schema.json` (`schedule[].kind`: `window`, `freeze`, `expedite`, `precondition`; ADR-053) | Decides: automatic vs windowed vs full ceremony |
+| Freeze suspends adoption | a dated `freeze` clause, which queues rather than runs | `registry/policy.schema.json` (`schedule`) | Decides: refuse-and-queue vs proceed |
+| Evidence gate | the blue/green typed-output diff record | `registry/promotion-evidence.schema.json` (ADR-046) | Decides (`validation`): promotion may proceed only on a clean or approved diff |
+| Approval gate | a named approver's sign-off, bound to the digest of the evidence it accepts | `registry/policy.schema.json` (`schedule[].approval`: `approver`, `accepts_digest`, `at`, `authority_level`) | Decides (`override`-class): a human authority accepts the evidence |
+| Window gate | a `window` clause, an `expedite` clause, or a calendar the policy names by reference (`calendar_ref`) and an information provider serves; authority declared per scope; stale knowledge fails closed (docs/design/change-control-knowledge-sources.md, UC 013–015) | `registry/policy.schema.json` (`schedule`); `registry/examples/example-policy-change-window.yaml` | Decides: execute now, defer, or expedite under elevated approval |
+| Propagation order | the entity's `dependencies[]` edges (state records): `edge_type` and its ordering semantics | `registry/state-record.schema.json`; the shutdown-order machinery's own surface | Enriches: derives batch order; no policy overrides structure |
+| Batch verification | target types' declared outputs vs realized values | each class's `outputs` ([D8.3]; per-type adequacy varies) | Decides (`validation`): batch passes or propagation halts |
+| Debt states (windowed, queued, frozen) | typed debt, derived from the schedule clauses and never stored: `pin_behind`, `windowed`, `frozen` | `registry/policy.schema.json` (`schedule`, ADR-053) | Enriches: makes waiting legible and auditable |
+| Adoption trail | audit records | `registry/audit-record.schema.json` | Enriches: the reconstructible history every retrospective reads |
 
-The pattern the validation exposes: **the graph, outputs, policy machinery, and audit
-substrate all exist; what is pending is precisely the vocabulary this flow's corpus family was
-authored to demand** — the temporal policy clauses, the typed debt states, and the two record
-shapes (change record, evidence record) already assigned to P0/P1. Nothing in this flow
-requires a surface that is neither present nor already on the build list.
+Every surface this flow reads has a home in the registry today: the graph, the outputs, the
+policy clauses, the two record shapes (change record, evidence record), and the audit
+substrate.
 
 ## The invariants
 
@@ -82,15 +78,15 @@ requires a surface that is neither present nor already on the build list.
   clauses of a declared policy object the orchestration evaluates — never tribal process. The
   human decision is made once, in the policy, not once per change.
 - **A window must *fit*, not just be open.** The provider gives an implementation time-to-complete
-  estimate (its own duration is provider_specific); the window gate proceeds only if
-  `estimate + margin ≤ window_remaining`. A 2-hour window cannot hold a 4-hour implementation — a
-  job that won't finish is not started; it defers, batch-fits, or expedites (ADR-053 §8; the
-  estimate reuses the RTO/T6 validated-time-bound machinery).
+  estimate (its own duration is provider_specific). The window gate proceeds only if
+  `estimate + margin ≤ window_remaining`. A 2-hour window cannot hold a 4-hour implementation. A
+  job that won't finish is not started; it defers, batch-fits, or expedites (ADR-053 ruling 8; the
+  estimate reuses the RTO and T6 validated-time-bound machinery).
 - **Scheduling gates control when; evidence gates control whether.** An expedite clause
   compresses the calendar under elevated approval and a flagged audit record; nothing waives
   the evidence gate. There is no path to a promoted breaking change without its diff.
 - **Waiting is visible and typed.** Queued (freeze), windowed (scheduled), and ordinary
-  pin-behind lag are distinct debt states — an estate that is behind is provably on-policy
+  pin-behind lag are distinct debt states. An estate that is behind is provably on-policy
   behind.
 - **Propagation is ordered and resumable.** Downstream updates run in dependency-derived
   order, in batches, each verified before the next; failure halts with a recorded,
@@ -101,10 +97,11 @@ requires a surface that is neither present nor already on the build list.
 
 ## What UDLM does not decide
 
-Who executes the orchestrated adoption run and how it schedules — that is a DCM Process-family
-concern (the adoption job is automation intent like any other; see the process-migration
-stage). UDLM defines the policy clause vocabulary, the debt states, the evidence records, and
-the trail; DCM's engine evaluates and runs them.
+Who executes the orchestrated adoption run and how it schedules. That is the control plane's
+Process-family concern: the adoption job is automation intent like any other (see
+[automation-migration-and-promotion](automation-migration-and-promotion.md)). UDLM defines the
+policy clause vocabulary, the debt states, the evidence records, and the trail. The control plane
+evaluates and runs them.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
@@ -121,6 +118,6 @@ the trail; DCM's engine evaluates and runs them.
 |---|---|
 | Change classification, pins, debt | ADR-045 (class evolution and pinning) |
 | Evidence, promotion, refusal routing | ADR-046 (blue/green promotion contract) |
-| Policy clause vocabulary, debt states | [ADR-053](../adr/ADR-053-change-control-policy-vocabulary.md) (ruled; JSON-Schema shape follows) |
+| Policy clause vocabulary, debt states | [ADR-053](../adr/ADR-053-change-control-policy-vocabulary.md) (accepted; realized by `registry/policy.schema.json` `schedule`) |
 | Corpus cases | `use-cases/change-control/` (ride every analysis run) |
 | Worked example (three regimes) | `docs/examples/change-control-walkthrough.md` |

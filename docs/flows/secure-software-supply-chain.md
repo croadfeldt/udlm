@@ -1,24 +1,24 @@
 # Secure software supply chain — the orchestrated pipeline
 
-**What this settles:** the end-to-end flow that carries a library or image update — from *any* trigger — to
-a governed, evidenced blue/green deploy: **identify targets → blast-radius → change window → policies →
+**What this settles:** the end-to-end flow that carries a library or image update, from *any* trigger, to
+a governed, evidenced blue/green deploy: **identify targets → blast radius → change window → policies →
 sign-off → lower-environment QA → rebuild → blue/green → reconcile**, every step audited. It is **the
-rehydration pipeline entered through a supply-chain trigger** — so it **builds on
+rehydration pipeline entered through a supply-chain trigger**. So it **builds on
 [request-realization](request-realization.md)** and **composes**
 [change-control-adoption](change-control-adoption.md) (the ceremony), [uc-10](uc-10-dynamic-rehydration.md)
-(the rebuild), and [application-tier-provisioning](application-tier-provisioning.md) (the admission gates),
-adding only the ITSM-window, lower-env-QA, and blue/green stages.
+(the rebuild), and [application-tier-provisioning](application-tier-provisioning.md) (the admission gates).
+It adds only the ITSM window, lower-environment QA, and blue/green stages.
 
 > **Use Case:** `governance/secure-software-supply-chain`. **Persona:** platform-engineer · **Profile:** prod.
 
-**In one breath.** A library or image update is ingested — the trigger doesn't matter (a CVE fix, an
-upstream release, a base-image bump). The dependency graph returns the **targets** and the **blast-radius**;
-the estate's change policy resolves a **change window** from the ITSM calendar; **governance, standards, and
-validation policies** evaluate the change; required **sign-offs** are recorded; the change is rebuilt and
-**QA'd in a lower environment** so its result is *evidence*, not a hope; then it's **rehydrated/redeployed**
-— new image, Terraform, Ansible, DR data — behind a **blue/green typed-output-diff gate**, swapped only on a
-clean diff, and reconciled. Every classification, window, policy verdict, sign-off, and QA result is on the
-**audit chain**. Prod executes an already-validated path — it is not a test.
+**In one breath.** A library or image update is ingested; the trigger doesn't matter (a CVE fix, an
+upstream release, a base-image bump). The dependency graph returns the **targets** and the **blast radius**.
+The estate's change policy resolves a **change window** from the ITSM calendar. **Governance, standards, and
+validation policies** evaluate the change, and required **sign-offs** are recorded. The change is rebuilt and
+**QA'd in a lower environment**, so its result is *evidence*, not a hope. Then it is **rehydrated or
+redeployed** (new image, Terraform, Ansible, DR data) behind a **blue/green typed-output-diff gate**, swapped
+only on a clean diff, and reconciled. Every classification, window, policy verdict, sign-off, and QA result
+is on the **audit chain**. Prod executes an already-validated path; it is not a test.
 
 ## The flow
 ```mermaid
@@ -52,9 +52,9 @@ flowchart TD
 - **Targets + blast-radius are derived.** The dependency graph returns the affected deployments (by
   name/version/digest), not a hand-kept list ([uc-07](uc-07-udlm-dependency-graph-data-model.md)).
 - **The change window comes from the ITSM system.** The estate's change policy resolves the window from the
-  **change calendar as sourced knowledge** (adopt-by-reference, ADR-053) — DCM integrates the ITSM, it does
-  not replace it. Scheduling gates decide *when*; evidence gates decide *whether* — and no clause waives
-  blue/green evidence for a breaking change.
+  **change calendar as sourced knowledge** (adopt by reference, ADR-053). The control plane integrates the
+  ITSM; it does not replace it. Scheduling gates decide *when*; evidence gates decide *whether*, and no
+  clause waives blue/green evidence for a breaking change.
 - **QA in a lower environment is the evidence.** Automated tests run *before* prod, and their result is
   attached to the change (T6 pre-validated outcomes) — so the prod deploy executes an already-validated
   path.

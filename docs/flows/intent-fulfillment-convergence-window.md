@@ -40,13 +40,13 @@ flowchart TD
   `w`; the six permanent matrix cells collapse across the window.
 - **Give-up cascades.** When a member is given up (at `w=0` or window expiry), its operational
   dependents become `dependency_cancelled`; a request unit cancels all.
-- **`w=∞` is convergence.** Deferring indefinitely is the k8s-style "hold desired state and
+- **`w=∞` is convergence.** Deferring indefinitely is the Kubernetes-style "hold desired state and
   reconcile" behavior — the member persists as intent until it can realize.
 
 ## What UDLM does not decide
 
 The **default window** when the intent states none, the concrete value of `N`, and the schedule of
-re-attempts — DCM policy over the window UDLM carries as an intent field (ADR-008). UDLM defines the
+re-attempts — control-plane policy over the window UDLM carries as an intent field (ADR-008). UDLM defines the
 window as an intent field and the transient/permanent distinction it acts on.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
@@ -66,4 +66,3 @@ window as an intent field and the transient/permanent distinction it acts on.
 | The `w>0` operational case | [operational-dependency-cascade](intent-fulfillment-operational-dependency-cascade.md) |
 | Deferred convergence (persistence) | [pending-converges-later](intent-fulfillment-pending-converges-later.md) |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
-| DCM counterpart | dcm-project/dcm `docs/flows/` |

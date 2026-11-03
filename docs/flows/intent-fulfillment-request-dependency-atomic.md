@@ -55,7 +55,7 @@ sequenceDiagram
 ## What UDLM does not decide
 
 The window value, and the mechanics of a clean cancel-all (releasing reservations, any rollback of
-side effects) — DCM policy over the coupling and statuses UDLM declares (ADR-008). UDLM owns the
+side effects) — control-plane policy over the coupling and statuses UDLM declares (ADR-008). UDLM owns the
 request nature, the hold-all/cancel-all propagation semantics, and the reservation contract.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
@@ -73,4 +73,3 @@ request nature, the hold-all/cancel-all propagation semantics, and the reservati
 | Reservation vs activation | ADR-011 (validate-and-reserve) |
 | The nature distinction | [request-vs-operational-distinction](intent-fulfillment-request-vs-operational-distinction.md) |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
-| DCM counterpart | dcm-project/dcm `docs/flows/` |

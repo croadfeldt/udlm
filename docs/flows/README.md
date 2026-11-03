@@ -1,56 +1,80 @@
 # Flows — how the model composes into a working system
 
-**What this settles:** the layer of documentation **above definitions and contracts**. A contract says
-*what one piece guarantees in isolation*; a **flow** says *how the pieces run together, in order, to
-accomplish one real outcome* — so the composition is understood and implementable, not something an
-engineer has to reverse-engineer out of a dozen ADRs. Flows do not restate contracts; they **sequence**
-them and name the invariant each step must uphold.
+**What this settles:** the layer of documentation above definitions and contracts. A contract says
+what one piece guarantees on its own. A **flow** says how the pieces run together, in order, to reach
+one real outcome. Flows do not restate contracts. They sequence them and name the invariant each step
+must uphold, so an engineer can implement the composition without reverse-engineering it from a dozen
+decision records.
 
 ## The stage and the actors
 
-A flow has two tellings, and this repo owns one of them:
+A flow has two tellings, and this repo owns one of them.
 
-- **UDLM sets the stage.** The UDLM flow defines the outcome in terms of the *model*: the abstractions
-  in play, the four-state transitions, the contract obligations, and the **invariant every phase must
-  uphold** — provider-neutral and implementation-neutral. It is the script and the rules of the stage: *any*
-  conformant implementation performing this flow must honor these, whatever engine it uses.
-- **DCM is the actors creating the play.** The companion flow in
-  [dcm-project/dcm `docs/flows/`](https://github.com/dcm-project/dcm/tree/main/docs/flows) tells the *same*
-  flow as a concrete performance: which components run, in what sequence, with what data, and what an
-  implementer must build. It performs the flow this repo stages.
+- **UDLM sets the stage.** A UDLM flow defines the outcome in terms of the model: the abstractions in
+  play, the four-state transitions, the contract obligations, and the invariant every phase must
+  uphold. It names no provider and no engine. Any conformant implementation that performs the flow
+  must honor these rules.
+- **The control plane performs it.** An implementation's own flow tells the same story as a concrete
+  performance: which components run, in what order, with what data. The example implementation (DCM,
+  [croadfeldt/dcm](https://github.com/croadfeldt/dcm)) keeps those in its `docs/flows/`: a README,
+  `request-realization.md` and one `uc-NN` flow per release use case.
 
-Read the UDLM flow to understand *what must be true and why*; read the DCM flow to understand *how it is
-made true*. Each UDLM flow links its DCM counterpart and vice versa.
+Read the UDLM flow to learn what must be true and why. Read the implementation's flow to learn how it
+is made true.
 
 ## Index
 
-| Flow | What it stages | DCM counterpart |
-|---|---|---|
-| [Lifecycle convergence](lifecycle-convergence.md) | The one loop beneath every entity — Intent vs Realized, a gap, and Converge closing it; realize/reconcile/rehydrate/teardown as one act, archetypes and day-0/1/2 as parameters | `docs/flows/lifecycle-convergence.md` |
-| [Request implementation](request-realization.md) | An abstract, portable request becomes a provider-ready one — filled and validated before anything is created | `docs/flows/request-realization.md` |
-| [Provider lifecycle](provider-lifecycle.md) | The provider's side of the same story — register, declare the inputs it needs (namespaces, storage classes, …), get dispatched, report realized state — so placement and enrichment have the data to fill a request | `docs/flows/provider-lifecycle.md` |
-| [Template assembly](template-assembly.md) | Pattern → Template → System — a reusable design becomes an orderable definition becomes a running instance; two definitions related by `refines`, and one instance that carries the four states (ADR-033) | `docs/flows/template-assembly.md` |
-| [Automation migration & promotion](automation-migration-and-promotion.md) | Automation moves like everything else — engines declare a shared process type, a green engine verifies against blue by typed-output diff, cutover is a placement preference, and versions promote through stages like an application release. |
-| [Change-control adoption](change-control-adoption.md) | The calendar and ceremony around class adoption — a declared change policy branches on change class; scheduling gates decide when, evidence gates decide whether; waiting is typed, visible debt; propagation is dependency-ordered and batch-verified. |
-| [Storage-array maintenance with dependents](storage-array-maintenance-dr.md) | Disruptive maintenance on an array serving ten applications — impact set derived from the graph, per-client tolerance policies split window-quiesce from DR cutover, the DR gate precedes scheduling, cutover is a re-bind on declared outputs, and failure halts resumably with DR still carrying the continuity clients. |
-
-**[request-realization](request-realization.md) is the foundational flow** — it walks the whole model end
-to end. Every other flow is intentionally **lighter and uses it as its base**: it assumes request-realization
-and *references* the shared steps (assemble, place, enrich, reserve, converge) rather than re-explaining
-them, so each use-case flow stays short and specific to what makes that case different. Read
+**[request-realization](request-realization.md) is the foundational flow.** It walks the whole model
+end to end. Every other flow is lighter and builds on it: it assumes request-realization and refers to
+the shared steps (assemble, place, enrich, reserve, converge) instead of re-explaining them. Read
 request-realization first.
 
-**The 21 September-release use cases** are documented as flows here, each
-labeled by its Use Case number and built on request-realization. Grouped by persona in
-**[by-persona.md](by-persona.md)** — the usage-by-role view. **UC-22 (governed automation)** extends the
-set — governing an automation by its *effect*, not just the artifact (inspect → govern → tenancy).
+### The model's own lifecycles
+
+| Flow | What it stages |
+|---|---|
+| [Lifecycle convergence](lifecycle-convergence.md) | The one loop beneath every entity: Intent versus Realized, a gap, and Converge closing it. Realize, reconcile, rehydrate and teardown are one act; archetypes and day-0/1/2 are parameters. |
+| [Request implementation](request-realization.md) | An abstract, portable request becomes a provider-ready one, filled in and checked before anything is created. |
+| [Provider lifecycle](provider-lifecycle.md) | The provider's side of the same story: register, declare what it needs, get dispatched, report realized state. |
+| [Template assembly](template-assembly.md) | Pattern → Template → System. A reusable design becomes an orderable definition, which becomes a running instance. Two definitions related by `refines`, and one instance that carries the four states (ADR-033, Templates). |
+| [Scoped-Class lifecycle](scoped-class-lifecycle.md) | A Class is authored, extended under the Liskov rule, compiled into the flat spec consumers read, and addressed. |
+| [Estate observation](estate-observation-lifecycle.md) | How observed resources enter the model: normalize to the vocabulary, quarantine what is off-vocabulary, link into the graph. |
+
+### Provisioning by family
+
+| Flow | What it stages |
+|---|---|
+| [Compute provisioning](compute-provisioning-lifecycle.md) | A compute intent is placed on a provider whose declared capabilities meet its requirements floor. |
+| [Container lifecycle](container-lifecycle-uniformity.md) | A container is a peer of a VM: same intent shape, same graph, same pipeline, on-prem or cloud. |
+| [Storage provisioning](storage-provisioning-lifecycle.md) | Pool → dataset → volume or share, each link an operational dependency on the one below. |
+| [Network provisioning](network-provisioning-lifecycle.md) | Segment → gateway → address services → allocation, with the subnet-overlap gate. |
+| [Platform provisioning](platform-provisioning-lifecycle.md) | A hub provisions a namespace under a quota, backed by a node pool and a storage class. |
+| [Application tier](application-tier-provisioning.md) | Package → image → service → database, through two admission gates. |
+| [Log shipping](log-shipping-lifecycle.md) | A log store publishes its intake; one shipper per source binds it; a shipper that stops shipping is stale. |
+| [Credential and identity](credential-and-identity-lifecycle.md) | A credential is a reference, resolved just in time and scope-checked; an identity escrow names what survives a recovery. |
+
+### Operations and governance
+
+| Flow | What it stages |
+|---|---|
+| [Automation migration and promotion](automation-migration-and-promotion.md) | Engines declare a shared process type. A green engine verifies against blue by typed-output diff. Cutover is a placement preference, and versions promote through stages like an application release. |
+| [Change-control adoption](change-control-adoption.md) | A declared change policy branches on change class. Scheduling gates decide when; evidence gates decide whether. Waiting is typed, visible debt. Propagation is dependency-ordered and batch-verified. |
+| [Storage-array maintenance with dependents](storage-array-maintenance-dr.md) | Disruptive maintenance on an array serving ten applications. The impact set comes from the graph, continuity clients cut over to DR first, and a failure halts resumably. |
+| [Governed automation, end to end](governed-automation-end-to-end.md) | From a consumer's login to an audited result: visibility policy, validation, approval or window, a just-in-time credential, pre-flight, and post-run reconciliation. |
+| [Secure software supply chain](secure-software-supply-chain.md) | A library or image update moves through blast radius, change window, policies, sign-off, lower-environment QA and a blue/green gate. |
+| [Data mobility](data-mobility.md) | The data half of rehydration, migration and redeployment: the requirement is data, the mechanism is the provider's. |
+
+**The 21 September-release use cases** are documented as flows here, each labeled by its use-case
+number and built on request-realization. [by-persona.md](by-persona.md) groups them by the persona who
+drives them. **UC-22 (governed automation)** extends the set: it governs an automation by its effect,
+not just the artifact (inspect → govern → tenancy).
 
 ### Intent fulfillment — dependencies (with a nature) + a convergence window
 
-One flow per case for the intent-requirement side — how a multi-resource intent behaves when it
-cannot be fully satisfied at once. They stage the permutation matrix in
-[`../design/intent-fulfillment-model.md`](../design/intent-fulfillment-model.md) (nature ×
-member-status × window) and the corpus family
+One flow per case for the intent-requirement side: how a multi-resource intent behaves when it cannot
+be fully satisfied at once. They stage the permutation matrix in
+[`../design/intent-fulfillment-model.md`](../design/intent-fulfillment-model.md) (nature × member
+status × window) and the corpus family
 [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md).
 
 | Flow | What it stages |
@@ -65,18 +89,19 @@ member-status × window) and the corpus family
 | [Surface names the root](intent-fulfillment-surface-names-root.md) (must-reject) | a chain failure naming only the proximate member, not the root + chain, is refused |
 | [Surfacing is mandatory](intent-fulfillment-surfacing-mandatory.md) (must-reject) | a silent partial expressed only as a missable field, with no warning, is refused |
 
-**Planned** (same shape): decommission & teardown ordering · dependency brokering (fulfillment: provider).
-Drift detection → reconcile and rehydration are delivered — [uc-14](uc-14-drift-detection-remediation.md),
-[uc-10](uc-10-dynamic-rehydration.md) (dynamic) and [uc-18](uc-18-provider-portable-rebuild.md) (provider-portable).
+**Planned** (same shape): decommission and teardown ordering; dependency brokering (fulfillment by
+the provider). Drift detection, reconcile and rehydration are delivered:
+[uc-14](uc-14-drift-detection-remediation.md), [uc-10](uc-10-dynamic-rehydration.md) (dynamic) and
+[uc-18](uc-18-provider-portable-rebuild.md) (provider-portable).
 
 ## The shape a flow follows
 
 Each flow doc keeps this structure so the tier stays consistent:
 
 1. **Thesis** — the outcome in one paragraph.
-2. **The stage** — the model pieces the flow composes (by contract, with pointers — never restated).
-3. **The sequence** — the phases in order; for each, *what is true before* and *the invariant it upholds after*.
+2. **The stage** — the model pieces the flow composes (by contract, with pointers, never restated).
+3. **The sequence** — the phases in order; for each, what is true before and the invariant it upholds after.
 4. **The invariants** — the stage rules any actor must obey, collected.
-5. **What UDLM does not decide** — the seam handed to DCM, with the pointer.
-6. **Data · Policy · Provider** — the required decomposition lens (SPEC-DESIGN §29).
-7. **Where each piece is specified** — a pointer table to the governing docs/spec/contracts/ADRs.
+5. **What UDLM does not decide** — the seam handed to the control plane, with the pointer.
+6. **Data · Policy · Provider** — the required decomposition lens (SPEC-DESIGN-REQUIREMENTS, hard constraint 29).
+7. **Where each piece is specified** — a pointer table to the governing docs, spec, contracts and decision records.

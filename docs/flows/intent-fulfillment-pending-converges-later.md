@@ -49,8 +49,7 @@ sequenceDiagram
 
 ## What UDLM does not decide
 
-The reconciliation cadence and how long "later" may be before a policy gives up (the window) — DCM
-policy over the desired-state model UDLM declares (ADR-008). UDLM owns the persistence semantics and
+The reconciliation cadence and how long "later" may be before a policy gives up (the window) — control-plane policy over the desired-state model UDLM declares (ADR-008). UDLM owns the persistence semantics and
 the `blocked_transient → realized` status transition.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
@@ -69,4 +68,3 @@ the `blocked_transient → realized` status transition.
 | The initial hold | [operational-dependency-cascade](intent-fulfillment-operational-dependency-cascade.md) |
 | The window that permits deferral | [convergence-window](intent-fulfillment-convergence-window.md) |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
-| DCM counterpart | dcm-project/dcm `docs/flows/` |
