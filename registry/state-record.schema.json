@@ -207,6 +207,47 @@
     "dispatch": {
       "$ref": "#/$defs/dispatch",
       "x-data-role": "governance"
+    },
+    "rebuilt_from": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_record_uuid"
+      ],
+      "properties": {
+        "source_record_uuid": {
+          "$ref": "common-elements.schema.json#/$defs/uuid_v7",
+          "description": "The last record of the entity this one replaces."
+        },
+        "source_store": {
+          "type": "string",
+          "description": "Where that record lives if not here: a peer, an archive, an export."
+        }
+      },
+      "description": "Set on the Intent of a rebuild (four-states §5.2, RHY-005): the original is gone, this is a new entity with a new uuid, and this says what it replaced. A restore in place keeps the uuid and uses `provider_entity_id_history` instead."
+    },
+    "provider_entity_id_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider_entity_id",
+          "replaced_at"
+        ],
+        "properties": {
+          "provider_entity_id": {
+            "type": "string",
+            "description": "The identifier the provider used before."
+          },
+          "replaced_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+            "description": "When the provider stopped using it (RFC 3339 UTC)."
+          }
+        }
+      },
+      "description": "Set on a restore in place (four-states §5.2, RHY-005): the entity kept its uuid and only the provider's identifier for it changed. Oldest first. The current identifier is in `correlation_ids`."
     }
   },
   "allOf": [
@@ -436,7 +477,13 @@
             "vlan": "lab/net/vlan-20"
           }
         ],
-        "disks": [{"name": "root", "size": "100Gi", "role": "boot"}],
+        "disks": [
+          {
+            "name": "root",
+            "size": "100Gi",
+            "role": "boot"
+          }
+        ],
         "run_state": {
           "desired_state": "running"
         }
@@ -577,7 +624,13 @@
             "network_ref": "lab/net/dmz"
           }
         ],
-        "disks": [{"name": "root", "size": "100Gi", "role": "boot"}],
+        "disks": [
+          {
+            "name": "root",
+            "size": "100Gi",
+            "role": "boot"
+          }
+        ],
         "placement": {
           "location_ref": "lab/facility/rack-3"
         },
@@ -919,7 +972,8 @@
                   "True",
                   "False",
                   "Unknown"
-                ]
+                ],
+                "x-standard": "Kubernetes:meta/v1 Condition.status"
               },
               "reason": {
                 "type": "string"
@@ -1177,12 +1231,12 @@
       "properties": {
         "execution_state": {
           "enum": [
-            "REQUESTED",
-            "INITIATED",
-            "EXECUTING",
-            "COMPLETED",
-            "FAILED",
-            "CANCELLED"
+            "requested",
+            "initiated",
+            "executing",
+            "completed",
+            "failed",
+            "cancelled"
           ],
           "description": "The current run's state (§6.2). Distinct from lifecycle_state."
         },
@@ -1360,9 +1414,7 @@
       }
     },
     "handle": {
-      "type": "string",
-      "pattern": "^([a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)*[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
-      "description": "ADVISORY human-readable identity (docs/spec/contracts/identifier-scheme.md §3). The uuid is the authoritative identity; the handle aids review and drift detection (a resolved-uuid whose current handle disagrees with a reference's recorded handle is drift, not failure). Never resolve by handle alone."
+      "$ref": "common-elements.schema.json#/$defs/handle"
     },
     "provider_preference": {
       "type": "object",

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.9
+$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.10
 conforms_to: udlm/0.1
 uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
 record_type: class
 class: base
 resource_type: Job
-version: 1.2.9
+version: 1.2.10
 family: Process
 status: active
 metadata:
@@ -138,10 +138,10 @@ outputs:
       gates read. Current-state data (act-now); per-transition history is the ledger's.
   started_at:
     type: string
-    description: RFC 3339 UTC instant execution entered EXECUTING.
+    description: RFC 3339 UTC instant execution entered `executing`.
   completed_at:
     type: string
-    description: RFC 3339 UTC instant execution reached COMPLETED/FAILED/CANCELLED.
+    description: RFC 3339 UTC instant execution reached `completed`, `failed` or `cancelled`.
 relationships:
   - edge_type: references
     target: Automation

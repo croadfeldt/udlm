@@ -1,9 +1,11 @@
 record_type: decision_record
-uuid: 7d3e180f-dec2-4e0a-9f2d-809c49256431
-handle: ADR-EXAMPLE-001
+uuid: 1bd1f415-eb6f-4d04-8a9f-c39ef2df1377
+supersedes:
+- 7d3e180f-dec2-4e0a-9f2d-809c49256431
+handle: adr-example-001
 conforms_to: udlm/0.1
 title: Adopt RFC 9562 UUIDv4 as the universal identity primitive
-version: 1.0.0
+version: 1.0.1
 scope: architecture
 rationale: Every entity, record, and reference needs one stable, collision-free identity. RFC 9562 v4
   (CSPRNG) carries no correlatable structure and needs no coordination to mint. Worked example (example.com
@@ -32,7 +34,7 @@ validation_evidence:
   validated_by: udlm-conformance-runner
 about:
 - contracts/identifier-scheme.md
-state: CANONICAL
+state: canonical
 provenance:
   proposed_by: example-architect
   model_version: n/a
@@ -42,5 +44,5 @@ metadata:
   notes:
   - at: '2026-07-07T14:05:00Z'
     author: claude-fable-5 (session f78102d7, wave 3.6)
-    text: "Worked DecisionRecord \u2014 architecture scope, Data\xB7Policy\xB7Provider decomposition,\
-      \ CANONICAL with UC-conformance validation evidence."
+    text: "Re-issued 2026-11-02 for row 134 (state spelled snake_case; supersedes the 1.0.0 record). Worked DecisionRecord \u2014 architecture scope, Data\xB7Policy\xB7Provider decomposition,\
+      \ canonical with UC-conformance validation evidence."

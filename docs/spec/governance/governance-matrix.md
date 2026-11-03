@@ -441,7 +441,8 @@ and how many fields it touched. The disclosure is deliberately shallow — a cou
 governing rule, never the list of withheld field paths, because enumerating what is protected
 is itself the disclosure the reduction prevented. `REDACT`'s in-band `<REDACTED>` sentinel
 remains available where the receiver may know a specific field exists; the disclosure is the
-mechanism for the case where it may not. The rule is `GMX-012`.
+mechanism for the case where it may not. The rule is `GMX-012`. On a served entity view the disclosure is the
+`reduction` element (`fields_withheld`, `governing_rule`), `entity-view.schema.json`.
 
 **A field an actor cannot read, that actor cannot write.** Read reduction and write control
 are the same authorization question asked in two directions, and answering them from two

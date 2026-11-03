@@ -30,7 +30,7 @@
       "description": "The UDLM spec version this record conforms to (`udlm/0.1`)."
     },
     "handle": {
-      "type": "string",
+      "$ref": "common-elements.schema.json#/$defs/handle",
       "description": "Advisory human identity. Deliberately NOT required to be unique across the estate the way a class name is: a class name enters the shared vocabulary and is expensive to get wrong, while two teams may each have written down their own `three-tier-app` and neither is making a claim about anyone else's."
     },
     "tenant_uuid": {

@@ -31,8 +31,7 @@
       "description": "OPTIONAL — the uuid of the finding record this one replaces (ADR-051 family rule; the identity-integrity gate refuses in-place edits of published records). Distinct from resolution.supersedes_finding_uuid, which records the REGISTRY-side judgment that one finding subsumes another."
     },
     "handle": {
-      "type": "string",
-      "pattern": "^([a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)*[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
+      "$ref": "common-elements.schema.json#/$defs/handle",
       "description": "Advisory human identity, e.g. findings/2026-07-24/compute-vm-output-shape. The uuid is authoritative."
     },
     "conforms_to": {

@@ -53,7 +53,7 @@ supersedes:
 record_type: realized_record
 state: Realized
 entity_uuid: 9c4e2b7a-1d3f-4a5b-8c6d-0e1f2a3b4c5d
-record_uuid: 01a178b9-d0f0-7006-8006-000000000006
+record_uuid: 01a19cfd-2fe8-7001-8001-000000000001
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Job
@@ -108,13 +108,13 @@ outputs:
     sandbox_image_digest: sha256:d6b046b27fe57002af7655dd6aa4ce3bc8a42a4621d7a5b4056a417e0d9952f5
     execution_target: Container
 process:
-  execution_state: COMPLETED
+  execution_state: completed
   affected_entities:
     - entity_uuid: 6f2d8a1e-4b3c-4d5e-9f6a-7b8c9d0e1f2a
       effect_type: read
       effect_description: downloaded and ran the package in a sealed sandbox on two versions
 supersedes:
-  - 01a163b2-87d8-7007-8007-000000000007
+  - 01a178b9-d0f0-7006-8006-000000000006
 provenance:
   outputs.started_at:
     - source:
@@ -250,8 +250,8 @@ provenance:
       sequence: 1
       timestamp: '2026-09-13T13:17:27Z'
 integrity:
-  head: sha256:ea016cfeba215db0daefaa827ade0718306e4f6d17f23c14c347b20fa1611525
-  previous: sha256:aa05d7257583f49feb8b63beb2b728c7a3bdf5f0570f743f9fc3db4240f3c348
+  head: sha256:fbe1c3057813e6167604e464b3e04b29a1bb7c817803114062668187e394c366
+  previous: sha256:ea016cfeba215db0daefaa827ade0718306e4f6d17f23c14c347b20fa1611525
   algorithm: sha256_jcs
 ---
 record_type: intent_record

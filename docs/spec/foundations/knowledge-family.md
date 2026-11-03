@@ -30,22 +30,22 @@ them for curated knowledge:
 
 | UDLM state | Knowledge interpretation | Storage semantics |
 |------------|--------------------------|-------------------|
-| **Intent** | `PROPOSED` — a proposed definition ("what we think should exist") | append-only, immutable record of the proposal |
-| **Requested** | `UNDER_REVIEW` — the proposal submitted into curation (the contribution under review) | append-only per review cycle |
-| **Realized** | `CANONICAL` — accepted, authoritative | versioned snapshots, `is_current` flag |
-| **Discovered** | `OBSERVED` — what an assessment / UC analysis observes in the field | ephemeral, refreshed per assessment/analysis run |
+| **Intent** | `proposed` — a proposed definition ("what we think should exist") | append-only, immutable record of the proposal |
+| **Requested** | `under_review` — the proposal submitted into curation (the contribution under review) | append-only per review cycle |
+| **Realized** | `canonical` — accepted, authoritative | versioned snapshots, `is_current` flag |
+| **Discovered** | `observed` — what an assessment / UC analysis observes in the field | ephemeral, refreshed per assessment/analysis run |
 
 Shared state machine skeleton (per-type tweaks allowed):
 
 ```
-OBSERVED ─┐                        (parallel evidence from the field)
+observed ─┐                        (parallel evidence from the field)
           ▼
-PROPOSED ──► UNDER_REVIEW ──► CANONICAL ──► DEPRECATED
+proposed ──► under_review ──► canonical ──► deprecated
    ▲             │
    └─────────────┘  (revision)
 ```
 
-**The signature operation:** the gap between `CANONICAL` (what should be) and `OBSERVED`
+**The signature operation:** the gap between `canonical` (what should be) and `observed`
 (what an assessment found) is **drift detection applied to knowledge** — identical in shape
 to the Resource family's Realized-vs-Discovered drift. This *is* DAV's gap analysis.
 
@@ -82,8 +82,8 @@ enablement). The unit the catalog inventories and the roadmap sequences.
   requiring it), leverage (foundational-dependency metric), evidence.
 - **Relationships:** `normalized_to` → TaxonomyTerm; `depends_on` → Capability;
   `required_by` → UseCase *(future)*; `surfaced_by` → Assessment/Finding *(future)*.
-- **States:** typically enters as `OBSERVED` (from an assessment) and/or `PROPOSED`, then
-  `UNDER_REVIEW` → `CANONICAL`; `DEPRECATED` is terminal.
+- **States:** typically enters as `observed` (from an assessment) and/or `proposed`, then
+  `under_review` → `canonical`; `deprecated` is terminal.
 
 ### 4.2 TaxonomyTerm
 A canonical vocabulary term — the **normalization authority** the catalog normalizes onto.
@@ -91,19 +91,19 @@ A canonical vocabulary term — the **normalization authority** the catalog norm
   (→ TaxonomyTerm), normalization_rules (how to normalize items for this subject matter),
   category (source grouping).
 - **Relationships:** `parent` → TaxonomyTerm; normalized **by** Capability/Alias.
-- **States:** `PROPOSED` (a back-fill candidate the catalog surfaced) → `UNDER_REVIEW` →
-  `CANONICAL`. Seeded `CANONICAL` from an authoritative taxonomy (e.g. The control plane Taxonomy).
-  `DEPRECATED` for retired terms.
+- **States:** `proposed` (a back-fill candidate the catalog surfaced) → `under_review` →
+  `canonical`. Seeded `canonical` from an authoritative taxonomy (e.g. The control plane Taxonomy).
+  `deprecated` for retired terms.
 - **Note:** TaxonomyTerm is the "spec"; Capability is "reality." Their gap drives back-fill
-  (Discovered/OBSERVED capabilities with no term ⇒ propose a term ⇒ the taxonomy grows).
+  (Discovered/observed capabilities with no term ⇒ propose a term ⇒ the taxonomy grows).
 
 ### 4.3 Alias
 A normalization rule mapping a non-canonical string/term to its canonical TaxonomyTerm —
 i.e. anti-vocabulary ("avoid → use instead") and discovered synonyms.
 - **Fields:** avoid (handle), use_instead, reason, source (taxonomy | discovered | manual).
 - **Relationships:** `resolves_to` → TaxonomyTerm.
-- **States:** `CANONICAL` when seeded from a taxonomy's anti-vocabulary; `PROPOSED` →
-  `CANONICAL` for synonyms discovered during normalization.
+- **States:** `canonical` when seeded from a taxonomy's anti-vocabulary; `proposed` →
+  `canonical` for synonyms discovered during normalization.
 
 ### 4.4 Antipattern
 A pattern to avoid relative to the taxonomy/architecture (a "what not to do," with the
@@ -111,7 +111,7 @@ recommended alternative).
 - **Fields:** name (handle), description, why, instead (recommended pattern), pillar,
   domain.
 - **Relationships:** `related_to` → TaxonomyTerm / Capability.
-- **States:** `PROPOSED` → `CANONICAL`; `DEPRECATED` when superseded.
+- **States:** `proposed` → `canonical`; `deprecated` when superseded.
 
 ### 4.5 DecisionRecord (a Decision Record / ADR — adopted, not invented)
 > **Machine-validatable schema:** `registry/decision-record.schema.json` (data-model-core §2 [D8.6]); `registry/tools/validate.py` dispatches `record_type: decision_record`. The Data·Policy·Provider decomposition is schema-required (SPEC-DESIGN §29).
@@ -133,17 +133,17 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
 - **Relationships:** `decides` → Finding(s) *(future member; M:N — one record closes a class)*;
   `about` → Capability / TaxonomyTerm / spec element (the anchor it justifies); `produces` → a change/proposal
   *(implementation-specific)*; `supersedes` → DecisionRecord.
-- **States (curation = ADR status):** `PROPOSED` (drafted) → `UNDER_REVIEW` → `CANONICAL` (accepted / the
-  authoritative WHY) → re-`OBSERVED` if its premises drift; `DEPRECATED`/superseded when a later record replaces
+- **States (curation = ADR status):** `proposed` (drafted) → `under_review` → `canonical` (accepted / the
+  authoritative WHY) → re-`observed` if its premises drift; `deprecated`/superseded when a later record replaces
   it (ADR's "never edit, supersede" rule *is* UDLM immutability + `supersedes`).
 - **Note (validation is a gate *where applicable*, not universal):** when the decision is testable, it reaches
-  `CANONICAL` **only with passing use-case validation** (evaluated against UCs — submitted + generated-with-
+  `canonical` **only with passing use-case validation** (evaluated against UCs — submitted + generated-with-
   variance — on the same engine that finds gaps) — the WHY is *earned, not asserted*. Non-validatable decisions
-  (e.g. a naming choice) may be `CANONICAL` without it, preserving compatibility with ordinary ADRs.
+  (e.g. a naming choice) may be `canonical` without it, preserving compatibility with ordinary ADRs.
   Implementation: `dav/docs/findings-resolution-design.md`; answers the "`depends_on` says *what* but not *why*"
   feedback by making the WHY a first-class, queryable record.
 - **Scope & scope-appropriate validation.** A record's anchor places it in one of three scopes (the
-  `Data · Policy · Provider` triad), and each reaches `CANONICAL` through *its own* mechanism — there is **no single
+  `Data · Policy · Provider` triad), and each reaches `canonical` through *its own* mechanism — there is **no single
   "validation runner"**; validation is the scope's existing machinery:
   - **architecture-scoped** (an ADR; anchor = a foundational/architecture decision) → **use-case / conformance
     validation**.
@@ -159,10 +159,10 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
 
 > **Fit with the UDLM model (coherence).** The ADR/DR sits cleanly on the substrate: it is `Data` (Knowledge),
 > never a Provider/Policy (it may be *about* one); ADR's "supersede, don't edit" **is** UDLM immutability +
-> versioning + `supersedes`; ADR status **is** the curation lifecycle; the `Discovered`/`OBSERVED` state adds
+> versioning + `supersedes`; ADR status **is** the curation lifecycle; the `Discovered`/`observed` state adds
 > *decision-drift* (do the premises still hold?) — a gain, not a clash. One semantic caveat: the four-state names
 > carry provisioning connotation ("Requested" ≈ dispatched-to-a-provider), which the Knowledge family reinterprets
-> as `UNDER_REVIEW` for curated artifacts. No structural incompatibility.
+> as `under_review` for curated artifacts. No structural incompatibility.
 
 ### 4.6 SoftwareImage · SoftwarePackage · Vulnerability — the software-supply-chain triad
 Facts *about* resources (their bill-of-materials and its known vulnerabilities), discovered by a scanner sweep
@@ -207,7 +207,7 @@ definitions, exactly this member.
 - **Relationships:** `related_to` → TaxonomyTerm / Capability (the capabilities the pattern
   requires or asserts); a Template (ADR-033) `refines` a Pattern — a reference between two
   definitions, so one Pattern yields many Templates.
-- **States:** `PROPOSED` → `CANONICAL`; `DEPRECATED` when superseded.
+- **States:** `proposed` → `canonical`; `deprecated` when superseded.
 
 ### 4.8 SovereigntyZone
 What a coined zone name means jurisdictionally. The accreditation side speaks ISO 3166
@@ -222,7 +222,7 @@ whose truth is held by the party that declares it.
   and it does not cross a peer boundary.
 - **Relationships:** cited by a realized entity's `sovereignty.zone`; matched against an
   accreditation's `scope.geographic_scope`.
-- **States:** `PROPOSED` → `CANONICAL`; established at setup and governed thereafter.
+- **States:** `proposed` → `canonical`; established at setup and governed thereafter.
 
 ## 5. Relationship graph (summary)
 

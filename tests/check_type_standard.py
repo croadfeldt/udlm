@@ -107,12 +107,17 @@ def bare_refs(node, prefix=""):
     for k, v in (node.get("properties") or {}).items():
         if not isinstance(v, dict):
             continue
-        if k.endswith("_ref") and v.get("type") == "string" and not is_reference_shape(v):
+        # every *_ref, whatever its declared type: an object-shaped one is the pre-URF form row 101 removed,
+        # and the regression G3 most needs to catch (#383)
+        if k.endswith("_ref") and not is_reference_shape(v):
             out.append(prefix + k)
         out += bare_refs(v, prefix + k + ".")
         if isinstance(v.get("items"), dict):
             out += bare_refs(v["items"], prefix + k + "[].")
     return out
+
+
+REFERENCE_DEFS = {"/$defs/Reference", "/$defs/data_reference", "/$defs/network_zone_ref", "/$defs/network_tier_ref"}
 
 
 def is_reference_shape(prop):
@@ -122,26 +127,50 @@ def is_reference_shape(prop):
         return False
     if prop.get("format") in ("udlm-ref-url", "udlm-filter-url", "uri", "uri-reference"):
         return True
-    blob = json.dumps(prop)
-    if "$ref" in blob or "udlm-ref-url" in blob:
-        return True
+    # a $ref counts only when it lands on a reference definition; a $ref to anything else (an object shape,
+    # a quantity) is not a reference just because it is a $ref (#383)
+    if isinstance(prop.get("$ref"), str):
+        return prop["$ref"].split("#")[-1] in REFERENCE_DEFS
+    for key in ("oneOf", "anyOf"):
+        if isinstance(prop.get(key), list) and prop[key]:
+            return all(is_reference_shape(b) for b in prop[key])
     return False
 
 
+def self_test():
+    """G3 must fire on both shapes #383 found it blind to, and pass a real reference; a lint that can't fail
+    proves only that the YAML parsed."""
+    spec = {"properties": {
+        "old_ref": {"type": "object", "properties": {"uuid": {"type": "string"}}},       # the pre-URF object form
+        "size_ref": {"$ref": "../common-elements.schema.json#/$defs/quantity"},           # a $ref, but not to a reference
+        "nested": {"type": "array", "items": {"properties": {"inner_ref": {"type": "string"}}}},  # bare string in items
+        "good_ref": {"$ref": "../common-elements.schema.json#/$defs/Reference"},
+        "url_ref": {"type": "string", "format": "udlm-ref-url"},
+        "either_ref": {"oneOf": [{"$ref": "#/$defs/Reference"}, {"type": "string", "format": "udlm-ref-url"}]}}}
+    got = sorted(bare_refs(spec))
+    want = ["nested[].inner_ref", "old_ref", "size_ref"]
+    if got != want:
+        sys.exit(f"self-test: G3 flagged {got}, expected {want}")
+
+
 def main():
+    self_test()
     types = load_types()
     registered = {d.get("resource_type") for d in types.values() if isinstance(d, dict)}
     # Class names of ANY tier are legal relationship targets: an edge to a category base
     # (e.g. Job -> Automation) is POLYMORPHIC — "any member of the category" (the
     # executes_definition case). Bases aren't served specs, but they are addressable targets.
     standards = set()  # every standard some class adopts: naming one in prose is an adoption claim (G5)
+    adopted_by = {}    # class -> standards it or any Type beneath it adopts (a Type's adoption serves its Base)
     for cp in glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"), recursive=True):
         cd = yaml.safe_load(open(cp, encoding="utf-8")) or {}
         if cd.get("record_type") == "class":
             registered.add(cd.get("resource_type"))
-            for adoption in cd.get("adopts") or []:
-                if adoption.get("standard"):
-                    standards.add(adoption["standard"])
+            mine = {a["standard"] for a in cd.get("adopts") or [] if a.get("standard")}
+            standards |= mine
+            rt_name = cd.get("resource_type") or ""
+            for i in range(len(rt_name.split("."))):
+                adopted_by.setdefault(".".join(rt_name.split(".")[:i + 1]), set()).update(mine)
     adopted_names = re.compile("|".join(r"\b" + re.escape(n) + r"\b" for n in sorted(standards, key=len, reverse=True)) or r"(?!)")
     baseline = {}
     if os.path.exists(BASELINE):
@@ -160,8 +189,11 @@ def main():
         # G1
         outputs = d.get("outputs")
         n_out = len(outputs) if isinstance(outputs, dict) else (len(outputs) if isinstance(outputs, list) else 0)
-        if fam in ("Resource", "Process") and n_out == 0 and "outputs-exempt:" not in desc_all:
-            found.append(("G1", rt, "outputs", "realizable type declares no outputs and no outputs-exempt note"))
+        exempt = d.get("outputs_exempt")
+        if fam in ("Resource", "Process") and n_out == 0 and not exempt:
+            found.append(("G1", rt, "outputs", "realizable type declares neither outputs nor outputs_exempt (row 136)"))
+        if n_out and exempt:
+            found.append(("G1", rt, "outputs", "declares outputs and outputs_exempt; it is one or the other"))
 
         # G2
         for r in d.get("relationships", []) or []:
@@ -191,6 +223,15 @@ def main():
         named = ADOPT_TOKENS.search(meta_desc) or adopted_names.search(meta_desc)
         if named and not (d.get("adopts") or []) and "adopts-exempt:" not in meta_desc:
             found.append(("G5", rt, "adopts[]", f"prose names {named.group(0)!r}; adopts[] is empty"))
+        # G5, widened (#646): the Base-test sentence names the standards the Base stands on (CLS-002); at least
+        # one of them must be adopted, by the class or a Type beneath it. A class that adopts something else
+        # (KubernetesCluster adopted only cost standards) passed the empty-adopts check above.
+        bt = re.search(r"Base test \(CLS-002\):(.*?\.)(?:\s+[A-Z]|$)", meta_desc, re.S)
+        if bt and "adopts-exempt:" not in meta_desc:
+            cited = {m.group(0) for m in adopted_names.finditer(bt.group(1))}
+            held = adopted_by.get(rt, set())
+            if cited and not any(c == a or c in a or a in c for c in cited for a in held):
+                found.append(("G5", rt, "base-test", f"Base test cites {sorted(cited)}; none is adopted by the class or its Types"))
 
         # G7 — plain-English context present (rule 36(l))
         if not d.get("context"):

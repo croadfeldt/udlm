@@ -1,12 +1,13 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Template/0.2.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Template/0.2.2
 conforms_to: udlm/0.1
 uuid: 39584b58-b513-4b3f-9780-b427865c58b7
 record_type: class
 class: base
 resource_type: Template
-version: 0.2.1
+version: 0.2.2
 family: Resource
 status: active
+outputs_exempt: 'a Template is a definition realized many times; the composite it realizes carries the outputs'
 filed_under:
   - services
 metadata:
@@ -16,8 +17,7 @@ metadata:
   description: 'An orderable composition: a unit assembled from other classes and references, declared once and
     realized many times. The Base carries only the composition mechanism — the sovereignty floor the whole must
     hold and the non-isolating groupings its parts join — and declares no constituents, because a Base says what
-    a composition is, not what one contains. outputs-exempt: a Template is a definition realized many times; the
-    composite it realizes carries the outputs.'
+    a composition is, not what one contains.'
 elements:
   - element: sovereignty_floor
     scope: Template

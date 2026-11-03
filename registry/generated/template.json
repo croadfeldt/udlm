@@ -1,23 +1,23 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Template/0.2.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Template/0.2.2",
   "conforms_to": "udlm/0.1",
   "uuid": "39584b58-b513-4b3f-9780-b427865c58b7",
   "resource_type": "Template",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Template — the orderable composition",
     "maintainer": "UDLM project",
     "origination_timestamp": "2026-08-10T00:00:00Z",
-    "description": "An orderable composition: a unit assembled from other classes and references, declared once and realized many times. The Base carries only the composition mechanism — the sovereignty floor the whole must hold and the non-isolating groupings its parts join — and declares no constituents, because a Base says what a composition is, not what one contains. outputs-exempt: a Template is a definition realized many times; the composite it realizes carries the outputs.",
+    "description": "An orderable composition: a unit assembled from other classes and references, declared once and realized many times. The Base carries only the composition mechanism — the sovereignty floor the whole must hold and the non-isolating groupings its parts join — and declares no constituents, because a Base says what a composition is, not what one contains.",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
           "class": "Template",
-          "version": "0.2.1",
+          "version": "0.2.2",
           "uuid": "39584b58-b513-4b3f-9780-b427865c58b7"
         }
       ]
@@ -89,5 +89,6 @@
       "Template.Application — the Type that says what is composed.",
       "SovereigntyZone — what the floor names."
     ]
-  }
+  },
+  "outputs_exempt": "a Template is a definition realized many times; the composite it realizes carries the outputs"
 }
