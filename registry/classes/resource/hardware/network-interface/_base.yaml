@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/NetworkInterface/0.17.1
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkInterface/0.17.2
 conforms_to: udlm/0.1
 uuid: 04f5c089-85b3-4a89-9b2e-d0c8d172ad23
 record_type: class
 class: base
 resource_type: NetworkInterface
-version: 0.17.1
+version: 0.17.2
 family: Resource
 status: active
 filed_under:
@@ -13,13 +13,12 @@ filed_under:
 ownership_model: whole_allocation
 metadata:
   display_name: Network Interface
-  description: 'A network interface in any of its forms: a physical port, a virtual interface, a passthrough, a
-    partition derived from a physical NIC (an SR-IOV VF, a VLAN or macvlan sub-interface), or a composite built
-    from member interfaces (a bond, a bridge). A Base by the Base test (CLS-002): Redfish NetworkAdapter/NetworkPort
-    and the RFC 8343 interface model abstract over all of them, so an interface is one deliverable every host, hypervisor
-    and switch provider realizes; `device_class` says which form. One type therefore carries the whole host interface
-    stack as a traversable tree (physical NICs → bond → bridge → sub-interfaces), serves switch ports too (contained
-    by a NetworkSwitch), and links host NIC to switch port through the LLDP-discovered `connects_to` adjacency.'
+  description: 'A network interface in any form: physical port, virtual interface, passthrough, partition of a NIC
+    (SR-IOV VF, sub-interface) or composite (bond, bridge); `device_class` says which. A Base by the Base test:
+    Redfish NetworkAdapter/NetworkPort and RFC 8343 cover them all, so every host, hypervisor and switch provider
+    realizes one deliverable (CLS-002). One type thus carries the host interface stack as a traversable tree. It
+    also serves switch ports (contained by a NetworkSwitch); LLDP-discovered `connects_to` links host NIC to switch
+    port.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:11:51Z'
 elements:

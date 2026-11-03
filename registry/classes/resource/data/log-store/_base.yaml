@@ -1,23 +1,21 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/LogStore/0.3.1
+$id: https://udlm.dev/registry/udlm/0.1/class/LogStore/0.3.2
 conforms_to: udlm/0.1
 uuid: 89fb33fa-ebf2-4b38-bf74-2e163ea8033b
 record_type: class
 class: base
 resource_type: LogStore
-version: 0.3.1
+version: 0.3.2
 family: Resource
 status: active
 filed_under:
   - data
 metadata:
   display_name: Log Store
-  description: 'A place logs are accepted and kept: it offers intake over standard protocols, keeps what it receives
-    for a declared number of days, and lets declared groups read it. A Base by the Base test (CLS-002): intake is
-    standardized — syslog (RFC 5424, received over RFC 5425/5426/6587 transports) and OTLP — and every log store
-    accepts one or both, so any of them can fill the order. Querying is not standardized (each store has its own
-    query language), so this class says nothing about it. Retention and read access can differ by kind of record:
-    a rule picks records by a criterion over their fields, the same kind a LogShipper filters with. Its senders are
-    LogShipper records, which bind its published intake.'
+  description: 'Where logs are accepted and kept: intake over standard protocols, retention in days, read access by
+    group. A Base by the Base test: every log store accepts syslog (RFC 5424 over RFC 5425/5426/6587 transports),
+    OTLP or both, so any fills the order (CLS-002). Querying is not standardized; this class says nothing about it.
+    Rules vary retention and read access by kind of record, picked by the criterion a LogShipper filters with.
+    Senders are LogShipper records bound to its published intake.'
   maintainer: udlm-registry
   origination_timestamp: '2026-10-10T00:00:00Z'
 elements:

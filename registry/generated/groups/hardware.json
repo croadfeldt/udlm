@@ -11,21 +11,21 @@
     },
     {
       "class": "GPU",
-      "version": "0.8.3",
+      "version": "0.8.4",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/gpu/_base.yaml",
       "types": []
     },
     {
       "class": "NetworkInterface",
-      "version": "0.17.1",
+      "version": "0.17.2",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/network-interface/_base.yaml",
       "types": []
     },
     {
       "class": "NetworkSwitch",
-      "version": "0.11.1",
+      "version": "0.11.2",
       "instantiable": true,
       "path": "registry/classes/resource/network/network-switch/_base.yaml",
       "types": []
@@ -39,7 +39,7 @@
     },
     {
       "class": "StorageDevice",
-      "version": "0.8.2",
+      "version": "0.8.3",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/storage-device/_base.yaml",
       "types": []

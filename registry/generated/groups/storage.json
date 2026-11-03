@@ -11,7 +11,7 @@
     },
     {
       "class": "BucketClass",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "instantiable": true,
       "path": "registry/classes/resource/storage/bucket-class/_base.yaml",
       "types": []
@@ -39,14 +39,14 @@
     },
     {
       "class": "StorageDevice",
-      "version": "0.8.2",
+      "version": "0.8.3",
       "instantiable": true,
       "path": "registry/classes/resource/hardware/storage-device/_base.yaml",
       "types": []
     },
     {
       "class": "StoragePool",
-      "version": "0.7.1",
+      "version": "0.7.2",
       "instantiable": true,
       "path": "registry/classes/resource/storage/storage-pool/_base.yaml",
       "types": []
@@ -62,7 +62,7 @@
     },
     {
       "class": "VolumeSnapshot",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "instantiable": true,
       "path": "registry/classes/resource/storage/volume-snapshot/_base.yaml",
       "types": []

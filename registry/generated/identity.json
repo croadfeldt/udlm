@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity/1.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity/1.3.2",
   "conforms_to": "udlm/0.1",
   "uuid": "db886a00-0e24-4ff7-992a-c6d546a34eb6",
   "resource_type": "Identity",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -11,14 +11,14 @@
     "display_name": "Identity Base Class",
     "maintainer": "UDLM maintainers",
     "origination_timestamp": "2026-08-04T00:00:00Z",
-    "description": "An identity the control plane authenticates and authorizes: a person or a service account. A Base by the Base test (CLS-002): SCIM (RFC 7643) User abstracts over both, so a subject with a handle, an actor type, an authentication source and a credential reference is one deliverable every identity provider (a directory, an IdP, a cloud IAM) fills the same way. Person and ServiceAccount are its two forms (CLS-004); a group of identities is IdentityGroup.",
+    "description": "An identity the control plane authenticates and authorizes: a person or a service account. A Base by the Base test, because SCIM (RFC 7643) User abstracts over both (CLS-002). A subject with a handle, an actor type, an authentication source and a credential reference is therefore one deliverable. Every identity provider (a directory, an IdP, a cloud IAM) fills it the same way. Person and ServiceAccount are its two forms (CLS-004); a group of identities is IdentityGroup.",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
           "class": "Identity",
-          "version": "1.3.1",
+          "version": "1.3.2",
           "uuid": "db886a00-0e24-4ff7-992a-c6d546a34eb6"
         }
       ]

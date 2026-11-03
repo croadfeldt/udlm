@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/GPU/0.8.3
+$id: https://udlm.dev/registry/udlm/0.1/class/GPU/0.8.4
 conforms_to: udlm/0.1
 uuid: 7456b9f8-f215-4b75-ae6a-edd8cc854949
 record_type: class
 class: base
 resource_type: GPU
-version: 0.8.3
+version: 0.8.4
 family: Resource
 status: active
 outputs_exempt: 'it publishes no realize-time binding surface (rule 36(b) documented exclusion)'
@@ -13,10 +13,10 @@ filed_under:
 metadata:
   display_name: GPU
   description: 'A GPU or accelerator: a physical card, a whole-card passthrough to a guest, or a vGPU/MIG partition
-    carved from a physical card. A Base of its own by the Base test (CLS-002), not a Type of Processor: nothing
-    ports between a CPU and a GPU, so Redfish filing both as Processor is a catalogue, not a portability contract;
-    Redfish Processor (ProcessorType GPU) and PCIeDevice abstract over the three forms. An inventory component:
-    its attributes are discovered facts on the containing host and'
+    carved from one. A Base of its own by the Base test, not a Type of Processor (CLS-002). Nothing ports between a
+    CPU and a GPU, so Redfish filing both as Processor is a catalogue, not a portability contract. Redfish Processor
+    (ProcessorType GPU) and PCIeDevice abstract over the three forms. An inventory component: its attributes are
+    discovered facts on the containing host.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:11:51Z'
 elements:
