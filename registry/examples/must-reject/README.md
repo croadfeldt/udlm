@@ -45,6 +45,14 @@ gate **accepts** it. So the corpus fails in two directions, which is the point:
 not documents to validate — running the ordinary validator over them would report the very errors
 they exist to cause.
 
+## The conformance suite's rules (`gate: conformance`)
+
+Cases 024 onward name `gate: conformance`: they are refused by the conformance suite
+(`tests/conformance.py`) rather than by a single gate. The record is judged beside this
+repository's worked records, so a reference or a supersession resolves against them, and only
+findings on the case itself count. The suite's `--self-test` also checks coverage: every rule the
+suite applies (14, from `schema` to `payload.outputs`) must have at least one case here, or CI fails.
+
 ## Relationship to `use-cases/must-reject/`
 
 That directory holds the **scenarios** — narrative, persona-framed, describing a refusal a conformant
