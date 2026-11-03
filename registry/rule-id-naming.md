@@ -39,8 +39,8 @@ PREFIX-SUB-NNN        REG-DP-002        (a hyphen-segmented sub-series; leading 
    rule — **retire and supersede** instead (the same immutability UDLM applies to versioned data).
    Retired numbers are not reused.
 5. **Prefix collisions are resolved by renumbering to a disjoint prefix**, not by coexistence — the
-   precedent is `REL-* → ERL-*`. The one-time pre-1.0 cleanup of the known collisions (ENT/GRP/INF/
-   OBS) is tracked via `baseline_spread` in the registry and burned down before 1.0.
+   precedent is `REL-* → ERL-*`. `baseline_spread` in the registry exists for temporary dedup debt;
+   the registry carries none today, and a new entry is never added to silence a collision.
 
 ## 3. How enforcement works
 
