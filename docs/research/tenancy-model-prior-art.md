@@ -1,8 +1,8 @@
 # Research: multi-tenancy model — prior art & validation
 
 **Type:** research note (decision support — not normative)
-**Date:** 2026-07-14 · **Method:** assessed the UDLM/DCM tenancy surface against the deployed industry canon (SaaS isolation, Kubernetes multi-tenancy, data-isolation patterns, ReBAC, GDPR).
-**Feeds:** `registry/profile.schema.json` / `Grouping` (the `tenant_boundary` model), DCM ADR-014 (RLS isolation), `docs/spec/foundations/data-model-core.md` §6 (the [D1] isolation ladder), `docs/spec/foundations/resource-grouping.md` (tenant lifecycle + cross-tenant), `docs/spec/contracts/data-store-contracts.md` (tenant-context contract), `docs/spec/foundations/ownership-sharing-allocation.md`.
+**Date:** 2026-07-14 · **Method:** assessed the UDLM and control-plane tenancy surface against the deployed industry canon (SaaS isolation, Kubernetes multi-tenancy, data-isolation patterns, ReBAC, GDPR).
+**Feeds:** `registry/profile.schema.json` / `Grouping` (the `tenant_boundary` model), DCM ADR-014 (RLS isolation), `docs/spec/foundations/resource-grouping.md` (the isolation ladder, tenant lifecycle + cross-tenant), `docs/spec/contracts/data-store-contracts.md` (tenant-context contract), `docs/spec/foundations/ownership-sharing-allocation.md`.
 
 ## What this settles
 
@@ -10,11 +10,11 @@ Before 1.0 locks the tenancy model, this checks it against how the industry actu
 
 ## The model, in one line
 
-A **Tenant is a grouping** with `resource_type: Grouping` (`data-model-core §5`) — carrying an `isolation_level`, `nesting`, `ownership`, `quota`, `sovereignty_constraints`, and (via the `cross_tenant_authorization` class) scoped inter-tenant grants. DCM realizes isolation with PostgreSQL **Row-Level Security** (DCM ADR-014). UDLM defines the isolation *contract*; the implementation supplies the mechanism (the ADR-008 split).
+A **Tenant is a grouping** with `resource_type: Grouping` (`data-model-core §5`), carrying an `isolation_level`, `nesting`, `ownership`, `quota`, `sovereignty_constraints`, and (via a grouping with record kind `cross_tenant_authorization`) scoped inter-tenant grants. The example implementation realizes isolation with PostgreSQL **Row-Level Security** (RLS; DCM ADR-014). UDLM defines the isolation *contract*; the implementation supplies the mechanism (the ADR-008 split).
 
 ## Model ↔ standards
 
-| Standard / pattern | UDLM/DCM equivalent | Verdict |
+| Standard / pattern | UDLM / control-plane equivalent | Verdict |
 |---|---|---|
 | **AWS SaaS silo / pool / bridge** isolation strategies | `isolation_level` ladder — `shared_rls` (pool) → `schema_per_tenant` (bridge) → `database_per_tenant` (silo) → `store_per_tenant_zone` (silo + sovereignty), profile-keyed | **Exceeds** — a 4th sovereignty rung the SaaS canon lacks |
 | **PostgreSQL Row-Level Security**, defense-in-depth | DCM ADR-014 — RLS scopes every query at the DB, "not application logic"; `tenant_uuid` on every tenant-scoped table | Matches (textbook) |
@@ -41,4 +41,4 @@ A **Tenant is a grouping** with `resource_type: Grouping` (`data-model-core §5`
 
 ## Adopt, don't absorb
 
-The model already speaks the right vocabulary — `isolation_level`, `tenant_boundary`, RLS, ReBAC-style grants — so this is validation, not adoption of new machinery. The two refinements are additive notes to `resource-grouping.md` (GRP-013) and the `data-model-core` §6 isolation ladder, not structural change. As with sovereignty: the spine is sound; close the edges.
+The model already speaks the right vocabulary (`isolation_level`, `tenant_boundary`, RLS, ReBAC-style grants), so this is validation, not adoption of new machinery. The two refinements are additive notes to `resource-grouping.md` (GRP-013 and the isolation ladder), not structural change. As with sovereignty: the spine is sound; close the edges.

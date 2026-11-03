@@ -27,7 +27,7 @@ and validation rules.
 
 ## 2. Error envelope — RFC 9457 Problem Details
 
-The error envelope **adopts [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (Problem Details for HTTP APIs)** via **[AEP-193](https://aep.dev/193/)** (DR-AEP-001; a Tier-2 record adoption per [adopted-standards.md](../principles/adopted-standards.md) §1a). This *replaces* UDLM's former bespoke envelope — the closed error-code vocabulary (§3) and the `retryable` semantics survive as the problem `type` and extension members; the custom envelope shape is retired (net-negative surface). Every error emitted on an interop surface MUST be an RFC 9457 problem object:
+The error envelope **adopts [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (Problem Details for HTTP APIs)** via **[AEP-193](https://aep.dev/193/)** (DR-AEP-001; a Tier-2 record adoption per [adopted-standards.md](../principles/adopted-standards.md) §1a). The closed error-code vocabulary (§3) is the problem `type`; the `retryable` semantics are extension members. Every error emitted on an interop surface MUST be an RFC 9457 problem object:
 
 ```json
 {
@@ -64,7 +64,7 @@ The error envelope **adopts [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (
 | `retryable` | yes | boolean | Whether the operation can safely be retried (§4). |
 | `retry_after_seconds` | optional | number \| null | If retryable, suggested minimum delay; mirrors the HTTP `Retry-After` header. |
 | `timestamp` | yes | RFC 3339 UTC | When the error occurred. |
-| *(context)* | optional | any | Error-specific structured context as **top-level** members (e.g. `scope_attempted`) — the former nested `details.*`, flattened per AEP-193. Context members pass the §8a egress guard: they may echo what the actor submitted, never enumerate what the actor did not (a `scopes_known` list is the canonical violation). |
+| *(context)* | optional | any | Error-specific structured context as **top-level** members (e.g. `scope_attempted`), flat per AEP-193, never nested. Context members pass the §8a egress guard: they may echo what the actor submitted, never enumerate what the actor did not (a `scopes_known` list is the canonical violation). |
 
 Peers MUST reject problem objects missing required members with `type: validation.error_envelope_malformed`.
 
@@ -165,7 +165,7 @@ at a time. Both concerns are real, so the rule is directional rather than a choi
 - **Inside the actor's own authorization scope**, an unresolvable reference is
   `validation.reference_not_found`. The actor is entitled to know the thing is absent.
 - **Outside it**, the refusal is the authorization code — `authz.cross_tenant_unauthorized` for
-  a tenancy crossing, `authz.forbidden` otherwise — **whether or not the target exists**. A
+  a tenancy crossing, `authz.forbidden` otherwise — **whether or not the target exists**. An
   implementation MUST NOT vary the emitted `type`, `status`, `detail`, or timing on the existence
   of an out-of-scope target. This is the web's standard 403-over-404 existence-hiding posture,
   stated once here so every surface inherits it.
@@ -241,13 +241,13 @@ transport-level error codes per the transport's conventions.
 
 ## 6. Audit linkage
 
-Every error envelope carries its audit linkage in **`instance`** — `urn:udlm:audit:<audit_uuid>` (§2) — the URN of the audit record written for the error. (There is no separate top-level `audit_uuid` member; it lives in the `instance` URN, per §2a.) The audit record MUST contain:
+Every error envelope carries its audit linkage in **`instance`** — `urn:udlm:audit:<audit_uuid>` (§2) — the URN of the audit record written for the error. (There is no separate top-level `audit_uuid` member; it lives in the `instance` URN, per §2.) The audit record MUST contain:
 
 - The `request_id` (envelope extension member) and the `audit_uuid` (from the `instance` URN) — same UUIDs.
 - The originating actor (authenticated identity or `unauthenticated`).
 - The operation attempted.
 - The problem `type`, `title`, and `detail`.
-- Structured `details` for reproducibility.
+- The structured context members (§2) for reproducibility.
 - Timestamp per [`time-and-clock.md`](time-and-clock.md).
 
 This enables forensic lookup: from any error a consumer received, the operator
@@ -305,7 +305,7 @@ the error path that feeds it.
 
 - `type` is NEVER localized — problem-type tokens are normative.
 - `title` and `detail` MAY be localized. Localization is the emitter's responsibility.
-- `details` field keys are normative; values MAY be localized where they are
+- Context member keys (§2) are normative; values MAY be localized where they are
   human-readable, but identifiers, codes, and other tokens remain in canonical
   form.
 
@@ -313,7 +313,7 @@ the error path that feeds it.
 
 ## 8. Internal vs interop errors
 
-Errors that never cross an interop boundary (between dcm internal components,
+Errors that never cross an interop boundary (between an implementation's internal components,
 for example) MAY use free-form representation. Only errors that flow to:
 
 - Consumers (consumer API)
@@ -334,9 +334,9 @@ This is the exfiltration-via-the-error-channel problem, and it is not hypothetic
 model — the substrate's own error surfaces reach for exactly the content the refusal was
 protecting. A policy denial's structural-validation output names failing field paths
 (`docs/spec/contracts/policy-contract.md` §11 — `field_results` "included in consumer error response",
-now guarded by §11's egress clause). This document's own §2 example originally explained an
-unrecognized scope by enumerating every known one in a `scopes_known` member — helpful, and an
-enumeration of protected structure. Both shapes are the reason this rule exists.
+guarded by §11's egress clause). An error that explains an unrecognized scope by enumerating
+every known one in a `scopes_known` member is helpful, and an enumeration of protected structure.
+Both shapes are the reason this rule exists.
 
 The rule, applied to every refusal on every surface:
 

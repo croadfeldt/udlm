@@ -1,14 +1,18 @@
 # LikeC4 ↔ UDLM
 
-How **LikeC4** — an architecture-as-code / C4 visualization tool, here a **customer-derived** item —
-relates to UDLM: what translates, what doesn't, and a worked example. This stands on its own; it is **not**
-coupled to any other integration or partner.
+**What this is:** a research note on how **LikeC4** (an architecture-as-code / C4 visualization tool,
+here a **customer-derived** item) relates to UDLM: what translates, what doesn't, and a worked example.
+It stands on its own; it is **not** coupled to any other integration or partner. Written before the spec
+settled the name: the spec rejected "Composite Service" as a second name for a Template (ADR-034;
+`docs/spec/foundations/template-composition-model.md`). Read "Composite Service" below as Template. The
+schema field for a constituent's failure effect is `failure_effect`; the YAML below uses the older name
+`required_for_delivery`.
 
-A LikeC4 model and a UDLM Composite Service are **two serializations of the same composite graph** — LikeC4
-is the human/visual one (design-time); the Composite Service is the operational/data one (runtime), and only
-it carries the graph through implementation, governance, and audit. So **a LikeC4 system *is* a Composite
-Service** (`docs/spec/foundations/template-composition-model.md`): design in LikeC4 → it maps to a UDLM Composite Service →
-DCM realizes each component via a separate provider → the live diagram re-projects from Realized state.
+A LikeC4 model and a UDLM Composite Service are **two serializations of the same composite graph**.
+LikeC4 is the human/visual one (design-time). The Composite Service is the operational/data one
+(runtime), and only it carries the graph through implementation, governance, and audit. So **a LikeC4
+system *is* a Composite Service**: design in LikeC4 → it maps to a UDLM Composite Service → the control
+plane realizes each component via a separate provider → the live diagram re-projects from Realized state.
 Sections: the worked example (§1–4), translation gaps (§5), and what UDLM does / doesn't represent (§6).
 
 ## 1. The architecture, in LikeC4 (design-time, Data)
@@ -42,7 +46,7 @@ external actor (`customer`) isn't provisioned — it informs public-facing confi
 
 | LikeC4 | Constituent (`component_id`) | `resource_type` | `provided_by` (back-end provider) |
 |---|---|---|---|
-| `db` | `db` | `Data.Database` | external — DCM places a DB provider |
+| `db` | `db` | `Data.Database` | external — the control plane places a DB provider |
 | `api` (`depends_on: [db]`) | `api` | `Container` | external — a container provider |
 | `web` (`depends_on: [api]`) | `web` | `Container` | external — a container provider |
 | `web -> api`, `api -> db` | dependency edges | — | drive the DAG |
@@ -75,13 +79,13 @@ compositeService:
 ```
 
 The `from:` bindings are **typed references over the `depends_on` edges** (bind a target's realized
-`outputs`) — data movement, not transformation (core-tenets T4). DCM resolves each at dispatch once the
-upstream constituent reaches Realized.
+`outputs`) — data movement, not transformation (core-tenets T4). The control plane resolves each at dispatch
+once the upstream constituent reaches Realized.
 
-## 3. DCM realizes it (runtime, Policy applied)
+## 3. The control plane realizes it (runtime, Policy applied)
 
-The request produces a **Composite Entity** (one UUID) traversing the four states. DCM — *where Policy is
-applied*:
+The request produces a **Composite Entity** (one UUID) traversing the four states. The control plane, *where
+Policy is applied*:
 
 1. **Requested** — assembles the payload (layers ⊕ policy), runs the Governance Matrix + sovereignty
    filter (e.g. place all three in an `fsi`/`sovereign` zone), validates the graph is a DAG (`RDG-001`).
@@ -92,8 +96,8 @@ applied*:
 4. **Discovered** — per-constituent + composite drift.
 5. **Audit** — every transition is a leaf in the Merkle chain (`AUD-001/002`).
 
-There is **no "LikeC4 provider"** and no meta-orchestrator: DCM's standard machinery places each primitive
-with the appropriate provider, sequences by the dependency graph, and compensates in reverse on failure.
+There is **no "LikeC4 provider"** and no meta-orchestrator: the control plane's standard machinery places each
+primitive with the appropriate provider, sequences by the dependency graph, and compensates in reverse on failure.
 That is the "break the primitives into separate providers on the back end."
 
 ## 4. The loop closes — live diagram from Realized state
@@ -144,20 +148,20 @@ UDLM **does not** model — and shouldn't, per the presentation-agnostic tenet:
 - **Viewer behavior:** interactive zoom across C4 levels, navigation.
 - **Views & dynamic views:** a *view* is a projection (a filtered rendering); a *dynamic view* is a
   narrative (an ordered scenario walk). UDLM holds the graph; views/narratives are **consumer
-  projections** (DAV / viewer territory), not substrate.
+  projections** (viewer territory; DAV's lenses are the example), not substrate.
 
 So LikeC4's *architecture data* is representable in UDLM; its *presentation + views* sit on top as a
-projection layer — the same place DAV's lenses live. Correct boundary, not a deficiency.
+projection layer, the same place a consumer's lenses live. Correct boundary, not a deficiency.
 
 ## The boundary, in one line
 
 | Step | Domain |
 |---|---|
 | LikeC4 model / Composite Service / bindings / edges | **Data** (UDLM) — declarative nouns |
-| LikeC4→Composite-Service mapping, assembly, placement, DAG, implementation, audit | **Policy / DCM** — the verbs |
+| LikeC4→Composite-Service mapping, assembly, placement, DAG, implementation, audit | **Policy / the control plane** — the verbs |
 | Realize each primitive | **Providers** |
 | Realized state → LikeC4 diagram | **Data projection** (a view) |
 
-So: **author in LikeC4 → UDLM Composite Service is the substrate → DCM applies policy + realizes via
-per-primitive providers → visualize back in LikeC4.** One model, design-time and runtime, with governance
-and audit in the middle.
+So: **author in LikeC4 → UDLM Composite Service is the substrate → the control plane applies policy +
+realizes via per-primitive providers → visualize back in LikeC4.** One model, design-time and runtime, with
+governance and audit in the middle.

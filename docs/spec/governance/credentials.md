@@ -29,7 +29,7 @@ permitted/forbidden algorithms, FIPS floors per profile, and certificate protoco
 > declare → select → attest pattern the Placement Engine uses for any resource. A request **declares** what it
 > needs (credential type, scope, assurance); each candidate provider **declares** what it can issue and to what
 > assurance level (its credential capability); the implementation **selects** the provider that meets the profile's
-> trust floor. This is the credential expression of the control plane Trust Model (the control plane `DCM ADR-022`): the control plane is a trust **broker**,
+> trust floor. This is the credential expression of the control plane Trust Model (`DCM ADR-022`): the control plane is a trust **broker**,
 > not a credential authority. See the control plane trust documents for the cross-plane model; this document specifies the
 > UDLM substrate contract — the data model, lifecycle, and provider interface — that the brokering rests on.
 >
@@ -71,7 +71,7 @@ provider:
     supported_algorithms: [rsa-2048, rsa-4096, ecdsa-p256, ecdsa-p384, ed25519]
 ```
 
-The implementation **selects** among providers declaring the needed `Credential.*` type by matching `credential_capability.max_assurance` and `attestation.level` against the profile's required floor (a `sovereign` profile may demand `hardware_attested` + `fips_140_level: 3`), then scoring on the usual placement signals. A provider whose declared (and verified) attestation does not meet the floor is filtered out before selection — a *claim* of capability is not *trust* in it (see the control plane `DCM ADR-022`, attestation ladder).
+The implementation **selects** among providers declaring the needed `credential_type` by matching `credential_capability.max_assurance` and `attestation.level` against the profile's required floor (a `sovereign` profile may demand `hardware_attested` + `fips_140_level: 3`), then scoring on the usual placement signals. A provider whose declared (and verified) attestation does not meet the floor is filtered out before selection — a *claim* of capability is not *trust* in it (see `DCM ADR-022`, attestation ladder).
 
 ---
 
@@ -86,7 +86,7 @@ The implementation **selects** among providers declaring the needed `Credential.
 | `ssh_key` | `CredentialRef` (`ssh_key`) | SSH access to realized infrastructure | P30D–P90D (configurable) | Scheduled or on-demand |
 | `secret` | `CredentialRef` (`secret`) | Arbitrary secret value (password, connection string) | Per type defaults | Scheduled or on-demand |
 | `signing_key` | `CredentialRef` (`signing_key`) | Cryptographic key for signing operations | Per algorithm defaults | Pre-expiry |
-| `encryption_key` | `CredentialRef` (`encryption_key`) | Data-at-rest encryption — per-tenant DEK wrapped by a KEK (envelope encryption); the addressable key a Tenant's `key_bindings` reference and the **crypto-shredding** primitive (destroy the KEK → tenant data unrecoverable; `profile.schema.json` `key_bindings`, GRP-013) | Per algorithm defaults | Pre-expiry, on rotation, or on tenant offboarding |
+| `encryption_key` | `CredentialRef` (`encryption_key`) | Data-at-rest encryption — per-tenant DEK wrapped by a KEK (envelope encryption); the addressable key a Tenant's key bindings reference and the **crypto-shredding** primitive (destroy the KEK → tenant data unrecoverable; GRP-013) | Per algorithm defaults | Pre-expiry, on rotation, or on tenant offboarding |
 | `service_account_token` | — | Workload identity for automated processes | PT1H–PT24H | Automatic; pre-expiry |
 | `database_password` | — | Access credential for realized database resources | PT24H–P7D (configurable) | Scheduled or on-demand |
 | `kubeconfig` | — | Access to realized Kubernetes clusters | PT8H–P30D (configurable) | Scheduled or on-demand |
@@ -103,11 +103,12 @@ The credential-type identifiers above are closed substrate vocabulary used in cr
 A credential is a UDLM Data artifact. Credential metadata is stored by the implementation; credential **values** are held only by the Credential Provider (never in the implementation's stores).
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 credential_record:
   credential_uuid: <uuid>
   credential_type: api_key | x509_certificate | ssh_key | service_account_token |
                    database_password | kubeconfig | hsm_backed_key | dcm_interaction |
-                   jwt | secret | signing_key
+                   jwt | secret | signing_key | encryption_key
 
   # Lifecycle
   status: pending | active | rotating | revoked | expired
@@ -186,10 +187,11 @@ is itself a boundary crossing) at its sharpest, because here the protected value
 submitter already knows. The reason to exclude it is not disclosure to *them*; it is that
 every store the refusal touches becomes a place the secret now lives.
 
-**The remaining architectural question — what a rejecting path does with an intent body that
-has already been received — is open and specified in ADR-049 (credential material at intent
-intake). ADR-049 weighs scan-before-persist against a quarantine buffer, provider-side
-redaction, and intake-time coercion to a reference.**
+**What a rejecting path does with an intent body it has already received is decided in ADR-049
+(credential material at intent intake): the invariant is UDLM's; the mechanism and its rigor are
+delegated to policy and profile. ADR-049's catalogue of mechanisms — scan-before-persist, a
+quarantine buffer, provider-side redaction, intake-time coercion to a reference — is informative,
+not a choice UDLM makes.**
 
 ---
 
@@ -219,9 +221,9 @@ PENDING → ACTIVE → ROTATING → ACTIVE (new value)
 
 ### 4.1 Issuance Flow Contract
 
-A credential a resource needs is **a dependency like any other** — not a bespoke field. When a resource type requires a credential, that is expressed with the **same `requires` relationship** the dependency model uses for every other dependency (see [Entity Relationships](../foundations/entity-relationships.md)). The dependent declares a `requires` edge to a `Credential.*` resource type. Dependency Resolution then issues a sub-request that Placement routes to a provider declaring the matching credential capability. There is no parallel `credential_requirements` mechanism — credentials reuse the dependency graph so that ordering, blast-radius, and lifecycle coupling come for free.
+A credential a resource needs is **a dependency like any other** — not a bespoke field. When a resource type requires a credential, that is expressed with the **same `requires` relationship** the dependency model uses for every other dependency (see [Entity Relationships](../foundations/entity-relationships.md)). The dependent declares a `requires` edge to `CredentialRef` with the needed `credential_type`. Dependency Resolution then issues a sub-request that Placement routes to a provider declaring the matching credential capability. There is no parallel `credential_requirements` mechanism — credentials reuse the dependency graph so that ordering, blast-radius, and lifecycle coupling come for free.
 
-> **Worked example (grounds the use case).** A consumer requests `Machine.VM`. The catalog item for that VM declares `requires: `CredentialRef` (`ssh_key`) (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `CredentialRef` (`ssh_key`) capability at the profile's required assurance** and dispatches to it; **that provider** — not the implementation — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: `CredentialRef` (`secret`) for a database password, or a service that `requires: `CredentialRef` (`x509_certificate`) for mTLS identity. In every case the implementation **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). An implementation never issues a credential itself.
+> **Worked example (grounds the use case).** A consumer requests `Machine.VM`. The catalog item for that VM declares `requires: CredentialRef` with `credential_type: ssh_key` (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `CredentialRef` (`ssh_key`) capability at the profile's required assurance** and dispatches to it; **that provider** — not the implementation — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: CredentialRef` (`credential_type: secret`) for a database password, or a service that `requires: CredentialRef` (`credential_type: x509_certificate`) for mTLS identity. In every case the implementation **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). An implementation never issues a credential itself.
 
 ```
 Consumer requests resource (e.g., Machine.VM)
@@ -229,14 +231,15 @@ Consumer requests resource (e.g., Machine.VM)
   ▼ Layer assembly + policy evaluation
   │   Dependency Resolution reads the type's `requires` edges, e.g.:
   │     requires:
-  │       - resource_type: `CredentialRef` (`ssh_key`)   # ordinary dependency, not a special field
+  │       - resource_type: CredentialRef          # ordinary dependency, not a special field
+  │         credential_type: ssh_key
   │         issued_to: requesting_actor
   │         scope: [ssh_access]
   │
   ▼ Placement selects the Service Provider for the VM
   │
   ▼ After VM implementation: credential sub-request placed against
-  │   providers declaring the `CredentialRef` (`ssh_key`) capability
+  │   providers declaring the CredentialRef (ssh_key) capability
   │   Placement filters on credential_capability (type + assurance +
   │   attestation level ≥ profile trust floor), then scores + selects
   │
@@ -261,7 +264,7 @@ Consumer requests resource (e.g., Machine.VM)
 
 ### 4.2 Interaction Credential Issuance Flow
 
-Interaction credentials carry the **same zero-standing-trust rationale** as every other dispatch in the system (see [Provider Contract](../contracts/provider-contract.md) §provider auth). Each interaction presents a freshly issued, narrowly scoped, short-lived credential rather than a long-lived shared key. A leaked credential therefore expires fast, and every use is attributable and audited. They are issued automatically before each provider interaction:
+Interaction credentials carry the **same zero-standing-trust rationale** as every other dispatch in the system (see [Provider Contract](../contracts/provider-contract.md) §5). Each interaction presents a freshly issued, narrowly scoped, short-lived credential rather than a long-lived shared key. A leaked credential therefore expires fast, and every use is attributable and audited. They are issued automatically before each provider interaction:
 
 ```
 The implementation prepares to dispatch to a provider
@@ -301,7 +304,7 @@ Bootstrap anchor present (out-of-band; single-purpose; short TTL)
   │   From here, ALL credentials flow through registered Credential Providers
 ```
 
-After the handoff the bootstrap path is closed; there is no standing bootstrap credential. The bootstrap anchor is itself a `trust anchor` in the control plane Trust Model sense (the control plane `DCM ADR-022`); its `anchor_type` is selected by profile (homelab may use a TOFU/self-asserted anchor, sovereign demands a hardware-attested one).
+After the handoff the bootstrap path is closed; there is no standing bootstrap credential. The bootstrap anchor is itself a `trust anchor` in the control plane Trust Model sense (`DCM ADR-022`); its `anchor_type` is selected by profile (homelab may use a TOFU/self-asserted anchor, sovereign demands a hardware-attested one).
 
 ---
 
@@ -656,7 +659,8 @@ Response 200:
 This is the full `credential_capability` declaration a provider registers (the summary form appears in §1.2). It is a **capability block on an ordinary provider**, not a distinct provider kind — `max_assurance` and `attestation` are what the implementation selects against (declare-and-select; §4.1).
 
 ```yaml
-credential_capability:        # declared on any provider that issues Credential.* types
+# illustrative: shape of the record, not schema-checked
+credential_capability:        # declared on any provider that issues credentials (CredentialRef)
   # Highest assurance + attestation this provider can satisfy (the select-against fields)
   max_assurance: aal3         # NIST 800-63B AAL (§12.2)
   attestation:

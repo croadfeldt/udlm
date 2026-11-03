@@ -2,13 +2,9 @@
 
 **Related Documents:** [Information Providers](information-providers.md) | [Universal Audit Model](universal-audit.md)
 
->
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md).
-> more of those three abstractions.
->
->
-> The Provider abstraction — Information Provider advanced capabilities.
+> [foundations.md](../foundations/foundations.md). This document details one of them:
+> the Provider abstraction — Information Provider advanced capabilities.
 
 ---
 

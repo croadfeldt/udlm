@@ -6,8 +6,7 @@ reference* to the standard, and the *binding* — but never re-expresses the sta
 portable model. This document formalizes that disposition, the constructs it introduces, and the split
 between what the **Data** model carries and what **Policy** does.
 
-It is the elaboration of **core tenet T5** (`core-tenets.md`). The worked example is cost
-(the 2026-06 registry design trail, retired to git history 2026-08-04): FOCUS + OpenCost, adopted, not absorbed.
+It is the elaboration of **core tenet T5** (`core-tenets.md`). The worked example is cost: FOCUS + OpenCost, adopted, not absorbed.
 
 ## 1. The disposition test — absorb / embed / adopt
 
@@ -174,7 +173,7 @@ the requirement range + the provider matrix are the implementor's inputs; Policy
 ## 5. Worked example — cost (FOCUS + OpenCost)
 
 - **Identity:** the `KubernetesCluster` resource's `uuid`/handle ↔ FOCUS `ResourceId`. UDLM owns this.
-- **Provider matrix:** the cost-SP (`dcm#57`) declares `FOCUS supports ">=1.2 <2.0" preferred 1.4`,
+- **Provider matrix:** the cost provider declares `FOCUS supports ">=1.2 <2.0" preferred 1.4`,
   `OpenCost supports "1.x"` — emit direction.
 - **Requirement:** a chargeback view needs allocation columns → requires `FOCUS >=1.3`.
 - **Policy:** provider at 1.4 → **accept**, bind at 1.4. A different provider that only emits 1.2 →
@@ -190,8 +189,9 @@ the requirement range + the provider matrix are the implementor's inputs; Policy
 - **Policy contract** — version negotiation/translation is a Policy responsibility (§4).
 - **Realized-entity** — the negotiated effective version (+ translation) is provenance (E4).
 
-> Wiring these into the JSON meta-schema / provider-contract schema is the follow-up implementation;
-> this document is the normative contract they implement.
+> These are wired in: `adopts[]` is carried by `registry/class.schema.json` and
+> `registry/resource-type-spec.schema.json`; `adopted_standard_support[]` by
+> `registry/provider-adopted-standards.schema.json`. This document is the normative contract they implement.
 
 ## 7. Other adoption candidates (the pattern generalizes)
 
@@ -232,4 +232,4 @@ gates the register step. This is the end-to-end process the pieces above assume.
 2. **Change the binding once**, at the standard's single home (the [file index](../../file-index.md) says which file owns it), and reference it everywhere else — do not restate it (single-source rule, `SPEC-DESIGN §33`).
 3. The spec change flows through normal versioning ([`VERSIONING.md`](../../../registry/VERSIONING.md)): a breaking change is a SPEC MAJOR, an additive one a MINOR.
 
-**Rule of thumb.** The *decision* lives in the register (one row, immutable, superseded not edited); the *binding* lives in one spec file (referenced, never restated); *version reconciliation* is Policy at runtime. **If a standard is cited in prose but has no register row, that is the gap to close** — register it (this is exactly how RFC 9457 slipped; it is now registered).
+**Rule of thumb.** The *decision* lives in the register (one row, immutable, superseded not edited); the *binding* lives in one spec file (referenced, never restated); *version reconciliation* is Policy at runtime. **If a standard is cited in prose but has no register row, that is the gap to close** — register it.

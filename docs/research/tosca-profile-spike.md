@@ -6,8 +6,10 @@ exit-1): (1) *does the UDLM type contract round-trip to a standard TOSCA node ty
 proof — and (2) *should we "just extend TOSCA" instead of keeping the model?* Feeds the interop track (task
 #54). **Method:** derive a candidate TOSCA v2.0 node type directly from the shipped
 `Compute.VM@0.6.4` spec (properties, outputs, relationships), then record what mapped cleanly,
-what was awkward, and what TOSCA has no native home for. This is a **paper mapping**, not a run through an
-orchestrator — see *Limits*.
+what was awkward, and what TOSCA has no native home for. The class has since been renamed `Machine.VM`;
+the spec version named here is the one the spike ran against. The original mapping was done on paper;
+the tool described in the update below has since round-tripped every type spec. Nothing has been run
+through an orchestrator; see *Limits*.
 
 ## Update — Q1 is now **mechanical**, across the whole registry
 
@@ -123,14 +125,15 @@ defect. This is positive evidence for [`../guides/implementing-a-resource-type.m
 1. **Adopt the finding, not a build:** record "TOSCA = interop-profile target for the type/topology layer;
    the lifecycle + sovereignty + attestation are the retained delta" as the interop-track (#54) starting
    position. A full generator is post-1.0.
-2. **If eng wants the stronger proof:** the next increment is a *round-trip* — emit this node type from the
-   spec by tool, ingest it back, and diff — which would move Q1 from "paper" to "by tooling." Small, and it
-   would harden the implementability claim.
+2. **The stronger proof, a round-trip by tool:** done. `registry/tools/tosca_emit.py` emits the node
+   type from the spec, ingests it back, and diffs (see the update at the top). Q1 moved from "paper" to
+   "by tooling."
 
 ## Limits (honest scope)
 
-Paper mapping of **one** type by hand — not run through an orchestrator, not round-tripped by tooling, not
-covering composite/Process/Knowledge families. The clean rows are high-confidence (grammar is close); the
-"awkward/absent" rows are the defensible core, but the *exact* extension shape (metadata vs `policy_type` vs
-a TOSCA profile namespace) is unsettled and is itself part of task #54. No claim survives for TOSCA
-**workflows** modelling the full convergence loop — untested here.
+The mapping began as **one** type by hand; `tosca_emit.py` has since round-tripped every shipped type spec
+on the type + topology layer. Still not done: a run through an orchestrator, and the composite, Process and
+Knowledge families. The clean rows are high-confidence (grammar is close). The "awkward/absent" rows are
+the defensible core, but the *exact* extension shape (metadata vs `policy_type` vs a TOSCA profile
+namespace) is unsettled and is itself part of task #54. No claim survives for TOSCA **workflows**
+modelling the full convergence loop; that is untested here.

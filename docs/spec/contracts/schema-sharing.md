@@ -48,7 +48,7 @@ format. JSON Schema is the normative wire format for:
 - Policy contract extensions
 - Credential type extensions
 - Location layer type extensions
-- Custom error code `details` field schemas
+- Custom error-code context-member schemas ([`error-model.md`](error-model.md) §2)
 - Any other udlm-extensible artifact
 
 JSON Schema is chosen for: maturity, broad tooling support, ability to express
@@ -79,8 +79,8 @@ that catalogs all its declared types and extensions.
   "published_at": "2026-05-26T14:32:18Z",
   "manifest": {
     "entity_types": [
-      { "id": "Machine.VM", "version": "0.3.0", "schema_url": "/schemas/entity_types/Machine.VM/0.3.0" },
-      { "id": "IPAddress", "version": "0.2.0", "schema_url": "/schemas/entity_types/Network.IPAddress/0.2.0" }
+      { "id": "Machine.VM", "version": "2.4.1", "schema_url": "/schemas/entity_types/Machine.VM/2.4.1" },
+      { "id": "IPAddress", "version": "0.14.1", "schema_url": "/schemas/entity_types/IPAddress/0.14.1" }
     ],
     "event_types": [
       { "id": "request.scheduled", "version": "1.0.0", "schema_url": "/schemas/event_types/request.scheduled/1.0.0" }
@@ -102,7 +102,7 @@ that catalogs all its declared types and extensions.
 | `bundle_uuid` | UUID identifying this bundle release |
 | `bundle_version` | Semver for the bundle as a whole |
 | `implementation` | Self-description of the publishing peer |
-| `implementation.udlm_version` | Which udlm SPEC version this bundle conforms to — the `conforms_to` form `udlm/<MAJOR.MINOR>` (VERSIONING.md; SPEC is `MAJOR.MINOR`, not `MAJOR.MINOR.REVISION`) |
+| `implementation.udlm_version` | Which udlm SPEC version this bundle conforms to — the `conforms_to` form `udlm/<MAJOR.MINOR>` (`registry/VERSIONING.md`; SPEC is `MAJOR.MINOR`, not `MAJOR.MINOR.REVISION`) |
 | `published_at` | RFC 3339 instant, UTC-normalized (`Z`), seconds precision minimum (common-elements.md §8) |
 | `manifest` | Categorized list of all schemas in the bundle, with per-schema versions |
 
@@ -244,12 +244,14 @@ in `registry/generated/`, each already carrying a canonical `$id` of the form
 `https://udlm.dev/registry/udlm/0.1/policy.schema.json`). That `$id` **is** the
 canonical URL a bundle references; `validate_registry.py` enforces that a spec's
 `$id` spec-segment matches its `conforms_to`, so the core-schema URLs move with
-the spec version at the 0.1→1.0 cutover (VERSIONING.md). The baseline includes:
+the spec version at the 0.1→1.0 cutover (`registry/VERSIONING.md`). The baseline includes:
 
-- The record schemas — `state-record`, `entity-view`, `bundle`, `policy`, `catalog-item`,
-  `layer`, `decision-record`, `audit-record`, `audit-leaf`, `commit-log-entry`,
-  `regeneration-manifest`, `finding-routing-record`,
-  `function-capability-matrix`, `provider-adopted-standards`, and the
+- The record schemas — every `registry/*.schema.json`: `state-record`, `entity-view`, `policy`,
+  `layer`, `profile`, `decision-record`, `audit-record`, `audit-leaf`, `commit-log-entry`,
+  `log-checkpoint`, `regeneration-manifest`, `finding-routing-record`,
+  `function-capability-matrix`, `provider-adopted-standards`, `composition`,
+  `composition-record`, `conformance-declaration`, `evaluation-context`,
+  `registration-verdict` and the rest of that directory — and the
   `resource-type-spec` meta-schema.
 - The identifier forms (`identifier-scheme.md`: UUID, handle, reference) and the
   timestamp discipline (RFC 3339, UTC `Z`, seconds precision minimum —
@@ -260,7 +262,7 @@ These are the **shared vocabulary** every peer can assume. An implementation's b
 manifest lists only its *own* extensions on top of this baseline; it does not
 re-publish the core. The bundle-manifest shape itself (§3) is the normative
 structure; publishing it as a machine-validatable `schema-bundle.schema.json` is
-a tracked follow-on tied to the conformance suite (../registry/UDLM-0.1-SCOPE.md §6).
+a tracked follow-on tied to the conformance suite (`registry/UDLM-0.1-SCOPE.md` §6).
 
 ---
 

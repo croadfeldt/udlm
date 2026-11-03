@@ -6,7 +6,12 @@ session**, to be run with the maintainer.
 (the DAV review console, `croadfeldt/dav`) rather than against reasoning alone.
 **Feeds:** ADR-038 (scoped Base/Type/Provider Classes; "Naming depth — unbounded, but governed"),
 `registry/class.schema.json`, `docs/spec/contracts/provider-contract.md` (capability declaration),
-and the spec section that does not yet exist (see *What this unblocks*).
+and the spec section that did not yet exist (see *What this unblocks*).
+
+**What has happened since.** The session ran and the premise held. The spec section now exists
+(`docs/spec/foundations/class-tiers.md`, `CLS-001`–`CLS-008`), the depth cap is three (row 070),
+and `Compute` became `Machine` (rows 069–073). Measurements below are as of the date above;
+`resource-type-hierarchy.md`, cited below, no longer exists.
 
 ## The premise under test
 
@@ -99,10 +104,11 @@ Two counts settle the premise: **how many cases needed a fourth level after filt
 
 A ruling here feeds four pieces of work, in this order:
 
-1. A normative spec section defining the three tiers — what each is, what may live at each, that an
-   opinion is legal only at Provider (NDF-001 depends on this), and that a consumer or provider may
-   bind at Base or Type. This is the piece that stops ADR-038 from being load-bearing: a decision
-   record is immutable by rule, so a model that lives only there cannot be corrected in place.
+1. A normative spec section defining the three tiers: what each is, what may live at each, and
+   that an opinion is legal only at Provider (NDF-001 depends on this). It also says that a consumer
+   or provider may bind at Base or Type. This is the piece that stops ADR-038 from being
+   load-bearing: a decision record is immutable by rule, so a model that lives only there cannot be
+   corrected in place.
 2. Portability as the stated base-class test, with `Compute` as the worked example of what it
    catches.
 3. A fix to both provider-contract projection comments, so they describe what they already show.
