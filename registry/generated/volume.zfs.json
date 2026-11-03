@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.8.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.8.2",
   "conforms_to": "udlm/0.1",
   "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f",
   "resource_type": "Volume.ZFS",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "ZFS Volume",
-    "description": "A ZFS dataset or zvol, a dialect of Volume (CLS-004): the consumer orders a volume and ZFS is how one host-local provider realizes it — a mounted dataset when `volume_mode` is filesystem, a zvol when block. Inherits capacity (the quota or volsize), access mode and volume mode; adds the ZFS-native mountpoint, reported usage and passthrough properties. Carved from a StoragePool, it cannot outlive its pool; datasets nest. Snapshot and replication policy belongs to the control plane, not here.",
+    "description": "A ZFS dataset or zvol, a dialect of Volume (CLS-004): the consumer orders a volume and ZFS is how one host-local provider realizes it — a mounted dataset when `volume_mode` is filesystem, a zvol when block. Inherits capacity (the quota or volsize), access mode and volume mode; adds the ZFS-native mountpoint, reported usage and passthrough properties. Carved from a StoragePool, it cannot outlive its pool; datasets nest. A `zfs receive` target says what it replicates with the inherited `replica_of`; snapshot and replication policy belongs to the control plane, not here.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z",
     "generated": true,
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Volume",
-          "version": "0.17.0",
+          "version": "0.18.0",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         },
         {
           "class": "Volume.ZFS",
-          "version": "0.8.1",
+          "version": "0.8.2",
           "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f"
         }
       ]
@@ -75,6 +75,10 @@
       "data_source": {
         "$ref": "../common-elements.schema.json#/$defs/Reference",
         "description": "What the volume is filled from when it is created: a VolumeSnapshot (a restore) or another Volume (a clone). Absent means it starts empty."
+      },
+      "replica_of": {
+        "$ref": "../common-elements.schema.json#/$defs/Reference",
+        "description": "The Volume this one is a continuously refreshed copy of."
       },
       "mountpoint": {
         "type": "string",
@@ -146,6 +150,13 @@
       "name": "restored_from",
       "cardinality": "0..1",
       "description": "The snapshot this volume was filled from (spec.data_source names it). Lineage, read at provisioning."
+    },
+    {
+      "edge_type": "references",
+      "target": "Volume",
+      "name": "replica_of",
+      "cardinality": "0..1",
+      "description": "The volume this one replicates (spec.replica_of names it). Declared on the replica, so a source never lists its copies."
     },
     {
       "edge_type": "references",

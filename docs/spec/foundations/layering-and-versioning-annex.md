@@ -162,41 +162,12 @@ provider_registration:
 
 **Cache invalidation:** Service Layer Cache entries carry the layer version. When the registered layer version increments, the cache entry is invalidated and refreshed before the next assembly.
 
-### 13.3 Conditional Layer Inclusion (Q23)
+### 13.3 Conditional Layer Inclusion (Q23) — superseded
 
-Layers may declare an `activation_condition` — a field comparison evaluated during **Step 2 (Layer Resolution)**. Layers whose condition evaluates false are excluded from the candidate set.
-
-```yaml
-layer:
-  handle: "platform/compute/gpu-config"
-  activation_condition:
-    field: request.gpu_requested
-    operator: equals
-    value: true
-```
-
-**Compound conditions:**
-```yaml
-activation_condition:
-  conditions:
-    operator: and   # and | or
-    rules:
-      - field: request.gpu_requested
-        operator: equals
-        value: true
-      - field: request.resource_class
-        operator: in
-        value: [ml-training, gpu-compute]
-```
-
-**Condition field scope** — activation conditions may reference:
-- Request fields (`request.gpu_requested`)
-- Tenant attributes (`tenant.tags`, `tenant.profile`)
-- Resource type fields (`resource_type.version`)
-- Core Layer fields already resolved in Step 1 (`core_layers.location_region`)
-- Ingress fields (`ingress.actor.roles`) — enabling role-specific layers
-
-**Condition vs consumer exclusion:** Conditional inclusion is declared by the layer author and evaluated automatically. Consumer exclusion (Q21) is declared at request time by the consumer. Both result in the layer being absent from the candidate set — but for different reasons, recorded differently in provenance.
+There is no `activation_condition`. Where a layer applies is said by `covers` and `applies_on`, a
+URF filter UDLM owns. A condition on request data is a policy decision, and the policy engine owns
+its own comparison language (ADR-065). The assembly engine therefore owns no predicates of its own
+(maintainer ruling 2026-11-03, #392).
 
 ### 13.4 Layer Chain and Service Dependencies (Q24)
 

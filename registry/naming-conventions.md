@@ -54,7 +54,7 @@ Three terms here are easy to collide; keep them distinct.
   scoped to a resource-type **Category** (§2, the domain). Declared explicitly by the provider; organized by
   the governed **provider-capability taxonomy** (a `TaxonomyTerm` subtree under the `provider-capability` root,
   `registry/taxonomies/provider-capability.yaml`). This is **not** the Knowledge-family
-  **`Capability [Knowledge]`** — that is DAV's *architecture-capability* sense ("what an architecture
+  **`Capability [Knowledge]`** — that is the Knowledge family's *architecture-capability* sense ("what an architecture
   provides," `docs/spec/foundations/knowledge-family.md §4.1`), a **disjoint** `TaxonomyTerm` subtree under
   `architecture-capability`. One shared `TaxonomyTerm` **type**, two disjoint subtrees; parent chains never cross.
 - **Capability category** — a **(verb × §2-Category)** term in the provider-capability taxonomy (e.g.

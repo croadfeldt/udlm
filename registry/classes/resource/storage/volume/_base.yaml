@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Volume/0.17.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Volume/0.18.0
 conforms_to: udlm/0.1
 uuid: aff9e319-cfb9-44da-8c35-fa47f3ea6270
 record_type: class
 class: base
 resource_type: Volume
-version: 0.17.0
+version: 0.18.0
 family: Resource
 status: active
 filed_under:
@@ -102,6 +102,19 @@ elements:
       $ref: ../../../../common-elements.schema.json#/$defs/Reference
       description: 'What the volume is filled from when it is created: a VolumeSnapshot (a restore) or another
         Volume (a clone). Absent means it starts empty.'
+  - element: replica_of
+    scope: Volume
+    optional: true
+    state: proposed
+    description: 'The Volume this one is a continuously refreshed copy of: a ZFS send/receive target, a Ceph RBD
+      mirror, a storage array''s async replica. Unlike `data_source` (filled once at creation), a replica keeps
+      following its source. Read by restore and disaster-recovery planning (where the copies of a volume are), by
+      the monitoring that alerts when a replica falls behind (its targets derive from these pairs), and by drift
+      checks (a replica is written only by replication). How often and how far back it replicates is policy, held
+      by the control plane, not here. The matching edge is `replica_of`.'
+    schema:
+      $ref: ../../../../common-elements.schema.json#/$defs/Reference
+      description: The Volume this one is a continuously refreshed copy of.
 spec_examples:
   - capacity: 500Gi
     access_mode: read_write_once
@@ -143,6 +156,12 @@ relationships:
     name: restored_from
     cardinality: 0..1
     description: The snapshot this volume was filled from (spec.data_source names it). Lineage, read at provisioning.
+  - edge_type: references
+    target: Volume
+    name: replica_of
+    cardinality: 0..1
+    description: The volume this one replicates (spec.replica_of names it). Declared on the replica, so a source
+      never lists its copies.
   - edge_type: references
     target: Volume
     name: cloned_from
@@ -189,4 +208,5 @@ context:
     - StorageCluster — the platform provisioning it.
     - Machine — the machine whose named disk it realizes (`realizes_disk`).
     - VolumeSnapshot — a point-in-time copy it can be restored from (`data_source`).
+    - Volume — the volume it replicates (`replica_of`), or the replicas that follow it.
     - Database — databases whose data directory it backs.
