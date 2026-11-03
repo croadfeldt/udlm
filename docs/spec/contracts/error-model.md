@@ -175,10 +175,10 @@ mechanism that would make the reference legal (the grant), never the target's at
 
 The same directional rule covers the create-time collision oracle: `validation.uuid_collision`
 (409) reveals that *some* entity holds a submitted identifier, and an actor who deliberately
-submits foreign UUIDs at create time can probe existence one identifier at a time. A
+submits foreign UUIDs at create time can probe existence one identifier at a time. An
 implementation MUST emit `validation.uuid_collision` identically — same `type`, `status`,
-`detail`, timing — whether the colliding entity is inside or outside the actor's scope, and
-each such refusal writes its `REFUSE` record, so a probing pattern is legible in audit as an
+`detail`, timing — whether the colliding entity is inside or outside the actor's scope. Each
+such refusal writes its `REFUSE` record, so a probing pattern is legible in audit as an
 enumeration attempt rather than invisible in an error branch. (Legitimate v4 collisions are
 vanishingly rare; a run of them from one actor is signal, not noise.) See
 `docs/spec/foundations/entity-relationships.md` §6 (`XTA-006` — the cross-tenant refusal contract).
@@ -256,11 +256,11 @@ can find the full audit context. See [`universal-audit.md`](universal-audit.md).
 ### 6a. The refusal contract — what a rejection owes its reader
 
 A refusal is a product, not an absence of one. Rejecting a request is the substrate's most
-consequential output on the paths that matter most — a crossing that must not happen, a secret
-that must not land, a provider that must not be handed work it cannot do — and a rejection that
-is untyped, unexplained, leaky, or unrecorded fails the operator even though the dangerous
-thing did not happen. Four obligations apply to **every** refusal emitted on an interop
-surface, whatever the surface:
+consequential output on the paths that matter most: a crossing that must not happen, a secret
+that must not land, a provider that must not be handed work it cannot do. A rejection that is
+untyped, unexplained, leaky, or unrecorded fails the operator even though the dangerous thing
+did not happen. Four obligations apply to **every** refusal emitted on an interop surface,
+whatever the surface:
 
 1. **Typed.** The refusal carries a `type` from the closed vocabulary (§3) that names the
    *violation class*, matchable without parsing prose. A violation reported under a code that
@@ -290,11 +290,11 @@ must-reject corpus exists to catch, which is why every case's success criteria e
 four rather than asserting "the request is rejected".
 
 **The audit record of a refusal excludes what the refusal protected.** §6 requires the audit
-record to carry the problem `detail`, and `detail` MAY carry sensitive occurrence text (§2) —
-a tension that resolves in one direction on the refusal path: where the refused content is
+record to carry the problem `detail`, and `detail` MAY carry sensitive occurrence text (§2).
+That tension resolves in one direction on the refusal path. Where the refused content is
 itself the protected thing (credential material, a masked field's value, a foreign tenant's
-attributes), the emitter MUST NOT place it in `detail`, and the audit record therefore carries
-a `detail` that never held it. Field *paths*, violation classes, and rule identities are
+attributes), the emitter MUST NOT place it in `detail`. The audit record therefore carries a
+`detail` that never held it. Field *paths*, violation classes, and rule identities are
 recorded; values are not. This is the existing hash-only discipline of the audit leaf
 (`universal-audit.md` §8 — leaves carry field paths and value hashes, never values) applied to
 the error path that feeds it.
@@ -334,7 +334,7 @@ This is the exfiltration-via-the-error-channel problem, and it is not hypothetic
 model — the substrate's own error surfaces reach for exactly the content the refusal was
 protecting. A policy denial's structural-validation output names failing field paths
 (`docs/spec/contracts/policy-contract.md` §11 — `field_results` "included in consumer error response",
-now guarded by §11's egress clause), and this document's own §2 example originally explained an
+now guarded by §11's egress clause). This document's own §2 example originally explained an
 unrecognized scope by enumerating every known one in a `scopes_known` member — helpful, and an
 enumeration of protected structure. Both shapes are the reason this rule exists.
 
@@ -348,9 +348,9 @@ The rule, applied to every refusal on every surface:
   actionable. Listing the fields, scopes, or entities the actor did *not* name — the
   `scopes_known` shape — discloses the protected set and is prohibited on any surface where
   that set is itself governed. Where enumeration is genuinely useful and genuinely
-  unprotected — the declared outputs of a producer type the actor is entitled to bind against,
-  the capabilities a provider publicly declares — it is permitted and expected, because that
-  content is already the actor's to read.
+  unprotected, it is permitted and expected, because that content is already the actor's to
+  read. Examples: the declared outputs of a producer type the actor is entitled to bind
+  against, and the capabilities a provider publicly declares.
 - **Filtering happens before serialization, not after.** The guard runs on the refusal
   *object*, so the pre-guard form never exists on the wire.
 - **The same rule governs the audit record** (§6a), because the audit store is a different

@@ -22,7 +22,7 @@ This document specifies the **substrate contract** by which Service Providers au
 - Notification status polling
 - Lifecycle event reporting
 
-The substrate contract is deliberately **mechanism-neutral**. UDLM defines *what* must be authenticated and *what* properties the authentication must guarantee; specific cryptographic mechanisms (mTLS, signed JWTs, hardware-bound assertions, HSM-attested tokens, etc.) are implementation choices that MUST be declared via the [schema-sharing protocol](schema-sharing.md) so that federation peers can interoperate.
+The substrate contract is deliberately **mechanism-neutral**. UDLM defines *what* must be authenticated and *what* properties the authentication must guarantee. Specific cryptographic mechanisms (mTLS, signed JWTs, hardware-bound assertions, HSM-attested tokens, etc.) are implementation choices that MUST be declared via the [schema-sharing protocol](schema-sharing.md) so that federation peers can interoperate.
 
 This means: a UDLM peer implementation MAY choose mTLS + interaction-credential (the control plane implementation's choice), or it MAY choose signed JWTs with replay protection, or any other two-factor mechanism that satisfies the contract below. Conformance is at the contract level, not the mechanism level.
 
@@ -88,8 +88,11 @@ The substrate requires that a UDLM implementation attest provider identity at re
 At registration, the implementation MUST capture verifiable identity-binding material for the provider. This material MUST be:
 
 - Cryptographically bound (the provider must demonstrate possession of a private key or equivalent)
+
 - Verifiable on every subsequent inbound call
+
 - Subject to rotation (the implementation MUST support rotation of identity material on a declared interval)
+
 - Subject to revocation (the implementation MUST be able to revoke the identity binding)
 
 The specific format (X.509 certificate, signed JWT key pair, HSM key, ed25519 signing key, etc.) is an implementation choice. The provider's registration record MUST include a mechanism declaration so federation peers can resolve verification.
@@ -110,8 +113,11 @@ Verification failure MUST result in rejection (connection refusal, 401, or equiv
 Providers MUST rotate Layer 1 identity material on the declared rotation interval. The substrate requires:
 
 - A pre-expiry warning is issued at a declared lead time (e.g., P14D for long-lived certificates)
+
 - A transition window during which both old and new identity material are accepted
+
 - After the transition window, only the new identity material is accepted
+
 - All rotations are audited
 
 ### 4.4 Identity Binding Is Not Operation Authorization
@@ -289,8 +295,11 @@ registration_token:
 ### 8.2 Bootstrap Invariants
 
 - The registration token is single-use. A token marked `used: true` MUST NOT be reused regardless of its `expires_at`.
+
 - The Layer 1 identity factor MUST also be enforced on the registration call — the provider must demonstrate possession of the identity material it is registering.
+
 - If a provider needs to re-register with a sovereignty declaration change, a new registration token is required (treated as a new registration requiring fresh approval).
+
 - Version and capability updates do NOT require a new registration token — the existing callback credential authenticates such re-registration calls.
 
 ---
@@ -332,8 +341,11 @@ Platform admin (or automation) triggers revocation:
 Components that validate inbound credentials MUST maintain a local revocation cache:
 
 - Cache populated from the substrate's revocation event stream
+
 - Cache TTL bounded by the maximum credential lifetime for the active profile
+
 - On cache miss: remote check against the revocation registry (prevents stale cache from accepting revoked credentials)
+
 - Cache invalidation is immediate on revocation event receipt (not TTL-based)
 
 The revocation cache MUST ensure revocation propagates within the profile-governed SLA (PT30S standard; PT15S sovereign).

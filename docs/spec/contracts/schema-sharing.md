@@ -15,10 +15,10 @@
 
 Schema-sharing is a **peer-to-peer, machine-to-machine** protocol between
 implementations — not a user-facing surface. Consumers use the service catalog and
-admins/SREs author types in their own deployment; this contract exists so that
-when one implementation federates or ingests data carrying a type another peer was
-never compiled against, the receiving peer can fetch the sender's schema (from
-`/.well-known/udlm/schema-bundle`) and validate it on the fly. It is the
+admins/SREs author types in their own deployment. This contract exists for one
+case: one implementation federates or ingests data carrying a type another peer
+was never compiled against. The receiving peer can then fetch the sender's schema
+(from `/.well-known/udlm/schema-bundle`) and validate it on the fly. It is the
 interop layer under the catalog, not a replacement for it.
 
 A peer implementation may extend udlm with custom resource types, custom event
@@ -183,11 +183,14 @@ has never seen before — it learns the schema on demand.
 To avoid round-trips on every interaction:
 
 - Peers MAY cache remote schema bundles.
+
 - Cached bundles MUST be revalidated when the source peer publishes a new
   bundle version (via federation event `schema.bundle_updated`, see
   [`event-catalog.md`](event-catalog.md)).
+
 - The bundle endpoint MUST honor HTTP caching headers (ETag, If-None-Match)
   for HTTP transports.
+
 - Per-schema URLs MUST be immutable for a given `(id, version)` tuple.
 
 ---
@@ -213,10 +216,14 @@ schema and validation requirements.
 A schema in a published bundle MUST:
 
 - Use JSON Schema Draft 2020-12.
+
 - Declare `$id` matching its `schema_url` in the bundle manifest.
+
 - Declare `$schema` (the meta-schema URL).
+
 - Be self-contained or reference only other schemas in the same bundle or in
   the udlm core schemas.
+
 - NOT reference internal-only schemas (those scoped to the implementation).
 
 A schema MAY:
@@ -262,12 +269,18 @@ a tracked follow-on tied to the conformance suite (../registry/UDLM-0.1-SCOPE.md
 A conformant implementation MUST:
 
 - Publish a schema bundle at `/.well-known/udlm/schema-bundle`.
+
 - Publish individual schemas at the URLs declared in the bundle manifest.
+
 - Use JSON Schema Draft 2020-12 for all schemas.
+
 - Honor semver for schema versioning.
+
 - Reject incompatible-version interactions with `schema.version_incompatible`.
+
 - Reject unknown-type data with `schema.unknown_type` (where required fields)
   or downgrade gracefully (optional fields).
+
 - Cache remote bundles correctly and revalidate on update notifications.
 
 ---
@@ -275,11 +288,19 @@ A conformant implementation MUST:
 ## 12. Related contracts
 
 - [`identifier-scheme.md`](identifier-scheme.md) — UUIDs and references in bundles
+
 - [`time-and-clock.md`](time-and-clock.md) — `published_at` timestamps
+
 - [`error-model.md`](error-model.md) — `schema.*` error codes
+
 - [`event-catalog.md`](event-catalog.md) — `schema.bundle_updated` federation event
+
 - [`layering-and-versioning.md`](../foundations/layering-and-versioning.md) — semver conventions
+
 - [`provider-contract.md`](provider-contract.md) §8–10 — broader capability declaration mechanism
+
 - [`provider-contract.md`](provider-contract.md) — provider schemas in the bundle
+
 - [`policy-contract.md`](policy-contract.md) — policy schemas in the bundle
+
 - [`CONFORMANCE.md`](../../../CONFORMANCE.md) — conformance declaration that complements the bundle

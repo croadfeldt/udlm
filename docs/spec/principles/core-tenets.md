@@ -9,10 +9,10 @@ question: **where does logic live?**
 ## The north star — removal of toil through enablement
 
 Above every tenet sits the project's north star (maintainer, enshrined 2026-07-25): **the
-primary goal is removal of toil through enablement.** The model surfaces what changed and what
-it touches, computed from structure and provenance rather than compiled by hand; the
-organization decides its response through declared policy; the platform enables that response
-— automated, approved, delayed, skipped, or a shape these documents never anticipated. Defaults
+primary goal is removal of toil through enablement.** The model surfaces what changed and what it
+touches, computed from structure and provenance rather than compiled by hand. The organization
+decides its response through declared policy. The platform enables that response — automated,
+approved, delayed, skipped, or a shape these documents never anticipated. Defaults
 and best practices are provided and advisory; an organization that adds ceremony or complexity
 beyond them is exercising exactly the control the platform exists to enable, and their chosen
 complexity must cost **declaration, not labor**. Every design decision in this registry answers
@@ -91,7 +91,7 @@ an explicit, governable edge, not an opaque expression.
 
 ## T5 — Adopt external standards by reference, not absorption
 When a credible external standard already models a domain's data — **FOCUS** for cost/usage, **OpenCost**
-for Kubernetes allocation, **OSCAL** for compliance, **SCIM** for identity — UDLM **adopts** it: it
+for Kubernetes allocation, **OSCAL** for compliance, **SCIM** for identity — UDLM **adopts** it. UDLM
 carries the *identity* (the join key), a *version-pinned conformance reference*, and the *binding*, but
 **never re-expresses the standard's schema** in the portable model. *Absorbing* (a parallel UDLM type)
 or *embedding* (baking the fields into every entity) duplicates an external system's data and its
@@ -103,7 +103,7 @@ enforcing, and translating between versions is Policy** (T2), and the negotiated
 recorded as provenance. The full disposition, constructs, and the version-negotiation contract are in
 `adopted-standards.md`. **This is an active review gate, not advice:** redefining a concept a credible
 standard already solves — API versioning, auth/identity, DR objectives (RTO/RPO), health probes — is a
-**review finding**; the default is "adopt by reference or justify why not" (`SPEC-DESIGN-REQUIREMENTS`
+**review finding**. The default is "adopt by reference or justify why not" (`SPEC-DESIGN-REQUIREMENTS`
 Design principles).
 
 ## T6 — Pre-validated outcomes, not testing during incidents
@@ -111,8 +111,8 @@ A declared resilience outcome (survive DR / move / rehydrate within an RTO/RPO) 
 **continuously validated**, not asserted. So **process validation is a lifecycle, not an event**: the
 operational processes that satisfy an outcome (migration, failover, rehydration) are **rehearsed on a
 cadence** — `simulated` (synthetic, schema-conformant, non-sensitive data, sovereignty-safe) or
-`rehearsal` (real data to a reversible target) — each run producing **validation evidence** that backs
-the claim, with **freshness** (a claim un-rehearsed within its cadence goes *stale*) and a **finding** on
+`rehearsal` (real data to a reversible target). Each run produces **validation evidence** that backs the
+claim, with **freshness** (a claim un-rehearsed within its cadence goes *stale*) and a **finding** on
 failure. The consequence: **a real incident executes an already-validated path — it *validates the
 outcome*, it does not *test an unknown*.** The cadence is driven by the workload's declared *criticality*
 (data, consumer-set); whether to *gate* on stale validation (e.g. refuse to place a critical workload on
@@ -123,30 +123,31 @@ validation layer — **valid spec** (CONFORMANCE) + **valid data** (valid-by-con
 
 ## T7 — Reach for an existing mechanism before coining a new one
 Before introducing a new primitive — a "module", a new field family, a new envelope, a parallel type —
-first try to **compose it from mechanisms the model already has**: classification tags, profiles
-(ADR-007), provider capability declaration (ADR-PROV-002), conformance tiers, must-ignore-unknown, object
-references, and typed edges. Most "we need a new X" is an existing mechanism under a new name, and a
-coined primitive is permanent surface — every peer must implement it and every reader must learn it.
+first try to **compose it from mechanisms the model already has**. The existing mechanisms are
+classification tags, profiles (ADR-007), provider capability declaration (ADR-PROV-002), conformance
+tiers, must-ignore-unknown, object references, and typed edges. Most "we need a new X" is an existing
+mechanism under a new name, and a coined primitive is permanent surface — every peer must implement it
+and every reader must learn it.
 **This is an active review gate, not advice:** a PR that introduces a net-new mechanism must show, in its
-*Why*, that no existing mechanism (or composition of them) covers the need — otherwise the finding is
-"reduce to existing." (This is exactly how ADR-029 dropped a proposed "inventory module" in favor of a
-`classification` tag + profile inclusion + capability declaration + an optional conformance tier.) T5 is
-this tenet aimed **outward** — don't re-express an external standard; T7 aims it **inward** — don't
+*Why*, that no existing mechanism (or composition of them) covers the need. Otherwise the finding is
+"reduce to existing". This is exactly how ADR-029 dropped a proposed "inventory module" in favor of a
+`classification` tag + profile inclusion + capability declaration + an optional conformance tier. T5 is
+this tenet aimed **outward** — don't re-express an external standard. T7 aims it **inward** — don't
 multiply internal primitives. Occam's razor as a contract obligation.
 
 **The rule, stated positively: extend before net-new — where feasible, possible, and mutually
 beneficial, while balancing complexity.** The default is to *extend an existing concept* (add an
-attribute, a nature, a scope, a tier) rather than add a parallel one — but it is a balance, not a
-dogma: extend when the existing concept genuinely covers the need and the extension keeps it
-coherent; go net-new when forcing the fit would *over-complicate* the existing concept or bend its
+attribute, a nature, a scope, a tier) rather than add a parallel one. But it is a balance, not a
+dogma. Extend when the existing concept genuinely covers the need and the extension keeps it
+coherent. Go net-new when forcing the fit would *over-complicate* the existing concept or bend its
 meaning. The test is total surface and clarity, not primitive count for its own sake. Worked
 exemplar (2026-07-27): the intent-fulfillment model needed "peer atomicity" (all-or-none over
-members that don't operationally depend on each other). The first instinct was a parallel
-`atomic` flag; asking *"do we already have something that expresses this?"* reduced it to a
-**nature on the existing dependency edge** (request vs operational) — atomicity became a
-request-layer dependency, not a new mechanism, and the whole best_effort/all_or_nothing axis
-dissolved. Extending the dependency concept was feasible, mutually beneficial (it also gave
-hold-all activation for free), and *lowered* complexity — exactly the balance this tenet asks for.
+members that don't operationally depend on each other). The first instinct was a parallel `atomic`
+flag. Asking *"do we already have something that expresses this?"* reduced it to a **nature on the
+existing dependency edge** (request vs operational). Atomicity became a request-layer dependency,
+not a new mechanism, and the whole best_effort/all_or_nothing axis dissolved. Extending the
+dependency concept was feasible, mutually beneficial (it also gave hold-all activation for free), and
+*lowered* complexity — exactly the balance this tenet asks for.
 
 **A field earns its place.** A field is surface too, and the same test applies at the smallest
 scale: every field needs a genuine use case and an operational benefit. Before adding one, and when
@@ -174,7 +175,7 @@ a best-of-breed tool already provides. The **naturalization boundary** (DCM ADR-
 Provider translates generic intent into the tool's native form and reports realized state back, so the tool
 stays swappable and the substrate stays generic. **This is an active review gate, not advice:** a proposal
 for the control plane to directly build / scan / sign / deploy must show that no existing tool can be wrapped
-as a Provider — otherwise the finding is "wrap it, don't build it." The control plane's value is the layer
+as a Provider. Otherwise the finding is "wrap it, don't build it". The control plane's value is the layer
 no single tool owns: the **cross-tool intent** and the **estate / realized graph**. Litmus — *does a mature
 tool own this mechanism?* → Provider-wrap it; *does anyone own the cross-tool intent + estate graph?* → no →
 that's ours.

@@ -23,6 +23,7 @@ Cost is a **two-way** contract between a UDLM-conformant implementation (e.g. Th
 ```
 
 - **Outbound (the substrate and its control plane → engine):** for a resource, the implementation hands the engine (a) the `priced_by` cost-model reference and (b) the resolved values of the resource's meterable dimensions. This is the "give the engine a method to look up resource data."
+
 - **Inbound (engine → the substrate and its control plane):** the engine returns cost (`cost.attributed`, provider-contract §10), which the implementation **consumes** — attributing it to the owning tenant, and OPTIONALLY feeding it into its own decisions (placement, budgets). 
 
 **The engine computes; it never decides.** No placement, budget, or quota decision is delegated into the cost calculation. Those decisions stay in the implementation as **policy** ([ADR-COST-001](../../../docs/adr/ADR-COST-001-metering-placement-reference-dont-model.md)), using returned cost as an *input*. The cost engine is a pure function: `(resource dimensions + cost model) → cost`.
@@ -76,7 +77,7 @@ Given an `entity_uuid`, a conformant implementation MUST be able to resolve ever
 | `provisioned_hours` | capex | lifecycle `realized_to_decommissioned` | its in-service window |
 | `power_kwh` | opex | telemetry `host.power.draw` | actual energy consumed |
 
-`priced_by → onprem-baremetal-2026-q3` in the cost engine. The control plane resolves the capex dimensions from fields + the lifecycle clock and the opex dimension from a power-telemetry provider, hands them to the engine with the `priced_by` ref, and consumes the returned `cost.attributed {capex, opex}`, attributing it to the host's owning tenant. A **VM** (`Machine.VM`) follows the identical pattern — capex = allocated vCPU/memory/disk over `provisioned_hours`; opex = `cpu_hours_used`, `network_egress_gb`, `power_kwh`.
+`priced_by → onprem-baremetal-2026-q3` in the cost engine. The control plane resolves the capex dimensions from fields + the lifecycle clock and the opex dimension from a power-telemetry provider. It hands them to the engine with the `priced_by` ref, and consumes the returned `cost.attributed {capex, opex}`, attributing it to the host's owning tenant. A **VM** (`Machine.VM`) follows the identical pattern — capex = allocated vCPU/memory/disk over `provisioned_hours`; opex = `cpu_hours_used`, `network_egress_gb`, `power_kwh`.
 
 ---
 
@@ -100,5 +101,7 @@ The control plane's metering resolver walks each Resource Type's `metering.dimen
 ## 5. Data · Policy · Provider
 
 - **Data:** `spec.metering` (the meterable surface) + `priced_by` (the cost-model reference). No rates, no formulas.
+
 - **Policy:** which `priced_by` wins (type default vs per-customer instance override); whether returned cost gates placement/budget/quota — all admin policy in the implementation.
+
 - **Provider:** the cost engine (`serve_data:cost`) computes; a telemetry provider (`serve_data`) supplies opex usage. The implementation consumes; neither decides on the engine's behalf.

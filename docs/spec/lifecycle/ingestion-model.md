@@ -119,9 +119,9 @@ tenant:
 
 How an entity entered the substrate is provenance, and provenance has one home: the ADR-059
 dual-record surface. An ingestion is a write, so it is **sealed** — the L2 OpenLineage seal for
-the admitting write carries the ingestion evidence in its facets, and the admission rule
-supplies the pathway (`pathway_ref` = the discovery run for brownfield, the request for
-imports). There is no separate ingestion record kind.
+the admitting write carries the ingestion evidence in its facets. The admission rule supplies the
+pathway (`pathway_ref` = the discovery run for brownfield, the request for imports). There is no
+separate ingestion record kind.
 
 The seal for an admitting write MUST carry, per source:
 
@@ -216,8 +216,8 @@ Service Provider performs discovery scan
 When a brownfield entity is promoted, its Discovered State record is promoted to become the
 initial Realized State — the moment the implementation assumes lifecycle authority. Promotion
 is a state transition, so its record is the entity's **receipt** (ADR-059: states + pin +
-integrity — the initial Realized snapshot seeded from discovery, `source.kind: discovery` on
-its provenance entry) and its evidence is the promotion's **seal**, which MUST cite: the
+integrity — the initial Realized snapshot seeded from discovery, `source.kind: discovery` on its
+provenance entry). Its evidence is the promotion's **seal**, which MUST cite: the
 seeding Discovered-state reference, the admitting ingestion seal, the promoting actor, and the
 promotion instant. No separate promotion record kind exists.
 
@@ -255,7 +255,7 @@ In all cases: once an entity reaches `PROMOTED`, it has a Realized State record 
 | `ING-014` | Maximum ingestion sources per entity is profile-governed. Exceeding the maximum triggers `warn` or `reject` per policy. |
 | `ING-015` | Ingested entities may be associated with Resource Type Specifications and promoted to Service Catalog items. Drift detection operates bidirectionally between the ingested entity and its associated catalog item. |
 | `ING-016` | A composition record is **never offered**. It carries no `supports` and no catalog projection; it MAY be realized by the tenant that owns it and MUST NOT be presented to another tenant. Offering something to others is a claim requiring a version, a narrowing check against a parent, and a named owner — which is what a class carries and a composition record does not. |
-| `ING-017` | Promotion is an act of **ownership**, and it is a round trip: a composition record reaches `canonical` only when a class has been minted from it, the record names that class (`promoted_to`), and the class names the record it came from (`promoted_from`). A record claiming acceptance without naming what it became records an outcome nobody can verify. |
+| `ING-017` | Promotion is an act of **ownership**, and it is a round trip. A composition record reaches `canonical` only when a class has been minted from it, the record names that class (`promoted_to`), and the class names the record it came from (`promoted_from`). A record claiming acceptance without naming what it became records an outcome nobody can verify. |
 | `ING-018` | A composition record **survives its promotion**. The class does not consume it. Re-ingestion of the same source (`provenance.source_ref`) MUST resolve to the existing record rather than creating a second one — otherwise every re-import of an unchanged diagram appears as a brand-new composition. |
 | `ING-019` | A composition synthesized from an external artifact carries `provenance.origin: discovered_derived`, never `declared` — the same rule brownfield entity ingestion already applies. Inferred content is never silently presented as human-declared, however clean the mapping was. |
 | `ING-020` | The promotion decision that cannot be derived is **which values are choices**. An ingested composition states fixed values; a class must declare what may VARY (`supports`). Nothing computes that split — it is the judgement the review exists to make, and the reason promotion is a governed process rather than a conversion. |

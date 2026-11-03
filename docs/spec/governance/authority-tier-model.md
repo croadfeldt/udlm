@@ -175,7 +175,7 @@ federation_tier_resolution:
 
 ## 3. Tier Registry Change Impact Detection (Approval Continuity Contract)
 
-When the authority tier registry is modified — a new tier inserted, a tier removed, a tier's `decision_gravity` changed, or a tier's position changed — a UDLM-conformant implementation MUST evaluate the impact on all items that reference tier names before activating the change. This section specifies the substrate-required detection model.
+When the authority tier registry is modified, a UDLM-conformant implementation MUST evaluate the impact on all items that reference tier names before activating the change. A modification is a new tier inserted, a tier removed, a tier's `decision_gravity` changed, or a tier's position changed. This section specifies the substrate-required detection model.
 
 > **Substrate note:** The impact detection pipeline described here is required, not an optional audit feature. A tier registry change that creates security degradations MUST NOT activate until each degradation is explicitly acknowledged by a reviewer at `verified` tier or above. The detection mechanism itself is an implementation detail; this specification defines the required behavior and data model.
 
@@ -354,7 +354,7 @@ Every tier registry change MUST produce the following audit records, regardless 
 - Registry activation record (actual effective timestamp)
 - Per-affected-item notification records (who was notified, when)
 
-Historical approval records MUST retain their `stored_tier_weight` from time of creation (ATM-008). The audit trail thus contains both the point-in-time weight (what authority level was required when the decision was made) and the current weight (what authority level the same tier name requires today), enabling auditors to identify decisions made under different governance regimes.
+Historical approval records MUST retain their `stored_tier_weight` from time of creation (ATM-008). The audit trail thus contains both the point-in-time weight (what authority level was required when the decision was made) and the current weight (what authority level the same tier name requires today). Auditors can therefore identify decisions made under different governance regimes.
 
 ---
 

@@ -1,10 +1,10 @@
 # UDLM — Credentials
 
-**What this settles.** The single home for anything credential-shaped: the closed
+**What this settles.** The single home for anything credential-shaped. It holds the closed
 `credential_types` vocabulary (§2), the credential record and scope wire contract (§3),
-lifecycle (§4), rotation (§5), revocation (§6), consumer delivery (§7), the provider API and
-registration contracts (§8–§9), the cryptographic floor (§10), and the `CPX-*` system
-policies (§14).
+lifecycle (§4), rotation (§5), revocation (§6) and consumer delivery (§7). It also holds the
+provider API and registration contracts (§8–§9), the cryptographic floor (§10), and the `CPX-*`
+system policies (§14).
 
 **In one breath.** The implementation is a trust **broker**, never a credential authority:
 credential *values* are produced and held by a provider and flow **directly** to the
@@ -14,9 +14,9 @@ authorized consumer (CPX-001) — the control plane never sees, stores, or relay
 
 **Background — read first** (skip if you have it):
 [accreditation-and-authorization-matrix.md](accreditation-and-authorization-matrix.md) — the
-zero-trust model that governs credential scope and lifetime ·
+zero-trust model that governs credential scope and lifetime.
 [provider-contract.md](../contracts/provider-contract.md) — how a capability is declared and
-becomes selectable · [standards-catalog.md](../../../registry/standards-catalog.md) — the
+becomes selectable. [standards-catalog.md](../../../registry/standards-catalog.md) — the
 permitted/forbidden algorithms, FIPS floors per profile, and certificate protocol RFCs
 (RFC 7030, 8555, 8894, 4210).
 
@@ -50,7 +50,7 @@ The implementation maintains its own operational secrets — provider authentica
 
 ### 1.2 Consumer-Facing Credentials
 
-When consumers request credential resources (API keys, certificates, SSH keys, secrets) or when realized resources require credentials (kubeconfigs, database passwords, service account tokens), the substrate requires that the credentials are issued by a provider that declares the **credential capability** — `CredentialRef` in `supported_resource_types` (with the `credential_type` values it issues) plus a `credential_capability` block. Any provider that declares this capability handles such requests through the standard provider dispatch pipeline; there is no separate provider *kind*. The capability declaration is what the implementation **selects against** (declare-and-select): it states which credential types the provider can issue, the assurance it can reach, and the secret-engine/attestation backing — so the implementation can pick a provider that satisfies the active profile's trust floor.
+Consumers request credential resources (API keys, certificates, SSH keys, secrets), and realized resources require credentials (kubeconfigs, database passwords, service account tokens). In both cases the substrate requires that the credentials are issued by a provider that declares the **credential capability**. That capability is `CredentialRef` in `supported_resource_types` (with the `credential_type` values it issues) plus a `credential_capability` block. Any provider that declares this capability handles such requests through the standard provider dispatch pipeline; there is no separate provider *kind*. The capability declaration is what the implementation **selects against** (declare-and-select). It states which credential types the provider can issue, the assurance it can reach, and the secret-engine/attestation backing. The implementation can therefore pick a provider that satisfies the active profile's trust floor.
 
 ```yaml
 provider:
@@ -158,8 +158,8 @@ Authorized consumers retrieve the credential value via `value_retrieval_endpoint
 ### 3.2 Credential material arriving where a reference belongs
 
 Value separation is a discipline about *where values live*. It says nothing about what happens
-when a value arrives somewhere it should never have been — and that is the common case, because
-the shape of a secret is a string, and the shape of a reference to a secret is also a string. A
+when a value arrives somewhere it should never have been. That is the common case, because the
+shape of a secret is a string, and the shape of a reference to a secret is also a string. A
 consumer writing an intent by hand, or generating one from an existing deployment, pastes a
 password into the field that expects a `CredentialRef` — the reference type that names
 *which* credential is held *where* and carries no value-bearing field. The intent validates:
@@ -169,16 +169,16 @@ The type-authoring discipline that this is supposed to prevent is real and long-
 (`registry/SPEC-DESIGN-REQUIREMENTS.md` §36(h) — secret-bearing fields are credential
 references, never inline values), but it is a rule about how a *type* is designed, checked by
 review. It cannot see a value a submitter puts into a correctly-designed field at run time.
-That gap is what `CPX-013` closes, and where it runs is the whole substance of the rule: the
+That gap is what `CPX-013` closes, and where it runs is the whole substance of the rule. The
 Intent record is written verbatim and never modified afterwards
 ([`docs/spec/foundations/four-states.md`](../foundations/four-states.md) — Intent is the immutable record
-of what was asked for), so a detection that runs *after* the intent is stored has already lost.
+of what was asked for). So a detection that runs *after* the intent is stored has already lost.
 There is nothing to scrub; the store's own integrity guarantee forbids it. **The check runs
 before the write, or it does not work at all** — a sequencing constraint, not an optimization.
 
-The second half is that the rejecting path must not itself become the leak. A refusal that
-quotes the offending value back to the submitter, a log line that captures the raw request
-body, an audit record that preserves `detail` verbatim — each of these takes a secret that was
+The second half is that the rejecting path must not itself become the leak. Consider a refusal
+that quotes the offending value back to the submitter, a log line that captures the raw request
+body, or an audit record that preserves `detail` verbatim. Each of these takes a secret that was
 correctly refused and writes it somewhere durable. `CPX-014` states what the rejecting path may
 record: the field path and the violation class, never the material. This is the general
 refusal-payload rule ([`docs/spec/contracts/error-model.md`](../contracts/error-model.md) §8a — a refusal
@@ -188,7 +188,7 @@ every store the refusal touches becomes a place the secret now lives.
 
 **The remaining architectural question — what a rejecting path does with an intent body that
 has already been received — is open and specified in ADR-049 (credential material at intent
-intake), which weighs scan-before-persist against a quarantine buffer, provider-side
+intake). ADR-049 weighs scan-before-persist against a quarantine buffer, provider-side
 redaction, and intake-time coercion to a reference.**
 
 ---
@@ -219,7 +219,7 @@ PENDING → ACTIVE → ROTATING → ACTIVE (new value)
 
 ### 4.1 Issuance Flow Contract
 
-A credential a resource needs is **a dependency like any other** — not a bespoke field. When a resource type requires a credential, that is expressed with the **same `requires` relationship** the dependency model uses for every other dependency (see [Entity Relationships](../foundations/entity-relationships.md)): the dependent declares a `requires` edge to a `Credential.*` resource type, and Dependency Resolution issues a sub-request that Placement routes to a provider declaring the matching credential capability. There is no parallel `credential_requirements` mechanism — credentials reuse the dependency graph so that ordering, blast-radius, and lifecycle coupling come for free.
+A credential a resource needs is **a dependency like any other** — not a bespoke field. When a resource type requires a credential, that is expressed with the **same `requires` relationship** the dependency model uses for every other dependency (see [Entity Relationships](../foundations/entity-relationships.md)). The dependent declares a `requires` edge to a `Credential.*` resource type. Dependency Resolution then issues a sub-request that Placement routes to a provider declaring the matching credential capability. There is no parallel `credential_requirements` mechanism — credentials reuse the dependency graph so that ordering, blast-radius, and lifecycle coupling come for free.
 
 > **Worked example (grounds the use case).** A consumer requests `Machine.VM`. The catalog item for that VM declares `requires: `CredentialRef` (`ssh_key`) (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `CredentialRef` (`ssh_key`) capability at the profile's required assurance** and dispatches to it; **that provider** — not the implementation — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: `CredentialRef` (`secret`) for a database password, or a service that `requires: `CredentialRef` (`x509_certificate`) for mTLS identity. In every case the implementation **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). An implementation never issues a credential itself.
 
@@ -261,7 +261,7 @@ Consumer requests resource (e.g., Machine.VM)
 
 ### 4.2 Interaction Credential Issuance Flow
 
-Interaction credentials carry the **same zero-standing-trust rationale** as every other dispatch in the system (see [Provider Contract](../contracts/provider-contract.md) §provider auth): each interaction presents a freshly issued, narrowly scoped, short-lived credential rather than a long-lived shared key, so a leaked credential expires fast and every use is attributable and audited. They are issued automatically before each provider interaction:
+Interaction credentials carry the **same zero-standing-trust rationale** as every other dispatch in the system (see [Provider Contract](../contracts/provider-contract.md) §provider auth). Each interaction presents a freshly issued, narrowly scoped, short-lived credential rather than a long-lived shared key. A leaked credential therefore expires fast, and every use is attributable and audited. They are issued automatically before each provider interaction:
 
 ```
 The implementation prepares to dispatch to a provider
@@ -286,7 +286,7 @@ The implementation prepares to dispatch to a provider
 
 ### 4.3 Bootstrap Credential Issuance
 
-Credential issuance has a chicken-and-egg problem: the implementation needs a credential to talk to the first Credential Provider, but a Credential Provider cannot have issued it yet. The substrate resolves this with a one-time **bootstrap credential** — a short-lived, single-purpose anchor (a kubeadm/SPIRE-style bootstrap token or a pre-placed mTLS identity; the anchor type is profile-governed) whose **only** authorized scope is registering and authenticating to the first Credential Provider. The handoff is explicit and one-way:
+Credential issuance has a chicken-and-egg problem: the implementation needs a credential to talk to the first Credential Provider, but a Credential Provider cannot have issued it yet. The substrate resolves this with a one-time **bootstrap credential** — a short-lived, single-purpose anchor (a kubeadm/SPIRE-style bootstrap token or a pre-placed mTLS identity; the anchor type is profile-governed). Its **only** authorized scope is registering and authenticating to the first Credential Provider. The handoff is explicit and one-way:
 
 ```
 Bootstrap anchor present (out-of-band; single-purpose; short TTL)
@@ -1037,7 +1037,7 @@ credential_provider_registration:
 | `CPX-011` | Profile credential requirements are additive when compliance domains are active (HIPAA, PCI DSS, FedRAMP, DoD IL4). Compliance overlay requirements always tighten, never relax, the base profile. |
 | `CPX-012` | CPX-001 (values never in the implementation's stores) applies in ALL profiles including `homelab`. There is no profile that permits credential values to be stored by the implementation. |
 | `CPX-013` | Inline credential material submitted where the model requires a credential reference is detected and refused **at intent intake, ordered before the Intent record is written**. The Intent store is append-only and never modified after write (four-states), so a detection that runs after persistence cannot be remediated — sequencing is part of the rule, not an implementation detail. The refusal is emitted as `validation.inline_credential_material` and names the offending field path and the conversion (declare a `CredentialRef`; the issuer resolves the value directly to the authorized consumer). Detection covers the same surface as the existing store-side scanners — known credential formats, private-key and certificate blocks, and high-entropy strings in fields typed as references. |
-| `CPX-014` | The rejecting path does not persist the material it refused. The refusal payload MUST NOT echo the submitted value; request/error logs MUST NOT capture the raw body of an intent refused under `CPX-013`; and the `REFUSE` audit record carries the field path and the violation class only (`AUD-023`, `AUD-024` — refusal records name rules, paths, and subjects, never protected content). A corrected resubmission carrying a `CredentialRef` in the same field passes the same validation unchanged. |
+| `CPX-014` | The rejecting path does not persist the material it refused. The refusal payload MUST NOT echo the submitted value. Request/error logs MUST NOT capture the raw body of an intent refused under `CPX-013`. The `REFUSE` audit record carries the field path and the violation class only (`AUD-023`, `AUD-024` — refusal records name rules, paths, and subjects, never protected content). A corrected resubmission carrying a `CredentialRef` in the same field passes the same validation unchanged. |
 
 ---
 
