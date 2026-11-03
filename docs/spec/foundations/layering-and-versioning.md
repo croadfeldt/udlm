@@ -2,7 +2,7 @@
 
 **What this settles.** The normative contract for how a request payload is assembled from
 layers: the merge rules, the provenance obligation, record identity and status (§4b), and the
-`LAY-00x`/`OPS-00x` system policies an implementer must satisfy. Worked examples, the assembly
+`LAY-00x` system policies an implementer must satisfy. Worked examples, the assembly
 diagram at scale, and the resolved-questions log live in the non-normative
 [Layering Annex](layering-and-versioning-annex.md), which adds no requirements.
 
@@ -53,7 +53,7 @@ Two edges the same rules produce:
 | 1 | Base | platform | §3.1 |
 | 2 | Core | platform / standards | §3.2 |
 | 3 | Intermediate / Customization | org / tenant | §3.3 |
-| 4 | Service | service provider | §3.4 · `LAY-002` (versioning) · `LAY-003` (activation) |
+| 4 | Service | service provider | §3.4 · `LAY-002` (versioning) · `LAY-003` (where it applies) |
 | 5 | Request | consumer | §3.5 — consumer values override all data layers; exclusions per `LAY-001` |
 | over all | Policy layers | policy owners | §3.6 — compliance-class Validation overrides everything, incl. consumer (`LAY-005`) |
 
@@ -176,7 +176,7 @@ The Request Layer is the only layer type that does not require a PR review — i
 > **Machine-validatable schema:** `registry/layer.schema.json` (data-model-core §2 [D8.4]); `registry/tools/validate.py` dispatches `record_type: layer`.
 ## 3. Layer Types
 
-The control plane defines six layer types. Each has a distinct purpose, scope, ownership model, and position in the assembly precedence chain.
+UDLM defines seven layer types (`registry/layer.schema.json` `layer_type`): six assembly positions, each with a distinct purpose, scope, ownership model and position in the precedence chain, and reference data (§3.7), which other layers reference rather than merge.
 
 ### 3.1 Base Layer
 
@@ -231,10 +231,9 @@ The control plane defines six layer types. Each has a distinct purpose, scope, o
 - Environment layer (production, staging, development)
 
 > **Location Topology:** Location layers are one application of the Reference Data
-> Layer pattern (Section 3.7). The standard schema for each location level —
-> Country, Region, Zone, Site, Data Center, Hall, Cage, and Rack — is specified
-> in [Location Topology Layer Model](location-topology-layers.md), including
-> field definitions, priority bands, authority model, and hierarchy assembly.
+> Layer pattern (§3.7). How location layers compose, assemble and are governed — with the
+> specific levels left to the implementation — is specified in
+> [Layered Topology Contract](location-topology-layers.md).
 
 ---
 
@@ -271,15 +270,9 @@ The control plane defines six layer types. Each has a distinct purpose, scope, o
 
 **Scope:** **Must be type-scoped.** A Service Layer without a declared Resource Type scope is invalid. The scope inheritance behavior is configurable per Service Layer declaration.
 
-**Type Scope Declaration:**
-```yaml
-type_scope:
-  resource_type_uuid: <uuid of Resource Type>
-  resource_type_fully_qualified_name: <Category.ResourceType>
-  scope_inheritance: <exact|descendants>
-  # exact: applies only to the declared Resource Type
-  # descendants: applies to the declared Resource Type and all child types via inheritance
-```
+**Type scope declaration:** `resource_type` names the one type the layer is scoped to; `covers`
+(a URF filter, §3.8) targets more than one type, for example a Base and every class beneath it.
+When both are present they must agree.
 
 **Ownership:** Service Providers or service domain teams. Stored in Service Layer SCM (source control management). Registered with the control plane as part of Service Provider registration.
 
@@ -379,14 +372,19 @@ This unified model means:
 - The same governance tooling manages resource type definitions, reference data, and
   service configuration
 
-- The same lifecycle (developing → proposed → active → deprecated → retired) applies
-  to all three
+- The same record states (`active` → `deprecated` → `retired`, §4b.2) apply to all three
 
 - The same ownership declarations, the same GitOps workflow, the same authority tiers
 
 - Provider extension layers (domain: `provider`) extend resource types for a specific
   catalog item without modifying the Resource Type Specification itself — they are
   injected during payload assembly only when that catalog item is selected
+
+> **Vocabulary terms.** A curated vocabulary value (`network_tier`, `storage_tier`, `release_channel`)
+> has its own record kind, `record_type: vocabulary_term` (`registry/vocabulary-term.schema.json`,
+> ADR-058). A reference-data layer (`layer_type: reference_data`) is the shape for governed datasets
+> such as a network zone or an OS image; `registry/tools/validate.py` resolves data references against
+> both.
 
 **Purpose:** Provide governed, versioned sets of allowed values for use as field
 constraints in Resource Type Specifications and Provider Catalog Items. Reference Data
@@ -413,7 +411,7 @@ for a field constraint.
 
 **Characteristics:**
 
-- Same lifecycle as all other layers: `developing → proposed → active → deprecated → retired`
+- Same record states as all other layers: `active → deprecated → retired` (§4b.2)
 
 - Same governance: GitOps workflow, owned by declared authority, approved by designated tier
 
@@ -444,6 +442,7 @@ select it.
 ```yaml
 # illustrative: layer shape; the layer schema is layer.schema.json
 layer:
+  record_type: layer
   uuid: <uuid>
   handle: "platform/os-images/rhel-9-4-approved"
   version: "1.0.0"
@@ -451,14 +450,9 @@ layer:
 
   layer_type: reference_data
   reference_data_type: os_image
-  scope: type_agnostic
+  domain: platform
 
-  priority:
-    value: "150.01.0"
-    label: "platform.reference.os-image.rhel-9-4"
-    category: platform_reference
-
-  data:
+  fields:
     image_name: "RHEL 9.4"
     image_uuid: "img-rhel-9-4-20260315"
     image_sha256: "a1b2c3d4..."
@@ -470,8 +464,6 @@ layer:
     approved_for_classifications: [public, internal, confidential, restricted]
     cis_benchmark_version: "CIS RHEL 9 Benchmark v1.0"
     fips_compliant: true
-
-  concern_tags: [os-image, rhel, approved, fips-compliant]
 ```
 
 **Example — VM Size layer:**
@@ -479,6 +471,7 @@ layer:
 ```yaml
 # illustrative: layer shape; the layer schema is layer.schema.json
 layer:
+  record_type: layer
   uuid: <uuid>
   handle: "platform/vm-sizes/medium-general-purpose"
   version: "2.1.0"
@@ -486,9 +479,10 @@ layer:
 
   layer_type: reference_data
   reference_data_type: vm_size
-  scope: type_agnostic   # applies across providers for Machine.VM
+  domain: platform
+  covers: estate?resource_type==Machine.VM   # applies across providers for Machine.VM
 
-  data:
+  fields:
     size_name: "Medium — General Purpose"
     size_code: "gp-medium"
     display_name: "Medium (8 CPU / 32 GB)"
@@ -498,8 +492,6 @@ layer:
     network_bandwidth_gbps: 10
     approved_for_workloads: [web, application, database, batch]
     cost_tier: standard
-
-  concern_tags: [vm-size, general-purpose, approved]
 ```
 
 ---
@@ -547,7 +539,7 @@ Authoritative: [ADR-054](../../adr/ADR-054-references-context-and-field-projecti
 
 ### 3a.1 The Three Provenance Models
 
-Field-level provenance tracks which layer set each field, which policy modified it, and the full change history. The control plane supports three configurable models — organizations choose based on their scale, compliance requirements, and operational preferences. The active Profile provides a recommended default via its activated Policy Group.
+Field-level provenance tracks which layer set each field, which policy modified it, and the full change history. UDLM defines three configurable models; an organization chooses by its scale, compliance requirements, and operational preferences. The active Profile provides a recommended default via its activated Policy Group.
 
 **Model A — Full Inline**
 All provenance stored explicitly on every entity record. Every field carries its complete provenance inline: source layer, modifying policies, previous values, timestamps, actor chain.
@@ -688,32 +680,35 @@ Every layer has a formal identity model with three components that together make
 
 ### 4.1 Layer Domain
 
-The **Layer Domain** mirrors the Policy domain model exactly. It declares ownership, storage location, and authorization scope. The same domain hierarchy, the same authority model, the same override precedence.
+The **Layer Domain** is the precedence ladder layers share with policies
+(`common-elements.schema.json#/$defs/policy_domain`; `registry/layer.schema.json` `domain`). It
+declares ownership, storage location, and authorization scope.
 
 | Domain | Meaning | Authorization | Can Override |
 |--------|---------|--------------|-------------|
-| `system` | The control plane built-in layers — ship with the control plane | The control plane maintainers only | Nothing above system |
-| `platform` | Platform team layers — apply across all Tenants | Platform team | tenant, service, provider |
-| `tenant` | Tenant-specific layers — scoped to one Tenant | Tenant Admin | service, provider within Tenant |
-| `service` | Service Provider contributed layers | Service Provider owner | provider |
-| `provider` | Provider Catalog Item layers | Provider owner | Nothing above provider |
-| `request` | Consumer-declared values in the request itself | Consumer | Nothing above request — lowest authority |
+| `system` | Built-in layers that ship with the control plane | Maintainers only | Nothing above system |
+| `platform` | Platform team layers — apply across all Tenants | Platform team | tenant, resource_type, entity |
+| `tenant` | Tenant-specific layers — scoped to one Tenant | Tenant Admin | resource_type, entity within the Tenant |
+| `resource_type` | Layers scoped to one resource type (`resource_type` declared) | Type owner | entity |
+| `entity` | Layers scoped to one entity — the narrowest | Entity owner | Nothing above entity |
 
-A lower-domain layer cannot override a higher-domain layer.
+A lower-domain layer cannot override a higher-domain layer. The service and request positions are
+not domains: they are the layer's `layer_type` and `precedence_class` (§3), and a consumer's request
+layer always has the lowest authority.
 
-**Provider extension layers** (`domain: provider`) are contributed by Service Providers
-as part of their catalog item registration. They add provider_specific fields to the
+**Provider extension layers** are service layers (`layer_type: service`) contributed by Service
+Providers as part of their offering registration. They add provider_specific fields to the
 assembled payload for their offering only. They cannot override platform or tenant layers.
-They carry the same portability implications as inline `provider_specific_extensions` in
-the catalog item declaration — any request using them is non-portable and must be
-explicitly marked. See [class-tiers.md §5.1](class-tiers.md) (the offer on the Provider Class)
-for the catalog item `provider_extension_layer_handles` declaration. A `tenant` layer cannot override a `platform` layer. This is enforced at ingestion — the conflict detection pipeline checks domain authority before allowing a merge.
+They carry the same portability implications as a Provider Class element — any request using
+them is non-portable and must be explicitly marked. See [class-tiers.md §5.1](class-tiers.md) for
+the offer on the Provider Class. A `tenant` layer cannot override a `platform` layer. This is
+enforced at ingestion — the conflict detection pipeline checks domain authority before allowing a merge.
 
 **Domain mirrors policy authority:** Just as system-domain policies have highest authority in the Policy Engine, system-domain layers have highest authority in the assembly process. The same mental model applies to both.
 
 ### 4.2 Layer Groups — grouping with record kind: layer_grouping
 
-Just as Policy Groups organize policies into cohesive concern-based collections, **Layer Groups** organize layers. A Layer Group is a `grouping` with an `Grouping` — a versioned, audited, GitOps-managed collection of related layers.
+Just as Policy Groups organize policies into cohesive concern-based collections, **Layer Groups** organize layers. A Layer Group is a plain `Grouping` whose members are layers ([universal-groups](universal-groups.md) §2.2) — a versioned, audited, GitOps-managed collection of related layers.
 
 Layer Groups enable:
 
@@ -724,14 +719,14 @@ Layer Groups enable:
 - **Governance** — activate or deactivate a concern's worth of layers in one operation
 
 ```yaml
-# illustrative: layer shape; the layer schema is layer.schema.json
-# A Layer Group — grouping with record kind: layer_grouping
-dcm_group:
+# illustrative: grouping shape, not schema-checked
+# A Layer Group — a plain Grouping whose members are layers
+grouping:
   uuid: <uuid>
   handle: "platform/layer-groups/pci-network-standards"
   version: "1.0.0"
   status: active
-  record kind: layer_grouping
+  resource_type: Grouping
   concern_tags: [pci-dss, networking, standards]
   members:
     - member_uuid: <layer-uuid>
@@ -796,10 +791,9 @@ metadata:
   display_name: Default DNS
 ```
 
-**What replaced the older layer fields.** Earlier drafts of this section showed fields the schema no
-longer has:
+**Fields that are not in the schema, and what carries the job instead:**
 
-| Older field | Now |
+| Not a field | What carries it |
 |---|---|
 | `priority` (value, label, category) | `precedence_class` and `precedence_order` |
 | `concern_tags`, `compatibility` (resource types, providers, profiles) | `covers`, one URF filter over the resources the layer may inject into |
@@ -814,7 +808,8 @@ longer has:
 
 The **Layer Handle** is the human-readable, stable identifier for a layer within the control plane.
 
-**Format:** `{domain}/{concern_or_type}/{name}`
+**Convention:** `{scope}/{concern_or_type}/{name}`. The grammar is identifier-scheme §2.2
+(`[namespace/]name`); the segments are a convention, not a schema.
 
 **Examples:**
 ```
@@ -831,53 +826,51 @@ provider/service/cloudnativepg-database-config
 {layer_store_root}/{domain}/{concern_or_type}/{name}/v{Major}.{Minor}.{Revision}.yaml
 
 # Example:
-dcm-layers/platform/core/security-cpu-limits/v1.2.0.yaml
-dcm-layers/tenant/{tenant-uuid}/service/payments-vm-standards/v1.0.0.yaml
+layers/platform/core/security-cpu-limits/v1.2.0.yaml
+layers/tenant/{tenant-uuid}/service/payments-vm-standards/v1.0.0.yaml
 ```
 
-### 4.5 Priority Schema
+### 4.5 Precedence order
 
-The **Priority Schema** is the deterministic ordering mechanism for resolving conflicts between layers of the same type and scope.
-
-**Format:** `{integer}.{integer}.{integer}...` — unlimited depth
-
-**Comparison:** Left-to-right, segment by segment. **Higher numeric value = higher priority** (higher value = higher priority). No ceiling — you can always go higher.
+Two fields order layers deterministically (`registry/layer.schema.json`). `precedence_class`
+(`base | core | intermediate | service | request | policy`) is the position in the assembly chain,
+lowest authority first; it usually equals `layer_type`. `precedence_order` is an optional integer
+that orders layers **within** one class; higher wins. Ties break by class, then by declared chain
+order.
 
 ```
-900.10    beats    800.10    (900 > 800 at segment 1)
-900.20    beats    900.10    (20 > 10 at segment 2)
-900.10.5  beats    900.10    (longer path with matching prefix)
-900.10.10 beats    900.10.5  (10 > 5 at segment 3)
+core / 900    beats    core / 800     (same class, higher order)
+service / 100 beats    core / 900     (class first, then order)
 ```
 
-**Reference Priority Taxonomy (advisory — not enforced by the control plane):**
+**Reference bands (advisory — not enforced by the control plane):**
 
-| Suggested Range | Category | Rationale |
+| Suggested `precedence_order` | Category | Rationale |
 |-----------------|----------|-----------|
-| `900.*` | Compliance | Regulatory mandates — highest authority |
-| `800.*` | Security | Security standards |
-| `700.*` | Sovereignty | Data residency constraints |
-| `600.*` | Operations | SRE and operational standards |
-| `500.*` | Platform | Platform-level defaults |
-| `400.*` | Service | Service-specific configuration |
-| `300.*` | Organization | Organizational defaults |
-| `200.*` | Site | Location-specific overrides |
-| `100.*` | Custom | Implementor-defined — lowest standard category |
+| `900–999` | Compliance | Regulatory mandates — highest authority |
+| `800–899` | Security | Security standards |
+| `700–799` | Sovereignty | Data residency constraints |
+| `600–699` | Operations | SRE and operational standards |
+| `500–599` | Platform | Platform-level defaults |
+| `400–499` | Service | Service-specific configuration |
+| `300–399` | Organization | Organizational defaults |
+| `200–299` | Site | Location-specific overrides |
+| `100–199` | Custom | Implementor-defined — lowest standard band |
 
-Higher number = higher priority. Organizations adopt, adapt, or ignore this taxonomy — the control plane resolves conflicts purely by numeric comparison.
+Higher number = higher precedence within a class. Organizations adopt, adapt, or ignore these bands — the control plane resolves conflicts purely by numeric comparison.
 
 ---
 
 ## 4b. Record identity and accountability
 
 Every governed record — a layer, a policy, a class, a profile, a provider registration — says what it
-is, which version it is, whether it is in force, and who answers for it. These used to live in one
-`artifact_metadata` block. That block is retired: each of its jobs now has its own home in the
-record envelope, the audit record or version control, and the schemas enforce them.
+is, which version it is, whether it is in force, and who answers for it. There is no
+`artifact_metadata` block: each job has its own home in the record envelope, the audit record or
+version control, and the schemas enforce them.
 
 ### 4b.1 Where each job lives
 
-| Job | Old `artifact_metadata` field | Where it lives now |
+| Job | Not a record field | Where it lives |
 |---|---|---|
 | Identity | `uuid`, `handle` | The record's own top-level `uuid` and `handle` (ADR-051: the uuid is frozen identity). |
 | Version | `version` | The record's top-level `version`, under the publish law (`registry/VERSIONING.md`). |
@@ -974,17 +967,17 @@ flowchart TD
     S1["1. Schema validation<br/>Is the layer well-formed per the layer schema?<br/>Does it carry its identity, version and status?<br/>Is the version correctly incremented?"]
     S2["2. Handle validation<br/>Is the handle unique in the control plane?<br/>Does the handle match the Git path?<br/>Does the domain match the submitting actor's authorization?"]
     S3["3. Scope validation<br/>If type-scoped: do declared resource types exist in the registry?<br/>Is the layer type consistent with the domain?"]
-    S4["4. Priority validation<br/>Is the priority value in valid dotted-notation format?<br/>Does the priority category match the domain advisory range?<br/>(Warning only if category/domain mismatch — not a block)"]
+    S4["4. Precedence validation<br/>Is precedence_order an integer?<br/>Does it sit in the advisory band for its class and domain?<br/>(Warning only if band/domain mismatch — not a block)"]
     S5["5. Conflict detection<br/>For each field in this layer:<br/>Find all active layers of the same type and overlapping scope<br/>Check if any declare the same field"]
     S6["6. Deprecation reference validation<br/>If status: deprecated — does replacement UUID exist?"]
     S7["7. Result<br/>All checks pass → PR approved for merge<br/>Any check fails → PR blocked, detailed error comment posted"]
 
     G --> CI --> S1 --> S2 --> S3 --> S4 --> S5
 
-    S5 -->|If conflict found| C1["Does the new layer declare a higher priority?<br/>→ Allowed, documented"]
-    S5 -->|If conflict found| C2["Does the existing layer declare a higher priority?<br/>→ Allowed, documented"]
-    S5 -->|If conflict found| C3["Neither declares priority?<br/>→ CONFLICT ERROR — PR blocked"]
-    S5 -->|If conflict found| C4["Both declare equal priority?<br/>→ CONFLICT ERROR — PR blocked"]
+    S5 -->|If conflict found| C1["Does the new layer declare a higher precedence_order?<br/>→ Allowed, documented"]
+    S5 -->|If conflict found| C2["Does the existing layer declare a higher precedence_order?<br/>→ Allowed, documented"]
+    S5 -->|If conflict found| C3["Neither declares precedence_order?<br/>→ CONFLICT ERROR — PR blocked"]
+    S5 -->|If conflict found| C4["Both declare equal precedence_order?<br/>→ CONFLICT ERROR — PR blocked"]
     S5 -->|If conflict found| C5["Domain authority violation?<br/>→ CONFLICT ERROR — PR blocked"]
     S5 -.->|Conflict notification| CN["Posted as PR comment with: conflicting layer UUID, handle, owner<br/>Both layer owners notified via notification_endpoint"]
 
@@ -995,18 +988,18 @@ flowchart TD
 
 | Situation | Resolution | Action |
 |-----------|-----------|--------|
-| New layer and existing layer conflict, no priority on either | CONFLICT ERROR | PR blocked. Both owners notified. One must declare priority or remove the conflicting field. |
-| New layer has higher priority (higher value) than existing | Allowed — new layer wins | Documented in provenance. Warning posted if domain authority is unusual. |
-| Existing layer has higher priority | Allowed — existing layer wins | New layer is a lower-priority alternative. Documented. |
-| Both layers have equal priority | CONFLICT ERROR | PR blocked. Priority must be differentiated. |
-| New layer from lower domain overrides higher domain | CONFLICT ERROR | Domain authority violation. Platform cannot be overridden by service layer. |
-| Priority category suggests domain mismatch | WARNING | PR comment posted, not blocked. Merge allowed but reviewers are notified. |
+| New layer and existing layer conflict, no `precedence_order` on either | CONFLICT ERROR | PR blocked. Both owners notified. One must declare `precedence_order` or remove the conflicting field. |
+| New layer has higher `precedence_order` than existing | Allowed — new layer wins | Documented in provenance. Warning posted if domain authority is unusual. |
+| Existing layer has higher `precedence_order` | Allowed — existing layer wins | New layer is a lower-precedence alternative. Documented. |
+| Both layers have equal `precedence_order` | CONFLICT ERROR | PR blocked. The order must be differentiated. |
+| New layer from lower domain overrides higher domain | CONFLICT ERROR | Domain authority violation. Platform cannot be overridden by a tenant layer. |
+| Precedence band suggests domain mismatch | WARNING | PR comment posted, not blocked. Merge allowed but reviewers are notified. |
 
 ### 4c.3 Pre-Validation of All Layers
 
 Because conflict detection runs at ingestion, all layers resident in the control plane are pre-validated:
 
-- No two active layers of the same type and scope conflict without explicit priority resolution
+- No two active layers of the same type and scope conflict without explicit precedence resolution
 
 - The assembly process never encounters an ambiguous merge — all conflicts are resolved at definition time
 
@@ -1379,8 +1372,6 @@ field_name:
 
 ---
 
-The Request Payload Processor assembles the final payload by executing the following **nine steps** in order. Each step is recorded in the payload's provenance chain.
-
 ### 5a.11 Global Policy Self-Override — The Immutable Ceiling Model
 
 **Q51 resolved:** When a Global compliance-class Validation Policy sets `override: immutable` on a field, can a higher-priority Global policy still override it?
@@ -1426,6 +1417,8 @@ classification_level:
 ---
 
 ## 6. The Assembly Process — Steps 1–9
+
+The Request Payload Processor assembles the final payload by executing the following **nine steps** in order. Each step is recorded in the payload's provenance chain.
 
 ### Step 1 — Intent Capture
 The consumer's Request Layer is received and stored as the **Intent State** in the Intent Store. No modification occurs at this step. The Intent State is the immutable record of what the consumer asked for.
@@ -1536,13 +1529,11 @@ Core Layers are type-agnostic by default. They are applied to every request rega
 ### 8.2 Service Layer Scope Enforcement
 Service Layers must declare a Resource Type scope. The Request Payload Processor enforces this during Layer Resolution:
 
-- A Service Layer whose declared Resource Type does not match the request Resource Type is excluded from the merge
+- A Service Layer whose `resource_type` (or `covers` filter, §3.8) does not match the request Resource Type is excluded from the merge
 
-- A Service Layer with `scope_inheritance: exact` is only included if the request Resource Type exactly matches the declared type
+- A Service Layer scoped by `resource_type` matches that one type; one scoped by `covers` matches every type its filter names, for example a Base and every class beneath it
 
-- A Service Layer with `scope_inheritance: descendants` is included if the request Resource Type is the declared type or any descendant type in the inheritance hierarchy
-
-- A Service Layer with no declared type scope is invalid and must be rejected
+- A Service Layer with neither `resource_type` nor `covers` is invalid and must be rejected
 
 ### 8.3 Unanticipated Data Interaction Prevention
 The type scoping rules for Service Layers are the primary mechanism for preventing unanticipated data interactions — one of the core data model objectives. Because Service Layers can only contribute to requests of their declared type, data from one service domain cannot inadvertently affect requests in another service domain.
@@ -1551,7 +1542,7 @@ The type scoping rules for Service Layers are the primary mechanism for preventi
 
 ## 9. Layer Versioning
 
-All layers follow the universal the control plane versioning scheme: **Major.Minor.Revision**
+All layers follow the universal versioning scheme (`registry/VERSIONING.md`): **Major.Minor.Revision**
 
 | Component | Trigger |
 |-----------|---------|
@@ -1596,11 +1587,12 @@ The layer chain of a Realized Entity is always traceable — given a Realized St
 
 ## 13a. Override Control and Constraint Visibility Gaps
 
-### 13b.1 Override Preference Enforcement (Q50)
+### 13a.1 Override Preference Enforcement (Q50)
 
 Layer fields declare override intent using three values. The Request Payload Processor enforces this during assembly Step 3 (Layer Merge) — no separate compliance-class Validation Policy required.
 
 ```yaml
+# illustrative: per-field override control has no schema field yet (#632); a layer's `limits` carries the bound
 fields:
   dns_servers:
     value: [192.0.2.53, 192.0.2.54]
@@ -1631,7 +1623,7 @@ fields:
 
 **Enforcement point:** Step 3 (Layer Merge) — if a lower-priority layer or consumer request sets a field marked `immutable`, assembly halts with a clear error identifying the conflicting layer and the locking layer.
 
-### 13b.2 Constraint Schema Visibility (Q52)
+### 13a.2 Constraint Schema Visibility (Q52)
 
 Constrained fields expose their constraint schema to consumers in the Service Catalog UI and Consumer API at a policy-governed disclosure level.
 
@@ -1674,7 +1666,7 @@ policy:
     THEN set: constraint_visibility.level = full
 ```
 
-### 13b.3 System Policies — Override Control
+### 13a.3 System Policies — Override Control
 
 | Policy | Rule |
 |--------|------|
@@ -1696,7 +1688,7 @@ policy:
 
 > The resolved open-questions log has moved to the non-normative
 > [Layering Annex](layering-and-versioning-annex.md) (“Open Questions”). All entries
-> are resolved; their outcomes are stated normatively in the `LAY-00x`/`OPS-00x` policies.
+> are resolved; their outcomes are stated normatively in the `LAY-00x` policies.
 
 ---
 

@@ -12,9 +12,9 @@
 
 ## 1. Purpose
 
-UDLM is a implementation-neutral substrate whose universal contracts (identifier, four-state
+UDLM is an implementation-neutral substrate whose universal contracts (identifier, four-state
 lifecycle, provenance, classification, events) are domain-independent. Its **entity-type
-definitions** are not domain-independent in *meaning* — an `Resource` is
+definitions** are not domain-independent in *meaning* — a `Resource` is
 about the infrastructure domain, a `Capability` about the architecture/knowledge domain —
 so as UDLM is used across domains, the set of definitions grows and benefits from logical
 organization.
@@ -59,14 +59,14 @@ Every definition therefore carries a **`family` tag** — the mechanism for disa
 terminology that overlaps across domains (see §6).
 
 **One definition, applied uniformly.** A family may group **entity-type definitions**
-(e.g. Resource, Knowledge) or **vocabulary-term definitions** (e.g. The control plane, Computing,
-Automotive). These are **not two notions of "family"** — they are the one concept above
+(e.g. Resource, Knowledge) or **vocabulary-term definitions** (e.g. Computing, Automotive, or an
+implementation's own vocabulary). These are **not two notions of "family"** — they are the one concept above
 grouping different *kinds* of definition. A definition has a family; whether the
 definition is a type or a term does not change what a family is. Consequently the two
 things that can look like "two families" for one entity are really two *different
 definitions*, each in one family. A `Capability` **type** lives in the **Knowledge**
 family (recorded once, at the type level). A specific **term** like "Provider"
-lives in the **the control plane** family (recorded on that term's row). No row carries two families;
+lives in the family of the vocabulary that defines it (recorded on that term's row). No row carries two families;
 no second definition of "family" exists.
 
 ## 3. Why families (design rationale)
@@ -89,7 +89,7 @@ Families name the domain a set of definitions was organized under; usage is open
 | **Resource** | Maintained-state resources (provisioned, reconciled) | The control plane | shape (derived, `has_constituents`): Atomic \| Composite (+ ownership sub-types) — [Entity Types](entity-types.md) | Provisioning: REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL … |
 | **Process** | Bounded executions (automation runs) | The control plane | shape (derived, `has_constituents`): Atomic \| Composite — [Entity Types](entity-types.md) §2.3 | Provisioning (terminal): REQUESTED → INITIATED → EXECUTING → COMPLETED / FAILED / CANCELLED |
 | **Knowledge** | Architecture / capability knowledge (curated) | DAV | members defined in [Knowledge Family](knowledge-family.md) §4 (the one home for that list) | Curation: PROPOSED → UNDER_REVIEW → CANONICAL (+ OBSERVED, DEPRECATED) |
-| **Access** | Identity — who/what a request acts as | The control plane | `Identity` (+ future identity-contract types) — [Auth Providers & Identity Contract](../governance/auth-providers.md); `Escrow` — identity state surviving host re-realization, [Identity Escrow](identity-escrow.md) | Contract: identity is resolved/verified by the control plane, never held as a maintained state |
+| **Access** | Identity and authorization — who/what a request acts as, and what it may do | The control plane | `Identity` (with `Identity.Person`, `Identity.ServiceAccount`, `IdentityGroup`) — [Auth Providers & Identity Contract](../governance/auth-providers.md); `Escrow` (`IdentityEscrow`) — identity state surviving host re-realization, [Identity Escrow](identity-escrow.md); `Grouping` (`Grouping.Tenant`, `Grouping.Authorization`) — [Universal Group Model](universal-groups.md) | Contract: identity is resolved/verified by the control plane, never held as a maintained state; groupings are declared records |
 
 The **Resource** family is the founding set (UDLM's original definitions, retroactively
 grouped). The **Knowledge** family is the first proof that the same substrate organizes a

@@ -1,8 +1,10 @@
 # UDLM — Resource Grouping
 
 > **Related:** See [Universal Group Model](universal-groups.md) for the canonical group model. The constructs here (Tenants, Resource Groups) map 1:1 to the grouping record kind values in that model.
-> **Machine-validatable schema:** Tenants, Resource Groups, and cross-tenant authorizations are
-> `Grouping` records validating against `registry/profile.schema.json` (profiles) / the `Grouping` class (groupings).
+> **Machine-validatable schema:** Tenants, Resource Groups and cross-tenant authorizations are
+> instances of the `Grouping` classes (`Grouping`, `Grouping.Tenant`, `Grouping.Authorization` —
+> `registry/classes/access/authorization/grouping/`), stored as state records
+> (`registry/state-record.schema.json`). Profiles validate against `registry/profile.schema.json`.
 
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md)
 
@@ -59,8 +61,10 @@ The Tenant boundary enables the following control-plane capabilities for all res
 ### 2.4 Tenant Entity Definition
 
 ```yaml
-dcm_tenant:
+# illustrative: shape of the record, not schema-checked
+tenant:
   uuid: <uuid>
+  resource_type: Grouping.Tenant
   name: <human-readable name>
   description: <description>
   version: <Major.Minor.Revision>
@@ -135,6 +139,7 @@ Both subclasses implement the same interface. The Default Resource Group is simp
 Every Resource Group — both control-plane default and custom — must implement this interface:
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 resource_group:
   uuid: <uuid>
   name: <human-readable name>
@@ -156,8 +161,7 @@ resource_group:
     max_depth: <integer|unlimited>
   membership:
     # ONE membership record shape — the Universal Group Model form
-    # (universal-groups §2.1; data-model-core §5). The former
-    # joined_timestamp/joined_by_uuid variant is SUPERSEDED by added_at/added_by.
+    # (universal-groups §2.1; data-model-core §5).
     members:
       - member_uuid: <uuid of Resource/Service Entity or child Resource Group>
         member_type: <entity|resource_group>
@@ -326,7 +330,8 @@ custom_group_type_registration:
 ## 10. Cross-Tenant Authorization (reference)
 
 A cross-tenant authorization is a grouping with `record kind: cross_tenant_authorization`. Its **one home** is
-[universal-groups](universal-groups.md) §13 — the wire shape (`receiving_tenant_uuid`,
-`authorized_resources[].permitted_operations`), lifecycle (creation §13.3, revocation/expiry §13.4 with the
+[universal-groups](universal-groups.md) §13 — the wire shape (the `Grouping.Authorization` fields
+`granted_by`, `granted_to`, `authorized_operations`, `valid_from`, `expires_at`, `ends_when`,
+`platform_managed`), lifecycle (creation §13.3, revocation/expiry §13.4 with the
 PT72H per-profile resolution deadline), and the `CTX-*` rules. Nothing here redefines it.
 

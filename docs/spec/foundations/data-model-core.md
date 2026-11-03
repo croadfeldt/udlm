@@ -2,9 +2,7 @@
 
 Rulings **[D1]**..**[D8]** are normative; this document is the single normative statement of the UDLM data model.
 **Authority rule:** where any other UDLM document disagrees with this one, THIS document wins and the other
-document is defect-fixed to defer here. (The 2026-07-06 consistency review found 5 colliding rule-ID families, 4
-drift-severity enums, and 3 relationship vocabularies — precisely because no single normative core existed.) Each
-section lists the detailed documents it governs.
+document is defect-fixed to defer here. Each section lists the detailed documents it governs.
 
 ---
 
@@ -21,8 +19,8 @@ section lists the detailed documents it governs.
 - `correlation_ids` carry stable natural keys (smbios_uuid, mac, provider_id, …) for entity
   resolution across discovery sources: one real resource, one uuid.
 
-- Boundary translation: external systems that reference by name (e.g. control-plane control-plane
-  catalog's `requires_resources` name-edges) map name↔uuid at the Provider/catalog boundary;
+- Boundary translation: external systems that reference by name (a control plane's catalog with
+  name-keyed edges, for example) map name↔uuid at the Provider/catalog boundary;
   the external name is recorded as a `correlation_ids` entry (`scheme: provider_id`).
 
 *Governs:* `docs/spec/contracts/identifier-scheme.md`, reference fields in both schemas, REF-001/002.
@@ -32,8 +30,9 @@ section lists the detailed documents it governs.
 - Four families (ADR-027): **Resource** and **Process** — maintained state vs bounded
   execution — each with a **derived** Atomic/Composite shape (`has_constituents`, the coarse shape from the control plane's
   orchestration perspective, not a stored field). The other two are **Knowledge** (members defined in
-  `docs/spec/foundations/knowledge-family.md` §4 — the one home for that list) and **Access** (`Identity`),
-  which do not carry the Atomic/Composite shape axis.
+  `docs/spec/foundations/knowledge-family.md` §4 — the one home for that list) and **Access** (`Identity`,
+  `Escrow`, `Grouping` — the schema's `entity_type` set for the family), which do not carry the
+  Atomic/Composite shape axis.
 
 - A **Resource Type Specification** (validates against `registry/resource-type-spec.schema.json`)
   is the portable contract; an **instance** is stored as one record per lifecycle state (validates against
@@ -41,24 +40,27 @@ section lists the detailed documents it governs.
   `Base[.Type[.Provider]]` (single-segment for a Base, e.g. `Topology`; CLS-001) — and
   the record schema accepts exactly the same name grammar as the type schema.
 
-- **Machine-validatable surface** — the model is only as solid as its schemas. Current: type spec,
-  state-record, entity-view, provider-adopted-standards, profile. **[D8] Committed program**, in
-  priority order: (1) Tenant + grouping — **DONE** (`registry/profile.schema.json` / `Grouping` +
-  required instance `tenant_uuid`; `registry/tools/validate.py` dispatches instances on
-  `record_type`). (2) Catalog item — **DONE** (a catalog item is a provider Class:
+- **Machine-validatable surface** — the model is only as solid as its schemas. Current: every record
+  kind in `registry/*.schema.json`. **[D8] Committed program**, in
+  priority order: (1) Tenant + grouping — **DONE** (the `Grouping` classes under
+  `registry/classes/access/authorization/grouping/`, stored as state records; profiles via
+  `registry/profile.schema.json`; `tenant_uuid` required on every instance; `registry/tools/validate.py`
+  dispatches instances on `record_type`). (2) Catalog item — **DONE** (a catalog item is a provider Class:
   `registry/class.schema.json` carrying the `registry/composition.schema.json` constituents shape, +
   validate.py semantic checks; the application model — an application IS a composition — and the
-  ADR-016 evidence; `docs/spec/foundations/template-composition-model.md` §1.4/§2.5). (3) Policy
+  ADR-016 evidence; `docs/spec/foundations/template-composition-model.md` §1.2/§2.5). (3) Policy
   record + typed outputs **[DONE — registry/policy.schema.json; type-spec outputs are the
   referenceable typed binding surface, output-resolved by the validator]**. (4) Layer record **[DONE
-  — registry/layer.schema.json]**. (5) Audit record + Commit Log entry. (6) DecisionRecord **[DONE —
+  — registry/layer.schema.json]**. (5) Audit record + Commit Log entry **[DONE —
+  registry/audit-record.schema.json, registry/audit-leaf.schema.json,
+  registry/commit-log-entry.schema.json]**. (6) DecisionRecord **[DONE —
   registry/decision-record.schema.json; the WHY becomes a queryable, Data·Policy·Provider-decomposed
   record]**. (7) Process Resource **[DONE — the `process` execution axis on the realized record;
   execution_state separate from lifecycle_state per D7; validate.py enforces it on Process-family
   entities]**. **The D8 schema program is COMPLETE.** Until an artifact's schema exists, its prose
   definition is explicitly marked *pre-schema* and is not citable as "[enforced]".
 
-*Governs:* `registry/SPEC-DESIGN-REQUIREMENTS.md`, `entities/*`, `docs/spec/foundations/entity-types.md`.
+*Governs:* `registry/SPEC-DESIGN-REQUIREMENTS.md`, `registry/classes/**`, `docs/spec/foundations/entity-types.md`.
 
 ## 3. Lifecycle — one enum, separate operational axes
 
@@ -111,16 +113,14 @@ section lists the detailed documents it governs.
   a first-class projection of the same edges. `soft` edges order but never block
   (degrade-don't-break, DEP-006).
 
-- **Projection to the control plane execution DAG.** The 2026-07-06 dcm-project comparison found their
-  merged model is a single untyped "must-come-before" DAG from `requires_resources` + CEL-inferred
-  edges, name-referenced, hard-only, with teardown unspecified and runtime execution TODO. The UDLM
-  model projects LOSSLESSLY DOWN onto theirs: `depends_on(hard)` → `requires_resources`;
-  `binds_to{target_field}` → the declared form of their CEL output wiring (`${producer.output}`);
-  `contained_by` → an ordering edge at provision, plus the containment fact they cannot express.
+- **Projection to an execution DAG.** An execution engine's graph is typically a single untyped
+  "must-come-before" DAG: name-referenced, hard-only, with no teardown order. The UDLM model projects
+  LOSSLESSLY DOWN onto such a DAG: `depends_on(hard)` → a prerequisite edge;
+  `binds_to{target_field}` → the engine's declared form of output wiring;
+  `contained_by` → an ordering edge at provision, plus the containment fact a plain DAG cannot express.
   `soft` edges and `references` drop out of the execution DAG by design. The reverse projection is
   lossy — which is the argument for keeping the typed model as the data model and treating execution
-  DAGs as compiled artifacts. UDLM's reverse-topological teardown and typed-outputs formalization are
-  offered upstream as the fill for their two explicit gaps.
+  DAGs as compiled artifacts.
 
 *Governs:* `docs/spec/foundations/entity-relationships.md`, `docs/spec/foundations/service-dependencies.md`,
 `registry/common-elements.md` §7/§7a/§9, both schemas' relationship surfaces.
@@ -145,18 +145,18 @@ section lists the detailed documents it governs.
 
 - **E4 field-level provenance holds in every profile** (homelab = derivable-carrier/git;
   standard/prod = materialized; fsi/sovereign = + audit chain). Provenance `source.kind`
-  vocabulary: `layer | policy | actor | provider | discovery | rehydration | override` (the
-  last three added so DCM ADR-013 overrides and discovery/rehydration writes are recordable).
-  **Home (ADR-059):** the modification history lives in the audit/OL record family (sealed
-  seals, `udlm_provenance` facet), never on the working record — the record makes state claims
-  only. The in-record #191 provenance block migrates there (pending supersession, executed with
-  the receipt-schema phase).
+  vocabulary: `layer | policy | actor | provider | discovery | rehydration | override` (`override`
+  records a DCM ADR-013 override; `discovery` and `rehydration` record those writes).
+  **Home (ADR-059):** the modification history lives in the audit record family (sealed,
+  `udlm_provenance` facet), never on the working record — the record makes state claims
+  only. The in-record provenance block (`state-record.schema.json` `$defs/provenance`) is a
+  convenience copy, not citable as lineage.
 
-- **[D2] Audit integrity is the RFC 9162 Merkle model** (AUD-006, ADR-010) — per-leaf
+- **[D2] Audit integrity is the RFC 9162 Merkle model** (AUD-006; DCM ADR-010) — per-leaf
   signatures, signed tree heads. The "linear SHA-256 chain" wording elsewhere is a defect.
 
-- **[D1] Lifecycle data stores are defined by CONTRACT, not technology** (revised 2026-07-06,
-  maintainer ruling — sovereignty and tenancy make store choice a policy outcome). Four
+- **[D1] Lifecycle data stores are defined by CONTRACT, not technology** (sovereignty and
+  tenancy make store choice a policy outcome). Four
   normative store contracts, each with invariants any conforming store must satisfy. **Commit
   Log** (synchronous, consensus-durable before success — AUD-001). **State Store** (immutable
   snapshots, point-in-time by uuid, per-dot-path provenance, retention, tenancy isolation,
@@ -171,7 +171,7 @@ section lists the detailed documents it governs.
   isolation or residency policy requires, MUST — split stores per tenant/zone, use WORM audit
   tiers, embedded stores for disconnected/day-0 sites, or accredited substitutes. Conformance is
   measured against the contract, never the brand. Tenancy isolation is profile-keyed:
-  shared-schema RLS (`standard`) → schema/database-per-tenant (`fsi`) →
+  shared-schema row-level security (`standard`) → schema/database-per-tenant (`fsi`) →
   store-instance-per-tenant/zone (`sovereign`).
 
 *Governs:* `registry/common-elements.md` §8, `docs/spec/contracts/universal-audit.md`,
@@ -185,7 +185,7 @@ One definition each; everything else defers here:
 | Enum | Canonical values | Home |
 |---|---|---|
 | family | Resource, Process, Knowledge, Access | entity-type-families §4 (ADR-027) |
-| entity_type (Knowledge/Access discriminator) | Knowledge: per knowledge-family §4 (the one home for the member list) · Access: Identity | knowledge-family §4 / schema `family` allOf |
+| entity_type (Knowledge/Access discriminator) | Knowledge: per knowledge-family §4 (the one home for the member list) · Access: Identity, Escrow, Grouping | knowledge-family §4 / schema `family` allOf |
 | has_constituents (derived shape) | Atomic, Composite — Resource & Process only, *derived* not stored | entity-types §2.2 (ADR-027) |
 | lifecycle_state | Intent, Requested, Realized, Discovered, Decommissioned | §3 |
 | execution_state (Process) | REQUESTED, INITIATED, EXECUTING, COMPLETED, FAILED, CANCELLED | §3 [D7] |
@@ -196,23 +196,23 @@ One definition each; everything else defers here:
 | provenance source.kind | layer, policy, actor, provider, discovery, rehydration, override | §6 |
 | stake strength | required, preferred, optional | ownership doc (events defer) |
 | record kind | universal-groups closed set + cross_tenant_authorization | §5 |
-| Provider model | capability declarations (ADR-005), not a fixed type count | docs/spec/contracts/provider-contract.md **[D5]** |
+| Provider model | capability declarations (ADR-PROV-002), not a fixed type count | docs/spec/contracts/provider-contract.md **[D5]** |
 
 ## 8. Conformance — the honest enforcement ledger
 
 A rule may claim **[enforced]** only if a running validator checks it. Current honest state: schema
 validation + $id/version cross-checks + ADOPT-001 + PII-001 run in registry CI. Schema validation
 covers the type spec, state-record and entity-view (incl. required `tenant_uuid` [D3]), provider
-matrices, and grouping via `registry/profile.schema.json` / `Grouping` with per-class conditionals
-(tenant `ownership`/`isolation_level`/`membership_policy.exclusive: true`, cross-tenant-auth grant
-fields). It also covers compositions via `registry/composition.schema.json` (incl. required
+matrices, groupings as state records of the `Grouping` classes (`Grouping.Tenant` with its required
+isolation obligation, `Grouping.Authorization` with its grant fields), and profiles via
+`registry/profile.schema.json`. It also covers compositions via `registry/composition.schema.json` (incl. required
 `tenant_uuid`), plus validate.py semantic checks: component_id uniqueness, sibling
 depends_on/binding resolution, depends_on cycle rejection, and binding⊆depends_on ordering. Also
 enforced, **on new findings** only: uuid v4-nibble, snake_case key patterns, relationship-name
 coverage, and the PVD portable-value scan (`tests/check_portable_values.py`, `PVD-001`). The
 pre-existing set is triaged in `tests/portable-values-baseline.yaml` at the registry layer — tracked
-defects, not claims. Semver compat IS now enforced — tests/ci_compat_gate.py runs compat-check on
-every changed spec vs origin/main. Every "[enforced]" marker elsewhere is audited against this
+defects, not claims. Semver compatibility is enforced: `tests/ci_compat_gate.py` runs
+`compat-check.py` on every changed spec against `origin/main`. Every "[enforced]" marker elsewhere is audited against this
 ledger.
 
 **The refusal contract is specification, not enforcement.** The rules governing what a refusal must be —

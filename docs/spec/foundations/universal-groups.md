@@ -1,8 +1,9 @@
 # UDLM — Universal Group Model
 
-> **Machine-validatable schema:** `Grouping` records validate against
-> `registry/profile.schema.json` (profiles) / the `Grouping` class (groupings)
-> (`registry/tools/validate.py` dispatches on `record_type` to it).
+> **Machine-validatable schema:** a grouping is an instance of a `Grouping` class (`Grouping`,
+> `Grouping.Tenant`, `Grouping.Authorization` — `registry/classes/access/authorization/grouping/`),
+> stored as state records (`registry/state-record.schema.json`); `registry/tools/validate.py`
+> dispatches on `record_type`. Profiles validate against `registry/profile.schema.json`.
 
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource Grouping](resource-grouping.md) | [Entity Relationships](entity-relationships.md)
 
@@ -35,7 +36,7 @@ The **Universal Group Model** expresses every grouping need — tenancy, resourc
 
 ```yaml
 # illustrative: shape of the record, not schema-checked
-dcm_group:
+grouping:
   uuid: <uuid — immutable, assigned at creation>
   handle: <domain/class/name — e.g., org/tenant/payments-bu>
   version: <Major.Minor.Revision>
@@ -143,7 +144,7 @@ one class and not five.
 
 **Reading the rest of this document.** `tenant_boundary` is used throughout — including in the
 structural invariants below — as the descriptive name for the kind now carried by `Grouping.Tenant`.
-It names a kind; it is no longer how an instance declares itself. The `dcm_group:` wrapper in the
+It names a kind, not how an instance declares itself. The `grouping:` wrapper in the
 illustrative YAML likewise names a shape rather than a schema.
 
 
@@ -175,8 +176,9 @@ Regardless of `enforcement_model`, grouping kind, or active profile, the followi
 **Purpose:** Ownership boundary, isolation enforcement, cost attribution, audit scope, sovereignty boundary
 
 ```yaml
-dcm_group:
-  resource_type: Grouping
+# illustrative: shape of the record, not schema-checked
+grouping:
+  resource_type: Grouping.Tenant
   member_types_permitted: [resource_entity, group]
   exclusivity:
     per_member: one   # STRUCTURAL LOCK — cannot be changed by policy
@@ -187,7 +189,7 @@ dcm_group:
     on_group_destroy: notify   # requires explicit resolution
     on_member_destroy: remove_from_group
 
-  # Tenant-specific fields preserved from original model
+  # Tenant-specific fields
   tenant_config:
     hard_tenancy:
       cross_tenant_relationships: explicit_only
@@ -205,7 +207,8 @@ dcm_group:
 **Purpose:** Flexible composable grouping of resource entities — structured tagging
 
 ```yaml
-dcm_group:
+# illustrative: shape of the record, not schema-checked
+grouping:
   resource_type: Grouping
   group_subclass: cost_center   # advisory — CostCenter, BusinessUnit, Project, Team...
   member_types_permitted: [resource_entity]
@@ -219,8 +222,9 @@ dcm_group:
 **Purpose:** Cohesive collection of policies addressing a single concern
 
 ```yaml
-dcm_group:
-  record kind: policy_collection
+# illustrative: shape of the record, not schema-checked
+grouping:
+  resource_type: Grouping           # a policy collection: members are policies
   concern_tags: [pci-dss, encryption, network-segmentation]
   member_types_permitted: [policy]
   enforcement_model: enforced
@@ -236,7 +240,8 @@ dcm_group:
 **Purpose:** Complete control-plane configuration for a use case, composed of policy_collection groups
 
 ```yaml
-dcm_group:
+# illustrative: shape of the record, not schema-checked
+grouping:
   record_type: profile
   member_types_permitted: [group]   # only policy_collection groups
   extends: <parent profile uuid>    # inherits all parent's groups
@@ -276,7 +281,8 @@ Note this does not touch the derived `has_constituents` **shape** — a differen
 **New concept:** A group of tenant_boundary groups that share governance, visibility, and resources while maintaining complete independence.
 
 ```yaml
-dcm_group:
+# illustrative: shape of the record, not schema-checked
+grouping:
   record kind: federation
   name: "Global FSI Federation"
   member_types_permitted: [group]   # tenant_boundary groups only
@@ -401,25 +407,26 @@ All groups are stored in a single **Group Registry** — a lifecycle store bound
 
 ### 6.2 Class-Filtered API Views
 
-The universal registry exposes class-filtered views for convenience:
+The universal registry exposes class-filtered views for convenience (illustrative endpoints; the
+kind is the record's `resource_type`, §2.2):
 
-| Endpoint | Equivalent Query |
+| Endpoint | Equivalent filter |
 |----------|----------------|
-| `GET /tenants` | `GET /groups?record kind=tenant_boundary` |
-| `GET /resource-groups` | `GET /groups?record kind=resource_grouping` |
-| `GET /policy-groups` | `GET /groups?record kind=policy_collection` |
-| `GET /policy-profiles` | `GET /groups?record kind=policy_profile` |
-| `GET /federations` | `GET /groups?record kind=federation` |
+| `GET /tenants` | `resource_type=Grouping.Tenant` |
+| `GET /resource-groups` | `resource_type=Grouping`, members are resource entities |
+| `GET /policy-groups` | `resource_type=Grouping`, members are policies |
+| `GET /policy-profiles` | `record_type=profile` |
+| `GET /federations` | parked (§3.6) |
 
-Existing API references continue to work unchanged. New API consumers can use the universal endpoint.
+The plain-`Grouping` kinds are told apart by the three settings of §2.2, which have no machine home yet.
 
 ---
 
 ## 8. System Policies
 
 The structural invariants `GRP-INV-001`..`GRP-INV-006` are **defined once in §2.3** (every
-GRP-* id has exactly one definition — this includes [Resource Grouping](resource-grouping.md),
-whose former GRP-003 circular-nesting rule is now a pointer to `GRP-INV-005` here). The
+GRP-* id has exactly one definition; [Resource Grouping](resource-grouping.md)'s GRP-003 is a
+pointer to `GRP-INV-005` here). The
 policies below add behavior on top of those invariants:
 
 | Policy | Rule |
@@ -482,7 +489,7 @@ Sovereignty interaction is record kind-specific:
 | `policy_collection` | Always permitted | Policies have no sovereignty — governance artifacts |
 | `layer_grouping` | Always permitted | Layers have no sovereignty |
 | `composite` | Governed by most restrictive member | If contains cross-sovereignty resources, resource rules apply |
-| `federation` | Permitted with the control plane federation rules | control-plane-003 governs data flows |
+| `federation` | Parked (§3.6) | Not buildable as specified |
 
 ```yaml
 # Policy restricting cross-sovereignty resource group membership
@@ -568,8 +575,9 @@ Policy inheritance for nested groups is record kind-specific and profile-governe
 | `federation` | `opt_in` | Peer consent always required — not configurable |
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 # Nested group policy inheritance declaration
-dcm_group:
+grouping:
   resource_type: Grouping
   parent_group_uuid: <corporate-tenant-uuid>
   policy_inheritance: opt_out     # governed by active Profile
@@ -614,41 +622,39 @@ Without a cross-tenant authorization, entities in different Tenants cannot form 
 ### 13.2 Authorization Lifecycle
 
 ```yaml
-# illustrative: shape of the record, not schema-checked
+# illustrative: the fields are the Grouping.Authorization class's
+# (registry/classes/access/authorization/grouping/authorization.yaml); the worked
+# record is registry/examples/example-cross-tenant-authorization.yaml
 cross_tenant_authorization:
-  uuid: <uuid>
-  handle: "org/cross-tenant-auth/networkops-to-appteam-vlan100"
-  version: "1.0.0"
-  status: active
+  entity_uuid: <uuid>
+  resource_type: Grouping.Authorization
+  handle: "platform/grant/vlan-100-to-appteam"
+  tenant_uuid: <networkops-tenant-uuid>       # the grant lives in the granting tenant
 
-  granting_tenant_uuid: <networkops-tenant-uuid>
-  receiving_tenant_uuid: <appteam-tenant-uuid>
-  authorized_resources:
-    - resource_uuid: <vlan-100-uuid>
-      permitted_operations: [stake, read]
-    - resource_type: IPAddress
-      source_pool_uuid: <ippool-uuid>
-      permitted_operations: [allocate]
+  fields:
+    membership_criterion: estate?uuid=in=(<vlan-100-uuid>)   # the authorized resources (URF)
+    granted_by: <networkops-tenant-uuid>
+    granted_to: <appteam-tenant-uuid>
+    authorized_operations: [stake, read]
 
-  # Ending criteria (CTX-009). expires_at is required: no grant is open-ended by omission.
-  valid_from: <ISO 8601>
-  expires_at: <ISO 8601>
-  ends_when:                        # optional; threshold and scores are stated, never defaulted
-    threshold: 1                    # ends when the held scores reach this; 1 = any one
-    criteria:
-      - kind: bound                 # the grant serves one request, order or system
-        to: <system-uuid>
-        score: 1
-      - kind: uses                  # at most this many relationships formed under it
-        max: 20
-        score: 1
-      - kind: bound                 # a negative score is an exception: keeps the grant
-        to: <system-uuid>           # alive while the system it serves is still realized
-        score: -100
+    # Ending criteria (CTX-009). expires_at is required: no grant is open-ended by omission.
+    valid_from: <ISO 8601>
+    expires_at: <ISO 8601>
+    ends_when:                      # optional; threshold and scores are stated, never defaulted
+      threshold: 1                  # ends when the held scores reach this; 1 = any one
+      criteria:
+        - kind: bound               # the grant serves one request, order or system
+          to: <system-uuid>
+          score: 1
+        - kind: uses                # at most this many relationships formed under it
+          max: 20
+          score: 1
+        - kind: bound               # a negative score is an exception: keeps the grant
+          to: <system-uuid>         # alive while the system it serves is still realized
+          score: -100
 
-  # Who created this
-  granted_by_actor_uuid: <uuid>
-  granted_at: <ISO 8601>
+    platform_managed: false         # true when a platform admin created it (CTX-004)
+  # who created it, and when, is the submission's audit record (layering-and-versioning §4b.1)
 ```
 
 ### 13.3 Who Creates Cross-Tenant Authorizations
@@ -704,8 +710,8 @@ it binds, and whether this repository can check it. A rule this repository canno
 thereby unenforced — it is evidenced by a peer implementation, and saying so is the point.
 
 - **CTX-005** — target **control-plane**. Not checkable here: the derivation is provable (a reference
-  implementation over the edge graph, the #321 split), but the refusal *timing* is runtime. Blocked on
-  #425 — the authorization record has no schema, so there is nothing to diff against.
+  implementation over the edge graph, the #321 split), but the refusal *timing* is runtime. The record
+  to diff against is `Grouping.Authorization`; the diff itself runs in the control plane.
 - **CTX-006** — target **control-plane**. Not checkable here: a release decision taken at query and
   enforcement time (ADR-041 egress, structural surface).
 - **CTX-007** — target **control-plane**. Not checkable here: an audit-routing behavior.
@@ -719,4 +725,4 @@ families are backfilled separately rather than retrofitted here.
 
 ---
 
-*Document maintained by the control plane Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../../../CONTRIBUTING.md).*

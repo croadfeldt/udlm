@@ -10,7 +10,7 @@ Location layers are one application of the **Reference Data Layer** pattern (see
 
 The substrate concepts in this document — layer instances as field constraint sources, hierarchy assembly, authority ownership, lifecycle governance — apply equally to all Reference Data Layer types. Location is specified in detail here because it has the richest internal hierarchy and the most complex assembly behaviour of all the standard reference data types.
 
-The substrate is **abstract**: it defines that topology is layered and how layers compose, but it does NOT prescribe the specific layers a deployment uses. A consuming implementation (e.g., DCM) declares its canonical layer hierarchy (DCM's canonical default is a 9-layer Country → Region → Zone → Site → Data Center → Hall → Cage → Rack → Unit scheme). A peer implementation could pick a different scheme and still be UDLM-conformant.
+The substrate is **abstract**: it defines that topology is layered and how layers compose, but it does NOT prescribe the specific layers a deployment uses. A consuming implementation declares its canonical layer hierarchy (for example, a 9-layer Country → Region → Zone → Site → Data Center → Hall → Cage → Rack → Unit scheme). A peer implementation could pick a different scheme and still be UDLM-conformant.
 
 ---
 
@@ -59,7 +59,7 @@ Each topology layer instance is a first-class UDLM Data artifact:
 
 - It has a UUID and a stable handle
 - It is versioned (semver)
-- It carries a `status` (`developing`, `proposed`, `active`, `deprecated`, `retired`)
+- It carries a `status` (`active`, `deprecated`, `retired` — the three record states, [layering-and-versioning.md](layering-and-versioning.md) §4b.2)
 - It is owned by a declared authority
 - It is registered in a substrate-managed registry
 
@@ -115,14 +115,11 @@ layer:
   # Layer classification
   layer_type: core                        # always 'core' for location layers
   location_type: <type-name>              # implementation-declared type identifier
-  scope: type_agnostic                    # location layers apply to all resource types
+  # no `covers` — location layers apply to all resource types
 
-  # Priority — location layers occupy a dedicated band in the priority space
-  priority:
-    value: "<priority-value>"             # specific bands implementation-declared
-    label: "core.location.<type>.<code>"
-    category: core_location
-    rationale: "<human-readable rationale>"
+  # Position — location layers occupy a dedicated band within the core class
+  precedence_class: core
+  precedence_order: <integer>             # specific bands implementation-declared
 
   # Hierarchy — parent location
   location_hierarchy:
@@ -134,7 +131,7 @@ layer:
       # ... full ancestor chain
 
   # The location data — fields from the type definition
-  data:
+  fields:
     # Fields declared in the layer-type schema; specific fields are implementation-declared
     <field_name>: <value>
 
@@ -151,8 +148,6 @@ layer:
     ineligible_resource_types: []       # explicit exclusions
     max_data_classification: <classification>  # highest data classification accepted
     requires_accreditations: []         # accreditations providers must hold to serve this layer
-
-  concern_tags: [location, ...]
 ```
 
 ---
@@ -189,11 +184,14 @@ Higher-precedence (more-specific) layers MUST override lower-precedence (more-ge
 
 ## 6. Location Layer Lifecycle (Substrate Contract)
 
-Location layers follow the standard substrate artifact lifecycle:
+Location layers follow the standard record states:
 
 ```
-developing → proposed → active → deprecated → retired
+active → deprecated → retired
 ```
+
+Drafting and review are stages of a change before it becomes a record, not record states
+([layering-and-versioning.md](layering-and-versioning.md) §4b.2).
 
 **Substrate-required lifecycle behaviors:**
 
@@ -255,4 +253,4 @@ custom_location_type:
 
 ---
 
-*UDLM substrate document. The specific layer hierarchy (e.g., DCM's canonical 9-layer Country → Region → Zone → Site → Data Center → Hall → Cage → Rack → Unit scheme) is an implementation choice. So are placement engine algorithms, priority band allocations, consumer selection mechanics, authority-and-ownership models, and capacity-tracking implementations. The DCM implementation's canonical hierarchy and operational mechanics live in the DCM implementation's documentation.*
+*UDLM substrate document. The specific layer hierarchy (e.g., a 9-layer Country → Region → Zone → Site → Data Center → Hall → Cage → Rack → Unit scheme) is an implementation choice. So are placement engine algorithms, precedence band allocations, consumer selection mechanics, authority-and-ownership models, and capacity-tracking implementations. An implementation's canonical hierarchy and operational mechanics live in that implementation's documentation.*

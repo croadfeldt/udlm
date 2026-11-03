@@ -13,7 +13,7 @@
 
 This document provides end-to-end worked examples that make the UDLM data model concrete. Each example traces the complete lifecycle of a resource through the substrate — from consumer intent through the four states, showing exactly what data exists at each stage.
 
-These examples describe substrate-level behavior. Specific orchestration scenarios, runtime mechanics, and implementation-specific composite flows live in the consuming implementation's documentation (for example, DCM's `orchestration-scenarios.md`).
+These examples describe substrate-level behavior. Specific orchestration scenarios, runtime mechanics, and implementation-specific composite flows live in the consuming implementation's documentation (for example, an `orchestration-scenarios` document).
 
 ---
 
@@ -114,6 +114,8 @@ policies/
 
 A developer on the AppTeam Tenant requests a standard Linux VM. This example traces the complete lifecycle through all four states.
 
+> The YAML below is a narrative sketch. The normative record shapes are `registry/state-record.schema.json` (one record per state, [four-states.md](four-states.md) §2.7); the same VM as validated records is `registry/examples/example-vm-app01-{intent,requested,realized,discovered}-record.yaml`.
+
 ### 3.1 Consumer Submits Intent (Intent State)
 
 The developer submits the following intent via the Consumer API:
@@ -163,6 +165,7 @@ After intent is accepted, the Request Payload Processor performs assembly:
 **Layer Resolution and Merge:**
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 # Layer chain assembled (in precedence order, highest to lowest):
 # 1. system/core/datacenter-layer.yaml        (system domain)
 # 2. system/core/environment-layer.yaml        (system domain)
@@ -174,20 +177,20 @@ After intent is accepted, the Request Payload Processor performs assembly:
 # Resulting merged fields before policy evaluation:
 cpu_count:
   value: 4                         # from consumer intent
-  provenance.origin.source_type: consumer
-  provenance.origin.source_uuid: f5e6d7c8-entity
+  provenance.origin.source.kind: actor
+  provenance.origin.source.id: b2c3d4e5-actor-uuid
 
 memory.size:
-  value: 8                         # from consumer intent
-  provenance.origin.source_type: consumer
+  value: 8Gi                       # from consumer intent
+  provenance.origin.source.kind: actor
 
 storage_gb:
   value: 100                       # from consumer intent
 
 data_center:
   value: "EU-WEST-DC1"             # from datacenter layer
-  provenance.origin.source_type: base_layer
-  provenance.origin.source_uuid: dc-layer-uuid
+  provenance.origin.source.kind: layer
+  provenance.origin.source.id: dc-layer-uuid
 
 environment:
   value: production                # from consumer intent (overrides layer default "dev")
@@ -195,22 +198,23 @@ environment:
     - sequence: 1
       previous_value: dev          # layer default
       modified_value: production   # consumer override
-      source_type: consumer
+      source.kind: actor
 
 monitoring_agent:
   value: "datadog-agent:7.42"     # injected by org layer — consumer did not declare this
-  provenance.origin.source_type: intermediate_layer
-  provenance.origin.source_uuid: appteam-defaults-layer-uuid
+  provenance.origin.source.kind: layer
+  provenance.origin.source.id: appteam-defaults-layer-uuid
 
 backup_policy:
   value: "daily-30d-eu-west"      # injected by compliance layer
-  provenance.origin.source_type: intermediate_layer
-  provenance.origin.source_uuid: eu-west-compliance-layer-uuid
+  provenance.origin.source.kind: layer
+  provenance.origin.source.id: eu-west-compliance-layer-uuid
 ```
 
 **Policy Evaluation:**
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 # Validation policy (compliance-class): vm-size-limits evaluates
 # Result: APPROVED (4 CPU within AppTeam's 16 CPU limit)
 
@@ -222,8 +226,8 @@ monitoring_endpoint:
     - sequence: 1
       previous_value: null
       modified_value: "https://metrics.internal.eu-west.example.com"
-      source_type: policy
-      source_uuid: inject-monitoring-policy-uuid
+      source.kind: policy
+      source.id: inject-monitoring-policy-uuid
       operation_type: enrichment
       reason: "Standard monitoring endpoint for EU-WEST production resources"
 
@@ -283,6 +287,7 @@ placement:
 OpenStack EU-WEST-Prod-1 receives the payload, naturalizes it to OpenStack format, provisions the VM, and returns the denaturalized result:
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 # Event written to Realized Store event stream (entity_uuid key)
 
 event_type: REALIZED
@@ -297,7 +302,7 @@ storage_gb: { value: 100, provenance: {...} }
 
 # Provider-added fields (not in Requested State — added by provider after implementation)
 provider_entity_id: "vm-0a1b2c3d"              # OpenStack's internal VM ID
-assigned_ip_address: "10.1.45.23"              # IP assigned by provider at realization
+assigned_ip_address: "198.51.100.23"              # IP assigned by provider at realization
 hypervisor_host: "compute-node-07.eu-west"      # where the VM was physically placed
 actual_storage_gb: 102                          # actual allocated (rounded up)
 console_url: "https://console.eu-west.example.com/vm/0a1b2c3d"
@@ -332,6 +337,7 @@ Drift Detection runs field-by-field comparison: all fields match Realized State.
 An allocation request showing the `allocation` ownership model (pool → owned allocation).
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 # Consumer submits intent for an IP address
 # intent-store/a1b2c3d4-tenant/Network/IPAddress/ip-entity-uuid/intent.yaml
 
@@ -342,14 +348,14 @@ spec:
   attachment_ref: f5e6d7c8-entity-uuid     # the VM this IP will be assigned to
 
 # Assembly runs — placement finds eligible IPAddressPool
-# Pool: NetworkOps/Network/IPAddressPool/10.1.0.0-16 (owned by NetworkOps Tenant)
-# Available capacity: 65420 addresses
+# Pool: NetworkOps/Network/IPAddressPool/198.51.100.0-24 (owned by NetworkOps Tenant)
+# Available capacity: 250 addresses
 
 # Provider carves allocation:
-# New entity created: IPAddress 10.1.45.23/32
+# New entity created: IPAddress 198.51.100.23/32
 # Owned by: AppTeam Tenant (a1b2c3d4)
 # AllocationRecord relationship created:
-#   IPAddress 10.1.45.23/32 --[allocated_from]--> IPAddressPool 10.1.0.0/16
+#   IPAddress 198.51.100.23/32 --[allocated_from]--> IPAddressPool 198.51.100.0/24
 
 # Realized State event for the new IPAddress entity:
 entity_uuid: ip-entity-uuid
@@ -357,7 +363,7 @@ resource_type: IPAddress
 ownership_model: allocation
 owned_by_tenant_uuid: a1b2c3d4-appteam-uuid    # AppTeam owns this
 allocated_from_pool_uuid: pool-entity-uuid      # NetworkOps owns the pool
-address: "10.1.45.23"
+address: "198.51.100.23"
 prefix_length: 32
 address_family: IPv4
 ```

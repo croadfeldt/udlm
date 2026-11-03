@@ -7,7 +7,7 @@
 > and the resolved open-questions log that were extracted from the layering
 > specification to keep the normative core implementable on its own. Nothing
 > here adds a requirement; the binding rules (merge precedence, artifact
-> metadata, and the `LAY-00x`/`OPS-00x` system policies) live in the
+> metadata, and the `LAY-00x` system policies) live in the
 > [normative core](layering-and-versioning.md).
 
 ---
@@ -165,7 +165,7 @@ provider_registration:
       compatible_versions: "~1.2"      # any 1.2.x revision
 ```
 
-**Version lifecycle:** Service Layers follow the standard five-status artifact lifecycle. A deprecated Service Layer continues to work for existing implementations until retired. If a provider bumps to a new major version and updates its compatibility declaration, the old layer version is no longer used for new requests via that provider but continues to work for existing implementations.
+**Version lifecycle:** Service Layers have the three record states (`active`, `deprecated`, `retired` — normative core §4b.2 and §10). A deprecated Service Layer continues to work for existing implementations until retired. If a provider bumps to a new major version and updates its compatibility declaration, the old layer version is no longer used for new requests via that provider but continues to work for existing implementations.
 
 **Cache invalidation:** Service Layer Cache entries carry the layer version. When the registered layer version increments, the cache entry is invalidated and refreshed before the next assembly.
 
@@ -228,7 +228,7 @@ request:
 | 2 | Should Core Layers be ordered within their precedence level? | Merge determinism | ✅ Resolved — priority schema provides deterministic ordering |
 | 3 | Can a consumer explicitly exclude a layer from their request? | Consumer control vs. standardization | ✅ Resolved — layer_exclusions with mandatory reason; compliance-class Validation Policy can lock layers as non-excludable (LAY-001) |
 | 4 | How are Service Layers registered and versioned relative to Service Provider registration? | Provider contract | ✅ Resolved — independently versioned; provider declares semver compatibility; cache invalidation on version change (LAY-002) |
-| 5 | Should assembly support conditional layer inclusion? | Assembly flexibility | ✅ Resolved — activation_condition on layers; evaluated in Step 2; references request, tenant, resource type, core layer, and ingress fields (LAY-003) |
+| 5 | Should assembly support conditional layer inclusion? | Assembly flexibility | ✅ Resolved — no `activation_condition`; a layer applies where `covers` and `applies_on` say it does (§13.3, LAY-003) |
 | 6 | How does the layer chain interact with service dependencies? | Dependency model | ✅ Resolved — each dependency has its own layer chain; inherits parent resolved placement context; no consumer declaration inheritance (LAY-004) |
 | 7 | Should `override_preference` be declarable in layer definitions as a hint to the Policy Engine? | Override control | ✅ Resolved — override: allow/constrained/immutable enforced by Request Payload Processor at Step 3; compliance-class Validation Policy may additionally lock (LAY-005) |
 | 8 | When `override_preference: immutable` is set — can a higher-priority policy still override it? | Override control precedence | ✅ Resolved — immutable prevents lower-authority overrides only; higher-domain layers always win; compliance-class Validation Policy can additionally lock (LAY-005) |

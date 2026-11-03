@@ -64,7 +64,7 @@ to the Resource family's Realized-vs-Discovered drift. This *is* the first imple
   instances (e.g. capabilities discovered in a client assessment) default
   **client-confidential**. Set per instance, per field.
 
-- **Family tag:** every definition here carries `family: knowledge` — the disambiguation
+- **Family tag:** every definition here carries `family: Knowledge` — the disambiguation
   namespace (see [Entity-Type Families §6](entity-type-families.md)). So
   `Capability [Knowledge]` is distinct from any same-named term in another family, and
   collision-prone words (`Process`, `Policy`, `Service`, `Provider`, `Capability`) stay
@@ -101,7 +101,7 @@ A canonical vocabulary term — the **normalization authority** the catalog norm
 - **Relationships:** `parent` → TaxonomyTerm; normalized **by** Capability/Alias.
 
 - **States:** `proposed` (a back-fill candidate the catalog surfaced) → `under_review` →
-  `canonical`. Seeded `canonical` from an authoritative taxonomy (e.g. The control plane Taxonomy).
+  `canonical`. Seeded `canonical` from an authoritative taxonomy (an implementation's own, for example).
   `deprecated` for retired terms.
 
 - **Note:** TaxonomyTerm is the "spec"; Capability is "reality." Their gap drives back-fill
@@ -178,7 +178,7 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
   This is **distinct from a *runtime* decision** (a policy firing, a placement / provider selection), which is
   captured as **Audit + field-level provenance** ([Universal Audit](../contracts/universal-audit.md)) — **not** a
   DecisionRecord. A DecisionRecord is the deliberate *why* at **authoring time** (any scope); audit is *what
-  happened* at **runtime**. A consuming control plane (e.g. The control plane) records its architecture decisions *as*
+  happened* at **runtime**. A consuming control plane records its architecture decisions *as*
   architecture-scoped DecisionRecords (its ADRs) per this definition rather than maintaining a parallel form.
 
 > **Fit with the UDLM model (coherence).** The ADR/DR sits cleanly on the substrate: it is `Data` (Knowledge),
@@ -216,7 +216,7 @@ method: a discovery avenue → Knowledge classes → references-context edges �
   status). Terminal in the chain; blast-radius reverse-walks from here.
 
 - **Lifecycle:** curated upstream (NVD/OSV), **`Discovered`** locally (a scanner is a discovery avenue,
-  dcm DCM ADR-017) — never provider-realized.
+  DCM ADR-017) — never provider-realized.
 
 - **Edges** are `edge_type: references` (non-ordering, so outside the shutdown sort) but **walked by
   blast-radius/impact in reverse** — "everything pointing to `Vulnerability#X`" = the affected package → image →
@@ -257,6 +257,29 @@ whose truth is held by the party that declares it.
   accreditation's `scope.geographic_scope`.
 
 - **States:** `proposed` → `canonical`; established at setup and governed thereafter.
+
+### 4.9 TestEvidence
+The evidence one test provides about a subject — any test, from any suite, in the result format the
+suite already emits (CTRF or JUnit). A suite that checks a vulnerability binds at the Type
+`TestEvidence.VulnerabilityCheck`. Class: `registry/classes/knowledge/test-evidence/_base.yaml`.
+
+- **Fields:** test_id, subject_ref, category, result, job_ref, file_path, file_digest, scope.
+
+- **Relationships:** `references` → Job (`produced_by` — the run that executed the test).
+
+### 4.10 VexStatement
+One exploitability claim about one vulnerability in one package version, with the evidence it rests
+on. It carries the OpenVEX status (affected, not affected, fixed, under investigation), the
+justification label when the status is not affected, and references to the tests that back it. A harness or a scanner
+drafts it (the intent record); product security confirms it (the realized record). Class:
+`registry/classes/knowledge/vex-statement/_base.yaml`.
+
+- **Fields:** vulnerability_ref, software_package_ref, status, justification, status_notes,
+  evidence_refs, document_url.
+
+- **Relationships:** `references` → Vulnerability (`about`), → SoftwarePackage, → TestEvidence.
+
+- **States:** `proposed` (drafted) → `canonical` (confirmed); `deprecated` when superseded.
 
 ## 5. Relationship graph (summary)
 
