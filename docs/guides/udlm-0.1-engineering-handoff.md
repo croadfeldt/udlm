@@ -1,7 +1,7 @@
 # UDLM 0.1 — Engineering Handoff
 
 **Status:** Handoff (orientation, non-normative) — points at the normative surface, does not restate it.
-**Audience:** the engineering team implementing UDLM 0.1 (the September release).
+**Audience:** the engineering team implementing UDLM 0.1.
 **What this settles:** where to start, the model you must hold in your head, where the authoritative truth lives, and how to check your work. Scope, use-case coverage, and exit criteria are settled separately in [`../../registry/UDLM-0.1-SCOPE.md`](../../registry/UDLM-0.1-SCOPE.md) — read that for *what's in*; read this for *how to get oriented*.
 
 ---
@@ -10,7 +10,7 @@
 
 UDLM is the **data / contract / type** layer — the wire-compatible substrate. It is **not** the orchestrator; the runtime that consumes it is DCM. The boundary is one test (ADR-008): *"could a peer implement this differently and still be valid? Yes → it's DCM (runtime/policy); No → it's UDLM (data/contract)."* Every ambiguity resolves with that question. UDLM 0.1 is the substrate that **enables the 21 release use cases** (`../../registry/UDLM-0.1-SCOPE.md` §3); DCM satisfies many success criteria at runtime over a UDLM shape — those are not 0.1 spec work.
 
-**Implement against the `dev` profile.** The architecture and wire contracts are identical across the six profiles; only the required *floor* differs (`registry/profiles/*.yaml`). September builds and validates the 21 UCs against **dev**; the `sovereign`/`fsi` floors exist so the architecture is provably production-grade, not to be implemented first (`../../registry/UDLM-0.1-SCOPE.md` §2).
+**Implement against the `dev` profile.** The architecture and wire contracts are identical across the six profiles; only the required *floor* differs (the UDLM Profile Set, croadfeldt/udlm-profiles). The 0.1 work builds and validates the 21 UCs against **dev**. The `sovereign`/`fsi` floors exist so the architecture is provably production-grade, not to be implemented first (`../../registry/UDLM-0.1-SCOPE.md` §2).
 
 **Valid-by-construction.** Everything is a typed record that validates against a JSON Schema. If it doesn't validate, it isn't UDLM. The validators are the definition of done (§5).
 
@@ -20,8 +20,8 @@ Hold these seven concepts and the rest follows:
 
 1. **Four lifecycle states** — Intent → Requested → Realized → Discovered, immutable, linked by `entity_uuid` (`docs/spec/foundations/four-states.md`). The spine everything hangs on.
 2. **Typed records + schemas** — each Resource Type is a spec validated by `resource-type-spec.schema.json`; each instance validates against its type. Identity is a UUID (RFC 9562 v4), advisory names are `handle`s (`docs/spec/contracts/identifier-scheme.md`).
-3. **Data layering** — a request payload is assembled by merging ordered layers lowest-authority-first (base → core → intermediate → service → request; policy over the result), with **field-level provenance** — every field records the layer uuid that set it (`docs/spec/foundations/layering-and-versioning.md`; `registry/layer.schema.json`). This is how a standard base is reused and specialized per data center / rack / segment.
-4. **Data references + immutable lineage** — a field points at shared governed data by URF reference — `uuid/<v4>[@version]?reference_data_type==<kind>` (identifier-scheme §9), the uuid resolving the target and the pin naming its immutable version — instead of inlining. Referenced entities are **immutable records** (a change is published as a new record — its own identity uuid and version — per the ADR-051 family rule); lineage is a **single explicit `supersedes` DAG**; change-impact is derived from that DAG and cascades transitively up the reference graph (`registry/data-reference.schema.json`; decision 012 in the [decisions register](../adr/README.md) — uuid-authoritative references, immutable + supersede). Acting on impact is a DCM policy, never automatic.
+3. **Data layering** — a request payload is assembled by merging ordered layers lowest-authority-first (base → core → intermediate → service → request; policy over the result). It carries **field-level provenance**: every field records the layer uuid that set it (`docs/spec/foundations/layering-and-versioning.md`; `registry/layer.schema.json`). This is how a standard base is reused and specialized per data center / rack / segment.
+4. **Data references + immutable lineage** — a field points at shared governed data by URF reference — `uuid/<v4>[@version]?reference_data_type==<kind>` (identifier-scheme §9), the uuid resolving the target and the pin naming its immutable version — instead of inlining. Referenced entities are **immutable records**: a change is published as a new record with its own identity uuid and version, per the ADR-051 family rule. Lineage is a **single explicit `supersedes` DAG**. Change-impact is derived from that DAG and cascades transitively up the reference graph (`registry/data-reference.schema.json`; decision 012 in the [decisions register](../adr/README.md) — uuid-authoritative references, immutable + supersede). Acting on impact is a DCM policy, never automatic.
 5. **Provider capability declaration** — a provider declares, per capability, what it can fulfill: topology / mobility / operational primitives / sovereignty (`registry/provider-adopted-standards.schema.json`; `docs/adr/ADR-PROV-002-*`). Placement matches consumer requirements against this.
 6. **Sovereignty & accreditation** — a declared sovereignty stance is a **claim**; trust requires a **1-1 match** with an **accreditation** (a verifiable credential: `proof` + `trust_anchor`) on provider × capability × jurisdiction × data-classification × plane, decided by a **two-gate** check (verify, then appraise). No match → `self_asserted` → not honored for sovereign placement (`docs/spec/governance/accreditation-and-authorization-matrix.md`; `registry/accreditation.schema.json`).
 7. **Policy is separate from data** — layers and references carry *values*; policies *decide/transform* (`registry/policy.schema.json`; `docs/spec/contracts/policy-contract.md`). Keep them apart: a layer says "the zone is DMZ"; a policy says "DMZ workloads must use the DMZ egress."
@@ -33,14 +33,15 @@ Hold these seven concepts and the rest follows:
 | Schema | What it defines |
 |---|---|
 | `resource-type-spec.schema.json` | the meta-schema every Resource Type definition validates against |
-| `entity-view.schema.json` | a realized instance record (the `resource_type` discriminator) |
+| `state-record.schema.json` | one record per lifecycle state (intent, requested, realized, discovered), the stored form of an entity |
+| `entity-view.schema.json` | the entity view — the merged read model folded from the per-state records, never written |
 | `layer.schema.json` | a data layer — base/overlay/reference_data; `fields`, provenance, `supersedes` lineage |
 | `data-reference.schema.json` | the data-reference shape — a URF string `uuid/<v4>[@version]?reference_data_type==<kind>` |
 | `provider-adopted-standards.schema.json` | provider capability declaration (adopted standards + per-capability blocks) |
 | `accreditation.schema.json` | a verifiable accreditation (`proof`, `trust_anchor`, scope) |
-| `policy.schema.json` | a policy record (the 8 policy types) |
+| `policy.schema.json` | a policy record (the nine policy types) |
 | `profile.schema.json` | deployment profiles |
-| `catalog-item.schema.json` | a Composite Service catalog item |
+| `composition.schema.json` | the composition shape (constituents, bindings) a catalog item or template carries; a catalog item itself is a Provider Class |
 | `decision-record.schema.json` | a DecisionRecord (the substrate form of an ADR) |
 | `audit-record` / `audit-leaf` / `commit-log-entry` | audit + tamper-evidence (Merkle, RFC 9162) |
 | `regeneration-manifest.schema.json` | the durable change record of a class change — classification, machine-enumerated blast radius, consumer debt, the gate suite that re-proved it (ADR-045) |

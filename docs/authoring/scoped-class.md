@@ -6,10 +6,11 @@ consumers already read, and passes CI unchanged. When you author at the Class la
 declared once and inherited by every type in a category — and two providers declaring one Type Class is
 what turns an engine migration into a provider swap.
 
-A **Class** is the authoring layer of the resource-type system. It lives in
-`registry/classes/<name>.yaml`, validates against `registry/class.schema.json` (read it first), and is
-built from **SharedDataElements**: a data element (`element` name), its declarative `schema` fragment,
-its curation `state` (`proposed` → `canonical`), and the `scope` it is held at. There are three tiers:
+A **Class** is the authoring layer of the resource-type system. It lives under
+`registry/classes/<family>/<group>/…` (ADR-061 — the directory mirrors the class hierarchy) and validates
+against `registry/class.schema.json` (read it first). It is built from **SharedDataElements**: a data
+element (`element` name), its declarative `schema` fragment, its curation `state` (`proposed` →
+`canonical`), and the `scope` it is held at. There are three tiers:
 
 - **Base** (`class: base`) — single-segment name (`Machine`). Elements here port across every type in
   the category.
@@ -48,7 +49,7 @@ Do **not** author a Class when:
    prose. **Produces:** the composable units this Class contributes.
 3. **Refine, never contradict, on redeclare.** If your element name already exists on an ancestor, your
    `schema` must *narrow* the ancestor's: a tighter enum (a subset), a tighter numeric bound, an added
-   `required` — never a type change, a widened enum, a looser bound, or a dropped `required`. A brand-new
+   `required`. Never a type change, a widened enum, a looser bound, or a dropped `required`. A brand-new
    element name is always a legal add. **Produces:** a child that *is-a* parent (the Liskov invariant).
 4. **Point governed values at reference data.** For an element whose values are a curated vocabulary, add
    `values.reference_data_type: <kind>` instead of an inline enum (e.g. `storage_tier`). The tier is a
@@ -153,7 +154,7 @@ Copy the pair **`registry/classes/resource/compute/machine/_base.yaml`** (the Ba
 — `parent: Machine`, adding VM-only `firmware` and `boot_order`). Together they show a Base authored from
 scratch, a Type extending it under Liskov, a governed-vocabulary element (`storage_tier` →
 `values.reference_data_type`), and coverage pointing at `scoped-class/*` UCs. Their compiled output is
-`registry/generated/machine.vm.json` (7 properties). The flow is
+`registry/generated/machine.vm.json` (14 properties). The flow is
 `docs/flows/scoped-class-lifecycle.md` — author → extend → compile → resolve.
 
 For the **provider tier**, copy **`registry/examples/classes/resource/compute/machine/vm/cexample-cloud.yaml`**.
@@ -181,8 +182,8 @@ python3 registry/tools/spec_coverage.py --check
 A pass looks like:
 
 - **check_class_liskov.py** — `N class(es) checked, 0 Liskov violation(s)` and exit 0 (no `FAIL [LSK-…`).
-- **generate_class_specs.py --check** — one `ok (fresh)  <Type> → registry/generated/<Type>.json (N props)`
-  line per Type Class, ending `N Type Class(es) compiled, 0 issue(s)`, exit 0. A `FAIL [GEN-001]` means
+- **generate_class_specs.py --check** — one `ok (fresh)  <Type> → generated/<type>.json (N props)`
+  line per compiled class, ending `N class(es) compiled (types + orderable bases), 0 issue(s)`, exit 0. A `FAIL [GEN-001]` means
   the committed generated file is stale — rerun **without** `--check` to rewrite it, then commit.
 - **spec_coverage.py --check** — your Class shows `✓ UC+example+flow`, `… 0 dangling`, exit 0.
 

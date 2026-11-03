@@ -134,9 +134,10 @@ If you submit a `not_before` time for a scheduled request, use UTC. If you
 submit a timestamp from a provider callback, use UTC. The implementation will
 reject anything else.
 
-Skew tolerance between you and the implementation is **±5 seconds**. If your
-clock is more than 5 seconds off, you'll see `validation.timestamp_skew_exceeded`
-errors. Run NTP.
+UDLM sets no fixed skew tolerance. A provider or node declares the clock sync it can hold
+(a `TimeSync` shape with a `max_divergence` bound), and placement matches against it. An
+artifact whose timestamp diverges past the declared bound is rejected with
+`validation.timestamp_skew_exceeded`. Run NTP.
 
 See [`docs/spec/contracts/time-and-clock.md`](../spec/contracts/time-and-clock.md).
 
@@ -144,33 +145,34 @@ See [`docs/spec/contracts/time-and-clock.md`](../spec/contracts/time-and-clock.m
 
 ## 6. Errors — how to read them and what to do
 
-Errors come back in a closed wire envelope:
+Errors come back as an RFC 9457 problem object (Problem Details for HTTP APIs):
 
 ```json
 {
-  "error_code": "validation.scope_not_recognized",
-  "message": "Scope 'tenant-foo' is not recognized.",
+  "type": "validation.scope_not_recognized",
+  "status": 400,
+  "title": "Scope not recognized",
+  "detail": "Scope 'tenant-foo' is not recognized by this implementation.",
+  "instance": "urn:udlm:audit:a1b2c3d4-...",
   "request_id": "f3b64dda-...",
-  "audit_uuid": "a1b2c3d4-...",
   "retryable": false,
   "retry_after_seconds": null,
-  "details": { ... },
   "timestamp": "2026-05-26T14:32:18.456Z"
 }
 ```
 
 The two fields you act on most:
 
-- `error_code` — a stable identifier in a closed vocabulary
+- `type` — a stable identifier in a closed vocabulary
   (see [`docs/spec/contracts/error-model.md`](../spec/contracts/error-model.md)). Match on this
-  in code, not on `message` (messages may be localized).
+  in code, not on `detail` (messages may be localized).
 - `retryable` — boolean. If `true`, you may retry after the suggested delay. If
   `false`, retrying won't help; fix the underlying condition.
 
 Other useful patterns:
 
-- `audit_uuid` links to a full audit record. When you file a support request,
-  send the audit UUID — operators can look up the full context.
+- `instance` names the audit record (`urn:udlm:audit:<audit_uuid>`). When you file a support
+  request, send the audit UUID — operators can look up the full context.
 - Errors are categorized by namespace (`auth.*`, `validation.*`, `lifecycle.*`,
   `rate_limit.*`, etc.). Use namespaces to route errors in your code (e.g., all
   `rate_limit.*` errors go through your backoff path).
@@ -289,14 +291,15 @@ See [`docs/spec/lifecycle/request-dependency-graph.md`](../spec/lifecycle/reques
 
 ### 11.3 "I want to schedule something for later"
 
-Use a **scheduled request**. Submit with a `scheduling` block:
+Use a **scheduled request**. Submit with a `schedule` block:
 
 ```yaml
-scheduling:
-  mode: at | window | recurring
-  not_before: <ISO 8601 UTC>
-  not_after: <ISO 8601 UTC>      # optional
-  recurrence: <cron expression>  # for mode: recurring
+schedule:
+  dispatch: at | window | recurring   # immediate is the implicit default
+  not_before: <ISO 8601 UTC>          # for at
+  not_after: <ISO 8601 UTC>           # optional deadline
+  window_id: <maintenance window>     # for window
+  cron: <cron expression>             # for recurring
 ```
 
 The request stays in `SCHEDULED` state until activation time. If the
@@ -318,7 +321,7 @@ Read the error:
 - `conformance.feature_not_implemented` → the implementation doesn't support
   this feature; check its conformance declaration.
 
-The `audit_uuid` in the error lets you (or an operator) find the full audit
+The audit UUID in the error's `instance` lets you (or an operator) find the full audit
 record for support follow-up.
 
 ### 11.5 "Something I created drifted"

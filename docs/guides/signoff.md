@@ -12,17 +12,14 @@ the [review sweep](../../CONTRIBUTING.md#the-review-sweep--what-every-pr-is-chec
 ./scripts/signoff.sh <base-ref>   # e.g. a release branch
 ```
 
-It runs every gate CI runs (and two CI doesn't), reports pass/fail per gate, and **exits non-zero if any hard
-gate fails** — so it doubles as a local pre-flight for the CI in `.github/workflows/validate.yml`:
-
-| Gate | What it protects |
-|---|---|
-| registry valid-by-construction · meta-schema | every type/instance/provider matrix validates (`ADOPT-001`, `$id`↔version) |
-| **estate-token scrub** | no hostnames / IPs / private identifiers leak into a shared repo |
-| single-source (rule IDs + definitions) | one rule / one definition, one home, one ID (`SPEC-DESIGN §33`, ADR-028) |
-| model vocabulary · profile tables · session narration | settled terms only; structural conventions hold |
-| compat-check compiles · version/compat gate | a changed type declares a sufficient version bump vs base |
-| standards registered *(report-only)* | a standard cited in prose has a register row |
+It runs every gate CI runs, reports pass/fail per gate, and **exits non-zero if any hard gate fails** —
+so it doubles as a local pre-flight for the CI in `.github/workflows/validate.yml`. The gate list is not
+restated in the script: `scripts/ci-steps.py` derives it from `validate.yml`, so a step added to CI is a
+step signoff runs. A step is hard unless the workflow marks it report-only (a trailing
+`|| echo "::warning::…"`), in which case signoff reports it and does not block. Among the steps: registry
+valid-by-construction and meta-schema validation, the estate-token scrub, single-source (rule IDs and
+vocabularies; `SPEC-DESIGN-REQUIREMENTS.md` rule 33, ADR-028), model vocabulary, the version/compat gate,
+readability, and the report-only standards-registered check.
 
 A green run is necessary, **not sufficient** — CI is the backstop, not the sign-off; the judgment items below
 are where most review findings actually come from.

@@ -1,10 +1,11 @@
 # Worked example — declaring a full-stack provider and its sovereignty accreditations
 
-**What this shows:** how one provider declares itself, declares that it manages the **full lifecycle of
-VMs, containers, and Kubernetes clusters** (and all their constituent capabilities), and how **three
-different sovereignty postures** are modelled with the accreditation record — using nothing but the
-provider capability declaration (`registry/provider-adopted-standards.schema.json`) and the accreditation
+**What this shows:** how one provider declares itself and declares that it manages the **full lifecycle of
+VMs, containers, and Kubernetes clusters** (and all their constituent capabilities). It then shows how
+**three different sovereignty postures** are modelled with the accreditation record. It uses nothing but
+the provider capability declaration (`registry/provider-adopted-standards.schema.json`) and the accreditation
 record (`registry/accreditation.schema.json`; `docs/spec/governance/accreditation-and-authorization-matrix.md`).
+DCM is the example control plane throughout.
 
 The scenario:
 - **Region sovereignty (US + Canada) for everything** the provider offers — *except* cluster lifecycle.
@@ -14,8 +15,8 @@ The scenario:
 The two accreditations are live, validated instances — `registry/examples/accreditation-region-us-ca.yaml`
 and `registry/examples/accreditation-state-mn.yaml`. The provider declaration is **not a repo
 artifact**: capabilities are declared at **DCM registration** (the classes a provider supports, or
-provider classes it injects — [provider-contract §2](../spec/contracts/provider-contract.md)), and the
-payload below is what crosses the wire, validating against
+provider classes it injects — [provider-contract §2](../spec/contracts/provider-contract.md)). The
+payload below is what crosses the wire; it validates against
 `registry/provider-adopted-standards.schema.json` at admission.
 
 ---
@@ -175,9 +176,9 @@ requirement. DCM resolves placement and runs the 1-1 match for (`full-stack-sp` 
   so it does **not** cover the VM capability.
 
 No accreditation matches all three axes, so the VM's Minnesota claim is `self_asserted`. Under a sovereign
-profile that is a **hard fail**: the provider is **not eligible** for this request, and — with no other
-eligible provider — DCM opens an **accreditation-gap finding** (§3.5 — an ADR-060 finding: opened once, closed only by
-citing the resolution) instead of silently placing it. The finding carries the §3.5 content
+profile that is a **hard fail**: the provider is **not eligible** for this request. With no other
+eligible provider, DCM opens an **accreditation-gap finding** instead of silently placing it (§3.5 — an
+ADR-060 finding: opened once, closed only by citing the resolution). The finding carries the §3.5 content
 contract:
 
 - `gap_type: missing` · severity `critical` · the provider (`full-stack-sp`)

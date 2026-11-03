@@ -2,8 +2,9 @@
 
 **What this is.** The procedure for adding a **reference-data vocabulary** — a governed, shared set of terms
 that many records point at instead of inlining a copy: storage tiers, OS images, network zones, GPU profiles.
-Each term is a `layer` record; the vocabulary is the set of them. You author the terms and their curation;
-DCM resolves references and injects the data at render time.
+Each term is a `vocabulary_term` record (`registry/vocabulary-term.schema.json`); the vocabulary is the set
+of them. You author the terms and their curation; the control plane (DCM is the example implementation)
+resolves references and injects the data at render time.
 
 > **Read once first:** [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) and [`README.md`](README.md) (the
 > universal contract).
@@ -18,8 +19,8 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 **When *not* to — pick the right arm (ADR-036 is the discriminator):**
 
 - The candidate set is **inherently vendor-native** (storage classes, CSI provisioners). Then the portable
-  value is a **requirements descriptor**, not a reference — **ADR-036: storage selection is
-  name-selectable but requirements-authoritative; a `tier` term denotes a requirements floor (its minima),
+  value is a **requirements descriptor**, not a reference. **ADR-036: storage selection is
+  name-selectable but requirements-authoritative. A `tier` term denotes a requirements floor (its minima),
   and the chosen native class is recorded as a realized output, never as intent.** Note the nuance: the
   *tier vocabulary itself* is authored as reference data (below), but an instance selects by the neutral tier
   name or by explicit minima — it never references a native class.
@@ -29,29 +30,30 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 
 ## 2. The steps, in order
 
-1. **Write one term per record** at `registry/examples/<vocab>-<term>.yaml`. Each is a `layer`
-   (`layer.schema.json` `required`): `record_type: layer`, a fresh v4 `uuid`, `conforms_to: udlm/0.1`,
-   `name`, `version`, `tenant_uuid`, `layer_type: reference_data`, and `fields`.
-2. **Set `reference_data_type`** — **required when `layer_type` is `reference_data`** (the schema's `allOf`
-   enforces it). This is the *match axis*: **DCM ADR-012 — a `data_reference` is a URF string,
-   `uuid/<v4>[@version]?reference_data_type==<kind>`, and it resolves only to an *active* reference-data layer of
-   the *same* kind; the type stops a field binding a `network_zone` where an `os_image` was meant.** Use a stable snake_case token (`storage_tier`, `os_image`, `network_zone`).
-3. **Put the governed content in `fields`** — a **named requirements bundle, not a bare enum value.** A
-   storage tier is not the string `"performance"`; it is `{tier_code, min_iops, min_throughput_mbps,
-   description}` — the shared SLA floor the name *means*. That bundle is exactly what makes the vocabulary
-   portable and requirements-authoritative (ADR-036).
-4. **Set governance** — `domain` (usually `platform` for a shared vocabulary), and `contributor`
-   (`contributor_type` + `review`, e.g. `dual_approval` for a platform vocabulary that flows through the
-   GitOps PR model).
-5. **Curate the term proposed → canonical.** A vocabulary value enters staged: **ADR-039 — a value enters as
-   `proposed` (a dirty-safe holding pen), and `canonical` is the promoted, portable set; reference resolution
-   honors the distinction so a strict profile can require canonical vocabulary. Cleaning *is* lineage — dedupe
-   and rename are `supersede` operations (DCM ADR-012), never deletion.** The `proposed → under_review →
-   canonical → deprecated` lifecycle (`docs/spec/foundations/four-states.md`) is the value-level curation state; a
+1. **Write one term per record** at `registry/examples/example-vocabulary-term-<kind>-<term>.yaml`. Each is
+   a `vocabulary_term` (`vocabulary-term.schema.json` `required`): `record_type: vocabulary_term`, a fresh v4
+   `uuid`, `conforms_to: udlm/0.1`, `name`, `version`, `tenant_uuid`, `vocabulary_kind`, `scope`, `term`,
+   `curation_state`, and `requirements`.
+2. **Set `vocabulary_kind` and `scope`.** `vocabulary_kind` is the *match axis*: **DCM ADR-012 — a
+   `data_reference` is a URF string, `uuid/<v4>[@version]?reference_data_type==<kind>`, and it resolves only
+   to an *active* term of the *same* kind; the kind stops a field binding a `network_zone` where an
+   `os_image` was meant.** Use a stable snake_case token (`storage_tier`, `os_image`, `network_zone`).
+   `scope` is the Class the term is canonical at, and so how far its meaning travels (ADR-038 §3).
+3. **Put the governed content in `requirements`** — a **named requirements bundle, not a bare enum value.** A
+   storage tier is not the string `"performance"`; it is `{min_iops, min_throughput_mbps, description}` — the
+   shared SLA floor the name *means*. That bundle is exactly what makes the vocabulary portable and
+   requirements-authoritative (ADR-036).
+4. **Set governance** — `contributor` (`contributor_type` + `review`, e.g. `dual_approval` for a platform
+   vocabulary that flows through the GitOps PR model).
+5. **Curate the term proposed → canonical.** A vocabulary value enters staged. **ADR-039 — a value enters as
+   `proposed` (a dirty-safe holding pen), and `canonical` is the promoted, portable set. Reference resolution
+   honors the distinction, so a strict profile can require canonical vocabulary. Cleaning *is* lineage — dedupe
+   and rename are `supersede` operations (DCM ADR-012), never deletion.** `curation_state` carries the
+   `proposed → under_review → canonical → deprecated` ladder (`docs/spec/foundations/four-states.md`). A
    revision of a canonical term is a **new immutable record** that names its predecessor via `supersedes`,
-   never an edit (DCM ADR-012 §6, ADR-051). (The `layer` record's own `status.state` — `active`/`deprecated`/
-   `retired` — is the record lifecycle; the proposed/canonical stage is the vocabulary-intake curation the
-   intake ladder in [`../design/vocabulary-intake-ladder.md`](../design/vocabulary-intake-ladder.md) operates.)
+   never an edit (DCM ADR-012 §6, ADR-051). The record's own `status.state` (`active`/`deprecated`/`retired`)
+   is the record lifecycle; the proposed/canonical stage is the curation the intake ladder in
+   [`../design/vocabulary-intake-ladder.md`](../design/vocabulary-intake-ladder.md) operates.
 
 ## 3. Completeness checklist — and the gate that enforces each
 
@@ -59,7 +61,7 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 |---|---|---|
 | Validates against `vocabulary-term.schema.json` (`vocabulary_kind` + `scope` + `term` + `curation_state` + a non-empty `requirements`) | Valid by construction | `registry/tools/validate.py` |
 | Every `data_reference` to this vocabulary resolves — active target, matching kind, pin naming the resolved version | Referential integrity (DCM ADR-012 `check_data_references`) | `registry/tools/validate.py` |
-| Each `supersedes` uuid resolves to a same-type record at a strictly lower version | Lineage integrity (`check_layer_lineage`) | `registry/tools/validate.py` |
+| Each `supersedes` uuid resolves to a same-type record at a strictly lower version | Lineage integrity | `registry/tools/validate.py` |
 | Fresh `uuid`; a revision is a new record, never an in-place edit | Immutable-record family (ADR-051) | `registry/tools/validate.py`, `tests/check_identity_integrity.py` |
 | Any normative rule the vocabulary doc introduces uses a registered, single-home prefix | One definition per rule (ADR-028) | `tests/check_single_source.py` |
 
@@ -91,11 +93,12 @@ $ python registry/tools/validate.py
 ALL VALID — 0 invalid
 
 $ python tests/check_single_source.py
-rule-id single-source: 46 registered prefix(es); 400 rule IDs across the normative surface; 0 collide (0 baselined); 2 sanctioned co-home(s), 0 spread-debt entr(y/ies).
+rule-id single-source: 54 registered prefix(es); 507 rule IDs across the normative surface; 0 collide (0 baselined); 2 sanctioned co-home(s), 0 spread-debt entr(y/ies).
+vocabulary single-source: 97 closed list(s) >= 4 members across the authored registry; 1 declared in more than one file (0 baselined).
 OK — every rule-ID prefix is registered; every ID has a single definition.
 ```
 
-Both exit `0`. `validate.py` runs `check_data_references` and `check_layer_lineage` as part of the sweep and
+Both exit `0`. `validate.py` checks reference resolution and `supersedes` lineage as part of the sweep and
 prints an advisory change-impact section (which references are pinned to a superseded version) before the
 `ALL VALID — 0 invalid` verdict — that section is informational, not a failure. A dangling, mistyped, or
 dishonestly-named reference fails the run and names the offending record.
