@@ -180,16 +180,11 @@ Registration approved (provider status → ACTIVE)
   │   All components reject the revoked credential within revocation SLA
 ```
 
-### 5.3 Credential Lifetime by Profile (Substrate Defaults)
+### 5.3 Credential Lifetime by Profile
 
-| Profile | Lifetime | Rotation trigger | IP binding |
-|---------|----------|-----------------|------------|
-| homelab | PT8H | Pre-expiry P1H | No |
-| dev | PT4H | Pre-expiry P30M | No |
-| standard | PT1H | Pre-expiry PT10M | No |
-| prod | PT30M | Pre-expiry PT5M | Optional |
-| fsi | PT15M | Pre-expiry PT3M | Required |
-| sovereign | PT15M + hardware attestation | Pre-expiry PT3M | Required; HSM-bound |
+Lifetime, the pre-expiry rotation window and whether the token is IP- or hardware-bound are
+profile-governed (`credential.callback_token_lifetime` in `registry/profile-settings-index.md`).
+What each standard posture requires is stated by the UDLM Profile Set, not here (row 140).
 
 The substrate requires that lifetime monotonically decrease with stricter profiles; specific values MAY vary per implementation.
 

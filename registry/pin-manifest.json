@@ -292,9 +292,17 @@
    "1.0.0": "sha256:945645c1593b2edf248b0b4c6f4aed300b29ace86c2a7038e17aa632f5c8651d"
   }
  },
+ "profile:cexample/profile/baseline": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-profile.yaml",
+  "versions": {
+   "1.0.0": "sha256:839feafbc100377864cb545e1d65b1f8627a93d18952f29aecd4f77b9d449228"
+  }
+ },
  "profile:udlm/profile/dev": {
   "current": "1.1.1",
   "path": "registry/profiles/dev.yaml",
+  "stranded": true,
   "versions": {
    "1.1.0": "sha256:f08128f026caf528369229cbeed4c6281e852e29087177ae61abedfb9df84c65",
    "1.1.1": "sha256:ac2f7c187ae726ea449746bb1eda80560cd6b4900e0aa0e8c37d17a6859d0027"
@@ -303,6 +311,7 @@
  "profile:udlm/profile/fsi": {
   "current": "1.1.1",
   "path": "registry/profiles/fsi.yaml",
+  "stranded": true,
   "versions": {
    "1.1.0": "sha256:1f734f52c315a00be12e7fa579566e539bb26fc27cd832abde78c542c9394673",
    "1.1.1": "sha256:86f5864ac0f7e71a071f2e00ca8b8f6dc07a58212793fd2c87582650f747f153"
@@ -311,6 +320,7 @@
  "profile:udlm/profile/homelab": {
   "current": "1.1.0",
   "path": "registry/profiles/homelab.yaml",
+  "stranded": true,
   "versions": {
    "1.1.0": "sha256:0633f36e7c5b7d541889b7c5f1c55d573be8db8974e89f5bea395af44af4c14d"
   }
@@ -318,6 +328,7 @@
  "profile:udlm/profile/prod": {
   "current": "1.1.1",
   "path": "registry/profiles/prod.yaml",
+  "stranded": true,
   "versions": {
    "1.1.0": "sha256:2d4d8f31beb4cfd981f240ce8548e5919596ee7e9b0947aada1051dd02a32fe0",
    "1.1.1": "sha256:d2e8f638cea3e78163ac726e08ad3c65e4fb1026d4157b95345a02f329bf1747"
@@ -326,6 +337,7 @@
  "profile:udlm/profile/sovereign": {
   "current": "1.1.2",
   "path": "registry/profiles/sovereign.yaml",
+  "stranded": true,
   "versions": {
    "1.1.0": "sha256:a94f0169446793b15a363e611fa59c8a80439acc2eb9b0ce8e22fd237b05d3b3",
    "1.1.1": "sha256:f7cc2d64ba9412ecbaa7c79627e218ad509959cf00430092582f13a04005e5cb",
@@ -335,6 +347,7 @@
  "profile:udlm/profile/standard": {
   "current": "1.1.1",
   "path": "registry/profiles/standard.yaml",
+  "stranded": true,
   "versions": {
    "1.1.0": "sha256:11ffefd642bfbc32349b5b627b410e614cfebd388040ca8ef4ae9afbaae8699d",
    "1.1.1": "sha256:ef2ee7749b4649d51ead3fcedf9e19f0d6ffee112252c9c0798fe1c356951aee"

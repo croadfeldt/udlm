@@ -23,13 +23,12 @@ import sys
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(REPO, "registry", "profile-settings-index.md")
 
-# The six canonical profiles, and they are the six FILES in registry/profiles/. Read from disk
-# rather than restated: this list said `minimal` where the shipped set says `homelab`, so a table
-# using the real profile names matched five of six columns and the detector under-counted — a
-# hardcoded copy of a list the repo already owns, which is what SPEC-DESIGN §33 forbids.
-PROFILES = sorted(os.path.splitext(f)[0] for f in os.listdir(
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "registry", "profiles"))
-    if f.endswith((".yaml", ".yml")))
+# The six standard postures. UDLM no longer ships them as records (row 140: they are the UDLM Profile
+# Set's), so the one place this repo names the set is the settings index; read it from there rather
+# than restate it — a hardcoded copy once said `minimal` where the set says `homelab` and the
+# detector under-counted.
+PROFILES = sorted(re.search(r"`((?:[a-z]+ \| )+[a-z]+)` profiles",
+                            open(INDEX, encoding="utf-8").read()).group(1).split(" | "))
 # Every surface a profile value table can live on. This read docs/spec and registry only, so a
 # table in a flow, a guide or a design doc was invisible — and those are exactly the documents that
 # reach for a per-profile table to illustrate something, then quietly become its second home.
