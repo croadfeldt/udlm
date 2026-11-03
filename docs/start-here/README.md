@@ -29,6 +29,9 @@ sentence: *records say what is, classes say what shape, and nothing is ever edit
 | [2. Say what you want](02-say-what-you-want.md) | write an intent record by copying one and changing three values | the validator says ok |
 | [3. Where the shape comes from](03-where-the-shape-comes-from.md) | open the class and find where `cpu.count` is defined | you can point to it |
 | [4. The four states](04-the-four-states.md) | read the four records of one VM side by side | you can say who writes each one |
-
-Steps 5 to 10 — relationships, layers, the gates, your own class, checking yourself, where next —
-follow once these four read well.
+| [5. Edges](05-edges.md) | read the three edges on a VM and the four words they use | the graph gate passes and you can name each edge's type |
+| [6. A layer](06-a-layer.md) | widen a bound in a child layer and watch it refused | you saw the refusal name who, what and why |
+| [7. The gates](07-the-gates.md) | list the gates, run a subset, run them all | signoff passed and you can name one gate's rule |
+| [8. Your own class](08-your-own-class.md) | copy the provider class, narrow it, then try to widen it | Liskov accepted 32 and refused 128 |
+| [9. Checking yourself](09-checking-yourself.md) | run the conformance suite and keep the report | you have a report and know what makes a part stable |
+| [10. Where next](10-where-next.md) | pick a path by what you came to do | you know which guide to open |

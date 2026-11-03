@@ -36,12 +36,12 @@ key beside it. Nothing to type yet.
 | `provenance` | which actor or policy set each field, and when |
 | `requested_ref`, `requested_ref_head` | the request this fulfils, and a hash so the link can be checked |
 | `supersedes` | the record this one replaces: records are never edited |
-| `integrity` | a hash chain over this record's versions, so tampering shows |
+| `integrity` | a seal over the record (a Merkle tree hash, RFC 9162), so tampering shows |
 
 ## Done when
 
 You can read `fields.cpu.count: 4` and say "that is what was built", read
 `outputs.primary_ip` and say "that is what came back", and read `supersedes` and say "the old
-version is still there, this one replaced it".
+record is still there, this one replaced it".
 
 Next: [Step 2 — say what you want](02-say-what-you-want.md).

@@ -31,5 +31,4 @@ side by side months later and still tell the story.
 You can say, for each of the four files, who wrote it and what it added — and you can say what
 "drift" means by pointing at two of them.
 
-Next: steps 5 to 10 — relationships, layers, the gates, your own class, checking yourself, where
-next — once these four read well.
+Next: [Step 5 — edges](05-edges.md).
