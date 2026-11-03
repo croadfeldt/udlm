@@ -65,6 +65,7 @@ EVAL_CONTEXT_VALIDATOR = _validator("evaluation-context.schema.json")
 LAYER_VALIDATOR = _validator("layer.schema.json")
 VOCABULARY_TERM_VALIDATOR = _validator("vocabulary-term.schema.json")
 REGISTRATION_VERDICT_VALIDATOR = _validator("registration-verdict.schema.json")
+PROVIDER_REGISTRATION_VALIDATOR = _validator("provider-registration.schema.json")
 PROMOTION_EVIDENCE_VALIDATOR = _validator("promotion-evidence.schema.json")
 LOG_CHECKPOINT_VALIDATOR = _validator("log-checkpoint.schema.json")
 AUDIT_RECORD_VALIDATOR = _validator("audit-record.schema.json")
@@ -753,7 +754,50 @@ def check_registration_verdict(doc):
                           f"{a.get('disposition')!r} \u2014 the list is append-only history, and an "
                           f"entry that changes nothing records no act")
         seen[cap] = i
+    # A verdict can only disposition what its provider declared. If this repository ships the
+    # provider's registration, an admission over a capability it never declared is authority granted
+    # for something nobody asked to do.
+    declared = _registrations().get(doc.get("provider_uuid"))
+    if declared is not None:
+        for i, a in enumerate(doc.get("capability_admissions", [])):
+            if a["capability"] not in declared:
+                errors.append(f"capability_admissions[{i}]: {a['capability']!r} is not in the provider's "
+                              f"registration — a verdict dispositions declared capabilities only")
     return errors
+
+
+def _capability_terms():
+    try:
+        import yaml as _y
+        caps = _y.safe_load(open(ROOT / "taxonomies" / "provider-capability.yaml", encoding="utf-8"))
+        return {t["term"] for t in (caps or {}).get("terms", [])}
+    except Exception:
+        return set()
+
+
+_REGISTRATIONS = None
+
+
+def _registrations():
+    """provider uuid -> declared capabilities, for every provider registration this repository ships."""
+    global _REGISTRATIONS
+    if _REGISTRATIONS is None:
+        import yaml as _y
+        _REGISTRATIONS = {}
+        for f in sorted((ROOT / "examples").glob("*.yaml")):
+            for d in _y.safe_load_all(open(f, encoding="utf-8")):
+                if isinstance(d, dict) and d.get("record_type") == "provider_registration":
+                    _REGISTRATIONS[d.get("uuid")] = set(d.get("capabilities") or [])
+    return _REGISTRATIONS
+
+
+def check_provider_registration(doc):
+    """Every declared capability names a term in provider-capability.yaml (PRV-003). The schema checks
+    the shape of a capability name; only the vocabulary can say it exists. A declaration of a capability
+    nobody defined could never be admitted, and would read as if it could."""
+    known = _capability_terms()
+    return [f"capabilities: {c!r} is not a term in provider-capability.yaml"
+            for c in doc.get("capabilities", []) if known and c not in known]
 
 
 def check_data_references(doc):
@@ -1024,6 +1068,11 @@ def pick_instance(doc):
                           f"{len(d['diff'])} diff entr(y/ies) -> "
                           f"{d.get('outcome') or 'unstated'}",
                 check_promotion_evidence)
+    if isinstance(doc, dict) and doc.get("record_type") == "provider_registration":
+        return (PROVIDER_REGISTRATION_VALIDATOR,
+                lambda d: f"provider_registration {d['handle']} {d['uuid'][:8]} "
+                          f"{len(d['capabilities'])} capabilit(y/ies) declared",
+                check_provider_registration)
     if isinstance(doc, dict) and doc.get("record_type") == "registration_verdict":
         return (REGISTRATION_VERDICT_VALIDATOR,
                 lambda d: f"registration_verdict {d['provider_uuid'][:8]} "
