@@ -14,6 +14,9 @@ data that any other conformant system can read, interpret, and exchange.
    intent, requested, realized, discovered.
 4. **[`docs/guides/working-with-udlm.md`](docs/guides/working-with-udlm.md)** — then go by role: author,
    reviewer, system builder, contributor.
+5. **[`docs/guides/co-engineering.md`](docs/guides/co-engineering.md)** — joining from another
+   organization: what to read, how to check your own records, how to change the spec, how decisions
+   are made.
 
 ## Layers
 
