@@ -13,7 +13,7 @@ record:
   conforms_to: udlm/0.1
   resource_type: NetworkInterface
   type_version: 0.17.2
-  type_ref: https://udlm.dev/registry/udlm/0.1/Vulnerability/0.2.1
+  type_ref: https://udlm.dev/registry/udlm/0.1/NetworkInterface/0.17.2
   handle: cexample/knowledge/vulnerability/cve-2024-33664
   at: '2026-09-13T13:00:00Z'
   time_source: example clock, NTP-synced

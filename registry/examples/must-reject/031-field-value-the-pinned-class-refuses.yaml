@@ -12,7 +12,7 @@ record:
   conforms_to: udlm/0.1
   resource_type: Machine.VM
   type_version: 2.4.1
-  type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
+  type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.4.1
   handle: lab/vm/app-01
   generation: 1
   origin: declared

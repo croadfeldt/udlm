@@ -236,7 +236,14 @@ def self_test():
         n_cases += 1
         got = {r for r, w, _d in run(ex + [(rec, os.path.basename(p))], rv, cv)["failures"] if w == os.path.basename(p)}
         if want not in got:
-            problems.append(f"must-reject {os.path.basename(p)}: expected {want} ({rule}), suite raised {sorted(got) or 'nothing'}")
+            hint = ""
+            if want.startswith("payload."):
+                rt, pinned = rec.get("resource_type"), str(rec.get("type_version"))
+                if rt in cv and str(cv[rt][0]) != pinned:
+                    hint = (f" — it pins {rt} {pinned} but this registry serves {cv[rt][0]}, so the payload was not"
+                            f" judged; repin the case to {cv[rt][0]}")
+            problems.append(f"must-reject {os.path.basename(p)}: expected {want} ({rule}), suite raised "
+                            f"{sorted(got) or 'nothing'}{hint}")
         else:
             covered.add(want)
     # Coverage (WP7d, #434): every rule this suite applies has at least one case it must refuse. A rule
