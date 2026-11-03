@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/state-record.schema.json",
   "title": "UDLM state record — one record per lifecycle state",
-  "description": "Ruling 071 (four-states.md §2.7). An entity's four states are four records — intent, requested, realized, discovered — each written by exactly one party, each immutable, each carrying one envelope plus one body. The envelope: entity_uuid (the identity every edge points at; never changes), record_uuid (this record, time-ordered), state, generation, supersedes, the tenant, the class pin, when and by which clock. The bodies: intent carries the fields as written and actor provenance; requested carries the fields after assembly and policy, the layers applied and left unapplied, the policies evaluated with their decisions, the fulfillment status when the request is refused or blocked, and the intent it came from; realized carries the fields as built, the outputs other things bind to, which provider instance built it, health, placement, the natural keys discovery recognizes it by, and the requested record it realizes; discovered carries what a sweep saw and how it was matched. One closed schema for the four kinds, dispatched on record_type; per-state rules say which body fields belong. The merged 'entity as it flows through the four states' shape (entity-view.schema.json) is a READ MODEL assembled from these records, never written; its blocks are $refs into this schema's $defs, so the stored form owns every shape and the view can never disagree with it.",
+  "description": "Ruling 071 (four-states.md §2.7): four states, four records (intent, requested, realized, discovered), each immutable, one author, one envelope plus one body. Envelope: entity_uuid (permanent), record_uuid (time-ordered), state, generation, supersedes, tenant, class pin, when and by which clock. Bodies: intent as written, requested after assembly and policy, realized as built, discovered as swept. One closed schema, dispatched on record_type; per-state rules say which body fields belong. The merged view (entity-view.schema.json) is a READ MODEL, never written; its blocks $ref these $defs.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -829,7 +829,7 @@
   "$defs": {
     "provenance": {
       "type": "object",
-      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; the control plane writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model. Each array is the ordered modification chain for that field: entries map 1:1 to the audit-provenance modifications[] records (origin = the first entry), with optional `sequence` for explicit ordering and `operation_type` for the write semantics.\n\nA HISTORY CLAIM ON A WORKING RECORD IS NOT CITABLE AS LINEAGE. Only sealed, chained and anchored records carry that weight (ADR-059) — this block is readable, but a consumer needing provable lineage reads the seal's `udlm_provenance` facet (`registry/facets/udlm-provenance.facet.json`), not this. `integrity` is what makes the record's own timeline verifiable on its own; this is the convenience copy of who set what.",
+      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path, the ordered history of who set each field. The control plane writes it at assembly (Layer, Policy, actor) and realization (Provider); the audit chain consumes it too (G3). Entries map 1:1 to audit-provenance modifications[] records (origin = first entry); optional `sequence` orders, `operation_type` gives write semantics. NOT CITABLE AS LINEAGE: only sealed, chained, anchored records are (ADR-059). Provable lineage is the seal's `udlm_provenance` facet (`registry/facets/udlm-provenance.facet.json`); this is the convenience copy.",
       "additionalProperties": {
         "type": "array",
         "items": {
@@ -850,7 +850,7 @@
               "properties": {
                 "kind": {
                   "$ref": "common-elements.schema.json#/$defs/provenance_source_kind",
-                  "description": "Canonical provenance source kinds (data-model-core §6/§7): layer = layer assembly wrote the value; policy = a policy set/enriched/locked it; actor = an authenticated identity wrote it directly ('consumer' in older documents maps here — a consumer acts as an actor); provider = the realizing provider reported it; discovery = a discovery cycle observed it; rehydration = a rehydration pipeline restored it; override = an authorized override set it (DCM ADR-013)."
+                  "description": "Canonical provenance source kinds (data-model-core §6/§7). `layer` = layer assembly wrote the value. `policy` = a policy set/enriched/locked it. `actor` = an authenticated identity wrote it directly ('consumer' in older documents maps here; a consumer acts as an actor). `provider` = the realizing provider reported it. `discovery` = a discovery cycle observed it. `rehydration` = a rehydration pipeline restored it. `override` = an authorized override set it (DCM ADR-013)."
                 },
                 "id": {
                   "type": "string"
@@ -965,7 +965,7 @@
             "properties": {
               "type": {
                 "type": "string",
-                "description": "The condition being reported. Open by design (K8s convention) — health, recovery and provider_specific conditions all live here. ONE FAMILY IS CLOSED: the fulfillment conditions `blocked_transient` | `blocked_permanent` | `refused` | `dependency_cancelled` (service-dependencies DEP-017), which say why a member has not reached Realized yet. That family is closed because its members carry PROPAGATION semantics — a dependent inherits transitively, and transient waits where permanent refuses — so a fifth spelling is not a new condition, it is a member of this family nobody can act on."
+                "description": "The condition being reported. Open by design (K8s convention): health, recovery and provider_specific conditions all live here. ONE FAMILY IS CLOSED: the fulfillment conditions `blocked_transient` | `blocked_permanent` | `refused` | `dependency_cancelled` (service-dependencies DEP-017), which say why a member has not reached Realized yet. That family is closed because its members carry PROPAGATION semantics (a dependent inherits transitively; transient waits where permanent refuses). A fifth spelling is not a new condition but a family member nobody can act on."
               },
               "status": {
                 "enum": [
@@ -981,7 +981,7 @@
               "blocked_on": {
                 "type": "string",
                 "format": "udlm-ref-url",
-                "description": "WHAT this member is waiting on — a reference to the blocking record. REQUIRED on a fulfillment condition (DEP-017): 'blocked' without a blocker is not actionable, and the root-naming obligation is the whole point of the family — a blocked_permanent app three hops from the refused volume is only useful if the volume is reachable from it. On an inherited condition this names the IMMEDIATE blocker, not the root; the root is found by walking, never by copying it down the chain (DRV-001)."
+                "description": "WHAT this member is waiting on: a reference to the blocking record. REQUIRED on a fulfillment condition (DEP-017): 'blocked' without a blocker is not actionable, and root-naming is the whole point of the family; a blocked_permanent app three hops from the refused volume is only useful if the volume is reachable from it. On an inherited condition this names the IMMEDIATE blocker, not the root; the root is found by walking, never copied down the chain (DRV-001)."
               },
               "message": {
                 "type": "string"
@@ -1090,7 +1090,7 @@
     },
     "correlation_ids": {
       "type": "array",
-      "description": "Stable natural keys independent of any observer, for entity resolution across discovery sources (dcm ADR-017 Decision C): a new observation matching an existing entity by these keys MERGES into that entity's uuid — one real resource, one entity uuid, never a duplicate. Every discovery source MUST emit them.",
+      "description": "Stable natural keys independent of any observer, for entity resolution across discovery sources (dcm ADR-017 Decision C). A new observation matching an existing entity by these keys MERGES into that entity's uuid: one real resource, one entity uuid, never a duplicate. Every discovery source MUST emit them.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -1116,7 +1116,7 @@
               "gateway_mac"
             ],
             "x-extensible-enum": true,
-            "description": "The kind of natural key. provider_id = the owning provider's own resource identifier (Avenue-1 discovery). A key that is unique only within a scope carries the scope in its value, rooted at the isolation domain the probe observed it in (four-states §2.4, row 118): segment_id = `<observer>/<domain>/<id>`, the observing device's own key (a chassis id, a machine id), the bridge domain, VRF, bridge or overlay it sits in, and the 802.1Q tag or VNI, an OBSERVATION that resolves to a VLAN record only when that record lists it; a VLAN's identity is its owning provider's identifier, provider_id, and UDLM never infers that two observer keys name one VLAN (row 119); subnet_prefix = `<segment_id value>#<cidr>`, or the bare CIDR where no segment is known; gateway_mac = the MAC that answers the subnet's gateway address, a second key that tells deliberate duplicates apart. A record may carry several keys; resolution matches on what it has and refuses a tie as ambiguous rather than merging on a guess."
+            "description": "The kind of natural key. `provider_id` = the owning provider's identifier (Avenue-1 discovery). Scoped keys carry their scope, rooted at the observed isolation domain (four-states §2.4, row 118). `segment_id` = `<observer>/<domain>/<id>` (device key, bridge domain/VRF/overlay, 802.1Q tag or VNI): an OBSERVATION, resolving to a VLAN only where that record lists it, never by inference (row 119). `subnet_prefix` = `<segment_id value>#<cidr>`, or the bare CIDR. `gateway_mac` = the gateway's MAC, separating deliberate duplicates. A tie is refused as ambiguous."
           },
           "value": {
             "type": "string"
@@ -1126,7 +1126,7 @@
     },
     "adopted_standards": {
       "type": "array",
-      "description": "ADOPTED-STANDARD BINDINGS (T5): for each external standard adopted by this entity's type, the realized record of the control plane's version negotiation — the requested range, the provider's chosen version, the negotiated effective version, and whether the control plane translated between versions (ADS-003/004/008). UDLM carries this record; the control plane (Policy) produces it and writes it to the audit log. The external data itself is NOT carried here — it is referenced from its Information Provider via the identity join.",
+      "description": "ADOPTED-STANDARD BINDINGS (T5): for each external standard adopted by this entity's type, the realized record of the control plane's version negotiation. It holds the requested range, the provider's chosen version, the negotiated effective version, and whether the control plane translated between versions (ADS-003/004/008). UDLM carries this record; the control plane (Policy) produces it and writes it to the audit log. The external data itself is NOT carried here; it is referenced from its Information Provider via the identity join.",
       "items": {
         "$ref": "#/$defs/adopted_standard_binding"
       }
@@ -1151,7 +1151,7 @@
         },
         "portability_notes": {
           "type": "string",
-          "description": "Human-readable explanation surfaced to the consumer: which provider_specific elements make it non-portable and which provider(s) it is thereby bound to. Where a hard `provider_preference` is in force, say so here and say what it costs: a hard pin makes rehydration PROVIDER-DEPENDENT, which is a different failure from lossy movement — replaying the intent against a provider that no longer exists does not degrade, it fails. Whether it counts as degradation at all is policy's call; what the record owes is the fact and the distinction."
+          "description": "Human-readable explanation surfaced to the consumer: which provider_specific elements make it non-portable and which provider(s) it is thereby bound to. Where a hard `provider_preference` is in force, say so here and say what it costs. A hard pin makes rehydration PROVIDER-DEPENDENT, a different failure from lossy movement: replaying the intent against a provider that no longer exists does not degrade, it fails. Whether that counts as degradation is policy's call; the record owes the fact and the distinction."
         },
         "bound_providers": {
           "type": "array",
@@ -1180,7 +1180,7 @@
     "expected_observation": {
       "type": "object",
       "additionalProperties": false,
-      "description": "The DECLARED observation expectation this entity is judged against (ADR-048 — staleness as declared expectation). Staleness verdicts — current | stale_expected | stale_deviant — are DERIVED by comparing observation age (states.discovered.at / drift.checked_at) with this declaration; no verdict is ever stored. Where absent, the OBS-005 profile TTL (docs/spec/foundations/service-dependencies.md) applies as the fallback. When the expectation is composed at a coarser scope (e.g. a group-wide offline window resolved per ADR-015), this block carries the RESOLVED value — its provenance rides the standard per-field provenance record, never a hand-typed copy.",
+      "description": "The DECLARED observation expectation this entity is judged against (ADR-048: staleness as declared expectation). Staleness verdicts — current | stale_expected | stale_deviant — are DERIVED by comparing observation age (states.discovered.at / drift.checked_at) with this declaration; none is stored. Absent, the OBS-005 profile TTL (docs/spec/foundations/service-dependencies.md) is the fallback. When composed at a coarser scope (a group-wide offline window resolved per ADR-015), this block carries the RESOLVED value; its provenance rides the standard per-field provenance record, never a hand-typed copy.",
       "properties": {
         "cadence": {
           "type": "string",
@@ -1370,12 +1370,12 @@
         "head",
         "algorithm"
       ],
-      "description": "THE RESOURCE CHAIN — the record's own version timeline, made tamper-evident in the record (ADR-059 Decision 2). Every new version appends, whichever pathway caused it, so a Discovered write is as tamper-evident as an Intent one.\n\nWHY IT IS ON THE RECORD AND NOT ONLY IN THE LEDGER. Records are unbounded in lifetime; stores are not. A realized entity may run for a decade while audit is retained for years and observability for weeks, so an operation that reaches into the ledger to verify itself works until the day it silently does not. The chain answers `has this record been altered` without any other system — which is ADR-059's record-content test applied to integrity itself.\n\nONE-WAY BRIDGE. The ledger's seal embeds the working copy and this head; the record never references the ledger. That direction is deliberate: operations must never hang on compliance storage being reachable.\n\nCLAIMS DISCIPLINE. This is a STATE claim — `the bytes of this version, and what preceded it`. It is not provenance, lineage or history, and presenting it under such a heading is a defect (ADR-059 Decision 1). Only sealed, chained, anchored ledger records make history claims.",
+      "description": "THE RESOURCE CHAIN: the record's own version timeline, tamper-evident in the record (ADR-059 Decision 2). Every version appends, whatever the pathway (Discovered as much as Intent). Records outlive stores; the chain verifies the record alone. ONE-WAY BRIDGE: the seal embeds this head, the record never references the ledger, so operations never depend on compliance storage. A STATE claim (`the bytes of this version, and what preceded it`), never provenance, lineage or history (a defect, ADR-059 Decision 1). Only sealed, chained, anchored ledger records make history claims.",
       "properties": {
         "head": {
           "type": "string",
           "pattern": "^sha256:[0-9a-f]{64}$",
-          "description": "This version's link. Computed over the RFC 8785 (JCS) canonical form of the record MINUS `integrity` itself, with `previous` folded in — the same strip-and-canonicalize machinery the identity digest uses (ADR-051), so the two can never disagree about what the bytes of a record are. Self-exclusion is not a convention but a necessity: a digest that covered itself would be uncomputable."
+          "description": "This version's link. Computed over the RFC 8785 (JCS) canonical form of the record MINUS `integrity` itself, with `previous` folded in: the same strip-and-canonicalize machinery the identity digest uses (ADR-051), so the two can never disagree about what a record's bytes are. Self-exclusion is a necessity, not a convention: a digest covering itself would be uncomputable."
         },
         "previous": {
           "type": [
@@ -1424,7 +1424,7 @@
         "provider",
         "strength"
       ],
-      "description": "A named provider this request PREFERS — the pin (ADR-050).\n\nIT DECIDES WHICH ELIGIBLE PROVIDER, NEVER WHETHER AN INELIGIBLE ONE IS REACHED. The `effective_capabilities` ceiling applies at the dispatch boundary on every path (`PRV-009`, `PRV-011`), so a pin naming a provider that has not been admitted for what the request needs is refused with `placement.capability_mismatch` BEFORE dispatch, carrying the required-versus-declared comparison.\n\nThe pin is absolute over the CHOICE and not over CAPABILITY. That is what keeps one sentence true everywhere — the ceiling always applies — instead of true-with-an-exception, and an exception is the thing a reader cannot see from the rule.\n\nA DELIBERATE BYPASS IS POLICY'S, NOT THE MODEL'S (ADR-008 peer test). Whether an operator may dispatch outside a declared capability is an operational choice a conformant implementation is entitled to make differently, so UDLM fixes only the invariant such a bypass would be an exception TO. A field here that could waive the ceiling would move that choice into the substrate and make every implementation inherit one estate's risk appetite.",
+      "description": "A named provider this request PREFERS: the pin (ADR-050). IT DECIDES WHICH ELIGIBLE PROVIDER, NEVER WHETHER AN INELIGIBLE ONE IS REACHED. The `effective_capabilities` ceiling applies at the dispatch boundary on every path (`PRV-009`, `PRV-011`): a pin naming an unadmitted provider is refused BEFORE dispatch with `placement.capability_mismatch` (required versus declared). Absolute over the CHOICE, never over CAPABILITY. A DELIBERATE BYPASS IS POLICY'S, NOT THE MODEL'S (ADR-008 peer test): UDLM fixes only the invariant and offers no waiver field.",
       "properties": {
         "provider": {
           "type": "string",
@@ -1444,7 +1444,7 @@
             "soft",
             "hard"
           ],
-          "description": "Whether placement may substitute.\n\n`soft` — a preference. If the named provider is ineligible, at capacity or absent, placement chooses another eligible one. The request stays portable.\n\n`hard` — a requirement. Placement does not substitute; if the named provider cannot serve the request it is refused. This is the form operators genuinely need and the one that costs something, so it is stated rather than inferred from context.\n\nREQUIRED, WITH NO DEFAULT (NDF-001). A pin whose strength is unstated would be read as soft by one implementation and hard by another, and the difference is whether a request silently moves provider or silently fails.\n\nNEITHER VALUE BYPASSES THE CEILING. `effective_capabilities` applies at the dispatch boundary on every path — a hard pin naming an ineligible provider is refused before dispatch, exactly as a soft one is (ADR-050). Hard changes whether placement SUBSTITUTES, never what is REACHABLE."
+          "description": "Whether placement may substitute. `soft` = a preference: an ineligible, full or absent provider is substituted; the request stays portable. `hard` = a requirement: no substitution; if the named provider cannot serve it, the request is refused. REQUIRED, WITH NO DEFAULT (NDF-001): unstated, one implementation reads soft and another hard — silently moving versus silently failing. NEITHER VALUE BYPASSES THE CEILING: `effective_capabilities` applies at dispatch on every path (ADR-050). Hard changes whether placement SUBSTITUTES, never what is REACHABLE."
         },
         "acknowledged": {
           "type": "object",
@@ -1453,7 +1453,7 @@
             "at",
             "by"
           ],
-          "description": "The consumer was told what a hard pin costs, and when.\n\nWHY THIS IS A RECORD AND NOT A WARNING. A warning is shown once, to the person choosing, and is gone. This is read by whoever inherits the request — the person harmed by a hard pin is rarely the one who set it, but the one who tries to move or rehydrate it later and finds the named provider gone.\n\nWHAT UDLM DOES AND DOES NOT DECIDE. The model carries the pin, its strength, and this acknowledgement, and makes all three readable — `provider_preference.*` resolves as a request-payload dot-path, so a policy can match on it. WHETHER a hard pin degrades portability, and what it means for rehydration, is POLICY's call: an estate with one provider loses nothing by pinning to it, and an estate with five loses a great deal. Computing that here would make UDLM decide an estate's exposure for it.",
+          "description": "The consumer was told what a hard pin costs, and when. A RECORD, NOT A WARNING: a warning shows once to the chooser; this is read by whoever inherits the request and finds the named provider gone. UDLM carries the pin, its strength and this acknowledgement, all readable (`provider_preference.*` is a request-payload dot-path a policy can match). WHETHER a hard pin degrades portability or rehydration is POLICY's call: one provider loses nothing by pinning, five lose much.",
           "properties": {
             "at": {
               "type": "string",

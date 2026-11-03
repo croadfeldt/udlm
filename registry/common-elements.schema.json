@@ -147,7 +147,7 @@
       "$comment": "common-elements.md §2.5 (docs/spec/contracts/identifier-scheme.md); resolution model in DCM ADR-025",
       "type": "string",
       "format": "udlm-ref-url",
-      "description": "A typed cross-entity pointer to another RESOURCE, written as a URF reference (identifier-scheme §9): `[//authority/]path[@pin]`, resolving to exactly one target (cardinality-1 — more than one match refuses `ambiguous`). Authored by handle (`estate/jobs/nightly-backup` — AEP-124 author-by-handle), resolved to the uuid form (`uuid/<v4>@sha256:…`) at reserve; both ends are the same grammar. The former six-field object (target_handle/target_uuid/resource_type/target_version/target_digest/target_authority) is REMOVED — each field is now an axis of the URL: the path carries handle-or-uuid, `@` carries version-or-digest (ADR-051's pin grammar verbatim), `//` carries the authority, and a type constraint rides as a query term (`?resource_type==Machine.VM`). Distinct from a data_reference (DCM ADR-012), which points at immutable reference-data.",
+      "description": "A typed cross-entity pointer to another RESOURCE, a URF reference (identifier-scheme §9): `[//authority/]path[@pin]`, resolving to exactly one target (cardinality-1; several matches refuse `ambiguous`). Authored by handle (`estate/jobs/nightly-backup`, AEP-124), resolved to the uuid form (`uuid/<v4>@sha256:…`) at reserve; both ends are one grammar. Each URL axis carries one fact: path = handle-or-uuid, `@` = version-or-digest (ADR-051's pin grammar), `//` = authority, and a type constraint rides as a query term (`?resource_type==Machine.VM`). Distinct from a data_reference (DCM ADR-012), which points at reference-data.",
       "examples": [
         "cexample/jobs/nightly-backup",
         "cexample/hosts/host-01@1.2.0",
@@ -159,7 +159,7 @@
       "$comment": "identifier-scheme.md §9.7 (a criterion over something that is not a record, URF-013); used by LogShipper and LogStore",
       "type": "string",
       "format": "udlm-filter-expr",
-      "description": "A filter over log records, written as a URF expression alone (identifier-scheme §9.2 and §9.7): every comparator, glob and connective, no path and no virtual field. Selectors are the fields of the OpenTelemetry Logs Data Model: `severity_number` (1-24; 9 = info, 13 = warn, 17 = error), `severity_text`, `body`, `event_name`, `resource.<key>` (the provider always stamps `resource.host.name` and `resource.udlm.handle`) and `attributes.<key>`. Syslog fields arrive as attributes under OpenTelemetry's RFC 5424 mapping (`attributes.syslog.facility`, `attributes.syslog.msgid`), so one criterion means the same thing whether a line came in as syslog or OTLP. A pattern goes after `=match=` (URF-012). Example: `severity_number=ge=13;resource.host.name==db-*;body=match='.*(timeout|refused).*'`.",
+      "description": "A filter over log records, a URF expression alone (identifier-scheme §9.2 and §9.7): comparators, globs and connectives; no path, no virtual field. Selectors are the OpenTelemetry Logs Data Model fields: `severity_number` (1-24; 9 = info, 13 = warn, 17 = error), `severity_text`, `body`, `event_name`, `resource.<key>` (the provider always stamps `resource.host.name` and `resource.udlm.handle`) and `attributes.<key>`. Syslog fields arrive as attributes under OpenTelemetry's RFC 5424 mapping (`attributes.syslog.facility`, `attributes.syslog.msgid`), so one criterion covers syslog and OTLP. Patterns go after `=match=` (URF-012). Example: `severity_number=ge=13;resource.host.name==db-*;body=match='.*(timeout|refused).*'`.",
       "examples": [
         "severity_number=ge=13;resource.host.name==db-*",
         "attributes.syslog.facility=in=(auth,authpriv)"
@@ -219,7 +219,7 @@
     },
     "edge_type": {
       "title": "Relationship edge type",
-      "description": "The four edges of the model's graph. `depends_on` needs it to work, `contained_by` is part of it, `binds_to` borrows it across a boundary, `references` merely points at it. Nature is DERIVED from this plus `strength` — never stored (ADR-027 addendum). Declared once here; `kind`/`dependency_type`/`relationship_type` are rejected vocabulary (tests/check_model_vocabulary.py). Its home is registry/edge-types.yaml, which carries each edge's DERIVED inverse as well as its name; this enum is a projection of that file's `edge_type` column and the single-source gate proves the two still agree (VOC-002).",
+      "description": "The four edges of the model's graph: `depends_on` needs it to work, `contained_by` is part of it, `binds_to` borrows it across a boundary, `references` merely points at it. Nature is DERIVED from this plus `strength`, never stored (ADR-027 addendum). Declared once here; `kind`/`dependency_type`/`relationship_type` are rejected vocabulary (tests/check_model_vocabulary.py). Its home is registry/edge-types.yaml, which also carries each edge's DERIVED inverse; this enum is a projection of that file's `edge_type` column, and the single-source gate proves the two agree (VOC-002).",
       "type": "string",
       "enum": [
         "depends_on",
@@ -243,7 +243,7 @@
     },
     "artifact_kind": {
       "title": "Registry artifact kind",
-      "description": "What kind of registry artifact a revision names. Shared by the regeneration manifest and the finding-routing record — the two halves of the same loop (what was regenerated, and what a finding was routed to), so a term added to one and not the other silently breaks the join between them.",
+      "description": "What kind of registry artifact a revision names. Shared by the regeneration manifest and the finding-routing record, the two halves of one loop (what was regenerated, and what a finding was routed to). A term added to one and not the other silently breaks the join between them.",
       "type": "string",
       "enum": [
         "base_class",
@@ -293,7 +293,7 @@
       "type": "object",
       "additionalProperties": false,
       "minProperties": 1,
-      "description": "One clause of a constraint envelope. Carries discrete `values`, or a `min`/`max` range (optionally with `step`), or both. An optional `when` scopes the clause to other selections — that is how a grouped matrix is expressed (`m5` allows one memory range, `r5` another). A clause with no `when` always applies; the envelope is the UNION of the clauses that apply.\n\nONE GRAMMAR, TWO TIERS. A Class element's `supports` declares what a provider can satisfy; a layer's `limits` declares what its descendants may set. Same shape on purpose — the containment question is identical (`is this narrower than that?`), so it is answered by one routine rather than two that drift.\n\nDATA, NOT LOGIC, and that is the load-bearing choice. Declaring the matrix as data keeps containment DECIDABLE: `when` is equality only, because a general expression language would make 'is the child inside the parent' undecidable in general, and an envelope nobody can check is a comment.",
+      "description": "One clause of a constraint envelope: discrete `values`, or a `min`/`max` range (optionally with `step`), or both. An optional `when` scopes it to other selections (a grouped matrix). No `when` means always applies; the envelope is the UNION of applying clauses. ONE GRAMMAR, TWO TIERS: a Class element's `supports` (what a provider can satisfy) and a layer's `limits` (what descendants may set); one routine answers containment for both. DATA, NOT LOGIC: `when` is equality only, so child-inside-parent stays decidable.",
       "properties": {
         "values": {
           "type": "array",
@@ -331,7 +331,7 @@
     },
     "capability_disposition": {
       "title": "Capability disposition",
-      "description": "A platform admin's decision about one declared provider capability. `pending` is where every declared capability starts — unusable, and not an error state: absence of a decision is absence of a grant, so a capability nobody has looked at behaves exactly like one refused. That is what default-deny means as a data shape (ADR-PROV-003).\n\nShared by the registration verdict (the current disposition) and the audit record's `capability_admit` event (the act that set it), so \"was this admission authorized\" is answered by matching a permit against a record rather than by translating between two vocabularies.",
+      "description": "A platform admin's decision about one declared provider capability. `pending` is where every capability starts: unusable, not an error state. No decision means no grant, so an unreviewed capability behaves like a refused one: default-deny as a data shape (ADR-PROV-003). Shared by the registration verdict (the current disposition) and the audit record's `capability_admit` event (the act that set it), so 'was this admission authorized' is answered by matching permit against record, never by translating vocabularies.",
       "type": "string",
       "enum": [
         "pending",
@@ -342,7 +342,7 @@
     },
     "TimeSync": {
       "title": "Time synchronization claim",
-      "description": "What clock accuracy a node or provider can HOLD — UTC-traceable, a bound, and the mechanism class that achieves it (ADR-005 Decision 2).\n\nA CLAIM, MATCHED AT PLACEMENT. The same shape as `sovereignty_declaration`: a provider advertises what it can hold, an accreditation or attestation is what makes the claim honorable, and placement admits a workload only where the claim clears the bound in effect. An unattested claim is self-asserted — usable where a profile permits that, and not where it does not.\n\nUDLM DEFINES THE SHAPE AND NO VALUE. The platform mandates no fixed tolerance: a profile adopts one by reference (FINRA CAT, MiFID II RTS 25, a national regime), and an implementation may declare its own in place of the profile's — a homelab that can hold 250 ms declares 250 ms rather than claiming 50 ms it cannot keep. Nothing is lost by allowing that, because the declared bound is what placement admits against: a looser declaration simply fails admission for the workloads needing tighter. A bound honestly declared and enforced is a fact the model can act on; one asserted to clear a floor is not.\n\nWHY A BOUND AND NOT A GRADE. `max_divergence` is a measurable quantity a second implementation can meet, which is what makes a time claim portable across an estate boundary — the same reason a governed term denotes a requirements floor rather than a label (ADR-036).",
+      "description": "Clock accuracy a node or provider can HOLD (ADR-005 Decision 2): UTC-traceable bound plus mechanism class. A CLAIM, MATCHED AT PLACEMENT (the `sovereignty_declaration` shape): accreditation honors it, placement admits where it clears the bound; unattested, usable only where a profile permits. UDLM DEFINES THE SHAPE, NO VALUE: a profile adopts a tolerance by reference (FINRA CAT, MiFID II RTS 25, a national regime) or an implementation declares what it can hold. A measurable bound, not a grade, is portable (ADR-036).",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -354,7 +354,7 @@
         "max_divergence": {
           "type": "string",
           "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(?!$)(\\d+H)?(\\d+M)?(\\d+(\\.\\d+)?S)?)?$",
-          "description": "The bound this party can hold from UTC, as an ISO 8601 duration — the repo's one time-quantity form (`PT1H`, `P30D`). Fractional seconds carry the small end: `PT0.05S` is 50 ms, `PT0.0001S` is 100 µs.\n\nNOT a `Quantity`: that shape is the Kubernetes byte/SI form (`32GB`, `500m`) and has no time unit at all, so `50ms` would be unrepresentable and `50m` would silently mean fifty milli-somethings. NOT a bare number: these bounds span six orders of magnitude, and the unit is the part a reader most needs.",
+          "description": "The bound this party can hold from UTC, as an ISO 8601 duration, the repo's one time-quantity form (`PT1H`, `P30D`). Fractional seconds carry the small end: `PT0.05S` is 50 ms, `PT0.0001S` is 100 µs. NOT a `Quantity`: that is the Kubernetes byte/SI form (`32GB`, `500m`) with no time unit, so `50ms` would be unrepresentable and `50m` would silently mean fifty milli-somethings. NOT a bare number: these bounds span six orders of magnitude, and the unit is what matters.",
           "examples": [
             "PT0.05S",
             "PT1S",
@@ -389,13 +389,13 @@
     },
     "volatile_output": {
       "title": "Volatile output marker",
-      "description": "Declares that this output's VALUE changes between two realizations of the same intent — a timestamp, a generated identifier, an assigned port. The output is real and typed; what it is not is comparable.\n\nWHY IT MUST BE DECLARED RATHER THAN INFERRED (ADR-046). Promotion is gated on a typed-output diff: compile the same intent under both revisions and compare. A volatile output differs every time, so an undeclared one makes the diff perpetually dirty — and a gate that is always red is a gate everyone learns to override. The failure is not a false alarm; it is the loss of the signal.\n\nAT THE DECLARATION, BY THE PARTY WHO KNOWS. Whoever declares the output knows whether it is generated; nobody downstream reliably does. Excluding it at diff time instead would be an ad-hoc exclusion, which is the thing ADR-046 rules against — a promotion could then be waved through by excluding whatever happened to differ.\n\nIT NARROWS NOTHING. A volatile output is still typed, still published, still consumable. This says only that its value is not evidence of compatibility, which is why it is an annotation on the output rather than a different kind of output.",
+      "description": "Declares that this output's VALUE changes between two realizations of the same intent: a timestamp, a generated identifier, a port. Real and typed, just not comparable. DECLARED, NOT INFERRED (ADR-046): promotion is gated on a typed-output diff, which an undeclared volatile output keeps perpetually dirty. BY THE PARTY WHO KNOWS: excluding it at diff time instead is the ad-hoc exclusion ADR-046 rules against. IT NARROWS NOTHING: still typed, published, consumable; only its value is not evidence of compatibility.",
       "type": "boolean",
       "default": false
     },
     "provenance_source_kind": {
       "title": "Provenance source kind",
-      "description": "Which class of writer set a value (data-model-core §6/§7): `layer` = layer assembly wrote it; `policy` = a policy set, enriched or locked it; `actor` = an authenticated identity wrote it directly; `provider` = the realizing provider reported it; `discovery` = a discovery cycle observed it; `rehydration` = a rehydration pipeline restored it; `override` = an authorized override set it.\n\nDeclared once and shared by the record's readable provenance block and the seal's citable `udlm_provenance` facet. They describe the same act from two sides, so two spellings would make them incomparable — which is precisely the join a verifier needs when checking that what the record says happened matches what the ledger sealed.",
+      "description": "Which writer set a value (data-model-core §6/§7). `layer` = layer assembly wrote it. `policy` = a policy set, enriched or locked it. `actor` = an authenticated identity wrote it. `provider` = the realizing provider reported it. `discovery` = a discovery cycle observed it. `rehydration` = a rehydration pipeline restored it. `override` = an authorized override set it. Declared once, shared by the record's provenance block and the seal's `udlm_provenance` facet, so a verifier can join the two.",
       "type": "string",
       "enum": [
         "layer",
@@ -459,7 +459,7 @@
         "aggregate",
         "bridge"
       ],
-      "description": "HOW A HARDWARE THING IS REALIZED (common-elements.md §7): physical = the real device; virtual = presented to a guest by a hypervisor; passthrough = a whole physical device given to a guest; partition = a slice derived from a physical parent (SR-IOV VF, vGPU/MIG, a VLAN sub-interface; set parent_device and partition_mechanism); aggregate = a bond over members; bridge = a bridge over lower layers. One home for the vocabulary (ADR-082): each hardware Base declares the element with the subset it can be."
+      "description": "HOW A HARDWARE THING IS REALIZED (common-elements.md §7). `physical` = the real device. `virtual` = presented to a guest by a hypervisor. `passthrough` = a whole physical device given to a guest. `partition` = a slice of a physical parent (SR-IOV VF, vGPU/MIG, a VLAN sub-interface); set parent_device and partition_mechanism. `aggregate` = a bond over members. `bridge` = a bridge over lower layers. One home for the vocabulary (ADR-082): each hardware Base declares the subset it can be."
     },
     "device_class_unit": {
       "title": "Device class (single device)",
@@ -667,7 +667,7 @@
       "title": "Quantity",
       "type": "string",
       "pattern": "^[0-9]+(\\.[0-9]+)?([kKMGTPE]i?)?B?$",
-      "description": "A size: a number with an optional decimal part and an optional unit — SI (k, M, G, T, P, E: powers of 1000) or binary (Ki, Mi, Gi, Ti, Pi, Ei: powers of 1024), with or without a trailing B (16Gi, 1TB, 84.2G, 500GiB). No unit means bytes. The Kubernetes resource.Quantity spellings plus the B-suffixed forms Redfish and storage tooling report. One home for every size in the model (#638)."
+      "description": "A size: a number with an optional decimal part and an optional unit. The unit is SI (k, M, G, T, P, E: powers of 1000) or binary (Ki, Mi, Gi, Ti, Pi, Ei: powers of 1024), with or without a trailing B (16Gi, 1TB, 84.2G, 500GiB). No unit means bytes. The Kubernetes resource.Quantity spellings plus the B-suffixed forms Redfish and storage tooling report. One home for every size in the model (#638)."
     },
     "cpu_quantity": {
       "title": "CPU quantity",

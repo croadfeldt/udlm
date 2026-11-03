@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/regeneration-manifest.schema.json",
   "title": "UDLM Regeneration Manifest (the durable change record of a class change)",
-  "description": "Machine-validatable regeneration manifest — the durable change record a registry class change emits. Shared building blocks are the point of the class system and also its risk: one Base element serves dozens of descendants, so changing it changes every artifact compiled from it, and every downstream consumer still reading an earlier revision starts carrying version debt. ADR-045 Decision 2 rules that the resulting ripple is computed from the class graph and never hand-listed; this record is where that computation lands so it can be read, reviewed, and audited long after the merge. It names the artifact that changed, how the compatibility classifier ruled and by which rule, the full affected set (each artifact by handle, version, and digest, with what happened to it), the consumers now accruing debt (read from the ADR-044 manifests in registry/consumers/), the standing gate suite that re-proved the regenerated set, and the registry ref the whole change landed under — which is also the only pin an estate can take inside the registry (ADR-045 Decision 3). The per-entity commit log (commit-log-entry.schema.json) cannot carry this: it records one entity's mutation and a fingerprint, whereas a class change is one decision over a computed set of artifacts. In the surface/decide/enable division of labour (docs/design/operational-response-matrix.md), this record is the SURFACE half of the Base/Type class-change row — the platform states the blast radius; the organization's own change policy decides what to do about it.",
+  "description": "The durable record a registry class change emits. The ripple is computed from the class graph, never hand-listed (ADR-045 Decision 2), and lands here. Contents: the changed artifact; the classifier's ruling and rule; the affected set; consumers accruing debt (ADR-044 manifests, registry/consumers/); the gate suite that re-proved it; the registry ref it landed under. That ref is the only pin an estate can take (ADR-045 Decision 3). SURFACE half of the class-change row (docs/design/operational-response-matrix.md): platform states blast radius, organization decides.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -112,7 +112,7 @@
             "breaking",
             "revision"
           ],
-          "description": "additive = the surface only grew, existing carriers keep validating; breaking = an existing carrier stops validating or loses portable surface (includes element removal and any move to a narrower scope, which no schema differ can see); revision = neither — descriptions, prose, and other content changes with no surface effect."
+          "description": "`additive` = the surface only grew; existing carriers keep validating. `breaking` = an existing carrier stops validating or loses portable surface, including element removal and any move to a narrower scope, which no schema differ can see. `revision` = neither: descriptions, prose and other content changes with no surface effect."
         },
         "classified_by": {
           "type": "string",
@@ -199,7 +199,7 @@
               "revalidated_bumped",
               "revalidated_unchanged"
             ],
-            "description": "What the atomic recompilation did to it (ADR-045 Decision 1, on the ADR-051 model). regenerated = a generated flat spec re-rendered from the class graph; revalidated_bumped = an authored Type or Provider Class whose own content changed, so it bumped its version under the publish law (identity uuid frozen; a new digest row lands in the pin manifest); revalidated_unchanged = an authored artifact that re-validated with no content change and therefore did NOT bump — the identity gate's no-op rule."
+            "description": "What the atomic recompilation did to it (ADR-045 Decision 1, on the ADR-051 model). `regenerated` = a generated flat spec re-rendered from the class graph. `revalidated_bumped` = an authored Type or Provider Class whose own content changed, so it bumped its version under the publish law (identity uuid frozen; a new digest row lands in the pin manifest). `revalidated_unchanged` = an authored artifact that re-validated with no content change and therefore did NOT bump: the identity gate's no-op rule."
           },
           "path": {
             "type": "string",
@@ -258,7 +258,7 @@
               "unknown_revision",
               "version_undeclared"
             ],
-            "description": "behind = legal, enumerated debt — the consumer reads an older revision and re-opens the question when it advances its registry ref; current = no distance; ahead and unknown_revision are refusals, not debt (ADR-045 Decision 3), and appear here only to name a consumer whose declaration cannot resolve; version_undeclared = the manifest consumes the tree without naming versions, so distance is not computable from it."
+            "description": "`behind` = legal, enumerated debt: the consumer reads an older revision and re-opens the question when it advances its registry ref. `current` = no distance. `ahead` and `unknown_revision` are refusals, not debt (ADR-045 Decision 3), and appear here only to name a consumer whose declaration cannot resolve. `version_undeclared` = the manifest consumes the tree without naming versions, so distance is not computable."
           },
           "distance": {
             "type": "string",
@@ -399,7 +399,7 @@
         "version",
         "digest"
       ],
-      "description": "One artifact at one exact revision. A published (identity, version) is immutable and its content digest names the exact bytes (ADR-051; VERSIONING.md § \"Identity, version, digest\") — so handle plus version plus digest names a thing, a claim about it, and the exact bytes that claim is about. The digest lives HERE, in the referrer, never in the artifact itself.",
+      "description": "One artifact at one exact revision. A published (identity, version) is immutable and its content digest names the exact bytes (ADR-051; VERSIONING.md § \"Identity, version, digest\"). So handle plus version plus digest names a thing, a claim about it, and the exact bytes that claim is about. The digest lives HERE, in the referrer, never in the artifact itself.",
       "properties": {
         "artifact_kind": {
           "$ref": "common-elements.schema.json#/$defs/artifact_kind",

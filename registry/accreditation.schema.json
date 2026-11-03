@@ -297,7 +297,7 @@
     "capability_scope_entry": {
       "type": "object",
       "additionalProperties": false,
-      "description": "One binding-grain entry (§3.3.1). Exactly one of two shapes: {provider_wide:true} attests EVERY capability the provider declares (survives capability changes, coarsest); or {capability_uuid, version?, category?} attests a specific capability — add `version` for the deterministic grain a version change EXPIRES, and `category` to narrow to one (verb × domain) category within the capability. EXACT-BY-DEFAULT (ADR-051): the reviewed bytes are what attested_digests names; an entry WITHOUT `version` or a {provider_wide:true} entry is the explicit declaration of validity wider than those exact bytes — a deliberate, visible widening, never an implication.",
+      "description": "One binding-grain entry (§3.3.1), in one of two shapes. `{provider_wide:true}` attests EVERY capability the provider declares; it survives capability changes (coarsest). `{capability_uuid, version?, category?}` attests one capability: add `version` for the deterministic grain a version change EXPIRES, and `category` to narrow to one (verb × domain) category within it. EXACT-BY-DEFAULT (ADR-051): the reviewed bytes are what `attested_digests` names. An entry WITHOUT `version`, or a `{provider_wide:true}` entry, explicitly declares validity wider than those bytes: a deliberate, visible widening, never an implication.",
       "properties": {
         "provider_wide": {
           "const": true,

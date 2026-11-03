@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/conformance-declaration.schema.json",
   "title": "UDLM Conformance Declaration",
-  "description": "The declaration an implementation publishes at /.well-known/udlm/conformance (CONFORMANCE.md §4). WIR-035 requires a declaration to match this schema; before it existed the requirement named §4.1, which is a worked JSON example rather than a schema, so an implementation was asked to match something it could not validate against. Transcribed from §4.1's example and §4.2's field-semantics table, which agree on all thirteen top-level fields. Where the two documents state nothing — the shape of the nested objects, and which interop surfaces exist — this schema deliberately does NOT invent a constraint; those are recorded as open in the issue that produced it, because a schema that guesses becomes the requirement.",
+  "description": "The declaration an implementation publishes at /.well-known/udlm/conformance (CONFORMANCE.md §4). WIR-035 requires a declaration to match this schema. Transcribed from §4.1's example and §4.2's field-semantics table, which agree on all thirteen top-level fields. Where the two documents state nothing — the shape of the nested objects, and which interop surfaces exist — this schema deliberately does NOT invent a constraint. Those are recorded as open in the issue that produced it, because a schema that guesses becomes the requirement.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -78,7 +78,7 @@
     "interop_surfaces": {
       "type": "object",
       "minProperties": 1,
-      "description": "Which surfaces are available and how to reach them. The surface NAMES are deliberately not enumerated: consumer_api, provider_callbacks, federation and audit_export appear only as keys in §4.1's example and are defined as a set nowhere in the spec, so an enum here would invent the vocabulary rather than record it. Each entry's shape is constrained because §4.1 is consistent about it.",
+      "description": "Which surfaces are available and how to reach them. The surface NAMES are deliberately not enumerated: consumer_api, provider_callbacks, federation and audit_export appear only as keys in §4.1's example and are defined as a set nowhere in the spec. An enum here would invent the vocabulary rather than record it. Each entry's shape is constrained because §4.1 is consistent about it.",
       "additionalProperties": {
         "type": "object",
         "required": [

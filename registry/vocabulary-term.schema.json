@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/vocabulary-term.schema.json",
   "title": "Vocabulary term",
-  "description": "ONE canonical term of a governed vocabulary — `high-throughput` of `network_tier`, `gold` of `storage_tier` — carried by a record keyed to (`vocabulary_kind`, `scope`).\n\nTWO ENFORCEMENTS APPLY BY CONSTRUCTION.\n\n  - `scope` puts the term at a Class position, and the scope position IS the portability contract (ADR-038 §3). A term canonical at `Network` is portable to every Network provider; one at a Provider scope is that provider's. Without a scope, a vocabulary kind means whatever the reader assumes — which is how `os_image` and `vm_size` come to mean many things.\n  - `curation_state` puts it on the vocabulary-intake ladder (ADR-039), so `proposed → canonical` is a state the record carries rather than a convention around it.\n\nTHE TERM DENOTES A FLOOR, NOT A LABEL (ADR-036). `requirements` carries what the name promises — `high-throughput` means at least 10G-class and sub-millisecond, and any provider clearing that qualifies. The match is against the floor, never the string, which is the only reason a term survives leaving the estate that coined it. A term with no floor is a label, and two estates' labels are incomparable by construction.\n\nNOT A TAXONOMY TERM, and the distinction is load-bearing. `Knowledge.TaxonomyTerm` carries a CATEGORY — what a thing IS (`dmz`, `management`), with normalization rules so five spellings converge. This carries a FLOOR — what a thing must MEET. `network_zone` is a taxonomy because a zone is a classification; `network_tier` is a vocabulary term because a tier is a measurable minimum. Collapsing them would put normalization rules on a floor and minima on a category.",
+  "description": "One canonical term of a governed vocabulary (`high-throughput` of `network_tier`, `gold` of `storage_tier`), keyed to (`vocabulary_kind`, `scope`). `scope` is a Class position, the portability contract (ADR-038 §3). `curation_state` puts it on the vocabulary-intake ladder (ADR-039). A FLOOR, NOT A LABEL (ADR-036): `requirements` carries the promise; matching is against it, never the string. NOT A TAXONOMY TERM: `Knowledge.TaxonomyTerm` carries a CATEGORY (what a thing IS), this a FLOOR (what it must MEET). `network_zone` is a taxonomy, `network_tier` a vocabulary term.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -62,7 +62,7 @@
     "scope": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]*(\\.[A-Z][A-Za-z0-9]*)*$",
-      "description": "The Class scope this term is canonical AT — the other half of the key, and the portability contract (ADR-038 §3, ADR-058 §2).\n\nRead it as the answer to \"how far does this meaning travel?\" A term at `Network` holds for every Network provider; the same name at `NetworkFabric.AcmeSDN` holds only there. Portable reliance on a term requires it be canonical at a scope at least as general as the consumer's — which is checkable in a diff rather than asserted in prose, and promoted by the governed contribution operation rather than by editing a copy.",
+      "description": "The Class scope this term is canonical AT: the other half of the key, and the portability contract (ADR-038 §3, ADR-058 §2). A term at `Network` holds for every Network provider; the same name at `NetworkFabric.AcmeSDN` holds only there. Portable reliance on a term requires it be canonical at a scope at least as general as the consumer's. That is checkable in a diff, not asserted in prose, and promoted by the governed contribution operation, not by editing a copy.",
       "examples": [
         "Network",
         "Storage",
@@ -85,7 +85,7 @@
     "requirements": {
       "type": "object",
       "minProperties": 1,
-      "description": "The FLOOR the term denotes — what a provider must clear to qualify (ADR-036). Kind-specific by nature: a `network_tier` states bandwidth and latency minima, a `storage_tier` states IOPS and throughput. Open by construction because UDLM does not know every vocabulary an estate will govern; what it does know is that a term with no floor cannot be compared across estates, which is why at least one property is required.\n\nThis is the data that used to sit in a layer's `fields`. It never was a contribution to an assembled payload — nothing merged it — which is the plainest evidence the layer form was wrong."
+      "description": "The FLOOR the term denotes: what a provider must clear to qualify (ADR-036). Kind-specific by nature: a `network_tier` states bandwidth and latency minima, a `storage_tier` IOPS and throughput. Open by construction, because UDLM does not know every vocabulary an estate will govern; what it does know is that a term with no floor cannot be compared across estates, which is why at least one property is required. It is never a contribution to an assembled payload; nothing merges it."
     },
     "status": {
       "type": "object",

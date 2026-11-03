@@ -46,7 +46,7 @@
       "items": {
         "$ref": "common-elements.schema.json#/$defs/uuid_v4"
       },
-      "description": "LINEAGE — the single, explicit mechanism (UDLM ADR-012; the decision-record 'never edit, supersede' idiom; layers are the reference member of ADR-051's immutable-record family). A layer version is IMMUTABLE: any change is a NEW record (its own identity uuid + a higher version), never an edit of the old one, and this array names the uuid(s) of the version(s) it directly supersedes. Absent = a lineage ROOT (a first version, or a genuinely new entity). Because it is a uuid array it expresses ANY lineage shape — linear (supersedes the one prior), fork (two records each supersede the same prior), merge (one record supersedes several), rename (supersede a prior at a different handle). It is authoritative (uuid-based); `handle` is advisory display only and is NOT a lineage signal. Each uuid MUST resolve to an existing layer of the same reference_data_type with a strictly lower version (validate.py check_layer_lineage). Change-impact is derived from this DAG plus the reverse reference index — which records reference a version that has since been superseded."
+      "description": "LINEAGE (UDLM ADR-012; ADR-051 immutable-record family), the only mechanism. Versions are IMMUTABLE: a change is a NEW record (own uuid, higher version); this array names the uuid(s) it directly supersedes. Absent = lineage ROOT. A uuid array expresses ANY shape: linear, fork, merge, rename. Authoritative; `handle` is advisory, NOT a lineage signal. Each uuid MUST resolve to an existing same-reference_data_type layer with a strictly lower version (validate.py check_layer_lineage). Change-impact derives from this DAG and the reverse reference index."
     },
     "tenant_uuid": {
       "$ref": "common-elements.schema.json#/$defs/uuid_v4",
@@ -90,7 +90,7 @@
         "policy",
         "reference_data"
       ],
-      "description": "The layer types (layering-and-versioning §3). Six are ASSEMBLY positions, ordered by authority: base (foundation, every chain begins here), core (standards/compliance defaults), intermediate (org/customization — a business unit, an enclave, an application team's configuration set), service (catalog/provider), request (the consumer's direct declaration — highest data authority), policy (applied over the merged result).\n\n`reference_data` is the seventh and is NOT an assembly position: it marks a layer that OTHER LAYERS REFERENCE — shared data, defined once and pointed at by `data_reference` rather than merged by precedence. Ruled 2026-08-11 to stay, correcting ADR-054's draft retirement. Two kinds of record were misfiled under it and have moved: a governed vocabulary TERM (matched against, never merged — now `vocabulary-term.schema.json`) and an application-team config set (contributed, so an `intermediate` layer). The test is what the record does — matched, contributed, or pointed at."
+      "description": "The layer types (layering-and-versioning §3); six are ASSEMBLY positions, ordered by authority. `base` = foundation, where every chain begins. `core` = standards/compliance defaults. `intermediate` = org/customization. `service` = catalog/provider. `request` = the consumer's direct declaration (highest data authority). `policy` = applied over the merged result. `reference_data`, the seventh, is NOT an assembly position: a layer OTHER LAYERS REFERENCE via `data_reference`, never merged by precedence. Vocabulary TERMS live in `vocabulary-term.schema.json`; application-team config sets are `intermediate`."
     },
     "reference_data_type": {
       "type": "string",
@@ -100,7 +100,7 @@
     "covers": {
       "type": "string",
       "format": "udlm-filter-url",
-      "description": "TARGET scoping (publish side; ADR-054 two-sided scoping): ONE URF filter (identifier-scheme §9) naming which resources this layer MAY inject into — e.g. estate?resource_type==Machine.* or estate?labels.concern==payments. The assembly engine GATHERS every layer whose covers matches the target, then orders by precedence; covers says *who may*, the request's from_layers says *who does*. OPTIONAL — do not duplicate resource_type: a type-scoped layer (resource_type: X) already targets X (≡ covers \"estate?resource_type==X.*\"), so its covers is DERIVED and omitted. When both are set, covers MUST match the layer's own resource_type (validate.py check_layer). covers is Data (the declaration); the match is Policy (the assembly engine)."
+      "description": "TARGET scoping (publish side, ADR-054): ONE URF filter (identifier-scheme §9) naming which resources this layer MAY inject into (estate?labels.concern==payments). Assembly GATHERS every layer whose covers matches, then orders by precedence: covers says *who may*, from_layers *who does*. OPTIONAL; do not duplicate resource_type: a type-scoped layer (resource_type: X) already targets X (≡ covers \"estate?resource_type==X.*\"), so covers is DERIVED and omitted. When both are set, covers MUST match the layer's resource_type (validate.py check_layer). covers is Data; the match is Policy (assembly engine)."
     },
     "applies_on": {
       "type": "array",
@@ -113,7 +113,7 @@
     "from_layers": {
       "type": "string",
       "format": "udlm-filter-url",
-      "description": "SOURCE scoping (subscribe side; ADR-054): ONE URF filter selecting which layers feed THIS request. OPTIONAL OVERRIDE — tenant isolation is the DEFAULT, not a re-declaration: absent, assembly draws the request's own tenant's layers plus platform/system-domain layers, never another tenant's. Declare only to select an EXPLICIT subset. Injection = the intersection: L injects into R iff R.target matches L.covers (or L.resource_type) ∧ R.operation ∈ L.applies_on ∧ L matches R.from_layers (default: tenant+platform) ∧ L not matched by R.skip. Injection is an ingress crossing — PROJ-006 admission applies (ADR-041)."
+      "description": "SOURCE scoping (subscribe side, ADR-054): ONE URF filter selecting the layers feeding THIS request. OPTIONAL OVERRIDE; tenant isolation is the DEFAULT: absent, assembly draws the tenant's own layers plus platform/system-domain layers, never another tenant's. Declare only to select an EXPLICIT subset. Injection = the intersection: L injects into R iff R.target matches L.covers (or L.resource_type) ∧ R.operation ∈ L.applies_on ∧ L matches R.from_layers (default: tenant+platform) ∧ R.skip does not match L. Injection is an ingress crossing: PROJ-006 admission applies (ADR-041)."
     },
     "skip": {
       "type": "string",
@@ -201,7 +201,7 @@
     "extends": {
       "type": "array",
       "minItems": 1,
-      "description": "The layer(s) this one extends — explicit lineage, readable from the record instead of reconstructible only by running assembly. Any layer may be a parent and any layer a child: the reference is what creates the relationship, so no layer needs marking as extensible — being pointed at is a property of the pointer, not the target, which is how the class system already works.\n\nA LIST, because a template or composite request draws on several lineages at once, and each extension carries its OWN matching criteria — `when` — so which parents apply depends on the context being assembled.\n\nVALUES OVERRIDE, LIMITS INTERSECT, and the asymmetry is what makes multiple parents safe. If `limits` merged like values, a permissive parent would erase a restrictive one's bound and you could buy permission by extending one more thing. Intersecting is MONOTONE: another parent can only tighten. A bound has no override; `skip` is the route, and it declines the layer's participation visibly.\n\nA CYCLE IS REFUSED: an extension chain that loops computes no value, and the model refuses what cannot be computed. DEPTH IS NOT CAPPED — deep chains are normal here, and how deep is too deep is a policy judgement, never a structural one.",
+      "description": "The layer(s) this one extends: explicit lineage on the record. Any layer may be a parent or a child; the reference creates the relationship. A LIST, since a request may draw on several lineages, each extension carrying its OWN `when` criteria. VALUES OVERRIDE, LIMITS INTERSECT, which is MONOTONE: another parent can only tighten, never erase a restrictive bound. A bound has no override; `skip` declines participation visibly. A CYCLE IS REFUSED. DEPTH IS NOT CAPPED; depth is policy's judgement.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -227,7 +227,7 @@
     "limits": {
       "type": "object",
       "minProperties": 1,
-      "description": "The envelope this layer's DESCENDANTS must stay inside — keyed by dot-path into the fields it bounds, each holding a list of constraint clauses whose union is the permitted set.\n\nABSENT MEANS UNBOUNDED, NEVER EMPTY. A layer that says nothing constrains nothing (NDF-001 — UDLM ships no defaults). The expected shape is wide or silent at the base, tightening as each extension determines the use case further — the same convergence the class tier runs when a declared range collapses to a selected value.\n\nAN ENVELOPE RATHER THAN A DIRECTION FLAG. A layer could instead declare only 'tighten, never loosen'; that is weaker because a direction can be judged solely against whatever happened to merge beneath it, so the legality of a layer cannot be established without assembling everything under it first. A declared envelope is checkable against every descendant independently, which is what makes one validation pass work over a deep chain.\n\nWHO ENFORCES IT IS NOT UDLM. A Class's `supports` containment is a gate, because a Class is UDLM's own portable artifact. A layer holds an estate's configuration, so what is permitted there is the estate's call: the envelope is DATA here and a policy enforces it (`policy_type: validation`) — one generic policy reading declared limits, not one policy per case.",
+      "description": "The envelope DESCENDANTS must stay inside, keyed by dot-path; each entry lists constraint clauses whose union is the permitted set. ABSENT MEANS UNBOUNDED, NEVER EMPTY: a silent layer constrains nothing (NDF-001); wide at the base, tightening per extension. AN ENVELOPE, NOT A DIRECTION FLAG: checkable against every descendant independently, in one pass. ENFORCEMENT IS NOT UDLM'S: a Class's `supports` containment is a gate; a layer is estate configuration, so this is DATA, enforced by one generic policy (`policy_type: validation`).",
       "additionalProperties": {
         "type": "array",
         "minItems": 1,

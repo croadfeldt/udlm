@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/promotion-evidence.schema.json",
   "title": "Promotion evidence",
-  "description": "The record a promotion is decided on: one corpus, one corpus ref, two revision sets, the typed-output diff between them, and the approvals for anything the diff found (ADR-046, `REG-016`).\n\nPROMOTION HAPPENS ON EVIDENCE, NEVER ON A VERSION CLAIM. \"The upstream change is compatible\" is a claim about someone else's estate, and claims about someone else's estate deserve evidence. The evidence exists deterministically — compile the organization's own intent corpus under both revisions and compare what each publishes — so the alternative to producing it is not trust, it is a decision taken with the answer available and unread.\n\nTHE DIFF IS THE ENTIRE GATE. Empty, or every entry explicitly approved. Anything else refuses the promotion outright, and nothing partially promotes: a half-promoted estate is one where the pinned and candidate revisions are both live and neither is the answer to \"what is this estate running\".\n\nAND A NON-EMPTY DIFF IS ALSO A FINDING. It contradicts the upstream compatibility claim, so it routes home with the diff as provenance (`finding-routing-record.schema.json`). The estate that discovered the incompatibility is the one holding the evidence for it, and letting that die locally means the next estate rediscovers it.",
+  "description": "The record a promotion is decided on (ADR-046, `REG-016`): one corpus and ref, two revision sets, their typed-output diff, and approvals for what it found. EVIDENCE, NEVER A VERSION CLAIM: it exists deterministically: compile the organization's intent corpus under both revisions and compare. THE DIFF IS THE ENTIRE GATE: empty, or every entry approved; anything else refuses, and nothing partially promotes. A NON-EMPTY DIFF IS A FINDING: it contradicts the upstream compatibility claim and routes home, diff as provenance (`finding-routing-record.schema.json`).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -27,7 +27,7 @@
     },
     "corpus_ref": {
       "type": "string",
-      "description": "The single ref both compilations ran against — a commit, a tag, a content digest.\n\nONE REF, RECORDED, AND IT IS AN INVARIANT RATHER THAN A CONVENIENCE. A corpus that moved between the two compilations makes the diff meaningless: a difference could then be the revision change or the corpus change, and nothing in the artifact distinguishes them. Recording the ref is what makes the evidence re-derivable by someone who did not run it — which is the only kind of evidence worth the name."
+      "description": "The single ref both compilations ran against: a commit, a tag, a content digest. ONE REF, RECORDED, AS AN INVARIANT: a corpus that moved between the two compilations makes the diff meaningless, because a difference could then be the revision change or the corpus change, and nothing in the artifact distinguishes them. Recording the ref makes the evidence re-derivable by someone who did not run it, the only kind of evidence worth the name."
     },
     "from_revisions": {
       "type": "array",
@@ -44,7 +44,7 @@
     },
     "diff": {
       "type": "array",
-      "description": "What the two compilations published differently, compared on DECLARED OUTPUTS ONLY — never provider internals, which are not a contract and would make every provider change look like a breakage.\n\nOutputs the model declares `volatile` are excluded BY THAT DECLARATION (`common-elements` `$defs/volatile_output`), never ad hoc at diff time. An ad-hoc exclusion would let a promotion be waved through by excluding whatever happened to differ.\n\nAn empty array is the passing case and must be distinguishable from an absent one — hence required.",
+      "description": "What the two compilations published differently, compared on DECLARED OUTPUTS ONLY, never provider internals, which are not a contract and would make every provider change look like a breakage. Outputs the model declares `volatile` are excluded BY THAT DECLARATION (`common-elements` `$defs/volatile_output`), never ad hoc at diff time; an ad-hoc exclusion would let a promotion be waved through by excluding whatever happened to differ. An empty array is the passing case and must be distinguishable from an absent one, hence required.",
       "items": {
         "type": "object",
         "additionalProperties": false,

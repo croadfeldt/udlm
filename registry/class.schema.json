@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/class.schema.json",
   "title": "UDLM Class artifact — the scoped-Class authoring layer",
-  "description": "Meta-schema for a Class artifact (registry/classes/*.yaml), the authoring layer of the scoped resource-type Class hierarchy (ADR-038). A Class carries the FULL definition surface — elements, outputs, relationships (consumer-declared), immutable, adopts, and (type tier) context — closing #323 so the compiled flat spec is complete, not a subset. A Class composes SharedDataElements (`$defs.shared_data_element`) at one scope tier — Base (`Machine`), Type (`Machine.VM`), or Provider (`Machine.VM.OCPVirt`) — each `extends` its parent under the Liskov invariant (add or refine, never contradict). Classes become the authoring layer; a generator compiles each Type Class down to the flat resource-type-spec shape consumers read today (`--check`-gated, no downstream break — the conversion executed 2026-08-04). An element's scope position IS its portability (ADR-038 §3), so the realized `portability` block derives from where an instance's populated elements sit rather than being asserted. Part of the UDLM spec, versioned on the SPEC axis. Status: ADR-038 is Proposed pending the engineering pass (#217); this shape inherits that status and executes the decided model.",
+  "description": "Meta-schema for a Class artifact (registry/classes/*.yaml), the authoring layer of the scoped Class hierarchy (ADR-038). It carries the FULL definition surface — elements, outputs, relationships (consumer-declared), immutable, adopts, and (type tier) context — so the compiled flat spec is complete (#323). It composes SharedDataElements (`$defs.shared_data_element`) at one tier, Base (`Machine`), Type (`Machine.VM`) or Provider (`Machine.VM.OCPVirt`), and `extends` its parent under the Liskov invariant: add or refine, never contradict. Scope position IS portability (ADR-038 §3): `portability` is derived, not asserted.",
   "examples": [
     {
       "$id": "https://udlm.dev/registry/udlm/0.1/class/Machine.VM.OCPVirt/1.0.0",
@@ -20,7 +20,7 @@
         "display_name": "Machine.VM.OCPVirt Provider Class (example)",
         "maintainer": "UDLM maintainers",
         "origination_timestamp": "2026-07-30T18:30:00Z",
-        "description": "EXAMPLE Provider Class — not canonical. Per the ADR-038 authorship ruling, Provider Classes are provider-authored and reach canonical standing through the control plane contribution lifecycle; this file demonstrates the grammar for the class named illustratively throughout ADR-038. OpenShift Virtualization (KubeVirt) Provider Class for the Machine.VM Type Class. Carries only what is meaningful when the VM lands on this provider: the target namespace (the canonical ADR-016 example of a provider-required field that lives off the portable type), instancetype/preference selection, run and eviction strategy, storage-class and boot-source mechanics, secondary-network attachments, and the GPU-passthrough / SR-IOV elements the Machine.VM flat spec explicitly parks for the Provider tier. Elements are proposed pending a grounding pass against a live VirtualMachine custom resource (deferred — OpenShift Virtualization not currently installed in the reference estate)."
+        "description": "EXAMPLE Provider Class — not canonical: Provider Classes are provider-authored and reach canonical through the contribution lifecycle (ADR-038 authorship ruling). OpenShift Virtualization (KubeVirt) Provider Class for the Machine.VM Type Class. It carries only what matters on this provider: the target namespace (the ADR-016 provider-required field), instancetype/preference selection, run and eviction strategy, storage-class and boot-source mechanics, secondary-network attachments, and the GPU-passthrough / SR-IOV elements Machine.VM parks for the Provider tier. Elements are proposed pending grounding against a live VirtualMachine custom resource."
       },
       "elements": [
         {
@@ -337,7 +337,7 @@
         "type": "string",
         "pattern": "^[a-z][a-z0-9-]*$"
       },
-      "description": "Where this Base is filed for people to find it: one or more terms of the usage-group taxonomy (registry/taxonomies/usage-group.yaml), Unix hard-link semantics — the class is the inode, each term a directory entry (ADR-082, CLS-010). Base Class only; Types and Provider Classes inherit the filing of their Base. Every instantiable Resource Base names at least one (CLS-011; gate tests/check_class_groups.py). The class's git directory is one of the terms named here (CLS-PATH-001); the other filings are generated views under registry/generated/groups/. Organization, not identity: adding or removing a term bumps no version and changes no digest (identity-excluded, like `coverage`). Never on a record of any kind."
+      "description": "Where this Base is filed: one or more terms of the usage-group taxonomy (registry/taxonomies/usage-group.yaml), with hard-link semantics: the class is the inode, each term an entry (ADR-082, CLS-010). Base only; Types and Providers inherit it. Every instantiable Resource Base names at least one (CLS-011, tests/check_class_groups.py). The class's git directory is one named term (CLS-PATH-001); the rest are generated views under registry/generated/groups/. Organization, not identity: a term change bumps no version, changes no digest (identity-excluded, like `coverage`). Never on a record."
     },
     "short_name": {
       "type": "string",
@@ -398,7 +398,7 @@
     },
     "outputs": {
       "type": "object",
-      "description": "Typed Realized-state outputs this Class publishes (E2), keyed by output name — a JSON-Schema fragment per output, same shape as the flat spec's `outputs`. Scoped like elements: any tier may declare (a Provider Class declaring provider_specific outputs is exactly the intended use, #323); the declaring Class IS the scope. Compile: merged down the chain, nearer Class overrides by name; a redeclare MUST refine (the Liskov gate applies element refinement rules to outputs). An output whose value differs between two realizations of the same intent declares `volatile: true` — the promotion diff excludes it by that declaration, never ad hoc (ADR-046). Records are checked against these. An undeclared output is allowed unless `outputs_closed`; a class with none says so with `outputs_exempt`.",
+      "description": "Typed Realized-state outputs this Class publishes (E2), keyed by name: a JSON-Schema fragment in the flat spec's `outputs` shape. Any tier may declare (provider_specific outputs on a Provider Class, #323); the declaring Class IS the scope. Compile merges down the chain, nearer Class overriding by name; a redeclare MUST refine (Liskov). A value varying between realizations of one intent is declared `volatile: true` (ADR-046). Records are checked against them. Undeclared outputs are allowed unless `outputs_closed`; a class with none declares `outputs_exempt`.",
       "additionalProperties": {
         "type": "object",
         "properties": {
@@ -410,7 +410,7 @@
     },
     "relationships": {
       "type": "array",
-      "description": "Relationship templates this Class declares — items ARE the flat spec's relationships items ($ref — one shape, single source), and DECLARED CONSUMER-SIDE (a class declares what IT consumes; never who may consume it). Compile: union down the chain, identity = `name` else (edge_type, target, target_field), NEAREST class wins on a redeclare. Liskov (maintainer ruling 2026-08-03 — tighten at your scope): a child MAY redeclare an ancestor's edge to TIGHTEN it — cardinality min may rise, max may fall, enforcement may tighten advisory→structural — never loosen, never retarget, never change edge_type.",
+      "description": "Relationship templates this Class declares. Items ARE the flat spec's relationships items ($ref, one shape, single source), DECLARED CONSUMER-SIDE: a class declares what IT consumes, never who may consume it. Compile unions down the chain; identity = `name` else (edge_type, target, target_field); NEAREST class wins on redeclare. Liskov (maintainer ruling 2026-08-03): a child MAY redeclare an ancestor's edge only to TIGHTEN it. Cardinality min may rise, max may fall, enforcement may tighten advisory→structural — never loosen, retarget, or change edge_type.",
       "items": {
         "$ref": "resource-type-spec.schema.json#/properties/relationships/items"
       }
@@ -428,7 +428,7 @@
     },
     "constituents": {
       "$ref": "composition.schema.json#/$defs/constituents",
-      "description": "COMPOSITE DEFINITION (the combining artifact, maintainer ruling 2026-08-03): a class MAY compose other classes — items ARE the shared composition shape (composition.schema.json — one shape, one semantic checker: component_id uniqueness, sibling resolution, acyclic depends_on, binding⊆depends_on). Constituent resource_type references resolve in the one dotted namespace (a class or a flat type during migration). Permitted on type and provider tiers (a provider-registered composite is §8.3's case), never base. Constituents do NOT enter the compiled flat spec — a composite EXPANDS at request time; the catalog item is a projection rendered implementation-side (the control plane, per-org curation + tenancy), never authored beside the class (one declaration, two projections: registration presents it, the catalog offers it)."
+      "description": "COMPOSITE DEFINITION (maintainer ruling 2026-08-03): a class MAY compose other classes. Items ARE the shared composition shape (composition.schema.json): one checker — component_id uniqueness, sibling resolution, acyclic depends_on, binding⊆depends_on. Constituent resource_type references resolve in the dotted namespace. Permitted on type and provider tiers (§8.3's provider-registered composite), never base. Constituents do NOT enter the compiled flat spec; a composite EXPANDS at request time. The catalog item is an implementation-side projection (control plane, per-org curation + tenancy), never authored beside the class."
     },
     "composition_visibility": {
       "$ref": "composition.schema.json#/$defs/composition_visibility",
@@ -441,7 +441,7 @@
     "promoted_from": {
       "type": "string",
       "format": "udlm-ref-url",
-      "description": "OPTIONAL — the composition record this class was promoted from (ING-017). Present when the class did not start life as a class: it was ingested from a diagram, converted, or authored by a consumer, and someone then took ownership of it. The composition SURVIVES promotion and this is the pointer back to it, which is what lets a re-ingest of the same source diff against what already exists instead of appearing as a brand-new composition (ING-018). Absent means the class was authored deliberately as an offer, which is the ordinary case."
+      "description": "OPTIONAL — the composition record this class was promoted from (ING-017). Present when the class did not start life as a class: it was ingested from a diagram, converted, or authored by a consumer, and someone then took ownership. The composition SURVIVES promotion; this is the pointer back to it, which lets a re-ingest of the same source diff against what exists instead of appearing brand-new (ING-018). Absent means the class was authored as an offer, the ordinary case."
     },
     "spec_examples": {
       "type": "array",
@@ -457,7 +457,7 @@
     },
     "ownership_model": {
       "$ref": "resource-type-spec.schema.json#/properties/ownership_model",
-      "description": "IS the flat spec's `ownership_model` ($ref — one shape, single source); compile copies it verbatim. TYPE tier only, on the same reasoning as `context`: which ownership pattern a thing follows is a property of the type, not of the category above it (a `Machine` base cannot say whether its members are owned outright or staked) and not of one provider's projection (a provider does not get to change who owns the result). A childless instantiable base is served directly and so may carry it too."
+      "description": "IS the flat spec's `ownership_model` ($ref — one shape, single source); compile copies it verbatim. TYPE tier only, on the same reasoning as `context`: which ownership pattern a thing follows is a property of the type. A `Machine` base cannot say whether its members are owned outright or staked, and one provider's projection does not get to change who owns the result. A childless instantiable base is served directly and so may carry it too."
     },
     "allocated_from_pool_type": {
       "$ref": "resource-type-spec.schema.json#/properties/allocated_from_pool_type",
@@ -696,7 +696,7 @@
           "required": [
             "reference_data_type"
           ],
-          "description": "Optional — declares that this element's values are a GOVERNED vocabulary (DCM ADR-012 reference-data of the named kind), not an inline enum. The element names the vocabulary KIND; the canonical terms are reference-data records of that kind (curated proposed → canonical). Whether an instance MAY supply a bare literal or MUST resolve to a canonical term (a `data_reference`, DCM ADR-012) is a PROFILE floor (ADR-007) enforced by the vocabulary-intake ladder (ADR-039 — match/mint, strict-profile-unknown-refused) — NOT a field here: homelab may write a bare string, sovereign must reference a canonical term.",
+          "description": "Optional — this element's values are a GOVERNED vocabulary (DCM ADR-012 reference-data), not an inline enum. The element names the KIND; canonical terms are reference-data records of that kind (curated proposed → canonical). Whether an instance MAY supply a bare literal or MUST resolve to a canonical term (a `data_reference`, DCM ADR-012) is a PROFILE floor (ADR-007), NOT a field here. The vocabulary-intake ladder enforces it (ADR-039: match/mint, strict-profile-unknown-refused): homelab may write a bare string, sovereign must reference a term.",
           "properties": {
             "reference_data_type": {
               "type": "string",
@@ -724,7 +724,7 @@
         "supports": {
           "type": "array",
           "minItems": 1,
-          "description": "OPTIONAL — what THIS scope can actually support: the values and ranges on offer. Read as an OFFER it says what the provider can satisfy; read as a MENU it says what a consumer may select. One declaration, both readings — the catalog reads this rather than restating it. A LIST of clauses whose UNION is the supported set, because a real support matrix is a mix of discrete values and ranges, and which of them apply can depend on other selections. Distinct from `schema` (which says what shape is VALID and stays portable) and from `values` (which names a governed vocabulary). `supports` narrows what is OFFERED, never what is legal. A child Class's clauses MUST be contained in its parent's (check_class_liskov) — declaring the matrix as DATA rather than as JSON Schema if/then is what keeps that containment decidable. It carries no presentation: ordering, grouping, labels and help text belong to whatever renders the menu, never to the model (#401).",
+          "description": "OPTIONAL — the values and ranges THIS scope can support. Both the provider's OFFER and the consumer's MENU, in one declaration the catalog reads rather than restating. A LIST of clauses whose UNION is the supported set. Distinct from `schema` (the VALID, portable shape) and `values` (a governed vocabulary): it narrows what is OFFERED, never what is legal. A child's clauses MUST sit inside its parent's (check_class_liskov). No presentation: ordering, grouping, labels, help text belong to the renderer (#401).",
           "items": {
             "$ref": "common-elements.schema.json#/$defs/constraint_clause"
           }

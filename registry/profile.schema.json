@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/profile.schema.json",
   "title": "UDLM Profile",
-  "description": "A PROFILE (a DEPLOYMENT profile — the posture a deployment engages) is one activatable unit: activating it turns on (or off) the capabilities, policies, settings, and mechanisms it names, so a deployment gets the posture appropriate to its use and environment — 'engage the fsi profile'. The record is an INERT, reusable definition: which profile a deployment runs is deployment state, never a field here. A profile REFERENCES governed artifacts; it never defines them (content lives in its own artifact, named by URF — identifier-scheme §9). ADR-007 supplies the composed-set and floor semantics preserved in `contains[].state`; ADR-015 (settings and configuration bundles) is the deciding record — its 'bundle' is this profile record, one term for one concept.",
+  "description": "A DEPLOYMENT PROFILE, the posture a deployment engages: one activatable unit. Activation turns on (or off) the capabilities, policies, settings and mechanisms it names ('engage the fsi profile'). An INERT, reusable definition; which profile a deployment runs is deployment state, never a field here. It REFERENCES governed artifacts, never defines them (URF, identifier-scheme §9). ADR-007 supplies the composed-set and floor semantics preserved in `contains[].state`; ADR-015 (settings and configuration bundles) decides; its 'bundle' IS this record, one term for one concept.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -110,7 +110,7 @@
     },
     "settings": {
       "type": "object",
-      "description": "Profile-level configuration values that have no artifact to reference. VALUES ONLY — a setting whose home is an artifact belongs in that entry's `settings`.\n\nA setting is not a primitive of its own (ADR-015). A named value plus a rule about who may change it and how far IS a layer field: the layer carries the value, `limits` carries the envelope a descendant must stay inside (LAY-009), and `covers`/`from_layers`/`skip` carry who it applies to. So anything here that needs an override ceiling, a tightening rule or a scope filter belongs on a layer instead — this object is for the residue that genuinely has nowhere else to live, and it stays deliberately shapeless because giving it a shape would be building the second mechanism back."
+      "description": "Profile-level values with no artifact to reference. VALUES ONLY: a setting homed in an artifact belongs in that entry's `settings`. A setting is not a primitive (ADR-015). A value plus a rule on who may change it IS a layer field: the layer carries the value, `limits` the envelope (LAY-009), `covers`/`from_layers`/`skip` the scope. Anything needing a ceiling, tightening rule or scope filter belongs on a layer. This holds the residue, deliberately shapeless: a shape would rebuild the second mechanism."
     },
     "activation": {
       "type": "object",

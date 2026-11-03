@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/evaluation-context.schema.json",
   "title": "Evaluation context (the policy-engine interface)",
-  "description": "The transient shared space a request evaluation creates, which policies read from and write to across passes (policy-contract §7.1). This is THE INTERFACE: under ADR-065 the engine is a black box, so the context shape is one of the few things that must be exact for two implementations to interoperate. It is transient — never persisted as entity data — but the snapshot at each pass is captured in the audit record, which is the form this schema governs. Not a record: it has no uuid identity, no lifecycle, and no version of its own; it belongs to the request evaluation that created it.",
+  "description": "The transient shared space a request evaluation creates, which policies read from and write to across passes (policy-contract §7.1). THE INTERFACE: under ADR-065 the engine is a black box, so this shape must be exact for two implementations to interoperate. Never persisted as entity data; the per-pass snapshot captured in the audit record is the form this schema governs. Not a record: no uuid identity, lifecycle or version of its own; it belongs to the request evaluation that created it.",
   "type": "object",
   "additionalProperties": false,
   "required": [

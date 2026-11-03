@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/entity-view.schema.json",
   "title": "UDLM entity view — the merged read model, assembled from per-state records",
-  "description": "One entity as it flows through the four states, in one document: the latest record of each state folded together (registry/tools/entity_view.py builds it; ruling 071, four-states.md §2.7). A READ MODEL: what a dashboard, a person, or a gate asks for. It is never written — the stored form is one record per state (state-record.schema.json), each with one author, and every block here is a $ref into that schema's $defs so the view cannot disagree with the records. `ownership` is gone (one author per record leaves nothing to referee) and `drift` is gone (drift is the comparison of the latest discovered record with the latest realized one, computed, never stored). Field values inside the state snapshots are typed by the entity's class, not re-validated here.",
+  "description": "One entity across its four states: the latest record of each, folded (registry/tools/entity_view.py; ruling 071, four-states.md §2.7). A READ MODEL for dashboards, people and gates. Never written: storage is one record per state (state-record.schema.json), one author each; every block here $refs that schema's $defs, so view and records cannot disagree. No `ownership` (one author, nothing to referee) and no `drift` (latest discovered versus latest realized; computed, never stored). Snapshot field values are typed by the entity's class, not re-validated.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -53,7 +53,7 @@
     "type_ref": {
       "type": "string",
       "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/(class/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}|[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?)/[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "description": "The `$id` of the pinned spec this instance was realized against. TWO forms are legal, and which one appears says how far the request got: a served Resource Type Spec (`.../udlm/0.1/Machine.VM/1.0.0`) before placement resolves a provider, or a PROVIDER CLASS (`.../udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0`) once it has. After placement the spec that actually governs IS the Provider Class — its narrowed ranges are what the selection must satisfy — so no separate field records the placement. `resource_type` stays the PORTABLE two-segment name either way: the entity is a Machine.VM, and that does not change because of where it landed. A consumer parsing this MUST handle both forms."
+      "description": "The `$id` of the pinned spec this instance was realized against. TWO forms are legal, telling how far the request got: a served Resource Type Spec (`.../udlm/0.1/Machine.VM/1.0.0`) before placement resolves a provider, or a PROVIDER CLASS (`.../udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0`) once it has. After placement the Provider Class governs (its narrowed ranges bind the selection), so no separate field records placement. `resource_type` stays the PORTABLE two-segment name either way; a Machine.VM is one wherever it landed. Consumers parsing this MUST handle both forms."
     },
     "lifecycle_state": {
       "$ref": "common-elements.schema.json#/$defs/lifecycle_state",
@@ -90,7 +90,7 @@
     },
     "provenance": {
       "$ref": "state-record.schema.json#/$defs/provenance",
-      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; the control plane writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model. Each array is the ordered modification chain for that field: entries map 1:1 to the audit-provenance modifications[] records (origin = the first entry), with optional `sequence` for explicit ordering and `operation_type` for the write semantics.\n\nA HISTORY CLAIM ON A WORKING RECORD IS NOT CITABLE AS LINEAGE. Only sealed, chained and anchored records carry that weight (ADR-059) — this block is readable, but a consumer needing provable lineage reads the seal's `udlm_provenance` facet (`registry/facets/udlm-provenance.facet.json`), not this. `integrity` is what makes the record's own timeline verifiable on its own; this is the convenience copy of who set what."
+      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path, the ordered history of who set each field. The control plane writes it at assembly (Layer, Policy, actor) and realization (Provider); the audit chain consumes it too (G3). Entries map 1:1 to audit-provenance modifications[] records (origin = first entry); optional `sequence` orders, `operation_type` gives write semantics. NOT CITABLE AS LINEAGE: only sealed, chained, anchored records are (ADR-059). Provable lineage is the seal's `udlm_provenance` facet (`registry/facets/udlm-provenance.facet.json`); this is the convenience copy."
     },
     "dependencies": {
       "$ref": "state-record.schema.json#/$defs/dependencies",
@@ -102,7 +102,7 @@
     },
     "expected_observation": {
       "$ref": "state-record.schema.json#/$defs/expected_observation",
-      "description": "The DECLARED observation expectation this entity is judged against (ADR-048 — staleness as declared expectation). Staleness verdicts — current | stale_expected | stale_deviant — are DERIVED by comparing observation age (states.discovered.at / drift.checked_at) with this declaration; no verdict is ever stored. Where absent, the OBS-005 profile TTL (docs/spec/foundations/service-dependencies.md) applies as the fallback. When the expectation is composed at a coarser scope (e.g. a group-wide offline window resolved per ADR-015), this block carries the RESOLVED value — its provenance rides the standard per-field provenance record, never a hand-typed copy."
+      "description": "The DECLARED observation expectation this entity is judged against (ADR-048: staleness as declared expectation). Staleness verdicts — current | stale_expected | stale_deviant — are DERIVED by comparing observation age (states.discovered.at / drift.checked_at) with this declaration; none is stored. Absent, the OBS-005 profile TTL (docs/spec/foundations/service-dependencies.md) is the fallback. When composed at a coarser scope (a group-wide offline window resolved per ADR-015), this block carries the RESOLVED value; its provenance rides the standard per-field provenance record, never a hand-typed copy."
     },
     "sovereignty": {
       "$ref": "state-record.schema.json#/$defs/sovereignty",
@@ -118,7 +118,7 @@
     },
     "adopted_standards": {
       "$ref": "state-record.schema.json#/$defs/adopted_standards",
-      "description": "ADOPTED-STANDARD BINDINGS (T5): for each external standard adopted by this entity's type, the realized record of the control plane's version negotiation — the requested range, the provider's chosen version, the negotiated effective version, and whether the control plane translated between versions (ADS-003/004/008). UDLM carries this record; the control plane (Policy) produces it and writes it to the audit log. The external data itself is NOT carried here — it is referenced from its Information Provider via the identity join."
+      "description": "ADOPTED-STANDARD BINDINGS (T5): for each external standard adopted by this entity's type, the realized record of the control plane's version negotiation. It holds the requested range, the provider's chosen version, the negotiated effective version, and whether the control plane translated between versions (ADS-003/004/008). UDLM carries this record; the control plane (Policy) produces it and writes it to the audit log. The external data itself is NOT carried here; it is referenced from its Information Provider via the identity join."
     },
     "portability": {
       "$ref": "state-record.schema.json#/$defs/portability",
@@ -134,7 +134,7 @@
     },
     "correlation_ids": {
       "$ref": "state-record.schema.json#/$defs/correlation_ids",
-      "description": "Stable natural keys independent of any observer, for entity resolution across discovery sources (dcm ADR-017 Decision C): a new observation matching an existing entity by these keys MERGES into that entity's uuid — one real resource, one entity uuid, never a duplicate. Every discovery source MUST emit them."
+      "description": "Stable natural keys independent of any observer, for entity resolution across discovery sources (dcm ADR-017 Decision C). A new observation matching an existing entity by these keys MERGES into that entity's uuid: one real resource, one entity uuid, never a duplicate. Every discovery source MUST emit them."
     },
     "process": {
       "$ref": "state-record.schema.json#/$defs/process",
@@ -146,11 +146,11 @@
     },
     "integrity": {
       "$ref": "state-record.schema.json#/$defs/integrity",
-      "description": "THE RESOURCE CHAIN — the record's own version timeline, made tamper-evident in the record (ADR-059 Decision 2). Every new version appends, whichever pathway caused it, so a Discovered write is as tamper-evident as an Intent one.\n\nWHY IT IS ON THE RECORD AND NOT ONLY IN THE LEDGER. Records are unbounded in lifetime; stores are not. A realized entity may run for a decade while audit is retained for years and observability for weeks, so an operation that reaches into the ledger to verify itself works until the day it silently does not. The chain answers `has this record been altered` without any other system — which is ADR-059's record-content test applied to integrity itself.\n\nONE-WAY BRIDGE. The ledger's seal embeds the working copy and this head; the record never references the ledger. That direction is deliberate: operations must never hang on compliance storage being reachable.\n\nCLAIMS DISCIPLINE. This is a STATE claim — `the bytes of this version, and what preceded it`. It is not provenance, lineage or history, and presenting it under such a heading is a defect (ADR-059 Decision 1). Only sealed, chained, anchored ledger records make history claims."
+      "description": "THE RESOURCE CHAIN: the record's own version timeline, tamper-evident in the record (ADR-059 Decision 2). Every version appends, whatever the pathway (Discovered as much as Intent). Records outlive stores; the chain verifies the record alone. ONE-WAY BRIDGE: the seal embeds this head, the record never references the ledger, so operations never depend on compliance storage. A STATE claim (`the bytes of this version, and what preceded it`), never provenance, lineage or history (a defect, ADR-059 Decision 1). Only sealed, chained, anchored ledger records make history claims."
     },
     "provider_preference": {
       "$ref": "state-record.schema.json#/$defs/provider_preference",
-      "description": "A named provider this request PREFERS — the pin (ADR-050).\n\nIT DECIDES WHICH ELIGIBLE PROVIDER, NEVER WHETHER AN INELIGIBLE ONE IS REACHED. The `effective_capabilities` ceiling applies at the dispatch boundary on every path (`PRV-009`, `PRV-011`), so a pin naming a provider that has not been admitted for what the request needs is refused with `placement.capability_mismatch` BEFORE dispatch, carrying the required-versus-declared comparison.\n\nThe pin is absolute over the CHOICE and not over CAPABILITY. That is what keeps one sentence true everywhere — the ceiling always applies — instead of true-with-an-exception, and an exception is the thing a reader cannot see from the rule.\n\nA DELIBERATE BYPASS IS POLICY'S, NOT THE MODEL'S (ADR-008 peer test). Whether an operator may dispatch outside a declared capability is an operational choice a conformant implementation is entitled to make differently, so UDLM fixes only the invariant such a bypass would be an exception TO. A field here that could waive the ceiling would move that choice into the substrate and make every implementation inherit one estate's risk appetite."
+      "description": "A named provider this request PREFERS: the pin (ADR-050). IT DECIDES WHICH ELIGIBLE PROVIDER, NEVER WHETHER AN INELIGIBLE ONE IS REACHED. The `effective_capabilities` ceiling applies at the dispatch boundary on every path (`PRV-009`, `PRV-011`): a pin naming an unadmitted provider is refused BEFORE dispatch with `placement.capability_mismatch` (required versus declared). Absolute over the CHOICE, never over CAPABILITY. A DELIBERATE BYPASS IS POLICY'S, NOT THE MODEL'S (ADR-008 peer test): UDLM fixes only the invariant and offers no waiver field."
     },
     "entity_uuid": {
       "$ref": "common-elements.schema.json#/$defs/uuid_v4",
