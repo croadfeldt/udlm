@@ -553,7 +553,6 @@ RDB-001 regeneration-manifest.schema.json:/:ddfbfceee1
 RDB-001 regeneration-manifest.schema.json:/properties/affected_artifacts/items/properties/disposition:7ab5aca0aa
 RDB-001 regeneration-manifest.schema.json:/properties/classification/properties/compatibility:3c99fb51d9
 RDB-001 regeneration-manifest.schema.json:/properties/consumer_debt/items/properties/debt:c042c564ed
-RDB-001 register:137:5b4c803b16
 RDB-001 registration-verdict.schema.json:/:191f7ff576
 RDB-001 resource-type-spec.schema.json:/$defs/adopted_standard_ref/properties/license_compatibility:e75c020df2
 RDB-001 state-record.schema.json:/$defs/adopted_standards:b2c8c88f16
@@ -568,7 +567,6 @@ RDB-001 state-record.schema.json:/:3304ce59af
 RDB-001 state-record.schema.json:/:6cdc853696
 RDB-001 vocabulary-term.schema.json:/:c3285a1d5c
 RDB-001 vocabulary-term.schema.json:/properties/scope:203f66cd5d
-RDB-002 register:137
 RDB-003 accreditation.schema.json:/$defs/capability_scope_entry
 RDB-003 audit-record.schema.json:/properties/action
 RDB-003 audit-record.schema.json:/properties/sequence_uuid
