@@ -44,6 +44,11 @@ DENY = {
 # pass. Match 10.0.x.y and 10.10.x.y (the estate's ranges); docs use RFC 5737 ranges instead.
 ESTATE_IP = re.compile(r"\b10\.(?:0|10)\.\d{1,3}\.\d{1,3}\b")
 
+# The one file that must name people: a maintainer's name is public identity, not an estate host
+# (row 146, the CNCF MAINTAINERS file). Only the hostname pass skips it; the IP pass still runs.
+PUBLIC_IDENTITY = {"MAINTAINERS.md"}
+
+
 def main() -> int:
     files = subprocess.run(["git", "ls-files"], capture_output=True, text=True).stdout.splitlines()
     hits = 0
@@ -53,7 +58,7 @@ def main() -> int:
         except (IsADirectoryError, FileNotFoundError):
             continue
         for i, line in enumerate(text.splitlines(), 1):
-            for tok in re.findall(r"[a-z0-9]+", line.lower()):
+            for tok in re.findall(r"[a-z0-9]+", line.lower()) if f not in PUBLIC_IDENTITY else ():
                 if hashlib.sha256(tok.encode()).hexdigest() in DENY:
                     print(f"FAIL [PII-001] {f}:{i}: contains a denylisted estate token (redacted)")
                     hits += 1
