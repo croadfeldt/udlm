@@ -9,7 +9,7 @@
       "uuid": "3f8b1d40-72c6-4a19-9e05-8d24b1706fa3",
       "conforms_to": "udlm/0.1",
       "handle": "lab/storage/zfs-host-a",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "display_name": "ZFS host A",
       "description": "Realizes ZFS volumes and storage pools on one lab host, and reports the network it sits on.",
       "capabilities": [
@@ -17,6 +17,58 @@
         "realize_resources/Machine",
         "serve_data/Network"
       ],
+      "capability_profiles": {
+        "realize_resources": {
+          "resource_types": [
+            {
+              "fqn": "StoragePool",
+              "version": "0.7.2"
+            },
+            {
+              "fqn": "Volume.ZFS",
+              "version": "0.8.3"
+            }
+          ],
+          "two_phase_realization": {
+            "hold_supported": true,
+            "min_hold_ttl": "PT30S",
+            "max_hold_ttl": "PT30M"
+          },
+          "cancellation": {
+            "supported": true,
+            "during": [
+              "dispatched",
+              "provisioning"
+            ]
+          },
+          "discovery": {
+            "supported": true,
+            "method": "api_query"
+          },
+          "dependency_introspection": {
+            "supported": true,
+            "methods": [
+              "api_query",
+              "inferred_from_config"
+            ],
+            "response_sla": "PT30S",
+            "max_edges_per_response": 500
+          }
+        },
+        "serve_data": {
+          "data_domains": [
+            {
+              "domain": "network",
+              "data_types": [
+                "vlan",
+                "address_assignment"
+              ]
+            }
+          ],
+          "data_freshness_sla": "PT15M",
+          "write_back_supported": false
+        }
+      },
       "sovereignty_declaration": {
         "operating_jurisdictions": [
           "US"
@@ -164,6 +216,9 @@
         "$ref": "#/$defs/capability"
       },
       "description": "The declared capability set (ADR-PROV-002). Each entry is a verb, or a verb and domain, from provider-capability.yaml. Declaring grants nothing: every entry starts pending in the verdict (ADR-PROV-003)."
+    },
+    "capability_profiles": {
+      "$ref": "#/$defs/capability_profiles"
     },
     "sovereignty_declaration": {
       "$ref": "#/$defs/sovereignty_declaration"
@@ -651,6 +706,662 @@
         }
       },
       "description": "The telemetry descriptor (§7). The control plane reads it to learn which signals exist and where to configure delivery. It does not probe or guess."
+    },
+    "duration": {
+      "type": "string",
+      "pattern": "^P(?!$)([0-9]+Y)?([0-9]+M)?([0-9]+W)?([0-9]+D)?(T(?=[0-9])([0-9]+H)?([0-9]+M)?([0-9]+S)?)?$",
+      "description": "An ISO 8601 duration."
+    },
+    "class_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fqn",
+        "version"
+      ],
+      "properties": {
+        "fqn": {
+          "type": "string",
+          "description": "The class the provider binds to: a Base, a Type, or a Provider Class where the offering carries provider-specific data (CLS-005)."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        }
+      },
+      "description": "A projection of a class the provider binds to. The class is authored; this entry is rendered from it (ADR-038 addendum)."
+    },
+    "realize_resources_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resource_types",
+        "two_phase_realization"
+      ],
+      "properties": {
+        "resource_types": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/class_binding"
+          },
+          "description": "The classes this provider realizes. Binding at a tier accepts orders at every tier above it (CLS-002 (c))."
+        },
+        "two_phase_realization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hold_supported"
+          ],
+          "properties": {
+            "hold_supported": {
+              "type": "boolean",
+              "description": "False means reserve only validates and returns facts; it holds nothing."
+            },
+            "min_hold_ttl": {
+              "$ref": "#/$defs/duration"
+            },
+            "max_hold_ttl": {
+              "$ref": "#/$defs/duration"
+            }
+          },
+          "description": "Reserve, commit and release (§6a), a base obligation of this capability. A requested hold is clamped to the declared range."
+        },
+        "cancellation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "supported"
+          ],
+          "properties": {
+            "supported": {
+              "type": "boolean"
+            },
+            "during": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The states in which a cancellation is accepted."
+            },
+            "endpoint": {
+              "type": "string",
+              "description": "Where the control plane sends a cancellation."
+            },
+            "response_time": {
+              "$ref": "#/$defs/duration",
+              "description": "How soon the provider answers a cancellation."
+            },
+            "partial_rollback_possible": {
+              "type": "boolean",
+              "description": "True if a cancellation can leave partial resources, so it may end in CANCELLATION_FAILED."
+            }
+          },
+          "description": "Cancellation support (operational-models.md §3.2)."
+        },
+        "discovery": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "supported"
+          ],
+          "properties": {
+            "supported": {
+              "type": "boolean"
+            },
+            "method": {
+              "enum": [
+                "api_query",
+                "passive_event",
+                "hybrid"
+              ]
+            },
+            "endpoint": {
+              "type": "string",
+              "description": "Where the control plane asks for discovered state."
+            },
+            "max_entities_per_batch": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "latency_p95": {
+              "$ref": "#/$defs/duration",
+              "description": "How long discovery typically takes, at the 95th percentile."
+            },
+            "supports_incremental": {
+              "type": "boolean",
+              "description": "True if the provider can return only entities changed since the last discovery."
+            }
+          },
+          "description": "Discovery support (operational-models.md §4)."
+        },
+        "dependency_introspection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "supported"
+          ],
+          "properties": {
+            "supported": {
+              "type": "boolean"
+            },
+            "methods": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "api_query",
+                  "passive_event",
+                  "inferred_from_config"
+                ]
+              }
+            },
+            "response_sla": {
+              "$ref": "#/$defs/duration",
+              "description": "No longer than the discovery endpoint's SLA (OBS-004)."
+            },
+            "max_edges_per_response": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "description": "Observed dependency edges for an entity the provider hosts (service-dependencies.md §3a). Observational only; never consulted for orchestration."
+        },
+        "naturalization": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "target_format": {
+              "type": "string",
+              "description": "The native format the provider translates to, such as a hypervisor API. A free string: the spec names no product."
+            }
+          }
+        },
+        "instance_size_catalog": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "class",
+              "resources"
+            ],
+            "properties": {
+              "class": {
+                "type": "string",
+                "description": "A size class from the portable vocabulary (ADR-014)."
+              },
+              "resources": {
+                "type": "object",
+                "description": "What the class resolves to on this provider, in the class's raw resource fields."
+              }
+            }
+          },
+          "description": "The provider's size classes and what each resolves to. Declared, not queried live, so placement can compare many providers at once (§8.1a)."
+        },
+        "version_channels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "engine",
+              "channel",
+              "resolves_to"
+            ],
+            "properties": {
+              "engine": {
+                "type": "string"
+              },
+              "channel": {
+                "type": "string",
+                "description": "An abstract version, such as latest or lts."
+              },
+              "resolves_to": {
+                "type": "string",
+                "description": "The concrete version the channel means on this provider now."
+              },
+              "supported": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "description": "How the provider resolves an abstract version to a concrete one. The realized record carries the concrete value, for audit (§8.1a)."
+        }
+      },
+      "description": "The realize_resources profile (§8.1)."
+    },
+    "serve_data_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "data_domains"
+      ],
+      "properties": {
+        "data_domains": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "domain"
+            ],
+            "properties": {
+              "domain": {
+                "type": "string"
+              },
+              "data_types": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "description": "What data the provider serves. Its authority level is not declared here; the control plane assigns it."
+        },
+        "max_queries_per_second": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "data_freshness_sla": {
+          "$ref": "#/$defs/duration"
+        },
+        "write_back_supported": {
+          "type": "boolean"
+        }
+      },
+      "description": "The serve_data profile (§8.2)."
+    },
+    "composite_service_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "execution": {
+          "enum": [
+            "dependency_ordered"
+          ]
+        },
+        "max_concurrent_implementations": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_constituent_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_nesting_depth": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "partial_delivery_supported": {
+          "type": "boolean"
+        },
+        "compensation_supported": {
+          "type": "boolean"
+        }
+      },
+      "description": "The limits a provider declares for composite services it fulfils (§8.3). The composite itself is a class with constituents; its shape is not restated here."
+    },
+    "authenticate_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authentication_modes"
+      ],
+      "properties": {
+        "authentication_modes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "oidc",
+              "ldap",
+              "saml",
+              "mtls",
+              "hardware_token"
+            ]
+          }
+        },
+        "mfa_methods": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "totp",
+              "push_notification",
+              "hardware_token"
+            ]
+          }
+        },
+        "rbac_model": {
+          "enum": [
+            "flat",
+            "hierarchical",
+            "abac"
+          ]
+        },
+        "step_up_supported": {
+          "type": "boolean"
+        },
+        "token_lifetime": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "default": {
+              "$ref": "#/$defs/duration"
+            },
+            "max": {
+              "$ref": "#/$defs/duration"
+            }
+          }
+        },
+        "federation_capable": {
+          "type": "boolean"
+        },
+        "supports_session_revocation": {
+          "type": "boolean"
+        }
+      },
+      "description": "The authenticate profile (§8.4). Authentication is a capability any provider may declare, not a provider type."
+    },
+    "federate_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tunnel_type"
+      ],
+      "properties": {
+        "tunnel_type": {
+          "enum": [
+            "peer",
+            "parent_child",
+            "hub_spoke"
+          ]
+        },
+        "inbound_authorization": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "operation"
+            ],
+            "properties": {
+              "operation": {
+                "type": "string"
+              },
+              "resource_types": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "description": "What this peer asks to be allowed to request. Advisory: the local side of the tunnel sets the real scope."
+        },
+        "outbound_authorization": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "operation"
+            ],
+            "properties": {
+              "operation": {
+                "type": "string"
+              },
+              "resource_types": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "description": "What this peer intends to request of others. Advisory, like inbound."
+        },
+        "max_classification": {
+          "type": "string",
+          "description": "The most sensitive data the peer channel may carry."
+        }
+      },
+      "description": "The federate profile (§8.5): another control plane joining as a peer. Its accreditations are in the registration's accreditations list, and the verdict computes its trust."
+    },
+    "execute_workflows_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supported_definitions"
+      ],
+      "properties": {
+        "supported_definitions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "The Process-family classes the provider binds to, rendered from the classes (CLS-005)."
+        },
+        "max_concurrent_executions": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timeout_default": {
+          "$ref": "#/$defs/duration"
+        },
+        "idempotent": {
+          "type": "boolean"
+        },
+        "cancellation_supported": {
+          "type": "boolean"
+        },
+        "engine": {
+          "type": "string",
+          "description": "The workflow engine behind the provider. A free string: the spec names no product."
+        }
+      },
+      "description": "The execute_workflows profile (§8.6)."
+    },
+    "capability_profiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "realize_resources": {
+          "$ref": "#/$defs/realize_resources_profile"
+        },
+        "serve_data": {
+          "$ref": "#/$defs/serve_data_profile"
+        },
+        "composite_service": {
+          "$ref": "#/$defs/composite_service_profile"
+        },
+        "authenticate": {
+          "$ref": "#/$defs/authenticate_profile"
+        },
+        "federate": {
+          "$ref": "#/$defs/federate_profile"
+        },
+        "execute_workflows": {
+          "$ref": "#/$defs/execute_workflows_profile"
+        }
+      },
+      "description": "The detail behind declared capabilities, one profile per verb (§8). A profile needs its verb among the declared capabilities; validate.py checks it. composite_service needs realize_resources."
+    },
+    "resource_advertisement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category"
+      ],
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/capability"
+        },
+        "inventory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "resource_ref",
+              "resource_type"
+            ],
+            "properties": {
+              "resource_ref": {
+                "type": "string"
+              },
+              "resource_type": {
+                "type": "string"
+              },
+              "selectable": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "capacity": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "resource_ref",
+              "dimensions"
+            ],
+            "properties": {
+              "resource_ref": {
+                "type": "string"
+              },
+              "dimensions": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "total": {},
+                    "free": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "eligibility": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "resource_ref"
+            ],
+            "properties": {
+              "resource_ref": {
+                "type": "string"
+              },
+              "zone": {
+                "type": "string"
+              },
+              "requires_capability": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "description": "What a provider offers, how much is free and its declared constraints (§8.1a). Returned by the capabilities endpoint, not part of the registration. Availability is authoritative; eligibility is policy."
+    },
+    "matched_capabilities_response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "matched_capabilities",
+        "unmatched_needs"
+      ],
+      "properties": {
+        "matched_capabilities": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "streams",
+              "subscribe_endpoint",
+              "auto_subscribed"
+            ],
+            "properties": {
+              "streams": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "subscribe_endpoint": {
+                "type": "string"
+              },
+              "auto_subscribed": {
+                "const": false,
+                "description": "Always false: the provider opts in (DISC-004)."
+              },
+              "action_required": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "unmatched_needs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "The implementation's answer to a registration's needs (§10.2a). It is the implementation's message, not the provider's."
+    },
+    "capability_registry_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "tier",
+        "default_approval_method"
+      ],
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/capability"
+        },
+        "tier": {
+          "enum": [
+            "core",
+            "verified_community",
+            "organization"
+          ]
+        },
+        "default_approval_method": {
+          "enum": [
+            "auto",
+            "reviewed",
+            "verified",
+            "authorized"
+          ]
+        },
+        "enabled_in_profiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The profiles that accept registrations for this category."
+        }
+      },
+      "description": "A deployment's entry for one capability category it accepts (§9). The verb and domain are the two halves of the category, so they are not stored apart."
     }
   }
 }

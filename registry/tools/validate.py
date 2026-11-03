@@ -796,8 +796,16 @@ def check_provider_registration(doc):
     the shape of a capability name; only the vocabulary can say it exists. A declaration of a capability
     nobody defined could never be admitted, and would read as if it could."""
     known = _capability_terms()
-    return [f"capabilities: {c!r} is not a term in provider-capability.yaml"
-            for c in doc.get("capabilities", []) if known and c not in known]
+    errors = [f"capabilities: {c!r} is not a term in provider-capability.yaml"
+              for c in doc.get("capabilities", []) if known and c not in known]
+    # A profile is the detail behind a declared capability. A profile for a verb the provider never
+    # declared describes something it has not asked to do, and could never be admitted.
+    verbs = {c.split("/")[0] for c in doc.get("capabilities", [])}
+    for verb in (doc.get("capability_profiles") or {}):
+        need = "realize_resources" if verb == "composite_service" else verb
+        if need not in verbs:
+            errors.append(f"capability_profiles.{verb}: the provider declares no {need} capability")
+    return errors
 
 
 def check_data_references(doc):
