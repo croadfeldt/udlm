@@ -3,8 +3,8 @@
 **What this settles:** how the UDLM data model *represents* dependencies, and how it supports
 expressing them several ways at the implementor's chosen granularity. This is the data-model side;
 how a consumer **resolves** the authored model into one effective graph (and how dependencies get
-*inserted* — discovered, derived, provider-reported) is a DCM concern (see the DCM architecture:
-dependency resolution).
+*inserted* — discovered, derived, provider-reported) is the control plane's concern. DCM is the example
+implementation here; see its dependency-resolution architecture.
 
 ## The primitive: typed dependency edges
 
@@ -40,9 +40,9 @@ difference is *how many* edges an implementor authors and *where* they sit.
 2. **Component chain** — where a dependency routes through a *managed* component, model it on the
    component, not the whole resource. Canonically **network fabric**: a `NetworkInterface`
    `contained_by` a host `connects_to` a switch port, and a consumer follows `host → NIC → port`
-   transitively. This applies only to components DCM actually manages/configures (DCM ADR-013 — DCM is not
-   a hardware system-of-record); inert inventory like a PSU is *not* modeled, so **power** is a direct
-   host dependency instead — see pattern 1 / the multi-edge redundancy case below.
+   transitively. This applies only to components the control plane actually manages or configures (DCM
+   ADR-013 — DCM is not a hardware system-of-record). Inert inventory like a PSU is *not* modeled, so
+   **power** is a direct host dependency instead — see pattern 1, the multi-edge redundancy case.
 3. **Bundling (via a node)** — to share a set of dependencies across resources, declare them on a
    node and have each resource `depends_on` that node. The dependents inherit the set as **secondary
    dependencies** through the graph's transitivity — no expansion, no special type. Best for shared

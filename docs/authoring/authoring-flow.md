@@ -5,10 +5,10 @@ model — for someone doing it the first time. Read this before the per-kind HOW
 sit inside. The one promise: **follow the path and the gates pass; skip a step and a gate names it.**
 
 **In one breath.** You start not by writing a schema but by checking whether the model *already* covers
-your need. If it doesn't, you author the artifact, give it a worked example that validates against its
-own schema, exercise it with 2–3 use cases (a success, a refusal, and a compose), place it in a flow, and
-declare that story in a `coverage:` block. Then you run the gates — the same ones CI runs — and fix what
-they name. Nothing merges without a person; the gates make the person's job about judgment, not
+your need. If it doesn't, you author the artifact and give it a worked example that validates against its
+own schema. You exercise it with 2–3 use cases (a success, a refusal, and a compose) and place it in a
+flow. You declare that story in a `coverage:` block. Then you run the gates — the same ones CI runs — and
+fix what they name. Nothing merges without a person; the gates make the person's job about judgment, not
 bookkeeping.
 
 ## The flow

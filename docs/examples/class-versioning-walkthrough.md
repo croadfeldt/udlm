@@ -12,10 +12,10 @@ every compute descendant — VM, Container, BareMetalHost — includes at Base s
 ## The worked scenario: one element, three changes
 
 **Change 1 — additive (UC-001).** The maintainer adds an optional `hugepages` sub-property to
-the `memory` element. One change set carries: the Base Class edit, every regenerated Type and
-Provider Class, every regenerated flat spec — each keeping its identity uuid, taking a
-minor/patch bump, and landing a new digest row in the pin manifest (ADR-051) —
-and the regeneration manifest. The fuzz, composition, and compat gates re-prove every
+the `memory` element. One change set carries the Base Class edit, every regenerated Type and
+Provider Class, every regenerated flat spec, and the regeneration manifest. Each regenerated
+artifact keeps its identity uuid, takes a minor/patch bump, and lands a new digest row in the pin
+manifest (ADR-051). The fuzz, composition, and compat gates re-prove every
 descendant in the same commit; no hand-written test exists anywhere in this flow. A pinned
 downstream estate sees nothing: its pins resolve the old revisions until it chooses otherwise.
 
@@ -59,18 +59,18 @@ PIN-BEHIND (legal): Machine pinned 0.4.1 (sha256:2f6c1a9e…); registry current 
 ```
 
 The list re-opens whenever the estate's registry ref advances. Two things are refused, typed
-distinctly (UC-004, UC-006): a *registry-internal* class declaring a fixed-version parent
-(intra-registry references are by handle; the registry ref is the only internal pin), and an
+distinctly (UC-004, UC-006). One is a *registry-internal* class declaring a fixed-version parent
+(intra-registry references are by handle; the registry ref is the only internal pin). The other is an
 estate pin naming a revision the consumed registry ref does not contain.
 
 **Does an upstream class change affect my pinned resource?** No — and not because the chain is
-separately locked, but because your pinned artifact *contains* its chain: the flat spec was
+separately locked, but because your pinned artifact *contains* its chain. The flat spec was
 compiled from its Base/Type/Provider classes at a specific registry state, and that content is
-baked in at compilation, not looked up live. It also *declares* that chain: the compilation-provenance
+baked in at compilation, not looked up live. It also *declares* that chain. The compilation-provenance
 block (ADR-045 §7) names every input revision — classes, layers, schemas, generator, each by
-handle, version, and digest — and for
-realized instances, the provider definition revision that realized them; verified by faithful
-recompilation, so the claim is checkable, live and historically. Upstream changes publish *new*
+handle, version, and digest — and, for realized instances, the provider definition revision that
+realized them. Faithful recompilation verifies it, so the claim is checkable, live and historically.
+Upstream changes publish *new*
 revisions (a published (identity, version) is immutable and its digest row is append-only —
 ADR-051); yours is untouched by construction. The only thing that
 changes on your side is the debt list — the new revision appears as visible lag until *your*
