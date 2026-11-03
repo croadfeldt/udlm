@@ -2,9 +2,21 @@
 # Pre-post signoff — run before opening any PR or publishing content.
 # Runs every automated gate, then prints the human judgment checklist.
 # Exit 0 only if all HARD gates pass. Procedure: docs/guides/signoff.md.
+#
+# Usage: scripts/signoff.sh [base-ref] [--only REGEX]
+#   --only REGEX   run only the gates whose name or command matches (case-insensitive). A subset is
+#                  a quick check while you work; it is not signoff. Run the full set before you post.
 set -uo pipefail
 cd "$(git rev-parse --show-toplevel)" || exit 2
-base="${1:-origin/main}"
+base="origin/main"; only=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --only) only="${2:-}"; shift 2 ;;
+    --only=*) only="${1#--only=}"; shift ;;
+    -h|--help) sed -n '2,10p' "$0"; exit 0 ;;
+    *) base="$1"; shift ;;
+  esac
+done
 fail=0; warn=0
 run() { # run "name" hard|soft cmd...
   local name="$1" kind="$2"; shift 2
@@ -40,12 +52,24 @@ if [ "$n_steps" -lt 20 ]; then
   echo "  A short list means the workflow moved or the parser broke. Passing here would be vacuous."
   exit 2
 fi
+if [ -n "$only" ]; then
+  all_steps="$steps"
+  steps=$(printf '%s\n' "$all_steps" | grep -Ei -- "$only")
+  n_only=$(printf '%s\n' "$steps" | grep -c .)
+  echo "  --only '$only': running $n_only of $n_steps gates (a subset is not signoff)"
+  [ "$n_only" -eq 0 ] && { echo "  no gate matches; names come from: python3 scripts/ci-steps.py"; exit 2; }
+fi
 while IFS=$'\t' read -r name kind cmd; do
   [ -z "$cmd" ] && continue
   cmd=${cmd//origin\/main/$base}          # honour a non-default base ref
   run "$name" "$kind" bash -c "$cmd"
 done <<< "$steps"
 
+if [ -n "$only" ]; then
+  echo ""
+  if [ "$fail" -gt 0 ]; then printf '\033[31m%d of the selected gate(s) failed.\033[0m\n' "$fail"; exit 1; fi
+  printf '\033[32mSelected gates PASS.\033[0m Run the full set (no --only) before you post.\n'; exit 0
+fi
 echo ""
 echo "== Judgment checklist (self-check — not automatable) =="
 cat <<'EOF'

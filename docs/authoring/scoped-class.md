@@ -186,4 +186,18 @@ A pass looks like:
   the committed generated file is stale — rerun **without** `--check` to rewrite it, then commit.
 - **spec_coverage.py --check** — your Class shows `✓ UC+example+flow`, `… 0 dangling`, exit 0.
 
-`./scripts/signoff.sh` runs these with the full gate set before you open a PR.
+A class change moves five derived files: the served specs, `registry/TYPE-CATALOG.md`,
+`registry/pin-manifest.json`, the coverage backlog and the model-health report. Each has a `--check`
+step in CI that fails while it is stale. Regenerate all of them at once, then commit what moved:
+
+```
+./scripts/regen.sh
+```
+
+While you work, run just the class gates:
+
+```
+./scripts/signoff.sh --only 'valid-by-construction|Liskov|GEN-001|TYPE-CATALOG|pin manifest|COV-001|model health'
+```
+
+`./scripts/signoff.sh` with no `--only` runs the full gate set; do that before you open a PR.

@@ -6,15 +6,17 @@ data that any other conformant system can read, interpret, and exchange.
 
 ## Start here
 
-1. **[`docs/guides/quickstart.md`](docs/guides/quickstart.md)** — one VM followed through its four
-   records, from the request to what discovery found. Ten minutes; every step names the file to open.
-2. **[`docs/spec/foundations/class-tiers.md`](docs/spec/foundations/class-tiers.md)** — the class system:
+1. **[`docs/start-here/`](docs/start-here/README.md)** — the slow walk: one short step at a time,
+   each ending with a command that proves it worked. Start here if the model is new to you.
+2. **[`docs/guides/quickstart.md`](docs/guides/quickstart.md)** — the fast version: one VM followed
+   through its four records in ten minutes; every step names the file to open.
+3. **[`docs/spec/foundations/class-tiers.md`](docs/spec/foundations/class-tiers.md)** — the class system:
    Base, Type and Provider Class, and how where an element sits decides how portable it is.
-3. **[`docs/spec/foundations/four-states.md`](docs/spec/foundations/four-states.md)** — the records:
+4. **[`docs/spec/foundations/four-states.md`](docs/spec/foundations/four-states.md)** — the records:
    intent, requested, realized, discovered.
-4. **[`docs/guides/working-with-udlm.md`](docs/guides/working-with-udlm.md)** — then go by role: author,
+5. **[`docs/guides/working-with-udlm.md`](docs/guides/working-with-udlm.md)** — then go by role: author,
    reviewer, system builder, contributor.
-5. **[`docs/guides/co-engineering.md`](docs/guides/co-engineering.md)** — joining from another
+6. **[`docs/guides/co-engineering.md`](docs/guides/co-engineering.md)** — joining from another
    organization: what to read, how to check your own records, how to change the spec, how decisions
    are made.
 
