@@ -537,7 +537,7 @@ Each provider shares the base contract (Section 1–7) and adds a typed capabili
 - The former **kinds** are capability **verbs**: Service/Resource = `realize_resources`, Information = `serve_data`, Process = `execute_workflows`, Peer the control plane = `federate`. (A Composite Service is *not* a kind — it is an ordinary `realize_resources` provider registering a multi-resource definition, §8.3.)
 - The former **yields** are simply more capabilities: **authentication** = `authenticate`; **credential issuance**, **notification** (`Notification.*`), **ITSM** (`ITSM.*`), and **telemetry** (§7) are `realize_resources`/`serve_data` scoped to those domains. Any provider that declares the capability exercises it — there is no separate "kind of provider."
 
-A provider declares its capabilities once; the **capability categories** (verb × domain; §9) it occupies follow, non-exclusive, and are what policy targets. The convenience-labeled blocks below (`service_provider_capabilities`, `information_provider_capabilities`, …) are per-capability **profile extensions** — shorthand for a capability + its domain; the canonical identity is the declared capability set, not the block name.
+A provider declares its capabilities once; the **capability categories** (verb × domain; §9) it occupies follow, non-exclusive, and are what policy targets. The profiles below sit under `capability_profiles` in the registration, one per verb. A profile is the detail behind a declared capability, and needs that capability declared.
 
 ### 8.1 `realize_resources` — Service / Resource profile
 
@@ -558,49 +558,29 @@ GET  {capabilities_endpoint}                  # return available options (networ
 
 **Capability declaration extension:**
 ```yaml
-# illustrative: shape of the record, not schema-checked
-service_provider_capabilities:
-  resource_types:                       # PROJECTION of the Resource-family classes the provider
-                                        # binds to — a Base or a Type as listed, a Provider Class
-                                        # only where the offering carries provider_specific data
-                                        # (CLS-005); the class is authored, this list is rendered
-                                        # (ADR-038 addendum). Binding at a tier accepts orders at
-                                        # every tier above it (CLS-002 (c)).
-    - fqn: Machine.VM
-      spec_version: "2.1.0"
-      catalog_item_uuid: <uuid>
-  two_phase_realization:                # reserve/commit/release — base MUST for realize_resources (§6a)
-    hold_supported: true                # false = validate-only reserve (validates + returns facts, holds nothing)
-    min_hold_ttl: PT30S                 # shortest TTL this provider will grant on reserve
-    max_hold_ttl: PT30M                 # longest TTL this provider will grant; the control plane's requested_ttl is clamped to [min,max]
-  cancellation:
-    supports_cancellation: true
-    cancellation_supported_during: [DISPATCHED, PROVISIONING]
-  discovery:
-    supports_discovery: true
-    discovery_method: api_query | passive_event | hybrid
-  dependency_introspection:
-    supported: true | false
-    # If supported: provider returns the observed dependency edges for any
-    # entity it hosts when the substrate calls {dependency_introspection_endpoint}.
-    # Observation is post-implementation and observational only — it is NOT
-    # consulted for orchestration. See docs/spec/foundations/service-dependencies.md §3a
-    # and policies OBS-001..OBS-005 for the contract.
-    methods:
-      - api_query             # actively query the underlying platform
-      - passive_event         # surface dependencies that emit lifecycle events
-      - inferred_from_config  # derived from provider-held configuration
-    response_sla: PT30S       # MUST be ≤ discovery endpoint SLA (OBS-004)
-    max_edges_per_response: 500
-  naturalization:
-    target_format: openstack_nova | vmware_vsphere | custom
-  # cost_metadata is an UNVERIFIED HINT only. The external cost engine is authoritative for placement
-  # scoring and cost attribution (docs/spec/contracts/cost-metering-linkage.md — "the engine computes; it never
-  # decides"). A provider's self-declared opex MUST NOT be the authoritative input to placement
-  # tie-breaking, or a provider could under-declare to win placement.
-  cost_metadata:
-    opex_per_unit_per_hour: 0.28          # advisory hint; not authoritative
-    currency: USD
+# schema: provider-registration.schema.json
+capability_profiles:
+  realize_resources:
+    resource_types:                       # a PROJECTION of the classes the provider binds to: a Base or a
+      - fqn: Machine.VM                   # Type, a Provider Class only for provider-specific data (CLS-005).
+        version: "2.1.0"                  # Binding at a tier accepts orders above it (CLS-002 (c)).
+    two_phase_realization:                # reserve/commit/release, a base obligation (§6a)
+      hold_supported: true                # false = reserve validates and returns facts, holds nothing
+      min_hold_ttl: PT30S                 # a requested TTL is clamped to [min, max]
+      max_hold_ttl: PT30M
+    cancellation:
+      supported: true
+      during: [dispatched, provisioning]
+    discovery:
+      supported: true
+      method: api_query                   # api_query | passive_event | hybrid
+    dependency_introspection:             # observed edges only; never consulted for orchestration
+      supported: true                     # (service-dependencies.md §3a, OBS-001..OBS-005)
+      methods: [api_query, passive_event, inferred_from_config]
+      response_sla: PT30S                 # no longer than the discovery endpoint SLA (OBS-004)
+      max_edges_per_response: 500
+    naturalization:
+      target_format: <native API the provider translates to>
 ```
 
 **Data direction:** the control plane sends assembled Requested State → Provider naturalizes → executes → denaturalizes → returns Realized State. Separately, on demand, the control plane sends `{entity_uuid}` to `{dependency_introspection_endpoint}` → Provider returns observed dependency edges → control-plane records them in the Entity Relationship Graph under `edge_nature: observed`.
@@ -612,33 +592,36 @@ service_provider_capabilities:
 Placement and consumer-selection only work over **real** resources. A `realize_resources` provider therefore **advertises**, per capability/category it offers, the three things placement decides against. This is how the **foundational (root) resources** consumers select get populated (`docs/guides/foundational-resources.md`): the provider that owns them publishes them; the platform data layer may add more; policy governs eligibility.
 
 ```yaml
-resource_advertisement:                 # returned from {capabilities_endpoint}, refreshed by lifecycle events
-  category: realize_resources/Network    # the capability category this advertises for
-  inventory:                             # the resources the provider OFFERS, as referenceable resources
-    - resource_ref: net-vlan-20          # identity of an offered foundational resource (VLAN, Location, StoragePool, Machine.BareMetalHost, ...)
-      resource_type: VLAN
-      selectable: true                   # part of the consumer-selectable set (subject to eligibility)
-  capacity:                              # the QUANTITATIVE input placement decides against, per offered resource
-    - resource_ref: host-a
-      dimensions: { vcpu: {total: 96, free: 40}, memory: {total: "512GB", free: "180GB"}, storage: {total: "10TB", free: "3TB"} }
-  eligibility:                           # provider-declared constraints; the control plane POLICY resolves the final eligible set
-    - resource_ref: net-vlan-20
-      zone: dmz
-      requires_capability: []            # what a consumer must hold to select this
+# schema: provider-registration.schema.json#/$defs/resource_advertisement
+category: realize_resources/Network      # returned from {capabilities_endpoint}, refreshed by lifecycle events
+inventory:                               # the resources the provider OFFERS
+  - resource_ref: net-vlan-20            # an offered foundational resource (VLAN, Location, StoragePool, ...)
+    resource_type: VLAN
+    selectable: true                     # in the consumer-selectable set, subject to eligibility
+capacity:                                # what placement decides against, per offered resource
+  - resource_ref: host-a
+    dimensions: { vcpu: {total: 96, free: 40}, memory: {total: "512GB", free: "180GB"}, storage: {total: "10TB", free: "3TB"} }
+eligibility:                             # declared constraints; policy resolves the eligible set
+  - resource_ref: net-vlan-20
+    zone: dmz
+    requires_capability: []              # what a consumer must hold to select this
 ```
 
 Rules:
-- **Availability is provider-authoritative; cost is not.** Unlike `cost_metadata` (an unverified hint — a provider must not be able to under-declare cost to win placement, §8.1), advertised **inventory + capacity** are authoritative for *what exists and how much is free*. They are **bounded**, though: the control plane cross-checks against realized state. Over-advertising (claiming free capacity that isn't) is a **drift finding**, not a silent win.
+- **Availability is provider-authoritative; cost is not.** A provider declares no cost: cost is referenced, never modeled (ADR-COST-001), so a provider cannot under-declare cost to win placement. Advertised **inventory + capacity** are authoritative for *what exists and how much is free*. They are **bounded**, though: the control plane cross-checks against realized state. Over-advertising (claiming free capacity that isn't) is a **drift finding**, not a silent win.
 - **Refreshed, not static.** Capacity changes are pushed via the `resource.capacity_changed` lifecycle event (§6), so placement reads current free capacity, not registration-time values.
 - **Eligibility is policy, not provider fiat.** The provider *declares* constraints; the **org's policy + Governance-Matrix** resolve which advertised resources a given consumer/zone/tenant may actually select (the "org ratifies" rule). A provider cannot grant itself selection authority by advertising.
 
 **Size-class resolution — `instance_size_catalog` (the abstract↔precise bridge).** When a resource type ships sized-by-class (`instance_size` — ADR-014, `common-elements §2.2`), the class is a *comparable but abstract* vocabulary. To let placement compare an abstract size against a **raw** requirement (or resolve one provider's class against another's), the provider **declares its class → raw mapping** here. The provider is the authority on what *its* `medium` is (ADR-014: the provider owns the concrete mapping):
 
 ```yaml
-instance_size_catalog:                  # per capability/category; the provider's authoritative size classes
-  - class: small    resources: { cpu: { count: 2 }, memory: { size: 8GB } }
-  - class: medium   resources: { cpu: { count: 4 }, memory: { size: 16GB } }
-  - class: large    resources: { cpu: { count: 8 }, memory: { size: 32GB } }
+# schema: provider-registration.schema.json
+capability_profiles:
+  realize_resources:
+    instance_size_catalog:              # the provider's authoritative size classes (ADR-014)
+      - { class: small,  resources: { cpu: { count: 2 }, memory: { size: 8GB } } }
+      - { class: medium, resources: { cpu: { count: 4 }, memory: { size: 16GB } } }
+      - { class: large,  resources: { cpu: { count: 8 }, memory: { size: 32GB } } }
 ```
 
 The control plane resolves `instance_size` → raw via this catalog, then applies the **same** `capacity-sufficient` test as a raw request (a raw requirement selects the smallest class whose resolved resources satisfy it). Split, per ADR-014: the **class vocabulary + ordering** is UDLM (portable/comparable), the **class→raw mapping** is the provider's (this catalog), the **resolution/comparison** is the control plane (placement). It is **declared, not live-queried** — placement scores many providers at once, so a per-request round-trip per provider is prohibitive; a provider with *parametric* classes MAY additionally expose a `resolve(size)` callback, but the declared catalog is the default.
@@ -648,10 +631,13 @@ The control plane resolves `instance_size` → raw via this catalog, then applie
 1. **Declare the resolution.** The provider **declares** how it resolves the abstract value to concrete — for versions, its channel → concrete-version map per engine. Placement can then **compare, conform, and validate** an abstract request against a raw/pinned requirement (and against an adjacent provider's channel) *before* it commits. **Declared, not live-queried** — same reason as the size catalog.
 
    ```yaml
-   version_channels:                     # per engine; the provider's authoritative channel resolution
-     - engine: postgres   channel: latest   resolves_to: "16.4"   supported: ["14.x","15.x","16.x"]
-     - engine: postgres   channel: lts      resolves_to: "15.8"
-     - engine: mysql      channel: latest   resolves_to: "8.4.2"
+   # schema: provider-registration.schema.json
+   capability_profiles:
+     realize_resources:
+       version_channels:                 # per engine; the provider's authoritative channel resolution
+         - { engine: postgres, channel: latest, resolves_to: "16.4", supported: ["14.x", "15.x", "16.x"] }
+         - { engine: postgres, channel: lts,    resolves_to: "15.8" }
+         - { engine: mysql,    channel: latest, resolves_to: "8.4.2" }
    ```
 
 2. **Resolve at naturalization.** When intent is abstract (or omitted → the provider's default channel), the provider resolves to the concrete value it will actually provision (DCM ADR-023).
@@ -676,17 +662,17 @@ POST {write_back_endpoint}       # optional; receive the control plane updates t
 
 **Capability declaration extension:**
 ```yaml
-information_provider_capabilities:
-  data_domains:
-    - domain: business_data
-      data_types: [business_unit, cost_center, product_owner]
-      # authority_level is NOT self-declared — the control plane assigns it; a value supplied here is ignored.
-      # Rule defined once in information-providers-advanced.md (the authority/confidence model).
-  query_capacity:
+# schema: provider-registration.schema.json
+capability_profiles:
+  serve_data:
+    data_domains:
+      - domain: business_data
+        data_types: [business_unit, cost_center, product_owner]
+        # authority level is NOT declared: the control plane assigns it
+        # (information-providers-advanced.md, the authority/confidence model)
     max_queries_per_second: 100
-  confidence_model:
     data_freshness_sla: PT1H
-  write_back_supported: false
+    write_back_supported: false
 ```
 
 **Data direction:** the control plane sends lookup query → Provider returns data in control-plane format → the control plane enriches entity fields.
@@ -710,26 +696,15 @@ the registration-side rendering of the same declaration.
 
 **Capability declaration extension (summary — full schema in [template-composition-model.md](../foundations/template-composition-model.md)):**
 ```yaml
-composite_service_capabilities:
-  constituent_provider_types: [service_provider, information_provider]
-  composition_model:
-    execution: dependency_ordered
+# schema: provider-registration.schema.json
+capability_profiles:
+  composite_service:                     # the limits this provider declares; the composite itself is a
+    execution: dependency_ordered        # class with constituents[] (class.schema.json), not restated here
     max_concurrent_implementations: 10
     max_constituent_count: 20
     max_nesting_depth: 3
-  partial_delivery_supported: true
-  compensation_supported: true
-  resource_types_composed:
-    - fqn: Template.Application.WebApp
-      version: "2.0.0"
-      constituents:
-        - resource_type: Machine.VM
-          required_for_delivery: required
-        - resource_type: IPAddress
-          required_for_delivery: required
-        - resource_type: DNSZone
-          required_for_delivery: partial
-      composition_visibility: selective
+    partial_delivery_supported: true
+    compensation_supported: true
 ```
 
 **Composite status determination:**
@@ -754,16 +729,18 @@ GET  {identity_endpoint}         # return actor claims for a token
 
 **Capability declaration:**
 ```yaml
-auth_capability:                 # declared on any provider; not a provider_type
-  authentication_modes: [oidc, ldap, saml, mtls, hardware_token]
-  mfa_methods: [totp, push_notification, hardware_token]
-  rbac_model: flat | hierarchical | abac
-  step_up_supported: true
-  token_lifetime:
-    default: PT1H
-    max: PT8H
-  federation_capable: true
-  supports_session_revocation: true
+# schema: provider-registration.schema.json
+capability_profiles:
+  authenticate:                          # declared on any provider; not a provider type
+    authentication_modes: [oidc, ldap, saml, mtls, hardware_token]
+    mfa_methods: [totp, push_notification, hardware_token]
+    rbac_model: hierarchical             # flat | hierarchical | abac
+    step_up_supported: true
+    token_lifetime:
+      default: PT1H
+      max: PT8H
+    federation_capable: true
+    supports_session_revocation: true
 ```
 
 **Data direction:** Consumer sends credentials → the auth-capable provider validates → returns token + claims → the control plane extracts actor identity.
@@ -778,25 +755,21 @@ auth_capability:                 # declared on any provider; not a provider_type
 
 **Capability declaration extension:**
 ```yaml
-peer_dcm_capabilities:
-  dcm_version: "1.0.0"
-  tunnel_type: peer | parent_child | hub_spoke
-  deployment_accreditations: [<accreditation_uuids>]
-  # inbound/outbound_authorization here are a REQUEST/advertisement, NOT authoritative. The
-  # authoritative authorization scope for the peer channel lives on the LOCAL side of the federation
-  # tunnel wire contract (docs/spec/governance/accreditation-and-authorization-matrix.md) — "what the remote
-  # peer may request" is set locally. A peer cannot widen its own grants by declaring them here.
-  inbound_authorization:                 # requested (advisory)
-    - operation: catalog_query
-      resource_types: [Machine.VM]
-  outbound_authorization:                # requested (advisory)
-    - operation: placement_query
-      resource_types: [Machine.VM]
-  data_boundary:
+# schema: provider-registration.schema.json
+capability_profiles:
+  federate:
+    tunnel_type: peer                    # peer | parent_child | hub_spoke
+    # inbound/outbound are a REQUEST, not a grant. The local side of the tunnel sets what the remote
+    # peer may request (accreditation-and-authorization-matrix.md); a peer cannot widen its own grants.
+    inbound_authorization:
+      - operation: catalog_query
+        resource_types: [Machine.VM]
+    outbound_authorization:
+      - operation: placement_query
+        resource_types: [Machine.VM]
     max_classification: restricted
-  # trust_posture is NOT declared here (DCM ADR-022). A federating peer submits attestation EVIDENCE
-  # (deployment_accreditations above + its federation certificate); THE CONTROL PLANE COMPUTES the peer's
-  # trust_posture in the dcm_registration_verdict (§2) — a value supplied in this block is rejected.
+    # The peer's accreditations go in the registration's `accreditations`. Its trust posture is
+    # computed in the registration verdict (§2); a value supplied here is rejected.
 ```
 
 **Data direction:** Bidirectional within declared authorization scope. Federation tunnel with mTLS, certificate pinning, per-message signing.
@@ -818,17 +791,19 @@ POST {cancel_endpoint}/{job_id}  # cancel running execution (if supported)
 
 **Capability declaration extension:**
 ```yaml
-process_provider_capabilities:
-  supported_definitions:     # PROJECTION of the Process-family classes the provider binds to — the Type (Automation.OSPatch) when the engine needs nothing beyond it, a Provider Class (Automation.OSPatch.EngineBlue) only for engine-specific data (CLS-005); the classes are authored, this list is rendered
-    - "Automation.OSPatch"
-    - "Automation.Backup"
-    - "Automation.ComplianceScan"
-    - "Automation.DataMigration"
-  max_concurrent_executions: 10
-  timeout_default: PT30M
-  idempotent: true
-  cancellation_supported: true
-  automation_platform: aap | tekton | argo_workflows | direct_api
+# schema: provider-registration.schema.json
+capability_profiles:
+  execute_workflows:
+    supported_definitions:               # the Process-family classes the provider binds to (CLS-005)
+      - Automation.OSPatch
+      - Automation.Backup
+      - Automation.ComplianceScan
+      - Automation.DataMigration
+    max_concurrent_executions: 10
+    timeout_default: PT30M
+    idempotent: true
+    cancellation_supported: true
+    engine: <workflow engine behind the provider>
 ```
 
 **Data direction:** the control plane sends job payload → Process Provider executes → reports progress via status polling or callback → returns result payload on completion. Result payload follows standard denaturalization — provider-native output translated to the control plane unified format.
@@ -842,14 +817,11 @@ process_provider_capabilities:
 The Capability & Category Registry is the authoritative, governed list of the **capabilities and capability categories** (the provider-capability taxonomy — verb × domain; `registry/taxonomies/provider-capability.yaml`) that a control-plane deployment accepts registrations for. It follows the three-tier registry model (Core / Verified Community / Organization). It replaces the old "Provider Type Registry" — there are **no provider types**, only capabilities and the categories they form (ADR-PROV-002).
 
 ```yaml
-capability_registry_entry:
-  capability: realize_resources          # a verb from the closed vocabulary
-  domain: Storage                        # a resource-type Category (naming-conventions §2)
-  category: realize_resources/Storage    # the (verb × domain) taxonomy term = the capability category
-  tier: core
-  default_approval_method: reviewed      # auto | reviewed | verified | authorized
-  enabled_in_profiles: [homelab, dev, standard, prod, fsi, sovereign]
-  capability_extension_schema_ref: <uuid>
+# schema: provider-registration.schema.json#/$defs/capability_registry_entry
+category: realize_resources/Storage      # the (verb × domain) term; verb and domain are its two halves
+tier: core                               # core | verified_community | organization
+default_approval_method: reviewed        # auto | reviewed | verified | authorized
+enabled_in_profiles: [homelab, dev, standard, prod, fsi, sovereign]
 ```
 
 Profile-governed approval methods override the registry defaults. The complete approval method resolution model is implementation-specific (see DCM repo).
@@ -956,19 +928,17 @@ A consuming system integrating with a UDLM-conformant implementation:
 When a provider registers, it MAY declare what it offers AND what it needs from the implementation:
 
 ```yaml
-# illustrative: shape of the record, not schema-checked
-provider_base_registration:            # canonical shape — §2; only the discovery-relevant
-  handle: "org/finops/acme-finops"
-  display_name: "Acme FinOps Platform"
-  capabilities: [serve_data/Cost]      # verb × domain (§8.2 profile carries the data_domains detail)
-
-  needs_from_implementation:
-    - domain: cost
-      description: "Cost estimation and attribution data"
-    - domain: entity_lifecycle
-      description: "Entity create/update/decommission events"
-    - domain: placement_decisions
-      description: "Placement scoring rationale for cost analysis"
+# schema: provider-registration.schema.json
+handle: "org/finops/acme-finops"         # only the discovery-relevant fields of the §2 registration
+display_name: "Acme FinOps Platform"
+capabilities: [serve_data/Cost]          # the §8.2 profile carries the data_domains detail
+needs_from_implementation:
+  - domain: cost
+    description: "Cost estimation and attribution data"
+  - domain: entity_lifecycle
+    description: "Entity create/update/decommission events"
+  - domain: placement_decisions
+    description: "Placement scoring rationale for cost analysis"
 ```
 
 #### 10.2a Matched-Capabilities Response

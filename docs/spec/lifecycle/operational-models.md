@@ -174,7 +174,7 @@ Consumer submits cancellation
 Consumer submits cancellation
   │
   ▼ Entity state: PROVISIONING
-  │   Implementation checks provider.supports_cancellation
+  │   Implementation checks the provider's cancellation.supported
   │
   ├── Provider supports cancellation:
   │   Implementation sends cancellation payload
@@ -195,19 +195,18 @@ Consumer submits cancellation
 
 ### 3.2 Provider Cancellation Capability Declaration (Wire Contract)
 
-Providers declare cancellation support in their registration. Shape is normative:
+Providers declare cancellation support in their registration (`registry/provider-registration.schema.json`):
 
 ```yaml
-provider_cancellation_capabilities:
-  supports_cancellation: true
-  cancellation_supported_during: [DISPATCHED, PROVISIONING]
-  # DISPATCHED: can cancel before work begins
-  # PROVISIONING: can cancel and roll back mid-execution
-  cancellation_endpoint: POST /api/v1/provider/entities/{entity_uuid}/cancel
-  cancellation_response_time: PT30S    # SLA for cancellation response
-  partial_rollback_possible: true
-  # true: cancellation may leave partial resources → CANCELLATION_FAILED path
-  # false: cancellation is all-or-nothing (rare)
+# schema: provider-registration.schema.json
+capability_profiles:
+  realize_resources:
+    cancellation:
+      supported: true
+      during: [dispatched, provisioning]  # dispatched: before work begins; provisioning: roll back mid-execution
+      endpoint: POST /api/v1/provider/entities/{entity_uuid}/cancel
+      response_time: PT30S                # how soon the provider answers a cancellation
+      partial_rollback_possible: true     # true: may leave partial resources → CANCELLATION_FAILED path
 ```
 
 ### 3.3 Cancellation Payload (Wire Contract)
@@ -255,15 +254,16 @@ resource_type_spec:
 ```
 
 ```yaml
-provider_registration:
-  discovery_capabilities:
-    supports_discovery: true
-    discovery_endpoint: POST /api/v1/provider/entities/discover
-    max_entities_per_discovery_batch: 1000
-    discovery_latency_p95: PT10S    # how long discovery typically takes
-    supports_incremental_discovery: true
-    # incremental: only entities changed since last_discovery_timestamp
-    # full: all entities every time
+# schema: provider-registration.schema.json
+capability_profiles:
+  realize_resources:
+    discovery:
+      supported: true
+      method: api_query
+      endpoint: POST /api/v1/provider/entities/discover
+      max_entities_per_batch: 1000
+      latency_p95: PT10S                 # how long discovery typically takes
+      supports_incremental: true         # only entities changed since the last discovery
 ```
 
 ### 4.3 Trigger Type 2 — Event-triggered (Closed Substrate Vocabulary)

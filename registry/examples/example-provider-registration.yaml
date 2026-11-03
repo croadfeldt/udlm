@@ -11,7 +11,7 @@ record_type: provider_registration
 uuid: 3f8b1d40-72c6-4a19-9e05-8d24b1706fa3
 conforms_to: udlm/0.1
 handle: lab/storage/zfs-host-a
-version: 1.0.0
+version: 1.1.0
 display_name: ZFS host A
 description: Realizes ZFS volumes and storage pools on one lab host, and reports the network it sits on.
 
@@ -19,6 +19,36 @@ capabilities:
   - realize_resources/Storage
   - realize_resources/Machine
   - serve_data/Network
+
+# The detail behind the declared capabilities, one profile per verb (§8).
+capability_profiles:
+  realize_resources:
+    resource_types:
+      - fqn: StoragePool
+        version: 0.7.2
+      - fqn: Volume.ZFS
+        version: 0.8.3
+    two_phase_realization:
+      hold_supported: true
+      min_hold_ttl: PT30S
+      max_hold_ttl: PT30M
+    cancellation:
+      supported: true
+      during: [dispatched, provisioning]
+    discovery:
+      supported: true
+      method: api_query
+    dependency_introspection:
+      supported: true
+      methods: [api_query, inferred_from_config]
+      response_sla: PT30S
+      max_edges_per_response: 500
+  serve_data:
+    data_domains:
+      - domain: network
+        data_types: [vlan, address_assignment]
+    data_freshness_sla: PT15M
+    write_back_supported: false
 
 # The provider-wide claim. Self-asserted until an accreditation attests exactly this scope.
 sovereignty_declaration:

@@ -371,10 +371,11 @@
   }
  },
  "provider_registration:lab/storage/zfs-host-a": {
-  "current": "1.0.0",
+  "current": "1.1.0",
   "path": "registry/examples/example-provider-registration.yaml",
   "versions": {
-   "1.0.0": "sha256:6e0f742f19266e68f1fa593eaac6a86cdb288abb2de7f1ba77396209b834949c"
+   "1.0.0": "sha256:6e0f742f19266e68f1fa593eaac6a86cdb288abb2de7f1ba77396209b834949c",
+   "1.1.0": "sha256:d7cbaa4a8e8b307a6037ac573fba4c6e7bf1a450fa315afb7d8af1b04e96dbbb"
   }
  },
  "resource_grouping:org/resource-group/example-orders-deployment": {
