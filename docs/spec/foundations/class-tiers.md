@@ -138,7 +138,12 @@ three cheaper axes to reach for first (ADR-038, *Naming depth*).
 Three words name three different things:
 
 - A **class** is the definition (this document). Its compiled flat spec, `registry/generated/<class>.json`,
-  is what the older documents called a *resource type specification*.
+  is what the older documents called a *resource type specification*. The control plane does that
+  flattening itself, at catalog generation. UDLM's generator is the reference implementation and the
+  CI gate that proves the grammar compiles (maintainer ruling 2026-07-30, #321).
+- A catalog's **display** data is the class's own `metadata` — display name, description, filing.
+  **Availability** and **usage** (who may order it now, how often it is ordered) are the control
+  plane's catalog, not the model's (maintainer ruling 2026-11-03, #477).
 - A provider's **offer** (its *catalog item*) is not prose beside the class. It
   is declared on the Provider Class: what the provider **requires** to realize a request is an element it
   adds with `optional: false`; what it **supports**, the values and ranges on offer, is `supports` on the
