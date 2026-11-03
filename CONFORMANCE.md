@@ -473,13 +473,11 @@ verifier. Independent verification:
 - Produces a verification report linked from the conformance declaration.
 - Carries more weight for peers evaluating whether to federate.
 
-**Certification progression.** Self-certification is the **v0 baseline** — a
-implementation runs the suite and records the suite version and results in its
-declaration. Independent verification is **optional at 0.x** but **carries more
-weight** for peers deciding whether to federate. A **required run of the shared
-certified suite** is the **1.0 conformance bar**: at 1.0, self-certification
-alone no longer suffices for a full conformance claim. This is a deliberate
-escalation, not "self-signed forever."
+**Certification progression.** At 1.0, self-certification means running the **shared** suite: an
+implementation runs `tests/conformance.py` at the suite version it declares and records the version
+and results in its declaration. Its own tests, however thorough, do not count toward a conformance
+claim. Independent verification stays optional and **carries more weight** for peers deciding
+whether to federate.
 
 ---
 
