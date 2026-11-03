@@ -47,7 +47,7 @@ flowchart TD
 
 Which nature a given relationship *should* carry — that is the consumer's modeling choice, informed
 by best-practice guidance, not a platform mandate; and the runtime that enacts each propagation is
-DCM's (ADR-008). UDLM defines the two natures and their propagation semantics.
+the control plane's (ADR-008). UDLM defines the two natures and their propagation semantics.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
@@ -65,4 +65,3 @@ DCM's (ADR-008). UDLM defines the two natures and their propagation semantics.
 | Operational side | [operational-dependency-cascade](intent-fulfillment-operational-dependency-cascade.md) |
 | Request side | [request-dependency-atomic](intent-fulfillment-request-dependency-atomic.md) |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
-| DCM counterpart | dcm-project/dcm `docs/flows/` |

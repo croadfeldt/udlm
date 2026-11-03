@@ -1,20 +1,20 @@
 # Platform provisioning — hub → namespace + quota → node pool / storage class (the flow)
 
-**What this settles:** how the platform family composes — a **hub** provisions a **namespace** bounded by a
-**resource quota**, backed by a **node pool** and a **storage class**. A **lighter** flow: it **builds on
-[request-realization](request-realization.md)** and [uc-02-solution-architecture-deployment](uc-02-solution-architecture-deployment.md);
-it documents only what platform provisioning adds — the **quota** as an enforced ceiling and the
-hub→namespace dependency.
+**What this settles:** how the platform family composes. A **hub** (the managing cluster) provisions a
+**namespace** bounded by a **resource quota**, backed by a **node pool** and a **storage class**. A
+**lighter** flow: it **builds on [request-realization](request-realization.md)** and
+[uc-02-solution-architecture-deployment](uc-02-solution-architecture-deployment.md). It documents only
+what platform provisioning adds: the **quota** as an enforced ceiling and the hub → namespace dependency.
 
 > **Use Cases:** `platform/provision-namespace-with-quota`, `platform/provision-node-pool`,
 > `platform/register-storage-class`, `platform/composite-hub-provisions-spoke` (positive);
 > `platform/namespace-quota-exceeded-refused` (must-reject). **Persona:** platform-engineer ·
 > **Profiles:** dev / prod.
 
-**In one breath.** A hub provisions a namespace with a resource quota; workloads within it draw compute
-from a node pool and storage from a storage class. The quota is an enforced ceiling — a request that would
-exceed it is refused naming the limit, not admitted over-quota. The namespace is an operational dependent
-of the hub; a hub-provisioned spoke realizes the dependency in order.
+**In one breath.** A hub provisions a namespace with a resource quota. Workloads within it draw compute
+from a node pool and storage from a storage class. The quota is an enforced ceiling: a request that would
+exceed it is refused naming the limit, not admitted over quota. The namespace is an operational dependent
+of the hub, and a hub-provisioned spoke realizes the dependency in order.
 
 ## The flow
 
@@ -38,10 +38,10 @@ flowchart TD
 
 ## What UDLM does not decide
 
-Which Kubernetes distribution / cloud realizes the namespace, or how a provider naturalizes a quota /
-node pool / storage class into native objects (the naturalization boundary, DCM ADR-023); the
-overcommit / eviction policy under quota pressure (Policy/DCM). UDLM defines the platform resource shapes,
-the quota-as-ceiling + hub-dependency contract, and the surfacing contract.
+Which Kubernetes distribution or cloud realizes the namespace, or how a provider naturalizes a quota,
+node pool or storage class into native objects (the naturalization boundary, DCM ADR-023); the overcommit
+and eviction policy under quota pressure (policy, the control plane's). UDLM defines the platform resource
+shapes, the quota-as-ceiling and hub-dependency contract, and the surfacing contract.
 
 ## Where each piece is specified
 
@@ -49,5 +49,5 @@ the quota-as-ceiling + hub-dependency contract, and the surfacing contract.
 |---|---|
 | Operational dependency + root-cause surfacing | ADR-052 |
 | Requirements-floor capacity (node pool / storage class) | ADR-036 |
-| The platform resource shapes + examples | `registry/generated/platform.*` (`spec.examples`, ADR-055) |
+| The platform resource shapes + examples | `registry/generated/kubernetes-cluster.json`, `kubernetes-namespace.json` (`hard` is the quota), `kubernetes-node-pool.json`, `storage-class.json` (`spec_examples`; register row 055) |
 | Corpus | `use-cases/platform/`, `use-cases/multi-cluster/` |
