@@ -41,13 +41,13 @@ The Universal Audit Model defines the **unconditional obligation** for every con
 ## 3. The Universal Audit Record
 
 ```yaml
-# illustrative: the audit record shape with its detail blocks; the schema is registry/audit-record.schema.json
+# illustrative: a summary; context, retention and integrity here are not yet fields of registry/audit-record.schema.json (#723)
 audit_record:
   # IDENTITY — immutable once written
   record_uuid: <uuid>
   sequence_uuid: <uuid v7 — position in the stream, required (time-and-clock §4)>
   record_timestamp: <RFC 3339 UTC 'Z', millisecond precision permitted — when the change occurred (common-elements §8.1)>
-  dcm_version: <control-plane version that produced this record>
+  implementation_version: <version of the implementation that produced this record>
 
   # WHO — composite actor chain
   actor:
