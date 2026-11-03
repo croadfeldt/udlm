@@ -1,0 +1,481 @@
+# Stability of every part of the spec — UDLM-1.0-LOCKDOWN.md §1 ruling 4, VERSIONING.md "Stability marker".
+# One row per class, record schema and spec document. Gate: tests/check_stability.py (STB-001..003).
+#   stable        carries the 1.0 promise: nothing removed, renamed or narrowed inside 1.x
+#   experimental  may change in a minor without deprecation; not part of the 1.0 claim
+#   reference     a document that states no rule, so there is nothing to promise
+# `why` is one short reason, for the reader; it is not checked.
+parts:
+  - part: class:Grouping
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Grouping.Authorization
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Grouping.Tenant
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:IdentityEscrow
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:IdentityGroup
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Identity
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Identity.Person
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Identity.ServiceAccount
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Capability
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:SoftwareImage
+    stability: experimental
+    why: proof of concept (#197)
+  - part: class:SoftwarePackage
+    stability: experimental
+    why: proof of concept (#197)
+  - part: class:SovereigntyZone
+    stability: experimental
+    why: classification vocabulary unsettled (#472)
+  - part: class:TaxonomyTerm
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:TestEvidence
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:TestEvidence.VulnerabilityCheck
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:TestEvidence.VulnerabilityCheck.AiTestHarness
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:VexStatement
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Vulnerability
+    stability: experimental
+    why: proof of concept (#197)
+  - part: class:Automation
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Automation.OSPatch
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Automation.OSPatch.EngineBlue
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Automation.OSPatch.EngineGreen
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Job
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Container
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:KubernetesCluster
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:KubernetesNamespace
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:KubernetesNodePool
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Machine
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Machine.BareMetalHost
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Machine.LPAR
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Machine.VM
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Database
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:LogStore
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Location
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Topology
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:BMC
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:GPU
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:NetworkInterface
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Processor
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:StorageDevice
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:DirectoryService
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:AddressService
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:ConnectionProfile
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:DHCPScope
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:DNSZone
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:IPAddressPool
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:IPAddress
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:NetworkGateway
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:NetworkSwitch
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Subnet
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:VirtualNetwork
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:VLAN
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:LogShipper
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:LogShipper.OTLP
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:LogShipper.Syslog
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:PowerFeed
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:UPS
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:CredentialRef
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Template
+    stability: experimental
+    why: catalog-item rename pending (#474, #477)
+  - part: class:Template.Application
+    stability: experimental
+    why: catalog-item rename pending (#474, #477)
+  - part: class:Template.Application.AcmeThreeTier
+    stability: experimental
+    why: catalog-item rename pending (#474, #477)
+  - part: class:Workload
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:BucketClass
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Bucket
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:FileShare
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:StorageClass
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:StorageCluster
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:StoragePool
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:VolumeSnapshot
+    stability: experimental
+    why: no use case exercises it yet
+  - part: class:Volume
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: class:Volume.ZFS
+    stability: stable
+    why: exercised by the use-case corpus and the estate
+  - part: schema:accreditation.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:audit-leaf.schema.json
+    stability: experimental
+    why: ADR-059 typed chains not built (#394)
+  - part: schema:audit-record.schema.json
+    stability: experimental
+    why: ADR-059 typed chains not built (#394)
+  - part: schema:class.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:commit-log-entry.schema.json
+    stability: experimental
+    why: ADR-059 typed chains not built (#394)
+  - part: schema:common-elements.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:composition-record.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:composition.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:conformance-declaration.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:data-reference.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:decision-record.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:entity-view.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:evaluation-context.schema.json
+    stability: experimental
+    why: assembly predicates ruling open (#392)
+  - part: schema:finding-routing-record.schema.json
+    stability: experimental
+    why: no consumer yet
+  - part: schema:function-capability-matrix.schema.json
+    stability: experimental
+    why: no consumer yet
+  - part: schema:layer.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:log-checkpoint.schema.json
+    stability: experimental
+    why: ADR-059 typed chains not built (#394)
+  - part: schema:policy.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:profile.schema.json
+    stability: experimental
+    why: the profile mechanism stays; the six profiles move out (#488)
+  - part: schema:promotion-evidence.schema.json
+    stability: experimental
+    why: no consumer yet
+  - part: schema:provider-adopted-standards.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:regeneration-manifest.schema.json
+    stability: experimental
+    why: no consumer yet
+  - part: schema:registration-verdict.schema.json
+    stability: experimental
+    why: provider registration schema pending (#634)
+  - part: schema:resource-type-spec.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:rule-id-registry.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:state-record.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: schema:vocabulary-term.schema.json
+    stability: stable
+    why: a record contract every peer reads
+  - part: doc:contracts/audit-provenance-observability.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:contracts/cost-metering-linkage.md
+    stability: experimental
+    why: no consumer yet
+  - part: doc:contracts/data-roles.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:contracts/data-store-contracts.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:contracts/error-model.md
+    stability: experimental
+    why: draft
+  - part: doc:contracts/event-catalog.md
+    stability: experimental
+    why: HTTP-level binding is 1.x
+  - part: doc:contracts/identifier-scheme.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:contracts/information-providers-advanced.md
+    stability: experimental
+    why: advanced surface, no consumer
+  - part: doc:contracts/information-providers.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:contracts/policy-contract.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:contracts/provider-callback-auth.md
+    stability: experimental
+    why: protocol, moves with the provider contract (#634)
+  - part: doc:contracts/provider-contract.md
+    stability: experimental
+    why: no schema behind 115 of 173 keys (#634)
+  - part: doc:contracts/rate-limit-and-backpressure.md
+    stability: experimental
+    why: draft
+  - part: doc:contracts/retry-semantics.md
+    stability: experimental
+    why: draft
+  - part: doc:contracts/schema-sharing.md
+    stability: experimental
+    why: load-bearing draft, no status marker
+  - part: doc:contracts/storage-providers.md
+    stability: experimental
+    why: storage claims still landing (#680)
+  - part: doc:contracts/time-and-clock.md
+    stability: experimental
+    why: draft
+  - part: doc:contracts/universal-audit.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/class-tiers.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/context-and-purpose.md
+    stability: reference
+    why: states no rule
+  - part: doc:foundations/data-model-core.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/entity-relationships.md
+    stability: experimental
+    why: fields no schema carries (#632)
+  - part: doc:foundations/entity-type-families.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/entity-types.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/examples.md
+    stability: reference
+    why: states no rule
+  - part: doc:foundations/foundations.md
+    stability: reference
+    why: states no rule
+  - part: doc:foundations/four-states.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/identity-escrow.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/knowledge-family.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/layering-and-versioning-annex.md
+    stability: reference
+    why: states no rule
+  - part: doc:foundations/layering-and-versioning.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/location-topology-layers.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/ownership-sharing-allocation.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/resource-grouping.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/resource-service-entities.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:foundations/service-dependencies.md
+    stability: experimental
+    why: depends on entity-relationships (#632)
+  - part: doc:foundations/template-composition-model.md
+    stability: experimental
+    why: audit pending (#460)
+  - part: doc:foundations/universal-groups.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:governance/accreditation-and-authorization-matrix.md
+    stability: experimental
+    why: residency rule cannot be evaluated (#385)
+  - part: doc:governance/auth-providers.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:governance/authority-tier-model.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:governance/credentials.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:governance/federated-contribution-model.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:governance/governance-matrix.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:governance/registry-governance.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:lifecycle/ingestion-model.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:lifecycle/operational-models.md
+    stability: experimental
+    why: operations family is 1.x (#330–#338)
+  - part: doc:lifecycle/request-dependency-graph.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:lifecycle/scheduled-requests.md
+    stability: experimental
+    why: request status ladder unsettled (#346)
+  - part: doc:lifecycle/subscription-lifecycle.md
+    stability: experimental
+    why: no consumer yet
+  - part: doc:principles/README.md
+    stability: reference
+    why: states no rule
+  - part: doc:principles/adopted-standards.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:principles/core-tenets.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:principles/cross-cutting-requirements.md
+    stability: reference
+    why: states no rule
+  - part: doc:principles/data-contracts.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:principles/design-priorities.md
+    stability: reference
+    why: states no rule
+  - part: doc:principles/naming-charter.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:principles/portable-values.md
+    stability: stable
+    why: normative and exercised
+  - part: doc:CONFORMANCE.md
+    stability: stable
+    why: the conformance contract every peer is tested against
+  - part: doc:registry/VERSIONING.md
+    stability: stable
+    why: the versioning law the 1.0 promise rests on
