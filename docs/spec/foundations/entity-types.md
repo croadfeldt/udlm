@@ -42,12 +42,19 @@ Duration is *not* the discriminator: a Resource that lives one hour and one that
 A **Resource** is a realized physical or virtual entity that exists as a **maintained state**: the system records its desired/realized state and continuously reconciles observed reality against it. What makes something a Resource is that it is *kept and reconciled* — drift-detected, suspendable, explicitly decommissioned — not how long it lasts.
 
 **Characteristics:**
+
 - Persists after provisioning — it continues to exist and consume resources until explicitly decommissioned
+
 - Owned by exactly one Tenant at any point in time
+
 - Has a full operational lifecycle including operational and suspended *phases* — carried as `status.conditions`; the coarse `lifecycle_state` is the five-value enum (data-model-core §3)
+
 - Subject to drift detection — its Realized State is continuously compared against Discovered State
+
 - Subject to TTL management — may declare an expiry after which decommission is triggered
+
 - May have relationships to other entities — dependencies, attachments, allocations, business data
+
 - Carries field-level provenance across its full lifecycle
 
 **Operational phase machine** (the `status` overlay — *not* `lifecycle_state`, which is the five-value enum in data-model-core §3). `REQUESTED`/`REALIZED`/`DECOMMISSIONED` below coincide with the `lifecycle_state` values `Requested`/`Realized`/`Decommissioned`; the rest (`PENDING`, `PROVISIONING`, `OPERATIONAL`, `SUSPENDED`, `DECOMMISSIONING`, `PENDING_REVIEW`, `FAILED`) are `status.conditions`:
@@ -82,13 +89,13 @@ stateDiagram-v2
     end note
 ```
 
-State meanings: **REQUESTED** (Intent assembled, Requested committed) · **PENDING** (awaiting provider capacity / dependency resolution) · **PROVISIONING** (provider actively realizing) · **REALIZED** (provider-confirmed, full Realized record) · **OPERATIONAL** (active, healthy, in use) · **SUSPENDED** (paused, not in active use, may be billed at reduced rate) · **DECOMMISSIONING** (provider removing, dependencies being released) · **DECOMMISSIONED** (terminal).
+State meanings: **REQUESTED** (Intent assembled, Requested committed) · **PENDING** (awaiting provider capacity / dependency resolution) · **PROVISIONING** (provider actively realizing) · **REALIZED** (provider-confirmed, full Realized record). **OPERATIONAL** (active, healthy, in use) · **SUSPENDED** (paused, not in active use, may be billed at reduced rate) · **DECOMMISSIONING** (provider removing, dependencies being released) · **DECOMMISSIONED** (terminal).
 
 **Applicable to:** VM, VLAN, IPAddress, StorageVolume, Container, LoadBalancer, DNSRecord, FirewallRule, NetworkPort, Subnet — and every other entity the system maintains as a reconciled state.
 
 #### 2.1.1 Resource Data Model
 
-The field set is not incidental — each group exists to serve a specific capability the entity type promises: **ownership/allocation** fields drive decommission safety and cost attribution (ownership-sharing-allocation.md); **provider** fields carry the realized identity that changes across rehydration; **TTL/billing** fields drive expiry and chargeback; **drift** fields carry the last Discovered-vs-Realized comparison; **rehydration** fields gate and record re-instantiation; **provenance** makes every value auditable. An implementation that does not use a capability simply leaves its fields null — they are optional carriers, not mandatory ceremony.
+The field set is not incidental — each group exists to serve a specific capability the entity type promises. **Ownership/allocation** fields drive decommission safety and cost attribution (ownership-sharing-allocation.md); **provider** fields carry the realized identity that changes across rehydration; **TTL/billing** fields drive expiry and chargeback. **Drift** fields carry the last Discovered-vs-Realized comparison; **rehydration** fields gate and record re-instantiation; **provenance** makes every value auditable. An implementation that does not use a capability simply leaves its fields null — they are optional carriers, not mandatory ceremony.
 
 ```yaml
 # illustrative: shape of the record, not schema-checked
@@ -161,24 +168,34 @@ resource_entity:
 | Ownership transfer conflict | An ownership transfer request conflicts with active relationships that prevent transfer |
 
 An entity in `PENDING_REVIEW`:
+
 - Is not actively drifting from its Realized State (the underlying resource is unchanged)
+
 - Has an active `pending_review_record` on the entity with trigger, timestamp, and resolution options
+
 - Generates notifications to the entity owner, Tenant admin, and platform admin
+
 - Remains in `PENDING_REVIEW` until a resolution action is taken (re_authorize, release, escalate, or manual override)
+
 - Is never automatically resolved — all resolutions require explicit human or policy authorization
 
 ### 2.2 Atomic and Composite — the derived shape (`has_constituents`)
 
-Within the **Resource** and **Process** families the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents) — is **derived** (`has_constituents`, from the constituent list), **not a stored `entity_type` field** (ADR-027 addendum, 2026-07-20: 0 behavioral consumers, fully derivable). Composite is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as an Atomic one; it additionally declares constituents and a `composite_health` axis. A composite Resource is produced by a composite resource type specification that orchestrates multiple constituent Resources into a higher-order service (a composite Process is one the control plane itself sequences across several constituent process calls, the same way — whereas a single call, even an Ansible workflow the provider orchestrates internally, is Atomic). The composite is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. the derived `has_constituents` is queryable and policy-gateable at the catalog and instance layers; "find all composites" = `has_constituents` (derived from `constituents[]`). (The specific type — `Machine.VM`, `Automation.Workflow` — is `resource_type`, a finer gate.)
+Within the **Resource** and **Process** families the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents) — is **derived** (`has_constituents`, from the constituent list), **not a stored `entity_type` field** (ADR-027 addendum, 2026-07-20: 0 behavioral consumers, fully derivable). Composite is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as an Atomic one; it additionally declares constituents and a `composite_health` axis. A composite Resource is produced by a composite resource type specification that orchestrates multiple constituent Resources into a higher-order service. A composite Process is one the control plane itself sequences across several constituent process calls, the same way. A single call, even an Ansible workflow the provider orchestrates internally, is Atomic. The composite is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. The derived `has_constituents` is queryable and policy-gateable at the catalog and instance layers; "find all composites" = `has_constituents` (derived from `constituents[]`). (The specific type — `Machine.VM`, `Automation.Workflow` — is `resource_type`, a finer gate.)
 
 **Characteristics:**
+
 - Represents the logical aggregate, not a physical resource
+
 - Owned by exactly one Tenant (the Tenant that requested the composite service)
+
 - Constituents may be owned by the same Tenant or may be allocations/stakes in pool resources owned by another Tenant
+
 - Drift detection operates at two levels: the composite level (is the composite healthy as a whole?) and the constituent level (is each underlying resource still in its expected state?)
+
 - Decommission is staged: composite decommissioned first, then constituents in reverse dependency order
 
-**Lifecycle state machine:** Same as Resource — and the lifecycle enum is **unchanged** for composites. Aggregate constituent health is a **separate health axis** (`composite_health`, a `status.conditions`-style overlay per [data-model-core](data-model-core.md) §3): a composite is healthy only when all required constituents are operational, and **`DEGRADED` is a condition/health value, never a lifecycle state** — a composite with a failed partial constituent stays in its lifecycle state while `composite_health: degraded` records the impairment.
+**Lifecycle state machine:** Same as Resource — and the lifecycle enum is **unchanged** for composites. Aggregate constituent health is a **separate health axis** (`composite_health`, a `status.conditions`-style overlay per [data-model-core](data-model-core.md) §3): a composite is healthy only when all required constituents are operational. **`DEGRADED` is a condition/health value, never a lifecycle state** — a composite with a failed partial constituent stays in its lifecycle state while `composite_health: degraded` records the impairment.
 
 **Constituent relationship:** Each constituent is recorded as a `constituent_of` relationship from the constituent to the composite. The composite holds `has_constituent` relationships to each constituent. The composite UUID is the correlation key across all constituent audit records.
 
@@ -207,14 +224,20 @@ composite_entity:
 
 A **Process** is a bounded execution — an automation job, playbook, pipeline, workflow, or script run. It is defined by its *form*, not its effect: it runs to a terminal outcome (COMPLETED, FAILED, or CANCELLED) and is never a maintained state — no drift, no suspend, no reconciliation. It may read or change Resources (and records which entity UUIDs it affected), but a Process itself is not kept. Automation is the archetype.
 
-Like a Resource, a Process's **shape is derived** (`has_constituents`, not stored) — and the line is drawn from the **implementation's (the control plane's) perspective**, its orchestration scope, *not* the process's internal complexity: **Atomic** is a *single call the control plane makes* — one job, one playbook run, **or an Ansible/AWX workflow invoked as one call** (the provider orchestrates its own internal jobs; the control plane made a single call, so it is still Atomic). **Composite** is when *the control plane itself* sequences more than one distinct process call, tracking them as constituents. A composite Process's constituents are those sub-process calls, recorded via the **same constituent-relationship model** a composite Resource uses. The specific tool is the `resource_type` (`Automation.AnsiblePlaybook`, `Job`) — vendor-specifics like "playbook" live there, at the finer gate.
+Like a Resource, a Process's **shape is derived** (`has_constituents`, not stored). The line is drawn from the **implementation's (the control plane's) perspective**, its orchestration scope, *not* the process's internal complexity. **Atomic** is a *single call the control plane makes* — one job, one playbook run, **or an Ansible/AWX workflow invoked as one call**. (The provider orchestrates its own internal jobs; the control plane made a single call, so it is still Atomic.) **Composite** is when *the control plane itself* sequences more than one distinct process call, tracking them as constituents. A composite Process's constituents are those sub-process calls, recorded via the **same constituent-relationship model** a composite Resource uses. The specific tool is the `resource_type` (`Automation.AnsiblePlaybook`, `Job`) — vendor-specifics like "playbook" live there, at the finer gate.
 
 **Characteristics:**
+
 - Does not persist after reaching a terminal state — no ongoing Realized State to manage
+
 - Must declare `max_execution_time` — mandatory, not optional
+
 - If max_execution_time is exceeded, the process enters FAILED state and a `PROCESS_TIMEOUT` event is generated (catalogued as `process.timeout` — docs/spec/contracts/event-catalog.md §17a)
+
 - If the process modifies any Resource, it must record the modified entity UUIDs in its provenance
+
 - Owned by the Tenant that initiated the execution
+
 - Subject to audit — every process execution produces a full audit trail
 
 **Lifecycle state machine:**

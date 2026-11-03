@@ -104,8 +104,11 @@ flowchart TD
 **Result:** 3 × 3 × 4 = **36 layer definitions** govern **40,000 VM configurations**. Each VM's realized entity is a lightweight reference to its layer chain — not a copy of all the configuration data.
 
 This also means:
+
 - Updating the CIS Benchmark base layer creates one new layer version that cascades to all 40,000 VMs at their next implementation
+
 - Drift detection compares each VM's discovered state against its realized entity's layer chain
+
 - Any VM can be reproduced exactly by replaying its layer chain through the assembly process
 
 ---
@@ -127,9 +130,13 @@ request:
 ```
 
 **Exclusion mechanics:**
+
 - Excluded layers are removed from the candidate set during **Step 2 (Layer Resolution)** before priority ordering
+
 - Excluded layers produce no fields in the assembled payload
+
 - If a validation policy requires a field that would have been injected by an excluded layer, the validation fails with a clear message identifying the excluded layer
+
 - Exclusion is different from override — exclusion removes the entire layer; override changes specific field values
 
 **Policy enforcement:** Compliance-class Validation Policies may declare specific layers non-excludable:

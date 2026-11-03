@@ -185,8 +185,11 @@ resource_group:
 A Resource/Service Entity can belong to multiple Resource Groups across all classes. This multi-dimensional membership is what gives groups their tag-like flexibility.
 
 **Membership constraints are configurable per group definition:**
+
 - A group can declare `exclusive: true` — meaning a resource can only belong to one group of that type at a time
+
 - Example: A `RegulatoryScope` group might declare `exclusive: true` — a resource cannot be in both EU-GDPR and US-FISMA regulatory scopes simultaneously
+
 - Example: A `Deployment` group might declare `exclusive: false` — a resource could participate in multiple deployments
 
 **Policy-governed membership:**
@@ -212,9 +215,13 @@ Tenant: Payments Platform
 ```
 
 **Nesting rules:**
+
 - Circular nesting is invalid — a group cannot contain itself directly or transitively
+
 - Nesting depth is declared per group — `max_depth: unlimited` allows arbitrary depth
+
 - A child group inherits policy scope from parent groups — policies applied to a parent group propagate to all child groups and their members
+
 - Cost rollup propagates up the nesting hierarchy
 
 ---
@@ -252,9 +259,13 @@ Resource Groups enable the following control-plane capabilities at the group sco
 Processes follow the same grouping rules as Resources:
 
 - Must belong to exactly one Tenant — non-overridable
+
 - Can optionally belong to Resource Groups
+
 - Typically grouped under the same Deployment or Service group as the resources they operate on
+
 - Tenant membership ensures cost attribution for execution resources
+
 - Group membership enables operational scoping — "show me all automation jobs that ran against this Deployment"
 
 ---
@@ -297,11 +308,17 @@ custom_group_type_registration:
 ## 9. Related Concepts
 
 - **Tenant** — primary ownership boundary, mandatory for all entities
+
 - **Resource/Service Entity** — the thing being grouped
+
 - **Policy Engine** — enforces grouping system policies and evaluates group-level organizational policies
+
 - **Cost Analysis** — rolls up costs through group hierarchies
+
 - **Drift Detection** — can be scoped to a group
+
 - **Rehydration** — can target a group as the unit of reconstruction
+
 - **Field-Level Provenance** — group membership changes are recorded in entity provenance
 
 ---

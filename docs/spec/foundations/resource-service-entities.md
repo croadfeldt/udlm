@@ -13,7 +13,7 @@
 
 This document defines the two fundamental transactional concepts in UDLM — the **Resource/Service Request** and the **Resource/Service Entity** — and establishes the ownership models, lifecycle principles, and provider relationship rules that govern them.
 
-Understanding the distinction between a Request and an Entity, and the principle that the implementation is the authoritative system of record for all resource data regardless of operational ownership, is essential to understanding how a conformant UDLM peer achieves its core goals of auditability, lifecycle management, and sovereignty.
+Two ideas are essential to how a conformant UDLM peer achieves its core goals of auditability, lifecycle management, and sovereignty. The first is the distinction between a Request and an Entity. The second is that the implementation is the authoritative system of record for all resource data regardless of operational ownership.
 
 ---
 
@@ -24,8 +24,11 @@ Understanding the distinction between a Request and an Entity, and the principle
 A **Resource/Service Request** is what a consumer submits to a UDLM implementation — the declared intent to consume a resource or service. It is the consumer side of the transaction.
 
 - Created when a consumer submits a request via a supported ingress surface (Web UI, Consumer API)
+
 - Captured as the **Intent State** before any processing
+
 - Processed into the **Requested State** after assembly and policy validation
+
 - Is the initiating event that causes a Resource/Service Entity to be created
 
 A Request is not a thing — it is an **instruction**. It describes what the consumer wants. The provider acts on the Requested State to produce an Entity.
@@ -35,10 +38,15 @@ A Request is not a thing — it is an **instruction**. It describes what the con
 A **Resource/Service Entity** is the "thing" produced by a provider as a result of fulfilling a Resource/Service Request. It is the provider side of the transaction — the allocation made real.
 
 - Created when a provider fulfills a Requested State payload
+
 - Returned to the implementation in unified data model format via Denaturalization
+
 - Captured as the **Realized State** in the Realized Store
+
 - Assigned to a **Tenant** — the ownership boundary
+
 - Has a UUID, full provenance chain, and complete lifecycle from creation to decommission
+
 - Is the unit of consumption, cost attribution, drift detection, and audit
 
 A Resource/Service Entity IS a thing — it exists, it has state, it has an owner, and the implementation manages its lifecycle.
@@ -62,14 +70,18 @@ This is the most fundamental principle governing Resource/Service Entities:
 The operational ownership model (described in Section 4) determines who has authority to operate on a Resource/Service Entity. It does not affect the implementation's data ownership. Specifically:
 
 - The implementation owns the **data definition** of every Resource/Service Entity — what it is, what it should be, what it was
+
 - The implementation owns the **lifecycle** — from Requested through Realized to Decommissioned
+
 - The implementation is **authoritative** — if a provider reports a change the implementation was not aware of, the implementation acts on it according to policy
+
 - The implementation acts as the **Tenant advocate** — it protects the Tenant's interests in all provider interactions
+
 - Providers are **custodians** of the underlying infrastructure — they are not the system of record
 
 **Unsanctioned change response vocabulary (typed interop baseline):**
 
-If a provider reports a state change that was not initiated by an authorized request, the Policy Engine evaluates the change and selects from the following typed action vocabulary — the interop baseline: which responses an estate's policies reach for is the organization's declaration, and new response types may be proposed (`docs/design/operational-response-matrix.md`):
+If a provider reports a state change that was not initiated by an authorized request, the Policy Engine evaluates the change and selects from the following typed action vocabulary — the interop baseline. Which responses an estate's policies reach for is the organization's declaration, and new response types may be proposed (`docs/design/operational-response-matrix.md`):
 
 | Response | Description |
 |----------|-------------|
@@ -98,10 +110,15 @@ UDLM defines **three** ownership models, canonically in [`ownership-sharing-allo
 The provider retains internal ownership of the underlying infrastructure. The consumer owns the Resource/Service Entity (the allocation) in their Tenant. The provider can reclaim the underlying resource when the entity is decommissioned.
 
 **Characteristics:**
+
 - Provider retains asset ownership
+
 - Consumer owns the allocation — the Entity in their Tenant
+
 - Provider has reclaim rights on decommission
+
 - Underlying infrastructure may be shared or subdivided
+
 - The implementation manages the Entity lifecycle; provider manages the underlying resource
 
 **Examples:** Virtual Machine, Container, Network Port, IP Address, Firewall Rule, Database Instance
@@ -125,9 +142,9 @@ The entire physical or logical resource is allocated as a single indivisible uni
 
 ### 4.3 Ownership transfer — a change of owner, not a fourth model
 
-Ownership can move to a new Tenant. The hardware supply chain is the canonical case: a procurement provider racks and offers hardware; a hosting team consumes it and **takes over ownership *and* lifecycle authority** (the prior owner has no reclaim rights afterward); they then re-offer it — e.g. as VMs — to end customers, who own their own allocations. This is a **change of the owner** on whichever ownership model already applies — **not** a distinct ownership model.
+Ownership can move to a new Tenant. The hardware supply chain is the canonical case. A procurement provider racks and offers hardware; a hosting team consumes it and **takes over ownership *and* lifecycle authority** (the prior owner has no reclaim rights afterward). They then re-offer it — e.g. as VMs — to end customers, who own their own allocations. This is a **change of the owner** on whichever ownership model already applies — **not** a distinct ownership model.
 
-A colocation-style split — the allocatee runs the device's business operations while the original owner **retains lifecycle management** — is *not* a transfer at all: it is a standard `allocation`/`shareable`, where ownership and lifecycle stay with the provider and the consumer holds the operating stake.
+A colocation-style split — the allocatee runs the device's business operations while the original owner **retains lifecycle management** — is *not* a transfer at all. It is a standard `allocation`/`shareable`, where ownership and lifecycle stay with the provider and the consumer holds the operating stake.
 
 Transfer is governed and recorded immutably in the transfer provenance record (the ownership-transfer count is unlimited by default, each recorded with a monotonic `sequence` and a mandatory reason):
 
@@ -143,7 +160,9 @@ ownership_transfer:
 ```
 
 - The current owner is always exactly one Tenant; ownership can be reassigned any number of times.
+
 - Every transfer is Policy-validated and the receiving Tenant must accept it — it cannot be forced.
+
 - The implementation remains authoritative for data and lifecycle through all transfers.
 
 **Examples:** a bare-metal server handed from procurement to a hosting team, then that team offering VMs on it; a hardware asset reassigned between business units.
@@ -216,9 +235,13 @@ a change request on the Job.
 ### 6.1 Characteristics
 
 - **Ephemeral lifecycle** — exists for the duration of execution, then terminates
+
 - **No ongoing realized state to manage** — lifecycle ends at COMPLETED or FAILED
+
 - **The run record is retained permanently** — the Job's receipt (states) and its seals are immutable and permanent
+
 - **Must belong to a Tenant** — even ephemeral resources must be owned
+
 - **Must be in the provenance chain** of any Resource/Service Entity they affect
 
 ### 6.2 Process Resource Lifecycle
@@ -276,7 +299,7 @@ job_record:
 
 ### 6.4 Provenance Obligation for Processes
 
-If a Job modifies the state of a Resource/Service Entity, that Entity's realized-state provenance MUST reference the Job uuid as the source of the modification — every change to an entity is traceable to the run that caused it (this is udlm#330's start/stop model doing provenance work).
+If a Job modifies the state of a Resource/Service Entity, that Entity's realized-state provenance MUST reference the Job uuid as the source of the modification. Every change to an entity is traceable to the run that caused it (this is udlm#330's start/stop model doing provenance work).
 
 ---
 
@@ -389,7 +412,9 @@ UDLM enforces a single foundational rule for the Realized Store:
 This constraint unifies all state change pathways and eliminates ambiguity:
 
 - **Drift is always unsanctioned** — if Discovered State differs from Realized State and there is no corresponding Requested State record explaining the difference, it is drift. There is no such thing as "legitimate drift."
+
 - **Discovery does not update Realized State** — discovery writes only to the Discovered Store. It never updates the Realized Store, even if discovery shows an authorized change (the authorization produces its own Requested State and Realized State records).
+
 - **Providers cannot write directly to Realized State** — providers report changes via the Provider Update Notification contract. The implementation evaluates the notification and creates a Requested State record if approved. Only then does a new Realized State record get written.
 
 ### 7a.2 Provider Update Notification
@@ -684,8 +709,11 @@ entity:
 ```
 
 **Three billing models for SUSPENDED (closed vocabulary):**
+
 - **`billable`** — resources reserved and capacity held (stopped VM still consuming reserved IP and storage)
+
 - **`non_billable`** — resources fully released on suspension (spot/ephemeral resource)
+
 - **`reduced_rate`** — partial resources held (storage retained, compute released)
 
 Policy injects `billing_state` and `billing_metadata` during state transitions.
@@ -774,11 +802,17 @@ policy:
 ---
 
 - **Tenant** — the mandatory ownership boundary for all Resource/Service Entities
+
 - **Four States** — Intent, Requested, Realized, Discovered — the state lifecycle of a Resource/Service Request and Entity
+
 - **Field-Level Provenance** — every state transition and ownership transfer is recorded in Entity provenance
+
 - **Policy Engine** — evaluates provider events and unsanctioned changes, determines response actions
+
 - **Service Dependencies** — Resource/Service Entities declare dependencies on other Entities
+
 - **Resource Grouping** — Entities belong to a Tenant and optionally to additional Resource Groups
+
 - **Provider Contract** — governs provider obligations including capacity reporting and event notification
 
 ---
