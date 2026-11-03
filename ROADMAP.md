@@ -8,9 +8,8 @@ freeze, every open issue sorted into blockers and 1.x, the work packages, and th
 
 - Close the remaining 1.0 blockers (the plan's §4.1).
 - Finish the readability sweep, area by area, under the gate (row 138).
-- Promote parts from experimental to candidate to stable by the ladder
-  (`docs/spec/governance/graduation.md`), as a running implementation's conformance reports
-  arrive.
+- Promote parts from experimental to candidate to stable by the graduation ladder (register
+  row 145), as a running implementation's conformance reports arrive.
 
 ## Then
 
