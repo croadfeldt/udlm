@@ -123,7 +123,7 @@ GET /.well-known/udlm/conformance
 
 **The schema is [`registry/conformance-declaration.schema.json`](registry/conformance-declaration.schema.json)** — that is what `WIR-035` requires a declaration to match, and what an implementation validates against. The example below is the worked illustration of it, not the definition.
 
-Three things the schema deliberately leaves open, because this section states nothing about them and a schema that guesses becomes the requirement: the **set of interop-surface names** (`consumer_api`, `provider_callbacks`, `federation`, `audit_export` appear only as keys in the example and are defined as a set nowhere), the **`profile` value** (organizations author their own), and **`leap_second_strategy`** (`time-and-clock.md` §8 holds that set open on purpose).
+The schema deliberately leaves three things open, because this section states nothing about them and a schema that guesses becomes the requirement. The **set of interop-surface names**: `consumer_api`, `provider_callbacks`, `federation` and `audit_export` appear only as keys in the example and are defined as a set nowhere. The **`profile` value**: organizations author their own. And **`leap_second_strategy`**: `time-and-clock.md` §8 holds that set open on purpose.
 
 The declaration body (the JSON response served at the endpoint above) has the
 following shape:
@@ -190,7 +190,7 @@ carrying the §4.1 shape (`udlm_version`, `profile`, `level`, `exclusions`,
 MAY serve the bare §4.1 object directly.
 
 Whether that single document is served at one `/.well-known/udlm/conformance`
-path or split across per-major paths is a **implementation choice at the HTTP
+path or split across per-major paths is an **implementation choice at the HTTP
 binding** (§1), not part of the data model. The **v1 HTTP binding is one path**:
 `GET /.well-known/udlm/conformance` returns the multi-version document.
 
@@ -289,21 +289,21 @@ count of top-level ids near the count of *concerns*, rather than inflating it wi
 
 **Where these come from.** This section consolidates the MUSTs of the contract documents it links.
 Where a source document carries its own conformance list, that list is authoritative and this one
-must not be shorter than it — `error-model.md` §9 is the worked case: it states nine conformance
-checks and this section carried four of them until they were reconciled.
+must not be shorter than it. `error-model.md` §9 is the worked case: it states nine conformance
+checks, and the Errors table below carries every one of them (`tests/check_conformance_consolidation.py`).
 
 **Who can test each item.** Every row says what kind of thing has to be exercised to check it, because
 the answer decides where the test can live at all:
 
-- **artifact** — checkable against something in this repository. 8 of 37. These are the only ones the
+- **artifact** — checkable against something in this repository. 8 of the 40 top-level ids. These are the only ones the
   corpus in `registry/examples/` can ever cover, and `WIR-001`/`WIR-002` already have cases there.
 - **wire** — checkable against a message an implementation emits: an error envelope, an event, a
   rate-limit response. Needs a peer to talk to, not a live estate.
 - **runtime** — checkable only against a running implementation over time: clock skew, retry budgets,
   backoff, endpoints answering at a well-known path.
 
-**The consequence is worth stating plainly: 29 of 37 requirements cannot be tested from inside this
-repository.** No amount of corpus work reaches them. They are what §8's suite exists for, and why
+**The consequence is worth stating plainly: 32 of the 40 top-level requirements cannot be tested from
+inside this repository.** No amount of corpus work reaches them. They are what §8's suite exists for, and why
 that suite has to be an artifact a third party runs against their own implementation rather than more
 gates here.
 
@@ -324,10 +324,10 @@ gates here.
 | Rule | Tested by | Requirement |
 |---|---|---|
 | `WIR-007` | artifact | All wire timestamps are RFC 3339 instants normalized to UTC with a `Z` suffix, seconds precision minimum; sub-second precision is permitted, and the producing clock is attributed via the nearest `time_source` |
-| `WIR-008` | runtime | A `max_divergence` bound is **in effect and declared** — the profile adopts one by reference (`time-and-clock.md` §6.2), and an implementation MAY declare its own — and the implementation enforces the bound it declared: provider-supplied artifacts beyond it are rejected with `validation.timestamp_skew_exceeded`, peer-supplied ones are audited and the source flagged (§6.4) |
-| `WIR-009` | runtime | A timestamp beyond the declared bound **in the future** is rejected (§6.4) |
+| `WIR-008` | runtime | A `max_divergence` bound is **in effect and declared** — the profile adopts one by reference (`time-and-clock.md` §6), and an implementation MAY declare its own — and the implementation enforces the bound it declared: provider-supplied artifacts beyond it are rejected with `validation.timestamp_skew_exceeded`, peer-supplied ones are audited and the source flagged (§6) |
+| `WIR-009` | runtime | A timestamp beyond the declared bound **in the future** is rejected (`time-and-clock.md` §6) |
 | `WIR-010` | runtime | Leap-second strategy declared (monotonic clock required; smear recommended) per [`time-and-clock.md`](docs/spec/contracts/time-and-clock.md) §8 |
-| `WIR-011` | runtime | Total order within a stream is reconstructible from the hash links + `sequence_uuid` **alone** — the wall-clock timestamp is never transmitted or compared for ordering (`time-and-clock.md` §4.1) |
+| `WIR-011` | runtime | Total order within a stream is reconstructible from the hash links + `sequence_uuid` **alone** — the wall-clock timestamp is never transmitted or compared for ordering (`time-and-clock.md` §4) |
 
 ### Errors ([`error-model.md`](docs/spec/contracts/error-model.md))
 
@@ -526,7 +526,7 @@ An implementation claiming conformance follows this process:
 1. **Implement** the required contracts per §5.
 2. **Publish** schema bundle, capability declarations, and conformance
    declaration at the well-known endpoints.
-3. **Run** the conformance test suite against the running implementation.
+3. **Run** the conformance test suite (§8) against the records the implementation writes.
 4. **Record** the test results, suite version, and timestamp in the conformance
    declaration.
 5. **Make public** the conformance declaration URL so peers can verify before
@@ -595,6 +595,6 @@ detectable by running the test suite; verifiers MAY publish discrepancies.
 - [`docs/spec/contracts/event-catalog.md`](docs/spec/contracts/event-catalog.md)
 - [`docs/spec/contracts/provider-contract.md`](docs/spec/contracts/provider-contract.md)
 - [`docs/spec/contracts/policy-contract.md`](docs/spec/contracts/policy-contract.md)
-- [`tests/test-framework-specification.md`](tests/test-framework-specification.md) — the conformance test suite
+- [`tests/test-framework-specification.md`](tests/test-framework-specification.md) — the test-framework specification; the suite itself is `tests/conformance.py` (§8)
 - [`docs/spec/foundations/data-model-core.md`](docs/spec/foundations/data-model-core.md) — the settled core decisions
 - [`docs/spec/foundations/layering-and-versioning.md`](docs/spec/foundations/layering-and-versioning.md) — semver basis

@@ -29,20 +29,23 @@ Three more, from the research in [`docs/research/udlm-1.0-research.md`](../docs/
 5. **One production deployment, stated honestly.** The estate runs the model end to end and passes
    suite 1.0.0; the conformance declaration says it is the authors' own deployment. Two independent
    implementations is the IETF and W3C floor; UDLM does not claim that level and says so.
-7. **Nothing is stable until it is used and validated** (maintainer, 2026-11-03). A part is stable
-   once a running implementation has used it and the conformance suite has judged its records.
-   Until then it is experimental, whatever it looks like on paper. Every part is experimental
-   today; the stable list is earned one part at a time, by a register row each. The 1.0 tag
-   covers the stable parts at that time, and the maintainer decides when that set is enough.
-8. **A part graduates by a ladder, not by a declaration** (maintainer, 2026-11-03; row 145). Three
-   stages: experimental, candidate, stable. Candidate needs a worked record, a must-reject case for
-   every rule it carries, readable text, no open blocker, and a register row. Stable needs 90 days
-   as a candidate with no breaking change and a conformance report from a running implementation
-   that judged at least ten of its records. The ladder is `docs/spec/governance/graduation.md`.
 6. **A release candidate with a 30-day hold.** When the exit criteria hold, the repo is tagged
    `udlm/1.0-rc1`. 1.0 is tagged only after 30 days with no breaking change and the suite green;
    a breaking change restarts the clock (OCI's rule). The maintainer's go is recorded as a register
    row. We are not at this stage; this is the rule for when we are.
+
+Two more (maintainer, 2026-11-03), on what stable means and how a part earns it.
+
+7. **Nothing is stable until it is used and validated** (row 144). A part is stable
+   once a running implementation has used it and the conformance suite has judged its records.
+   Until then it is experimental, whatever it looks like on paper. Every part is experimental
+   today; the stable list is earned one part at a time, by a register row each. The 1.0 tag
+   covers the stable parts at that time, and the maintainer decides when that set is enough.
+8. **A part graduates by a ladder, not by a declaration** (row 145). Three
+   stages: experimental, candidate, stable. Candidate needs a worked record, a must-reject case for
+   every rule it carries, readable text, no open blocker, and a register row. Stable needs 90 days
+   as a candidate with no breaking change and a conformance report from a running implementation
+   that judged at least ten of its records. The ladder is `docs/spec/governance/graduation.md`.
 
 ## 2. What 1.0 means
 
@@ -51,14 +54,14 @@ a promise: within 1.x nothing stable is removed, renamed or narrowed; additions 
 breaking change is 2.0. Every schema, class and contract is marked stable or experimental; only
 stable parts carry the promise, and experimental parts may change without notice. Stable is
 earned by use and validation, never declared (ruling 7). 1.0 is reached
-from a release candidate that has held with no breaking change for 30 days, has passed conformance
-suite 1.0.0 against at least one production deployment, and is ratified by the maintainer in the
+from a release candidate that has held with no breaking change for 30 days and has passed conformance
+suite 1.0.0 against at least one production deployment. The maintainer ratifies the cut in the
 register. A stable element is removed only in a major, after at least one minor as deprecated;
 peers get six months' notice before an old major is dropped.
 
-This matches what the field does: 1.0 is a compatibility promise, not a completeness claim (8 of
-9 specs shipped with parts left out); stability is per component (7 of 9); a candidate stage with
-a minimum hold is near-universal (8 of 9); nobody promises compatibility across majors (9 of 9).
+This matches what the field does. 1.0 is a compatibility promise, not a completeness claim (8 of
+9 specs shipped with parts left out). Stability is per component (7 of 9). A candidate stage with
+a minimum hold is near-universal (8 of 9). Nobody promises compatibility across majors (9 of 9).
 Where UDLM is stricter: a conformance suite is a gate (3 of 9). Where it is weaker, and says so:
 one deployment by the authors, where the IETF and W3C floor is two independent implementations.
 
@@ -86,9 +89,9 @@ From the day this document merges:
 - Nothing new lands in 0.1 except the blockers in §4.1. A new idea becomes an issue labelled
   `1.x` and waits.
 - A blocker is anything that would be a breaking change after the tag **in a part that will be
-  stable**: a rename; a field removed, narrowed or made required; a closed list of values that is
-  not settled; a wrong default; a rule the spec states that no schema carries; a decision the spec
-  claims that nothing implements. A part that is not settled can instead ship marked experimental
+  stable**. That means a rename; a field removed, narrowed or made required; a closed list of values
+  that is not settled; or a wrong default. It also means a rule the spec states that no schema
+  carries, or a decision the spec claims that nothing implements. A part that is not settled can instead ship marked experimental
   (ruling 4); WP0 decides that per row and records it.
 - Adding things (an optional field, a class, an edge, an output) is never a blocker. Adding is no
   harder after 1.0, so it waits.

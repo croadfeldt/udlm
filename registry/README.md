@@ -14,11 +14,14 @@ registry/
   classes/<family>/…               # ALL definitions (ADR-061: base = dir + _base.yaml;
                                    #   type/provider = leaf file until it gains children)
   generated/                       # the SERVED flat specs — compiled, one per type, never authored
-  profiles/                        # the deployment PROFILES — activatable postures (six built-in)
-  instances/                       # worked example records (realized entities, policies, layers, …)
-                                   #   and the shipped decision/taxonomy records
-  state-record.schema.json     # the instance meta-schema: one record per lifecycle state (ruling 071)
-  entity-view.schema.json      # the merged read model, assembled from state records — never written
+  examples/                        # worked records (state records, layers, policies, decision records, …);
+                                   #   must-reject/ holds the cases the gates and the conformance suite refuse
+  taxonomies/                      # the governed term trees (usage groups, provider capabilities, …)
+  consumers/                       # one manifest per consumer: what it reads and must conform to
+  facets/                          # the facet schemas a sealed record carries (context, finding, provenance, …)
+  state-record.schema.json         # the instance meta-schema: one record per lifecycle state (ruling 071)
+  entity-view.schema.json          # the merged read model, assembled from state records — never written
+  stability.yaml                   # every part's stage: experimental, candidate, stable or reference
   VERSIONING.md                    # two-axis versioning + the publish law
   pin-manifest.json                # the digest referrer behind the publish law (append-only)
   rule-id-registry.yaml            # every normative rule family and its one home file
