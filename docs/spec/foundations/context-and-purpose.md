@@ -11,7 +11,7 @@
 
 ## 1. Purpose
 
-UDLM is the foundational data model upon which a conformant implementation (e.g. The control plane) operates. It is not a storage mechanism or a database schema — it is the **lingua franca** through which every component of an implementation communicates: reading, writing, validating, enriching, transforming, or comparing data.
+UDLM is the foundational data model upon which a conformant implementation (the control plane, for example) operates. It is not a storage mechanism or a database schema — it is the **lingua franca** through which every component of an implementation communicates: reading, writing, validating, enriching, transforming, or comparing data.
 
 The data model exists to solve a problem that is endemic to enterprise IT: **there is no single, trustworthy, consistent representation of infrastructure state**. Tools proliferate, CMDBs diverge, and the result is that no one knows with confidence what exists, what was requested, what was provisioned, or whether the current state matches the intended state.
 
@@ -80,8 +80,8 @@ What is **normative** is that a field's evolution is *reconstructable*: for any 
 - The audit capability reads lineage that was recorded at the point of change, not reconstructed from logs
 
 **Where** provenance is stored is an implementation choice, with one ruled home (ADR-059): the
-modification history lives in the **audit/OL record family** — sealed, chained, in-model — while
-the working record carries state claims only. "Without querying a separate system" reads as
+modification history lives in the **audit record family** (OpenLineage vocabulary; sealed, chained,
+in-model) while the working record carries state claims only. "Without querying a separate system" reads as
 *without leaving the model*: the audit records are a UDLM record family, so lineage stays
 recoverable from stored model facts. It is housed in the family whose job is history, not
 inline with the working data. `layering-and-versioning.md` §3a's tiered storage models and
@@ -92,27 +92,26 @@ permitted (ADR-059's claims discipline).
 ### 4.4 Provenance Metadata Structure
 
 The field-level provenance shape has **one home**:
-[`registry/entity-view.schema.json`](../../../registry/entity-view.schema.json)
-`provenance` — keyed by dot-path into the spec, an ordered modification chain per field, each
-entry carrying `source.kind` (the canonical vocabulary:
-`layer | policy | actor | provider | discovery | rehydration | override`), the source uuid,
-the timestamp, and optional `operation_type`/`sequence`. Field override control
+[`registry/state-record.schema.json`](../../../registry/state-record.schema.json)
+`$defs/provenance` (the entity view references the same definition) — keyed by dot-path into the
+spec, an ordered modification chain per field, each entry carrying `source.kind` (the canonical
+vocabulary: `layer | policy | actor | provider | discovery | rehydration | override`), the source
+`id`, the timestamp, and optional `operation_type`/`sequence`. Field override control
 (`allow | constrained | immutable` and the actor matrix) is the Layering spec's model —
 [layering-and-versioning.md §5a](layering-and-versioning.md) — set exclusively by policy
 evaluation, never by data layers or request assembly. This document does not restate either
 shape.
 
-> **Supersession (ADR-059 — the working record and its provenance chains).** The in-record
-> provenance block is the *current* mechanism and is **superseded**: the working record
-> carries state claims only (states + pin + integrity chain), and field provenance migrates
-> to the `udlm_provenance` seal facet on the sealed ledger. The block retires when the
-> receipt shape lands; until then the schema above binds.
+> **Citable lineage (ADR-059 — the working record and its provenance chains).** The in-record
+> provenance block is a convenience copy and is not citable as lineage. Provable lineage is the
+> sealed ledger's `udlm_provenance` facet (`registry/facets/udlm-provenance.facet.json`); the
+> working record itself carries state claims only (states + pin + integrity chain).
 
 ### 4.5 The Provenance Obligation
 
 Provenance recording is a **data-model obligation, not optional**. Any entity that creates or modifies a field value records, alongside that value, the source UUID and source type that produced it and the timestamp. For modifications it also records the operation type and reason (the schema shape §4.4 points at). A process that modifies data without recording this violates the data-model contract.
 
-This obligation is stated **normatively**, together with the assembly and storage models that satisfy it (LAY-00x / OPS-00x), in [layering-and-versioning.md](layering-and-versioning.md) — the layering/assembly spec. This section summarizes why it matters; that spec binds.
+This obligation is stated **normatively**, together with the assembly and storage models that satisfy it (`LAY-00x`), in [layering-and-versioning.md](layering-and-versioning.md) — the layering/assembly spec. This section summarizes why it matters; that spec binds.
 
 *Which specific implementation components carry this obligation, and exactly what each records, is implementation architecture — see control-plane architecture documentation.*
 
@@ -183,7 +182,7 @@ This constraint is what makes the following capabilities trustworthy:
 Every governed record says what it is (`uuid`, `handle`), which version it is (`version`), whether it
 is in force (`status`: `active`, `deprecated` or `retired`), and who may author it (`contributor`). Who
 did what is the audit record of each submission; what changed is version control; who set each value
-of an entity is field-level `provenance`. These replace the retired `artifact_metadata` block.
+of an entity is field-level `provenance`. There is no `artifact_metadata` block.
 
 Drafting and review are stages of a change before it becomes a record, not record states. An
 accountable owner and their contact have no schema field yet; reaching them is a control-plane
@@ -271,12 +270,10 @@ flagged as portability-degraded and the consumer is notified. So: **carry provid
 
 ## 8. Resolved Questions
 
-The prior-state "open questions" for this document are all resolved, and each
-outcome now lives where it is normative: the store-contract model in
-[data-model-core](data-model-core.md) §6 (ruling D1), `native_passthrough`
-(DATA-001), and the provenance models (LAY-007/LAY-008) in
-[layering-and-versioning.md](layering-and-versioning.md). Those decisions live there,
-not here.
+This document has no open questions. Each former question is settled where it is normative:
+the store-contract model in [data-model-core](data-model-core.md) §6 (ruling D1),
+`native_passthrough` (DATA-001, [data-roles.md](../contracts/data-roles.md)), and the
+provenance models (LAY-007/LAY-008) in [layering-and-versioning.md](layering-and-versioning.md).
 
 ---
 

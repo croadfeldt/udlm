@@ -180,6 +180,16 @@ no single tool owns: the **cross-tool intent** and the **estate / realized graph
 tool own this mechanism?* → Provider-wrap it; *does anyone own the cross-tool intent + estate graph?* → no →
 that's ours.
 
+
+## T9 — The substrate never translates into a provider's native spec
+
+UDLM data crosses the provider boundary in UDLM form; **naturalization into a provider's
+native format happens at the provider edge, never in the substrate** (the control plane implementation
+records this as DCM ADR-023). The substrate carries conformant data in and conformant data out —
+it has no per-provider translation layer, so providers stay interchangeable and the data
+model stays free of any provider's vocabulary. The narrative *why* is
+[`docs/spec/foundations/context-and-purpose.md`](../foundations/context-and-purpose.md) §7.1.
+
 ---
 
 **Consequence — what a UDLM spec contains and doesn't.**
@@ -191,13 +201,3 @@ that's ours.
 
 See `cross-cutting-requirements.md` for the pillar requirements these tenets serve, and
 `registry/SPEC-DESIGN-REQUIREMENTS.md` for the per-entity authoring rubric.
-
-
-## T9 — The substrate never translates into a provider's native spec
-
-UDLM data crosses the provider boundary in UDLM form; **naturalization into a provider's
-native format happens at the provider edge, never in the substrate** (the control plane implementation
-records this as DCM ADR-023). The substrate carries conformant data in and conformant data out —
-it has no per-provider translation layer, so providers stay interchangeable and the data
-model stays free of any provider's vocabulary. The narrative *why* is
-[`docs/spec/foundations/context-and-purpose.md`](../foundations/context-and-purpose.md) §7.1.

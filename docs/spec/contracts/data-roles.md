@@ -70,7 +70,7 @@ A provider's registration says what roles it will accept (`accepts_roles`) and w
 
 ## 6. Policy validates and controls — reuse the Governance Matrix
 
-Role-based dispatch is **not new policy machinery** — the Governance Matrix already fires on every `the control plane → Provider` interaction (policy-contract §857) with `ALLOW / DENY / STRIP_FIELD / REDACT / AUDIT_ONLY`. `data_role` is now a **match source** (parallel to `data_classification`).
+Role-based dispatch is **not new policy machinery** — the Governance Matrix already fires on every `the control plane → Provider` interaction (policy-contract.md §15) with `ALLOW / DENY / STRIP_FIELD / REDACT / AUDIT_ONLY`. `data_role` is a **match source** (parallel to `data_classification`).
 
 - **Default rule:** `STRIP_FIELD` every non-`execution` role at the control plane→Provider boundary.
 - **Delivered set** = `accepts_roles` ∩ Governance-Matrix-permitted. Sovereignty/profile can strip a role the provider requested; it can never widen beyond `accepts_roles`.

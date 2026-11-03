@@ -1,8 +1,8 @@
 # Log shipping — store → shippers → staleness (the flow)
 
-**What this settles:** how a resource's logs come to land in a store, as records: a **log store** publishes its
+**What this settles:** how a resource's logs come to land in a store, as records. A **log store** publishes its
 intake, and one **log shipper** per source binds that intake and delivers to it. A **lighter** flow: it **builds
-on [request-realization](request-realization.md)** (the base intent→realized loop) and documents only what log
+on [request-realization](request-realization.md)** (the base intent → realized loop) and documents only what log
 shipping adds: the binding to the store's published intake, the protocol match, and staleness after realization.
 
 > **Use Cases:** `observability/deploy-log-shipper`, `observability/estate-logs-reach-one-store` (positive);
@@ -11,7 +11,7 @@ shipping adds: the binding to the store's published intake, the protocol match, 
 
 **In one breath.** The store is realized first and publishes one endpoint per declared intake (`syslog` over
 `tls`, `otlp` over `http`). Each shipper names the resource it ships from (a `contained_by` edge) and the store
-it ships to (a `binds_to` edge), and its Type names the protocol. A shipper whose protocol and transport the store
+it ships to (the `sink` edge, a `binds_to`), and its Type names the protocol. A shipper whose protocol and transport the store
 does not offer is refused before any sender is configured; one whose store is unreachable or unauthorized is
 refused too. Once realized, the shipper's `last_shipped_at` is watched, and a source that stops arriving is
 stale, not silently healthy.
@@ -27,7 +27,7 @@ flowchart TD
     D -->|yes| E{"Store reachable and the shipper<br/>authorized to write to it?"}
     E -->|no| E1["Refuse shipper — name the sink<br/>failure, not the store's internals"]
     E -->|yes| F["Provider configures the sender<br/>(agent, device setting or cluster forwarder)"]
-    F --> G["Shipper Realized<br/>shipping_to = the bound endpoint"]
+    F --> G["Shipper Realized<br/>sink = the bound endpoint"]
     G --> H{"last_shipped_at within<br/>the staleness bound?"}
     H -->|no| H1["Shipper stale — drift raised<br/>against the record"]
     H -->|yes| G
@@ -53,7 +53,7 @@ flowchart TD
 Which product stores the logs, how a sender is configured (an rsyslog drop-in, a Redfish EventDestination, a
 cluster log forwarder), the staleness bound, and whether every resource must have a shipper. The last two are
 policy: a deployment may require a shipper for every realized machine and raise the gap when one is missing.
-UDLM defines the record shapes, the binding and the protocol match; the control plane and its providers
+UDLM defines the record shapes, the binding and the protocol match. The control plane and its providers
 realize them.
 
 ## Where each piece is specified

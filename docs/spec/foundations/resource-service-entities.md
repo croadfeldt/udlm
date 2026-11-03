@@ -174,6 +174,7 @@ ownership_transfer:
 Every Provider Catalog Item must declare the ownership model(s) it supports:
 
 ```yaml
+# illustrative: not schema-checked — a class declares one ownership_model at the Type tier (OWN-007)
 catalog_item:
   uuid: <uuid>
   ownership_models_supported:
@@ -521,6 +522,7 @@ This pre-authorization pattern allows providers to implement auto-scaling, auto-
 Every Service Provider must declare its accreditation status during registration. Accreditation declarations are references to accreditation records registered in the accreditation registry (see [Accreditation and Authorization Matrix](../governance/accreditation-and-authorization-matrix.md)).
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 provider_registration:
   # ... existing fields ...
   accreditations:
@@ -544,7 +546,8 @@ provider_registration:
   # accreditations only; NOT self-declared. A provider without accreditations is capped at the hard
   # floor below (public/internal), so there is no self-declared fallback that could raise the ceiling
   # above what policy permits. A value supplied by the provider is ignored.
-  # (computed field, control-plane-owned — resolved in the dcm registration verdict, not the submission)
+  # (computed field, control-plane-owned — resolved in the registration verdict,
+  #  registry/registration-verdict.schema.json, not the submission)
 ```
 
 Providers without any accreditation records are treated as `self_declared` level and are subject to the most restrictive authorization matrix rules. They may only receive data classified as `public` or `internal`.
@@ -553,31 +556,20 @@ Providers without any accreditation records are treated as `self_declared` level
 
 ## 8. Entity Relationships
 
-Every Resource/Service Entity carries a `relationships` section declaring its relationships to other entities — internal entities, external data entities, and business context entities. The relationship model is universal — the same structure is used for all relationship types.
+Every Resource/Service Entity declares its edges to other entities — internal entities, external data entities, and business context entities — in `dependencies[]` on its record. The relationship model is universal: one structure for every relationship type, declared on one side and read both ways.
 
 See [Entity Relationships](entity-relationships.md) for the complete relationship model.
 
 ```yaml
-resource_service_entity:
-  uuid: <uuid>
-  # ... other entity fields ...
-  relationships:
-    - relationship_uuid: <uuid — same on both sides>
-      this_entity_uuid: <this entity's uuid>
-      this_role: <role this entity plays>
-      related_entity_uuid: <uuid of related entity or external reference>
-      related_entity_type: <internal|external>
-      edge_type: <depends_on|contained_by|binds_to|references>
-      strength: <hard|soft>          # depends_on only
-      relation: <declared relation name (common-elements §9)>
-      # nature (constituent|operational|informational) is derived from edge_type — see entity-relationships.md §6
-      lifecycle_policy:
-        on_related_destroy: <destroy|retain|detach|notify>
-        on_related_suspend: <suspend|retain|detach|notify>
-        on_related_modify: <cascade|ignore|notify>
-      status: <active|suspended|terminated>
-      provenance:
-        <standard provenance metadata>
+# schema: state-record.schema.json (dependencies[])
+dependencies:
+  - target_uuid: <uuid of the related entity>   # resolved from target_handle at reserve
+    edge_type: <depends_on|contained_by|binds_to|references>
+    strength: <hard|soft>          # depends_on only
+    relation: <declared relation name (common-elements §9)>
+    target_field: <field>          # binds_to only
+    # nature (constituent|operational|informational) is derived from edge_type — entity-relationships §4
+    # lifecycle policy per edge is an obligation with no schema field yet — entity-relationships §8
 ```
 
 ---
@@ -800,6 +792,8 @@ policy:
 | `RSE-018` | Entity `billing_state` (billable, non_billable, or reduced_rate) is a first-class field injected by policy during state transitions. A consuming cost-analysis component reads `billing_state` for cost attribution. The substrate does not decide billing policy — it carries the billing signal. |
 
 ---
+
+## 11. Related Concepts
 
 - **Tenant** — the mandatory ownership boundary for all Resource/Service Entities
 

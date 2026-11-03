@@ -45,14 +45,14 @@ sequenceDiagram
 - **Status inherits transitively.** `refused` root → `blocked_permanent` dependent →
   `blocked_permanent` next-up; the operational chain carries the status the whole way.
 - **One surface, rooted.** The chain is surfaced as a single refusal naming the **root** and the
-  members it took down — not one opaque failure per member (UC-008 forbids naming only the
+  members it took down — not one opaque failure per member (case 008 of the family forbids naming only the
   proximate one).
 - **Scoped to the chain.** Members not on this operational path are unaffected and realize.
 
 ## What UDLM does not decide
 
 Whether the refused chain is torn down, left inert, or routed for human override, and how the
-refusal is delivered — DCM policy over the statuses and surfacing contract UDLM declares (ADR-008).
+refusal is delivered — control-plane policy over the statuses and surfacing contract UDLM declares (ADR-008).
 UDLM owns the `refused`/`blocked_permanent` vocabulary, the transitive-inheritance semantics, and
 the root-naming obligation.
 
@@ -70,6 +70,5 @@ the root-naming obligation.
 |---|---|
 | The model + the matrix cell | [`intent-fulfillment-model.md`](../design/intent-fulfillment-model.md) (operational · permanent) |
 | Transient sibling | [operational-dependency-cascade](intent-fulfillment-operational-dependency-cascade.md) |
-| Refusal-with-resolution surface | [surface-names-root](intent-fulfillment-surface-names-root.md) (UC-008) |
+| Refusal-with-resolution surface | [surface-names-root](intent-fulfillment-surface-names-root.md) (case 008 of the family) |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
-| DCM counterpart | dcm-project/dcm `docs/flows/` |

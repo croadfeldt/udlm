@@ -4,10 +4,10 @@
 
 > **Scope.** This document defines the three abstractions the **data model** is built from and their
 > universal properties. How an implementation *connects* them at runtime — the event loop, the policy
-> evaluator, the control-plane components — is implementation architecture, not the data model; it is owned by
-> control-plane architecture docs, and this document points to it rather than specifying it (the substrate/implementation boundary,
-> [ADR-008](../../adr/ADR-008-udlm-dcm-boundary.md): if a peer could realize it differently and still be
-> valid, it is the control plane, not UDLM).
+> evaluator, the control-plane components — is implementation architecture, not the data model. That
+> belongs to control-plane architecture docs; this document points to it rather than specifying it. The
+> boundary test is [ADR-008](../../adr/ADR-008-udlm-dcm-boundary.md): if a peer could realize it
+> differently and still be valid, it is the control plane, not UDLM.
 
 ---
 
@@ -118,7 +118,7 @@ does internally.
 
 - **Zero trust** — every Provider interaction is authenticated and authorized; no implicit trust from network position
 
-- **Lifecycle** — every Provider registration goes through a defined lifecycle (SUBMITTED → VALIDATING → ACTIVE → DEREGISTERED)
+- **Lifecycle** — every Provider registration goes through a defined lifecycle: SUBMITTED → VALIDATING → PENDING_APPROVAL → ACTIVE, and from ACTIVE to SUSPENDED or DEREGISTERED ([provider-contract.md](../contracts/provider-contract.md) §2)
 
 The single interface every Provider implements — the base contract, and the capability declaration that
 distinguishes one Provider type from another — is defined in [provider-contract.md](../contracts/provider-contract.md).
@@ -150,7 +150,7 @@ Policies govern every transition, transformation, and constraint over Data.
 
 - **Match conditions** — every Policy declares when it fires, using the four governance matrix axes (subject, data, target, context) or payload type + field conditions
 
-- **Typed output schema** — every Policy produces one of seven output types; the output type determines how the result is applied
+- **Typed output schema** — every Policy produces one of eight output types ([policy-contract.md](../contracts/policy-contract.md) §10–§17); the output type determines how the result is applied
 
 - **Enforcement level** — hard (cannot be overridden) or soft (can be tightened by more-specific policies)
 
@@ -270,7 +270,7 @@ type by defining an output schema; a new data type by defining a schema. No core
 
 ## Design Priority Order
 
-The priority order that governs every design decision is **security → ease of use → extensibility → fit-for-purpose** (higher wins on conflict; all apply where none conflicts). It is defined once, with its decision procedure, profile scaling table, and `DPO-001–006` policies, in [Design Priorities](../principles/design-priorities.md). It is not restated here.
+The priority order that governs every design decision is **security → ease of use → extensibility → fit-for-purpose** (higher wins on conflict; all apply where none conflicts). It is defined once, with its decision procedure, profile scaling table, and `DPO-001–007` policies, in [Design Priorities](../principles/design-priorities.md). It is not restated here.
 
 ---
 

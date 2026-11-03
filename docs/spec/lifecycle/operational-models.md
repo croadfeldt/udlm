@@ -1,12 +1,8 @@
 # UDLM — Operational Models
 
->
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md).
-> more of those three abstractions.
->
->
-> The Policy abstraction — Recovery Policy types, trigger vocabulary, action vocabulary.
+> [foundations.md](../foundations/foundations.md). This document applies the Policy
+> abstraction: Recovery Policy types, trigger vocabulary, action vocabulary.
 
 **Related Documents:** [Four States](../foundations/four-states.md) | [Resource/Service Entities](../foundations/resource-service-entities.md) | [Service Dependencies](../foundations/service-dependencies.md) | [Retry Semantics](../contracts/retry-semantics.md)
 
@@ -32,11 +28,12 @@ The Recovery Policy Model is the foundational concept. Timeouts, cancellation ou
 The substrate defines three distinct timeout concerns. Each is independently configurable and independently audited. Specific default durations are implementation-configurable; the contract is that these three scopes exist and each has profile-governed defaults.
 
 ```yaml
+# illustrative: profile value table
 timeout_declarations:
   assembly_timeout:
     description: "Maximum time for the Request Payload Processor to complete assembly"
     profile_defaults:
-      minimal: PT5M
+      homelab: PT5M
       dev: PT5M
       standard: PT3M
       prod: PT2M
@@ -48,7 +45,7 @@ timeout_declarations:
   dispatch_timeout:
     description: "Maximum time to wait for provider implementation after dispatch"
     profile_defaults:
-      minimal: PT2H
+      homelab: PT2H
       dev: PT1H
       standard: PT1H
       prod: PT30M
@@ -63,7 +60,7 @@ timeout_declarations:
   reserve_query_timeout:
     description: "Maximum time for a single provider to respond to a reserve query"
     profile_defaults:
-      minimal: PT30S
+      homelab: PT30S
       dev: PT30S
       standard: PT10S
       prod: PT5S
@@ -80,7 +77,7 @@ timeout_declarations:
       If no reservation.expired arrives within the grace, the control plane emits its OWN reservation.expiry_unconfirmed
       event and fires the RESERVATION_EXPIRY_UNCONFIRMED recovery policy."
     profile_defaults:
-      minimal: PT60S
+      homelab: PT60S
       dev: PT60S
       standard: PT30S
       prod: PT15S
@@ -96,14 +93,14 @@ timeout_declarations:
       fixed point is a stalemate (mutually unsatisfiable criteria, oscillation, or holds that cannot be
       kept valid long enough to converge) — distinct from RESERVE_QUERY_ALL_EXHAUSTED (no capacity)."
     max_rounds:
-      minimal: 20
+      homelab: 20
       dev: 20
       standard: 12
       prod: 8
       fsi: 8
       sovereign: 8
     max_duration:
-      minimal: PT10M
+      homelab: PT10M
       dev: PT10M
       standard: PT5M
       prod: PT3M
@@ -177,7 +174,7 @@ Consumer submits cancellation
 Consumer submits cancellation
   │
   ▼ Entity state: PROVISIONING
-  │   Implementation checks provider.supports_cancellation
+  │   Implementation checks the provider's cancellation.supported
   │
   ├── Provider supports cancellation:
   │   Implementation sends cancellation payload
@@ -198,19 +195,18 @@ Consumer submits cancellation
 
 ### 3.2 Provider Cancellation Capability Declaration (Wire Contract)
 
-Providers declare cancellation support in their registration. Shape is normative:
+Providers declare cancellation support in their registration (`registry/provider-registration.schema.json`):
 
 ```yaml
-provider_cancellation_capabilities:
-  supports_cancellation: true
-  cancellation_supported_during: [DISPATCHED, PROVISIONING]
-  # DISPATCHED: can cancel before work begins
-  # PROVISIONING: can cancel and roll back mid-execution
-  cancellation_endpoint: POST /api/v1/provider/entities/{entity_uuid}/cancel
-  cancellation_response_time: PT30S    # SLA for cancellation response
-  partial_rollback_possible: true
-  # true: cancellation may leave partial resources → CANCELLATION_FAILED path
-  # false: cancellation is all-or-nothing (rare)
+# schema: provider-registration.schema.json
+capability_profiles:
+  realize_resources:
+    cancellation:
+      supported: true
+      during: [dispatched, provisioning]  # dispatched: before work begins; provisioning: roll back mid-execution
+      endpoint: POST /api/v1/provider/entities/{entity_uuid}/cancel
+      response_time: PT30S                # how soon the provider answers a cancellation
+      partial_rollback_possible: true     # true: may leave partial resources → CANCELLATION_FAILED path
 ```
 
 ### 3.3 Cancellation Payload (Wire Contract)
@@ -258,15 +254,16 @@ resource_type_spec:
 ```
 
 ```yaml
-provider_registration:
-  discovery_capabilities:
-    supports_discovery: true
-    discovery_endpoint: POST /api/v1/provider/entities/discover
-    max_entities_per_discovery_batch: 1000
-    discovery_latency_p95: PT10S    # how long discovery typically takes
-    supports_incremental_discovery: true
-    # incremental: only entities changed since last_discovery_timestamp
-    # full: all entities every time
+# schema: provider-registration.schema.json
+capability_profiles:
+  realize_resources:
+    discovery:
+      supported: true
+      method: api_query
+      endpoint: POST /api/v1/provider/entities/discover
+      max_entities_per_batch: 1000
+      latency_p95: PT10S                 # how long discovery typically takes
+      supports_incremental: true         # only entities changed since the last discovery
 ```
 
 ### 4.3 Trigger Type 2 — Event-triggered (Closed Substrate Vocabulary)
@@ -595,8 +592,9 @@ recovery_policy_group:
 Recovery profile groups bind to deployment profiles as defaults, with override at Tenant and resource-type levels:
 
 ```yaml
+# illustrative: profile value table
 profile_recovery_defaults:
-  minimal:    recovery-automated-reconciliation
+  homelab:    recovery-automated-reconciliation
   dev:        recovery-automated-reconciliation
   standard:   recovery-automated-reconciliation
   prod:       recovery-notify-and-wait

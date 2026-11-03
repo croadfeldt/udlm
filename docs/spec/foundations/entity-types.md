@@ -12,7 +12,7 @@
 > *logical grouping*, **not** a usage boundary. Within a family, the **shape** is **derived** (`has_constituents`, not stored) —
 > **Atomic** (owns no constituents) or **Composite** (owns constituents) — so "Composite" is a shape a
 > Resource *or* Process can take, not a separate family. The **Knowledge family** (Capability, TaxonomyTerm,
-> …), anchored by DAV, is in [../entities/knowledge-family.md](knowledge-family.md).
+> …), first exercised by a non-normative example implementation, is in [knowledge-family.md](knowledge-family.md).
 
 ---
 
@@ -116,7 +116,7 @@ resource_entity:
   owned_by_tenant_uuid: <uuid>          # exactly one Tenant; mandatory
   created_by_actor_uuid: <uuid>
 
-  # Ownership model — see doc 04b
+  # Ownership model — see ownership-sharing-allocation.md
   ownership_model: <whole_allocation|allocation|shareable>
   # whole_allocation: consumer owns this entity outright
   # allocation:       this entity is an allocation carved from a pool (consumer owns it)
@@ -153,7 +153,7 @@ resource_entity:
   # Relationships (see docs/spec/foundations/entity-relationships.md)
   relationships: [...]
 
-  # Field-level provenance on all data fields (see foundations.md §4)
+  # Field-level provenance on all data fields (see context-and-purpose.md §4)
   # [all resource-type-specific fields carry provenance metadata]
 ```
 
@@ -181,7 +181,7 @@ An entity in `PENDING_REVIEW`:
 
 ### 2.2 Atomic and Composite — the derived shape (`has_constituents`)
 
-Within the **Resource** and **Process** families the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents) — is **derived** (`has_constituents`, from the constituent list), **not a stored `entity_type` field** (ADR-027 addendum, 2026-07-20: 0 behavioral consumers, fully derivable). Composite is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as an Atomic one; it additionally declares constituents and a `composite_health` axis. A composite Resource is produced by a composite resource type specification that orchestrates multiple constituent Resources into a higher-order service. A composite Process is one the control plane itself sequences across several constituent process calls, the same way. A single call, even an Ansible workflow the provider orchestrates internally, is Atomic. The composite is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. The derived `has_constituents` is queryable and policy-gateable at the catalog and instance layers; "find all composites" = `has_constituents` (derived from `constituents[]`). (The specific type — `Machine.VM`, `Automation.Workflow` — is `resource_type`, a finer gate.)
+Within the **Resource** and **Process** families the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents) — is **derived** (`has_constituents`, from the constituent list), **not a stored `entity_type` field** (ADR-027 addendum). Composite is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as an Atomic one; it additionally declares constituents and a `composite_health` axis. A composite Resource is produced by a composite resource type specification that orchestrates multiple constituent Resources into a higher-order service. A composite Process is one the control plane itself sequences across several constituent process calls, the same way. A single call, even an Ansible workflow the provider orchestrates internally, is Atomic. The composite is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. The derived `has_constituents` is queryable and policy-gateable at the catalog and instance layers; "find all composites" = `has_constituents` (derived from `constituents[]`). (The specific type — `Machine.VM`, `Automation.OSPatch` — is `resource_type`, a finer gate.)
 
 **Characteristics:**
 
@@ -197,7 +197,7 @@ Within the **Resource** and **Process** families the **shape** — **Atomic** (o
 
 **Lifecycle state machine:** Same as Resource — and the lifecycle enum is **unchanged** for composites. Aggregate constituent health is a **separate health axis** (`composite_health`, a `status.conditions`-style overlay per [data-model-core](data-model-core.md) §3): a composite is healthy only when all required constituents are operational. **`DEGRADED` is a condition/health value, never a lifecycle state** — a composite with a failed partial constituent stays in its lifecycle state while `composite_health: degraded` records the impairment.
 
-**Constituent relationship:** Each constituent is recorded as a `constituent_of` relationship from the constituent to the composite. The composite holds `has_constituent` relationships to each constituent. The composite UUID is the correlation key across all constituent audit records.
+**Constituent relationship:** The composite lists each constituent in its `constituents[]` (`component_id`, `resource_type`, `instance_uuid`, `provided_by`, `lifecycle_state` — `registry/state-record.schema.json`). The constituent carries no stored back-reference; the inverse reading is derived (data-model-core §4). The composite UUID is the correlation key across all constituent audit records.
 
 ```yaml
 composite_entity:
@@ -224,7 +224,7 @@ composite_entity:
 
 A **Process** is a bounded execution — an automation job, playbook, pipeline, workflow, or script run. It is defined by its *form*, not its effect: it runs to a terminal outcome (COMPLETED, FAILED, or CANCELLED) and is never a maintained state — no drift, no suspend, no reconciliation. It may read or change Resources (and records which entity UUIDs it affected), but a Process itself is not kept. Automation is the archetype.
 
-Like a Resource, a Process's **shape is derived** (`has_constituents`, not stored). The line is drawn from the **implementation's (the control plane's) perspective**, its orchestration scope, *not* the process's internal complexity. **Atomic** is a *single call the control plane makes* — one job, one playbook run, **or an Ansible/AWX workflow invoked as one call**. (The provider orchestrates its own internal jobs; the control plane made a single call, so it is still Atomic.) **Composite** is when *the control plane itself* sequences more than one distinct process call, tracking them as constituents. A composite Process's constituents are those sub-process calls, recorded via the **same constituent-relationship model** a composite Resource uses. The specific tool is the `resource_type` (`Automation.AnsiblePlaybook`, `Job`) — vendor-specifics like "playbook" live there, at the finer gate.
+Like a Resource, a Process's **shape is derived** (`has_constituents`, not stored). The line is drawn from the **implementation's (the control plane's) perspective**, its orchestration scope, *not* the process's internal complexity. **Atomic** is a *single call the control plane makes* — one job, one playbook run, **or an Ansible/AWX workflow invoked as one call**. (The provider orchestrates its own internal jobs; the control plane made a single call, so it is still Atomic.) **Composite** is when *the control plane itself* sequences more than one distinct process call, tracking them as constituents. A composite Process's constituents are those sub-process calls, recorded via the **same constituent-relationship model** a composite Resource uses. The specific tool is the `resource_type` (`Automation.OSPatch`, `Job`) — vendor-specifics like "playbook" live there, at the finer gate.
 
 **Characteristics:**
 
@@ -251,9 +251,10 @@ REQUESTED → INITIATED → EXECUTING → COMPLETED (terminal)
 No SUSPENDED state. No PENDING_REVIEW state. Processes are transient — they do not enter states that require ongoing management.
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 process_entity:
   uuid: <uuid>
-  resource_type: <fqn>                  # e.g., Automation.AnsiblePlaybook
+  resource_type: <fqn>                  # e.g., Job
   lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>  # universal coarse lifecycle of the process entity
   execution_state: <REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED>  # per-RUN dynamics — separate axis (data-model-core §3 [D7])
   owned_by_tenant_uuid: <uuid>
@@ -264,8 +265,10 @@ process_entity:
   completed_at: <ISO 8601|null>
   execution_timeout_at: <ISO 8601|null>   # computed: started_at + max_execution_time
 
-  # Entities this process modified (mandatory if any modifications made)
-  affected_entity_uuids: [<uuid>, ...]
+  # Entities this process modified (mandatory if any modifications made) — state-record `process.affected_entities`
+  affected_entities:
+    - entity_uuid: <uuid>
+      effect_type: <created|modified|decommissioned|read>
 
   # Execution details
   provider_uuid: <uuid>                 # which automation provider executed this
@@ -323,16 +326,16 @@ These invariants apply to all entity types without exception:
 
 ## 5. Entity Type to Resource Type Mapping
 
-Not all resource types produce the same entity type. The entity type is declared in the Resource Type Specification:
+Not all resource types produce the same entity type. The family and the ownership model are declared on the class (`registry/class.schema.json`; the ownership fields sit at the Type tier):
 
 ```yaml
-resource_type_spec:
-  fqn: Machine.VM
-  family: Resource        # ADR-027 family (state vs execution)
-  ownership_model: whole_allocation       # whole_allocation | allocation | shareable
-  allocatable_from_pool_type: null        # if allocation: the pool resource type this comes from
-  pool_resource_type: null                # if pool: declare this is a pool resource
-  shareable: false                        # if shareable: true
+# schema: class.schema.json
+resource_type: Machine.VM
+family: Resource                        # ADR-027 family (state vs execution)
+ownership_model: whole_allocation       # whole_allocation | allocation | shareable (optional — OWN-009)
+# an allocation type declares allocated_from_pool_type: <pool type>
+# a pool type declares allocation_produces_type: <allocation type> — that is what makes it a pool
+# a shareable type may declare publicly_stakeable; a pool may declare publicly_allocatable (CTX-001)
 ```
 
 ---

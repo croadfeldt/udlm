@@ -1,29 +1,31 @@
 # Request implementation — the stage
 
 **What this settles:** how an abstract, portable request becomes one a *specific* provider can actually
-build — filled in and checked before anything is created. This is the model's telling: the pieces in play
-and the rules that always hold, told without reference to any particular engine. How a real engine performs
-it is the DCM companion, [`docs/flows/request-realization.md`](https://github.com/dcm-project/dcm/tree/main/docs/flows/request-realization.md).
+build, filled in and checked before anything is created. This is the model's telling: the pieces in play
+and the rules that always hold, told without reference to any particular engine. The example
+implementation (DCM) performs it in its own
+[`docs/flows/request-realization.md`](https://github.com/croadfeldt/dcm/blob/main/docs/flows/request-realization.md).
 
-**In one breath.** A user asks for *a VM this size*; the Kubernetes-specific parts like the `namespace` are
-usually left to the system to fill in. The system picks a provider, fills in whatever that provider needs
-(Kubernetes wants a `namespace`; an enterprise virtualization platform wants a `cluster`), checks the result is complete, and only then
-builds it. Portable in, provider-ready out — never dispatched half-built.
+**In one breath.** A user asks for *a VM this size*. The Kubernetes-specific parts, like the `namespace`,
+are usually left to the system to fill in. The system picks a provider and fills in whatever that provider
+needs: Kubernetes wants a `namespace`, an enterprise virtualization platform wants a `cluster`. It checks
+the result is complete, and only then builds it. Portable in, provider-ready out, never dispatched
+half-built.
 
 ## Start vendor-agnostic; add specifics on top
 
 Every request starts from a **vendor-agnostic base**. A portable `Machine.VM` carries the things
-true of *any* VM — `guest_os`, size, disks, networks — and deliberately leaves out one provider's mechanics
+true of *any* VM (`guest_os`, size, disks, networks) and deliberately leaves out one provider's mechanics,
 like Kubernetes' `namespace`. Keeping those off the base is what makes the type portable: another provider
-can still read it ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md) — the type models
+can still read it ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md): the type models
 the graph and audit surface; provider_specific config is stored separately).
 
 Provider-specific details get added *on top* of that base, and there are two ways in:
 
 - **The system adds them** after it picks a provider — the usual path, and the flow below.
-- **The consumer adds them at intent time** — a consumer *may* pin a `namespace`, a vendor QoS class, any
-  provider_specific element, right in the request. That's allowed and honored; it's simply **flagged as
-  breaking portability** so the trade is explicit (the realized record's `portability` block).
+- **The consumer adds them at intent time** — a consumer *may* pin a `namespace`, a vendor QoS class, or any
+  provider_specific element, right in the request. That is allowed and honored. It is simply **flagged as
+  breaking portability**, so the trade is explicit (the realized record's `portability` block).
 
 So the base is always portable, and going beyond it is a choice made with eyes open. The running example
 takes the common path: *the user gave cpu and memory, left the Kubernetes specifics to the system, and
@@ -67,21 +69,22 @@ flowchart TD
 ```
 
 **Read the block, not the arrows.** The loop runs **assemble → validate → enrich → placement**, then
-round again — until every policy is valid and complete. Layer assembly, transformation, validation and
-enrichment all happen *before* placement; placement is the last step of an iteration, and its result is
+round again, until every policy is valid and complete. Layer assembly, transformation, validation and
+enrichment all happen *before* placement. Placement is the last step of an iteration, and its result is
 data the earlier steps have not seen. There is no separate post-placement phase: **the post-placement
-work is the next iteration.** Only once it converges does each component validate and reserve, and only
-when all of them hold does anything commit.
+work is the next iteration.** Only once the loop converges does each component validate and reserve.
+Only when all of them hold does anything commit.
 
-**Three records, three moments** (a fourth, the discovered record, is written by every later discovery sweep — see the four records below). The **intent** is what the consumer asked for, stored on receipt and
-never modified. The **requested** state is what the system decided to ask the providers for — it exists
+**Three records, three moments.** A fourth, the discovered record, is written by every later discovery
+sweep (see the four records below). The **intent** is what the consumer asked for, stored on receipt and
+never modified. The **requested** state is what the system decided to ask the providers for. It exists
 only once the loop converges, which is what makes it storable. The **realized** state is the payload the
 provider returned, stored on success only.
 
-**Policy is engaged three times in one request** — and that is the thing worth carrying away:
+**Policy is engaged three times in one request**, and that is the thing worth carrying away:
 convergence before dispatch, the response when realization fails, and the action when realized differs
-from requested. Same mechanism, three moments. A failure writes nothing to realized; a difference is not
-resolved here either — policies decide whether to notify, to instruct the provider to change the
+from requested. Same mechanism, three moments. A failure writes nothing to realized. A difference is not
+resolved here either: policies decide whether to notify, to instruct the provider to change the
 resource, or to update the request where the provider's change is the one that has to win.
 
 > This is the readable on-ramp. The **authoritative** assembly process (nine steps, with
@@ -102,10 +105,10 @@ values on top) resolve the fields, and every field remembers where its value cam
 cpu, memory, guest_os — still no `namespace`, because no layer on a portable type carries a provider_specific
 field.
 
-**3. Enrich — add what a provider will need.** The system fills what the portable request does not carry
-— here, `namespace`. The value lands in the provider's Provider-Class element (ADR-038 — off the portable
+**3. Enrich — add what a provider will need.** The system fills what the portable request does not carry;
+here, `namespace`. The value lands in the provider's Provider-Class element (ADR-038, off the portable
 Base/Type Class) with its origin recorded, and `enrichment_status` moves toward `complete`. *Where* the
-value comes from is the organization's choice — see
+value comes from is the organization's choice; see
 [Where the value comes from](#where-the-value-comes-from).
 
 **4. Place — pick a provider that fits.** The system narrows to the providers that satisfy the request and
@@ -113,24 +116,25 @@ the policies (sovereignty, cost, capability), then picks one. The vaguer the req
 and the more the system decides; the more exact, the fewer fit.
 
 Placement is the **last step of an iteration**, not the end of the road. What it chooses is data steps 2–3
-have not seen, so the payload goes round again — re-assembled, re-validated, re-enriched, and re-placed —
+have not seen, so the payload goes round again (re-assembled, re-validated, re-enriched, and re-placed)
 until nothing changes. That is why there is no "post-placement" step in this list: **the post-placement
 work is the next pass through steps 2–4.**
 
-**5. Validate + reserve — check before building, per component.** A request is rarely one resource: a VM
+**5. Validate + reserve — check before building, per component.** A request is rarely one resource. A VM
 carries storage, a network attachment, and an address, each a separate component with its own provider and
-its own way of failing. **Every** component validates against its provider's requirements and takes a hold —
-without creating anything — and only when all of them hold does the flow commit (ADR-011). Reserving also
+its own way of failing. **Every** component validates against its provider's requirements and takes a hold,
+without creating anything. Only when all of them hold does the flow commit (ADR-011). Reserving also
 lands facts that did not exist before (an address, a volume handle, a segment), which can re-trigger policy
-evaluation. Still missing something → the request stops here with a clear, field-level error. An incomplete
-VM never reaches the provider's API; the gap surfaces as a plain validation failure, not a runtime crash.
+evaluation. If something is still missing, the request stops here with a clear, field-level error. An
+incomplete VM never reaches the provider's API; the gap surfaces as a plain validation failure, not a
+runtime crash.
 
 **6. Commit — build it.** The providers create the resources, passing data between components as each is
 built (the VM needs the volume handle to attach it, the segment attachment to connect). Typically that data
 was already pulled during validate-and-reserve; a component may need more during final provisioning. Each
-reports back what it built and the id that ties the UDLM record to the provider's native one, and DCM
-records the result. What was *asked* and what was *built*
-are both stored, so they can be compared later.
+reports back what it built and the id that ties the UDLM record to the provider's native one, and the
+control plane records the result. What was *asked* and what was *built* are both stored, so they can be
+compared later.
 
 ## Who provides what, and when
 
@@ -149,8 +153,8 @@ own case adds: its persona, its components, the data particular to it.
 | **security-officer** · **sovereignty-authority** | Author the policies that constrain where and how the request may be realized. | before, standing |
 | **cloud-operator** · **provider-owner** | Declare the provider's capabilities, capacity, and — where sovereign — residency guarantees. | before, standing |
 
-**Only one persona acts per request.** Everything else was declared earlier as governed data — which is
-the point: a request succeeds because other people's declarations were already in place, not because
+**Only one persona acts per request.** Everything else was declared earlier as governed data, which is
+the point. A request succeeds because other people's declarations were already in place, not because
 someone was asked at the time.
 
 ### 2. What a user request contains
@@ -182,12 +186,12 @@ as a non-portable pin, but it is **narrowing**, not placing.
 | Provider-specific fields (namespace, storage class native form) | the Provider Class declaration (provider-owner / cloud-operator) | enrich — **before** placement, refined each pass |
 | Reserved facts — the IP, the volume handle, the segment | the provider, at reserve | validate + reserve |
 
-Every one of these records **who set it** — field-level provenance is not a nice-to-have here; it is how
+Every one of these records **who set it**. Field-level provenance is not a nice-to-have here; it is how
 this table is answerable after the fact for a specific record.
 
 ### 4. Which persona sets placement
 
-**None.** Placement is **derived** — the engine narrows to providers whose declared capability and
+**None.** Placement is **derived**. The engine narrows to providers whose declared capability and
 capacity satisfy the request, and whose selection satisfies every applicable policy. It is an *outcome*
 of data other personas declared, not a decision anyone makes at request time.
 
@@ -205,8 +209,8 @@ The clearest answer to *when*:
 | 2 | **On failure** of realization | the response. Nothing is written to realized; most likely the user is told |
 | 3 | **On difference**, after realization | the action — notify, instruct the provider to change the resource, or update the request where the provider's change is the one that has to win |
 
-Same mechanism, three moments. Neither UDLM nor DCM has a built-in action for (2) or (3): the model
-carries the facts, policy carries the decision. A profile may extend what the options are.
+Same mechanism, three moments. Neither UDLM nor the control plane has a built-in action for (2) or (3):
+the model carries the facts, policy carries the decision. A profile may extend what the options are.
 
 ### The four records
 
@@ -221,18 +225,18 @@ writes the fourth for the rest of the entity's life.
 | **Realized** | the provider, through the system | after commit, on success only | what was built, the outputs others bind to, which provider instance built it, health; the requested record it realizes |
 | **Discovered** | discovery | every sweep, for as long as the entity exists | what is there right now, and how it was matched to the entity |
 
-Reconcile matches **the realized record against the requested record** — which is why the middle one
+Reconcile matches **the realized record against the requested record**, which is why the middle one
 has to exist as a stored record rather than a transient payload. Drift, later, is the same idea between
 the newest discovered record and the newest realized one: a comparison, never a stored field. Anyone
-who wants "the entity" in one piece asks for the entity view, which the system assembles from these
-records and never writes (`registry/entity-view.schema.json`).
+who wants "the entity" in one piece asks for the entity view. The system assembles it from these
+records and never writes it (`registry/entity-view.schema.json`).
 
 ---
 
 ## Worked example — a VM with network and storage
 
 One request, four components. Each needs different data, from a **different source**, at a **different
-moment** — which is the whole reason this example is worth drawing rather than listing.
+moment**. That is the whole reason this example is worth drawing rather than listing.
 
 ```mermaid
 flowchart LR
@@ -277,7 +281,7 @@ Read it as columns: **who** on the left, **what** in the middle, and the *when* 
 | **IP** | *nothing* | — | address family / pool from the segment | **the address itself** |
 
 **The IP row is the teaching case.** The consumer never mentions an IP, no layer carries one, and no policy
-sets one. It exists only as a *reserved fact* — the network provider allocates it during reserve and hands
+sets one. It exists only as a *reserved fact*. The network provider allocates it during reserve and hands
 it back, and it becomes part of the record with the provider named as its source. It cannot be known
 earlier, which is exactly why reserve exists as its own phase before commit.
 
@@ -285,40 +289,38 @@ earlier, which is exactly why reserve exists as its own phase before commit.
 attachment to connect. Those are pulled during validate-and-reserve in the ordinary case; a component may
 need more during final provisioning, and the commit phase passes it as each is built.
 
-**Four sources, four moments** — the table above is the same story in reference form: the consumer at
+**Four sources, four moments.** The table above is the same story in reference form: the consumer at
 request time, the layers and tenant binding at assemble, policy on every pass, the provider's native form
 at enrich (before placement), and the reserved facts at reserve. No single actor could have supplied all
 of it, and no earlier moment could have produced the address.
 
 ---
 
----
-
 ## It converges — the flow isn't one straight pass
 
 The line above is the *shape*, not a promise of a single pass. The policy and assembly engines are
-**re-entrant**: once a provider is chosen, the provider_specific data enrichment adds can change what the
-policies see, so they re-evaluate — and reserve is a **reconciliation loop** of its own, landing reserved
-facts (a placement, an address, a hold) and re-running the participating policies until the whole picture is
+**re-entrant**. Once a provider is chosen, the provider_specific data enrichment adds can change what the
+policies see, so they re-evaluate. Reserve is a **reconciliation loop** of its own: it lands reserved
+facts (a placement, an address, a hold) and re-runs the participating policies until the whole picture is
 stable. The engine loops around *place → enrich → evaluate → reserve* until it reaches a fixed point, then
 commits once. Re-evaluation is idempotent by contract, so it converges rather than thrashes.
-([ADR-006](../adr/ADR-006-convergence-control-model.md) — re-entrant policy and convergence;
-[ADR-011](../adr/ADR-011-validate-and-reserve.md) — validate-and-reserve; and the placement loop /
+([ADR-006](../adr/ADR-006-convergence-control-model.md), re-entrant policy and convergence;
+[ADR-011](../adr/ADR-011-validate-and-reserve.md), validate-and-reserve; and the placement loop and
 reserve-phase participation in [`layering-and-versioning.md`](../spec/foundations/layering-and-versioning.md).)
 
 ## Where the value comes from
 
-Step 4 fills a field the request didn't *already* carry — `namespace`. (If the user supplied it at intent
-time, it's already set — flagged non-portable — so this step leaves it alone.)
+Step 3 fills a field the request didn't *already* carry: `namespace`. (If the user supplied it at intent
+time, it is already set and flagged non-portable, so this step leaves it alone.)
 
-The value lives in **data**, and a **policy selects it** — the model's original split at work: *layers set
-the stage for data; policies refine and validate it* ([DCM ADR-024](../adr/README.md)).
-A governed layer holds the values — the tenant's namespace, or a small table of provider → value — and a
-post-placement enrichment policy looks up the right one for the chosen provider and injects it. The value
-stays data; the only logic is the lookup.
+The value lives in **data**, and a **policy selects it**. This is the model's original split at work:
+*layers set the stage for data; policies refine and validate it* (DCM ADR-012, data assembly and layering,
+non-normative). A governed layer holds the values (the tenant's namespace, or a small table of provider →
+value). An enrichment policy, on the pass after placement, looks up the right one for the chosen provider
+and injects it. The value stays data; the only logic is the lookup.
 
 If the data has no entry for the chosen provider, the policy stops with a clear reason ("no namespace mapping
-for Kubernetes VMs") — caught at reserve, never a silent gap. A plain layer default still covers fields that
+for Kubernetes VMs"), caught at reserve, never a silent gap. A plain layer default still covers fields that
 aren't provider-conditional and need no selecting.
 
 Whichever value wins is recorded in provenance, and a compliance policy can still override it for sovereignty
@@ -339,15 +341,15 @@ way. The three points below are markers on one scale, not three separate cases:
 
 Placement always does the same thing: start with every provider of the type, keep the ones that satisfy the
 user's specifics *and* policy, pick from what's left. Abstract is that with no user specifics; finite is it
-narrowed to one; partial is everything between. **Adding detail only ever narrows the choice** — it can't
+narrowed to one; partial is everything between. **Adding detail only ever narrows the choice.** It can't
 widen it past what policy allows.
 
 **The trade:** ask for less and get flexibility (more providers fit, the system optimizes, the resource
-stays portable); ask for more and get precision (fewer fit, and you may tie the request to one provider's
-ground). Neither is more correct — it's the user's call, and the flow runs the same either way.
+stays portable). Ask for more and get precision (fewer fit, and you may tie the request to one provider's
+ground). Neither is more correct. It is the user's call, and the flow runs the same either way.
 
 (Grounded in the specificity spectrum, `docs/spec/contracts/policy-contract.md` §2.4; the request `placement` block;
-and soft-vs-hard dependencies, `docs/spec/contracts/provider-contract.md` §1b — "any resolvable name" vs "this exact
+and soft-vs-hard dependencies, `docs/spec/contracts/provider-contract.md` §1b. "Any resolvable name" vs "this exact
 FQDN" is the same idea one level down.)
 
 ## The rules that always hold
@@ -355,7 +357,7 @@ FQDN" is the same idea one level down.)
 Whatever engine runs this flow:
 
 - **The required data is portable** — the user is never *required* to supply anything provider_specific; the
-  portable base is always enough. They *may* add provider_specific elements at intent time — that's allowed
+  portable base is always enough. They *may* add provider_specific elements at intent time. That is allowed
   and honored, and flagged as breaking portability ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); the realized record's `portability` block).
 - **How much to pin down is the user's dial, and it only narrows** — every request from abstract to finite
   is valid; more detail means fewer providers fit, never more.
@@ -364,27 +366,27 @@ Whatever engine runs this flow:
 - **Every value remembers where it came from** — a layer, the user, a policy, or a default; and
   `enrichment_status` says honestly whether it is `pending`, `partial`, or `complete`.
 - **Provider-specific values stay off the portable type** — they are Provider-Class `SharedDataElement`s
-  (ADR-038; the retired `provider_extensions` carrier is removed), flagged as non-portable
+  (ADR-038), flagged as non-portable
   ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); the realized record's `portability` block).
 - **"Enough" is the provider's to define** — the provider's required-data schema is what "provider-ready"
   means; the system doesn't guess it.
 
-## What UDLM leaves to DCM
+## What UDLM leaves to the control plane
 
-UDLM sets the stage; it doesn't perform. These are the engine's to decide (see the DCM companion):
+UDLM sets the stage; it doesn't perform. These are the control plane's to decide:
 
 - **The engine itself** — how assembly, placement, and enrichment are wired and ordered.
 - **The actual enrichment rules** — the real `namespace = f(tenant)` rule is content an organization writes;
-  UDLM guarantees the *step* exists and checks its result, DCM supplies the *rule*.
+  UDLM guarantees the *step* exists and checks its result, the control plane supplies the *rule*.
 - **How a provider is scored, and how reserve/commit are called.**
 
-The performance: [dcm-project/dcm `docs/flows/request-realization.md`](https://github.com/dcm-project/dcm/tree/main/docs/flows/request-realization.md).
+The example implementation's performance: [croadfeldt/dcm `docs/flows/request-realization.md`](https://github.com/croadfeldt/dcm/blob/main/docs/flows/request-realization.md).
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
 - **Data (UDLM):** the portable request, the four states, Provider-Class elements (ADR-038) for provider_specific
   values, and the provenance behind every field.
-- **Policy (DCM/org):** which provider gets chosen, and how the provider-required fields get filled.
+- **Policy (the control plane and the organization):** which provider gets chosen, and how the provider-required fields get filled.
 - **Provider:** declares what it needs ("enough"), and checks the request at reserve.
 
 ## Where each piece is specified
@@ -392,8 +394,8 @@ The performance: [dcm-project/dcm `docs/flows/request-realization.md`](https://g
 | Piece | Governing spec |
 |---|---|
 | Provider-specific config off the portable type | [ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md) · ADR-038 (Provider-Class elements) |
-| Provider declares the data it requires | `docs/spec/contracts/provider-contract.md` §base-level #2 |
+| Provider declares the data it requires | `docs/spec/contracts/provider-contract.md` §1a, item 2 |
 | Data layers + provider-aware enrichment | [`docs/spec/foundations/layering-and-versioning.md`](../spec/foundations/layering-and-versioning.md) |
-| Enrichment as a policy | `docs/spec/contracts/policy-contract.md` §12 |
+| Enrichment as a policy | `docs/spec/contracts/policy-contract.md` §12 (transformation output) |
 | Reserve-then-commit (check before build) | [ADR-011](../adr/ADR-011-validate-and-reserve.md) |
 | The four states, one record each | [`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md) §2.7; `registry/state-record.schema.json` |

@@ -5,9 +5,9 @@
 The home of the **CLS** rule family. This document defines the three class tiers the registry is
 built from. It also states the one question every tier answers: *who can realize an order placed
 here?* ADR-038 (scoped Classes of shared data elements — portability read off where an element
-sits) holds the why. ADR-068 (a Base is earned, not assumed — `Compute` split into `Container`,
-`KubernetesCluster` and `Machine`) and ADR-069 (a Base is a deliverable any member can realize)
-are the rulings this document turns into rules. ADR-082 (a class is defined once and filed under
+sits) holds the why. Register rows 068 (a Base is earned, not assumed — `Compute` split into
+`Container`, `KubernetesCluster` and `Machine`) and 069 (a Base is a deliverable any member can
+realize) are the rulings this document turns into rules. ADR-082 (a class is defined once and filed under
 usage groups like hard links; the folder Bases dissolve) adds the grouping system in §3. The rules
 here are normative; the register rows and ADR-038 are cited, never restated.
 
@@ -77,12 +77,12 @@ Two systems share the registry and are kept apart on purpose (ADR-082):
   filing is a link. Adding or removing a filing changes nothing about the class — no version bump,
   no digest change, no record touched.
 
-The former folder Bases (`Hardware`, `Network`, `Storage`, `Security`, `Software`, `Data`,
-`Facility`, `Observability`) mixed the two systems. A folder was a Base that could not pass the Base
-test, and every member carried a name that promised a family contract the folder could not honour.
-They dissolve into group terms. Each former member becomes a Base in its own right if it passes
-CLS-002, or is re-homed under a Base that does. `Hardware` is a group, not a Base, because it
-represents no portable data — `device_class` is a discriminator, not a deliverable.
+`Hardware`, `Network`, `Storage`, `Security`, `Data`, `Facility` and `Observability` are usage-group
+terms (`registry/taxonomies/usage-group.yaml`), not Bases. None passes the Base test, and a name
+under one of them would promise a family contract the group cannot honour. A member of such a group
+is a Base in its own right if it passes CLS-002, or is filed under a Base that does. `Hardware` is a
+group, not a Base, because it represents no portable data — `device_class` is a discriminator, not a
+deliverable.
 
 **On disk** (ADR-061 kept): a class's directory is named for the class. Git has no hard links, so a
 Base lives in ONE group directory — its hosting group, `registry/classes/<family>/<group>/<class>/`
@@ -196,8 +196,10 @@ Five requirements hold regardless of tier. A `universal` element MUST be support
 implementing the class. A `provider_specific` element MUST be marked `portability_breaking`, and a
 consumer MUST be warned when a request carries one. `exclusive` is the only sanctioned exception to
 vendor neutrality, declared in the registry. A class that carries a provider_specific element as
-universal is invalid. The classification rides each element's `portability` block in the flat spec
-(`registry/resource-type-spec.schema.json`). The tree names and validates. The portability of a given
+universal is invalid. The flat spec carries a type-level `portability` classification
+(`portable | partial | provider_specific`, `registry/resource-type-spec.schema.json`); a realized
+record carries the instance's computed `portability.classification` and `portability_breaking`
+(`registry/state-record.schema.json`). The tree names and validates. The portability of a given
 *request* is computed from the classification and what providers advertise (ADR-PROV-002), never from
 the tree alone.
 
@@ -207,7 +209,7 @@ the tree alone.
 |---|---|
 | `CLS-001` | **Three tiers, keyed to the declaration.** `class` states the tier; `parent` derives it: a Base has no parent, a Type's parent is a Base, a Provider Class's parent is a Type. The name renders the ancestry — one segment per tier, `Base.Type.Provider` — and MUST agree with it; the name never defines the tier. Each tier extends the one above by add or refine, never contradict (`LSK-001`). Depth is three; the `resource_type` pattern is the cap. |
 | `CLS-002` | **A Base Class is a deliverable that any member can realize.** A grouping earns a Base only when all three hold. (a) An existing, widely used API already abstracts over its members. (b) Every Base element is honorable by every descendant. (c) An offering declared at any tier accepts orders at every tier above it. A grouping that fails (a) is a folder (`CLS-003`). |
-| `CLS-003` | **A grouping that fails the Base test is a usage group, not a class.** Nothing is filed as a Base to be found; it is filed under a term of the usage-group vocabulary (`CLS-010`). A member of a former folder becomes a Base in its own right when it passes `CLS-002`, else is re-homed under a Base that does. An `instantiable: false` Base was tolerated only while its dissolution was in progress (ADR-082); none remains: the Access family gained its group level in row 089. |
+| `CLS-003` | **A grouping that fails the Base test is a usage group, not a class.** Nothing is filed as a Base to be found; it is filed under a term of the usage-group vocabulary (`CLS-010`). A member of a former folder becomes a Base in its own right when it passes `CLS-002`, else is re-homed under a Base that does. No Base declares `instantiable: false` (ADR-082; row 089). |
 | `CLS-004` | **The Type tier is spent on one axis per family.** The second segment narrows by form or by dialect, whichever carries the definition structure. Form and dialect MUST NOT both appear as Types under one Base. |
 | `CLS-005` | **A Provider Class exists only for provider_specific data.** A provider needing nothing beyond the Type binds at the Type. Two deployments with the same data are instances on the authority axis. An offering that requires consumer-supplied data the Type lacks MUST declare a Provider Class carrying it as elements, never as an opaque blob. |
 | `CLS-006` | **A class is named for its deliverable.** A technology name appears only when the technology is the contract (a conformance-tested standard), never when it is a product. A Base is never named for a vendor; a Type is a form or a dialect; a Provider Class is the offering. |

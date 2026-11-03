@@ -43,7 +43,7 @@ flowchart TD
 
 ## What UDLM does not decide
 
-The delivery channel and the exact wording of the surface — DCM/runtime concerns over the surfacing
+The delivery channel and the exact wording of the surface — the control plane's concerns over the surfacing
 contract UDLM declares (ADR-008). UDLM owns the obligation: an unsatisfiable intent is actively
 surfaced, first-class and distinct from any structured record.
 
@@ -60,7 +60,6 @@ surfaced, first-class and distinct from any structured record.
 | Piece | Contract |
 |---|---|
 | The surfacing constraint over the matrix | [`intent-fulfillment-model.md`](../design/intent-fulfillment-model.md) |
-| The root-naming sibling | [surface-names-root](intent-fulfillment-surface-names-root.md) (UC-008) |
+| The root-naming sibling | [surface-names-root](intent-fulfillment-surface-names-root.md) (case 008 of the family) |
 | Degraded / partial vocabulary | `docs/spec/contracts/provider-contract.md` (`partial_delivery`, `DEGRADED`) |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
-| DCM counterpart | dcm-project/dcm `docs/flows/` |

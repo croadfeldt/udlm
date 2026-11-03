@@ -1,9 +1,9 @@
 # UDLM 0.1 — Scope, Use-Case Coverage, and Exit Criteria
 
 **Normative** — the committed definition of the 0.1 release surface.
-**What this settles:** what UDLM 0.1 *is* for the September release — the data/contract surface that
-enables the 21 release use cases, what is deliberately **deferred**, the **exit criteria** that gate
-the `0.1 → 1.0` tag, and the **profile posture** (implement against dev/eval; architect for
+**What this settles:** what UDLM 0.1 *is* for the September release. That is the data/contract
+surface that enables the 21 release use cases, what is deliberately **deferred**, the **exit criteria**
+that gate the `0.1 → 1.0` tag, and the **profile posture** (implement against dev/eval; architect for
 sovereign/fsi). It turns the scattered `P1–P7` gap references into one checkable definition.
 
 UDLM is the **data / contract / type** layer. The control plane is the orchestration/runtime. The boundary rule
@@ -26,9 +26,10 @@ called out below and are **not** 0.1 spec gaps.
 ## 2. Profile posture — implement dev/eval, architect for sovereign/fsi
 
 The architecture and wire contracts are **identical across profiles**; only the required *floor*
-differs (ADR-007 — a profile is a composed set with a floor, not a level). The six built-in
-profiles are now defined as `policy_profile` records (`registry/profiles/*.yaml`), floors
-nesting by set-containment (`docs/guides/profile-resolution.md`). **dev** and **homelab** are on-ramp
+differs (ADR-007 — a profile is a composed set with a floor, not a level). The profile record shape is
+`registry/profile.schema.json`; the six named postures are records in the UDLM Profile Set
+(croadfeldt/udlm-profiles, row 140), floors nesting by set-containment
+(`docs/guides/profile-resolution.md`). **dev** and **homelab** are on-ramp
 siblings (small substrate, low ceremony), not rungs on the production ladder:
 
 | Profile | Role | Floor adds (over the one below) |
@@ -103,8 +104,9 @@ by the merged spec (ADR-010 / §8.1a / state-record) or are control-plane-runtim
 
 The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "Cutting the spec 0.1→1.0"):
 
-1. **Ratify the decisions.** 49 records in `docs/adr/` and 3 in `docs/dr/`, numbered to ADR-083 (ADR-076..081 are register rows without files). All
-   are `Proposed` except ADR-054, which is `Accepted`. 1.0 commits to backward-compat and cannot ship
+1. **Ratify the decisions.** 49 records in `docs/adr/` and 3 in `docs/dr/`, numbered to ADR-083.
+   ADR-076..081 are register rows without files. Of the 49, 47 are `Accepted`, one is `Proposed` and
+   one is `Rejected` (lockdown ruling 1: the register accepted them row by row). The 1.0 tag commits to backward-compat and cannot ship
    on unratified decisions, so this is the criterion with the most records behind it.
    Review-then-accept is the maintainer's call; the tracking issue is #217.
 
@@ -131,9 +133,9 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
 
 ## 6. Explicitly deferred (out of 0.1 scope, tracked)
 
-- **Executable conformance test runner** — large; overlaps the control plane/test-infra. `CONFORMANCE.md` is Draft
-  and `tests/test-framework-specification.md` specifies but does not implement it. Highest-value
-  post-scope item; gates the honest 1.0 claim.
+- **Executable conformance test runner** — the record-level half exists: `tests/conformance.py`, suite
+  1.0.0 (`CONFORMANCE.md` §8). The wire-level half, the §6 checklist run against an implementation's
+  interop surfaces, is 1.x. `CONFORMANCE.md` stays Draft until the tag.
 - **Draft contracts not load-bearing for the 21 UCs** — `error-model`, `time-and-clock`,
   `retry-semantics`, `rate-limit-and-backpressure`: finish or mark stable-by-reference before tag.
 - **Per-type `stability` field** — coarse maturity signal while the spec is `0.x`; deferred candidate
@@ -157,11 +159,12 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
 
 ## 7. The 0.1 surface (inventory)
 
-the resource types in the registry (see `registry/MODEL-HEALTH.md`) (post-2026-07-15: DCM ADR-013 removes the 5 hardware-*component* types —
-memory-module / processor / storage-device / graphics-processor / power-supply, #88 — keeping
-BMC / NetworkInterface; `CredentialRef` added, #99) · 12 record schemas ·
-17 contracts (11 complete/stable, 6 draft — see §5/§6) · the prose ADRs in `docs/adr/` (see `docs/adr/README.md`) + JSON
-DecisionRecords · docs/spec/foundations/lifecycle/governance/design-principles doc set · 6 built-in profiles.
+- The resource types in the registry: 71 classes (`registry/MODEL-HEALTH.md`, `registry/stability.yaml`, row 133).
+- 27 record schemas.
+- 17 contracts (11 complete/stable, 6 draft — see §5/§6).
+- The prose ADRs in `docs/adr/` (see `docs/adr/README.md`) + JSON DecisionRecords.
+- The docs/spec foundations, lifecycle, governance and principles doc set.
+- The profile mechanism (`registry/profile.schema.json`); the named postures are the UDLM Profile Set's (row 140).
 
 Plus the 2026-07-15 **recurrence-prevention layer**: SPEC-DESIGN **§33** (single-source) / **§34**
 (resource-type role, ADR-016), the guards `tests/check_single_source.py` · `check_profile_tables.py` ·

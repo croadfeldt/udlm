@@ -1,6 +1,6 @@
 # UDLM file index — what each document owns
 
-**Purpose.** One home per concept. This index says, for every normative document, *what it is* and *what it canonically owns* — so before you write a rule, vocabulary, or wire-shape, you can find the file that already owns it and **reference it** rather than restate it. This is the human-readable companion to the single-source rule (`registry/SPEC-DESIGN-REQUIREMENTS.md` §33) and its check (`tests/check_single_source.py`).
+**Purpose.** One home per concept. This index says, for every normative document, *what it is* and *what it canonically owns*. So before you write a rule, vocabulary, or wire-shape, you can find the file that already owns it and **reference it** rather than restate it. This is the human-readable companion to the single-source rule (`registry/SPEC-DESIGN-REQUIREMENTS.md` rule 33) and its check (`tests/check_single_source.py`).
 
 **How to use it.** Look up the concept you're about to write. If a file below already *owns* it, put your rule there (or reference its ID). If nothing owns it, the file whose purpose is the closest fit is the home — add it there and note the new ownership here. Never define the same rule in two files; cite the owning file's ID with a one-line gist — the reference carries its own gist (e.g. `ADR-008 — the UDLM/DCM boundary test`), never a bare pointer.
 
@@ -50,7 +50,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 
 ## `docs/spec/principles/` — see its `README.md` for the in-directory index
 
-- **`core-tenets.md`** — hard boundaries. *Owns:* `T1–T6`.
+- **`core-tenets.md`** — hard boundaries. *Owns:* `T1–T9`.
 - **`design-priorities.md`** — ranked priorities + the profile and authority-tier *vocabularies*. *Owns:* `Priority 1–4`, `DPO-*`, the profile name vocabulary (nature of a profile defers to ADR-007).
 - **`cross-cutting-requirements.md`** — always-on obligations. *Owns:* `P0–P4`.
 - **`adopted-standards.md`** — how external standards enter (the *Adopt* disposition). *Owns:* the absorb/embed/adopt test + adoption constructs.
@@ -82,7 +82,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`VERSIONING.md`** — *Owns:* the two-axis (SPEC / ENTITY) versioning + compatibility policy. The single versioning home.
 - **`naming-conventions.md`** — *Owns:* casing (`snake_case`), `Base[.Type[.Provider]]` naming, file naming, the name-to-a-standard rule.
 - **`common-elements.md`** — *Owns:* canonical shared shapes reused across types (`REL-*` shared elements, common patterns).
-- **`SPEC-DESIGN-REQUIREMENTS.md`** — *Owns:* the resource-type-spec rubric (MUST/SHOULD), including §33 the single-source rule.
+- **`SPEC-DESIGN-REQUIREMENTS.md`** — *Owns:* the resource-type-spec rubric (MUST/SHOULD), including rule 33, the single-source rule.
 - **`standards-adoption-register.md`** — *Owns:* the per-standard adoption decision + license verdict (`ADOPT-001`). The single home for license verdicts.
 - **`resource-type-data-sources.md`** — per-type "what it adopts by reference" mapping (design input; license verdicts defer to the register).
 - **`state-record.schema.json`** — *normative*. *Owns:* the per-state record shape (ruling 071; four-states.md §2.7): one envelope, four kinds (`intent_record`, `requested_record`, `realized_record`, `discovered_record`), one author each. The stored form of an entity's states.
@@ -90,11 +90,11 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`../registry/UDLM-0.1-SCOPE.md`** — the 0.1 scope + the 1.0 exit criteria.
 - **`README.md`** — registry overview.
 
-## `docs/spec/` — groups and audit
+## Groups and audit
 
-- **`audit-provenance-observability.md`** — *Owns:* the audit/provenance/observability model, `AUD-*` / `OBS-*`.
-- **`universal-audit.md`** — *Owns:* the universal audit record model.
-- **`universal-groups.md`** — *Owns:* the universal group model (`GRP-*` where it extends grouping).
+- **`docs/spec/contracts/audit-provenance-observability.md`** — *Owns:* the audit/provenance/observability model, `AUD-*` / `OBS-*`.
+- **`docs/spec/contracts/universal-audit.md`** — *Owns:* the universal audit record model.
+- **`docs/spec/foundations/universal-groups.md`** — *Owns:* the universal group model (`GRP-*` where it extends grouping).
 
 ## `docs/spec/lifecycle/`
 
@@ -107,13 +107,13 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 ## `docs/` and `docs/adr/`
 
 - **`docs/adr/`** — Architecture Decision Records. A ratified ADR is the authority for the decision it records; spec prose conforms to it, never contradicts it (e.g. ADR-007 owns "profiles are composed sets, not levels"). Its README also indexes the **instance-backed `ADR-<FAMILY>-NNN` namespace** (`ADR-PROV/RBAC/COST/AEP-*`) — DecisionRecord JSON in `registry/examples/`, resolvable only through that index.
-- **`docs/`** (root) — orientation + settled narrative surface: the file index, signoff procedure, consumer perspective, the 0.1 engineering handoff, **profiles.md** (the six profiles — personas/environments/differing characteristics), and the settled "what this settles" docs (dependency-modeling, foundational-resources, graph-integrity, host-network-and-config-model, profile-resolution). Non-normative unless a doc states otherwise.
-- **`docs/design/`** — design rationale + decision trails (scoped-class hierarchy, registry design notes).
-- **`docs/examples/`** — non-normative worked examples (VM end-to-end trace, the DAV knowledge case study, provider accreditation).
+- **`docs/`** (root) — orientation: this file index and the two use-case maps below. **`docs/guides/`** — the settled narrative surface: the signoff procedure, consumer perspective, the 0.1 engineering handoff, **profiles.md** (the six profiles — personas/environments/differing characteristics), and the "what this settles" docs (dependency-modeling, foundational-resources, graph-integrity, host-network-and-config-model, profile-resolution). Non-normative unless a doc states otherwise.
+- **`docs/design/`** — design rationale + decision trails: architecture as capabilities, change-control knowledge sources, custom-class best practice, the intent-fulfillment model, the operational response matrix, prior art and positioning, and the vocabulary-intake ladder.
+- **`docs/examples/`** — non-normative worked examples (the VM end-to-end trace, the composite VM workload, RAID pools, the multi-cluster hub, provider accreditation, class versioning, change control, the DAV knowledge case study, dependency modeling).
 - **`docs/flows/`** — the flow tier (stage-level walkthroughs; see its README).
 - **`docs/uc-scope-corpus-reconciliation.md`** — which of the 21 release use cases exist in the corpus under a different handle, which are absent, and which need a ruling; the burn-down map behind `tests/check_uc_traceability.py`.
 - **`docs/uc-enablement-map.md`** — the 21 release use cases against three layers (model, control plane, provider): what exists in each layer today and where, so "Covered" in the scope manifest reads as model-layer only.
-- **`docs/research/`** — prior art, proposals, and vision explorations (architecture-as-code, LikeC4, OSAC, holistic vision).
+- **`docs/research/`** — prior-art surveys (sovereignty enforcement, tenancy models, storage layout, portability classification), programs and their research (class tiers, per-state records, platform fidelity, 1.0, graduation), the TOSCA profile spike, and explorations (architecture-as-code, LikeC4, OSAC, holistic vision, minimal custom surface, test-evidence records).
 
 ---
 
@@ -122,7 +122,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 ## Unindexed-until-now (linked here so nothing is orphaned)
 
 - **`docs/guides/quickstart.md`** — the first read: one VM followed through its four records, each step pointing at the document that owns the rule. Non-normative.
-- **`docs/guides/consumer-perspective.md`** — consumer-facing walkthrough of the model (promoted 2026-07-23; maintained with the spec — the cleanliness sweep covers it).
+- **`docs/guides/consumer-perspective.md`** — consumer-facing walkthrough of the model (maintained with the spec — the cleanliness sweep covers it).
 - **`docs/guides/dependency-modeling.md`** — how the model represents dependencies (typed `edge_type` edges) and the four authoring patterns; resolution is DCM's.
 - **`docs/guides/host-network-and-config-model.md`** — host-network modeling design (bond/bridge via NetworkInterface; Kea/NMstate projection).
 - **`docs/design/custom-classes-best-practice.md`** — Provider-Class authoring best practice (search-first reuse; define at highest allowed scope).

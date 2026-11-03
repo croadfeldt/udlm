@@ -49,7 +49,7 @@ sequenceDiagram
 ## What UDLM does not decide
 
 What "degraded" operationally means for a given workload and whether an operator is paged on it —
-DCM/provider policy over the degraded surface UDLM declares (ADR-008). UDLM owns the soft-never-blocks
+control-plane or provider policy over the degraded surface UDLM declares (ADR-008). UDLM owns the soft-never-blocks
 semantics and the degraded/partial surfacing vocabulary.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
@@ -67,4 +67,3 @@ semantics and the degraded/partial surfacing vocabulary.
 | The hard sibling | [operational-dependency-cascade](intent-fulfillment-operational-dependency-cascade.md) |
 | Edge strength (hard/soft), degraded | `docs/spec/foundations/service-dependencies.md`, `docs/spec/contracts/provider-contract.md` |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
-| DCM counterpart | dcm-project/dcm `docs/flows/` |

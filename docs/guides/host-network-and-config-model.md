@@ -1,10 +1,10 @@
 # Host networking as data: adapters, IP addresses, and NetworkManager config
 
-**Status:** ✅ Accepted — ratified by [DCM ADR-023](../adr/README.md) (2026-07-15). This doc owns the mapping/worked-example detail; DCM ADR-023 owns the decision.
+**Status:** Accepted — row 023 of the [decisions register](../adr/README.md) (host networking as data: adopt NMstate and RFC 8344 for the addressing family). This doc owns the mapping and worked-example detail; the row owns the decision.
 **Driver:** I want host network facts to be first-class UDLM records so automation reads them from the
-estate instead of from bespoke per-tool lists. The immediate trigger is small and concrete: when a host's
+estate instead of from bespoke per-tool lists. The immediate trigger is small and concrete. When a host's
 motherboard is swapped its NIC gets a new MAC, and its reserved IP (say `192.0.2.91`) should be
-reassignable by editing one estate record — then have a DHCP provider render its reservation *from* that
+reassignable by editing one estate record. A DHCP provider then renders its reservation *from* that
 record rather than from a hand-maintained list. The general goal is bigger: model the adapter, its MAC, its
 IP, and its NetworkManager settings once, and let the DHCP provider, the host-network automation, and
 OpenShift all consume the same source of truth.
@@ -21,8 +21,8 @@ Three things, and the relationship between them:
 
 ## Prior art — and it converges
 
-I had the standards surveyed. The load-bearing result is that three independent, truly-open standards
-agree on the shape, which is the strongest signal I can ask for before committing.
+The load-bearing result of a standards survey is that three independent, truly-open standards agree on
+the shape, which is the strongest signal I can ask for before committing.
 
 | Standard | Adapter + MAC | IP | Config as its own object | License | RH alignment |
 |---|---|---|---|---|---|
@@ -38,32 +38,32 @@ Three convergences matter:
   object*, not a separate type.** RFC 8344, NMstate, and Redfish all land here independently.
 - **VLAN/bond/bridge children reference their parent/members by identifier**, not by nesting (RFC 8343
   `lower-layer-if`, NMstate `base-iface`/`port[]`, NetBox `parent`/`bridge`/`lag`). This is already how
-  UDLM models it: `parent_device` (1→N) / `lower_layer` (N→1), from #267.
+  UDLM models it: `parent_device` (1→N) / `lower_layer` (N→1), from issue #267 (the host-network model).
 - **MAC is an attribute of the L2 port**, separable from the physical device (CIM, Redfish
   `PermanentMACAddress` vs `MACAddress`, NetBox's first-class MACAddress).
 
 ## Recommended UDLM model
 
-UDLM already carries most of this. The mapping reuses existing types and adds exactly one, per the
-adopt-by-reference methodology (`docs/spec/principles/adopted-standards.md`).
+The mapping reuses existing types and adds exactly one, per the adopt-by-reference methodology
+(`docs/spec/principles/adopted-standards.md`).
 
-### 1. Adapter + MAC → reuse `NetworkInterface` (no change)
-It already has `device_class`, `partition_mechanism`, `aggregation`, `bridge`, `identity`, `mtu`,
-`vlan_id`, the `parent_device`/`lower_layer` stacking edges, and **`mac_address` as an output**. This is
-the "ethernet adapter resource" Maintainer means, and it already covers macvlan/VLAN/bond/bridge. I'd keep MAC
-as an attribute of the adapter for now (our fleet is one-MAC-per-adapter); note that NetBox's separate
-MACAddress record is the blessed escalation path *if* we ever need permanent-vs-assigned or multi-MAC.
+### 1. Adapter + MAC → `NetworkInterface` (no change)
+It carries `device_class`, `partition_mechanism`, `aggregation`, `bridge`, `identity`, `speed`, `mtu`,
+`vlan_memberships`, the `parent_device`/`lower_layer` stacking references, and **`mac_address` as an
+output**. This is the ethernet adapter resource, and it covers macvlan/VLAN/bond/bridge. MAC stays an
+attribute of the adapter (one MAC per adapter is the common case); NetBox's separate MACAddress record
+is the escalation path *if* permanent-vs-assigned or multi-MAC is ever needed.
 
-### 2. IP → reuse `IPAddress` as a **dependent record** (Maintainer's "IPaddress record dependency")
-`IPAddress` already exists (`family`, `allocation` → `address`). Model each address as its own
-record with a `depends_on` (or `references … relation: assigned_to`) edge to its `NetworkInterface`.
+### 2. IP → `IPAddress` as a **dependent record**
+`IPAddress` carries `address`, `ip_family` and `allocation`. Model each address as its own
+record with a `depends_on` (or `references … relation: attaches_to`) edge to its `NetworkInterface`.
 Field shape follows the RFC 8344/NMstate convergent form (`address` CIDR + `allocation` as the `origin`
 discriminator). **A static DHCP reservation is just `allocation: static`** bound to an interface — not a
 new type. This matches RFC 8344 `origin=static`, NetBox `status=reserved`, Redfish `AddressOrigin=Static`.
 
-### 3. NetworkManager config → **one new type, adopting NMstate by reference (Tier 2)**
-This is the only gap. Add a config resource (working name **`ConnectionProfile`** / `Config.HostNetwork`)
-whose body **conforms to the NMstate interface schema** rather than re-inventing fields: `state`,
+### 3. NetworkManager config → **`ConnectionProfile`, adopting NMstate by reference (Tier 2)**
+This is the one added type (`registry/classes/resource/network/connection-profile/_base.yaml`). Its body
+**conforms to the NMstate interface schema** rather than re-inventing fields: `state`,
 `ipv4`/`ipv6` (`enabled`/`dhcp`/`autoconf`/`address[]`), the type sub-objects (`vlan{base-iface,id}`,
 `link-aggregation{mode,port[]}`, `bridge{port[]}`, `mac-vlan{base-iface,mode}`), plus `routes.config[]`
 and `dns-resolver.config`. It attaches to an adapter by handle (`references … relation: configures`).
@@ -73,12 +73,11 @@ body. It is net-negative — it supersedes bespoke per-tool host-network vars �
 OpenShift `NodeNetworkConfigurationPolicy.spec.desiredState` for free.
 
 ### 4. DHCP reservations → a projection, not a hand-list
-Today `DHCPScope.reservations` is an inline array and the truth lives in a hand-maintained
-Ansible reservation list. Instead: **a reservation is derived** from every `IPAddress` with
-`allocation: static` that is bound to a `NetworkInterface` (which carries the MAC), contained by a
-host (which gives the hostname). A DHCP provider (e.g. Kea) realizing `AddressService`
-renders its reservations from that set. `DHCPScope.reservations` becomes a computed projection of the
-estate, so "the DHCP provider's records live in UDLM format" is satisfied by construction — whichever provider.
+**A reservation is derived** from every `IPAddress` with `allocation: static` that is bound to a
+`NetworkInterface` (which carries the MAC), contained by a host (which gives the hostname). A DHCP
+provider (e.g. Kea) realizing `AddressService` renders its reservations from that set.
+`DHCPScope.reservations` is a derived output, a computed projection of the estate, never authored. So
+"the DHCP provider's records live in UDLM format" is satisfied by construction — whichever provider.
 
 ## Data · Policy · Provider
 
@@ -103,28 +102,25 @@ estate, so "the DHCP provider's records live in UDLM format" is satisfied by con
 5. The DHCP provider renders `{mac: <new>, ip: 192.0.2.91, hostname: host-a}` from #2–#3; the old MAC
    disappears when the record changes. Same edit reassigns the IP on any future motherboard swap.
 
-## Decisions taken (2026-07-09)
+## Decisions
 
-- **MAC placement — DECIDED:** MAC stays an attribute of the ethernet-adapter resource
+- **MAC placement:** MAC stays an attribute of the ethernet-adapter resource
   (`NetworkInterface`), not a separate record. (A separate NetBox-style MACAddress record
   remains the escalation path if multi-MAC / permanent-vs-assigned is ever needed.)
-- **Config type — DECIDED:** adopt **NMstate as the whole body** of the config resource (Tier-2
+- **Config type:** adopt **NMstate as the whole body** of the config resource (Tier-2
   adopt-by-reference: UDLM owns identity + the conformance pointer, NMstate owns the body). Not just its
   vocabulary.
-- **Coverage — DECIDED:** all of Kea's reservation records live in UDLM format (fleet + IoT) — "Kea stores
-  its records in UDLM format." `DHCPScope.reservations` becomes a projection of the estate.
-
-## Decided at ratification (2026-07-15, DCM ADR-023)
-
-- **Config type name — DECIDED:** `ConnectionProfile`, attaching to the adapter via
+- **Config type name:** `ConnectionProfile`, attaching to the adapter via
   `references … relation: configures`.
+- **Coverage:** all of a DHCP provider's reservation records live in UDLM format — "Kea stores
+  its records in UDLM format." `DHCPScope.reservations` is a projection of the estate.
 
 ## Still open
 
-- **Reservation rendering:** a generator tool in the estate's DCM tooling that emits DHCP-provider
-  reservations from the estate, with a byte-for-byte parity check against the existing hand-maintained
-  reservation list before the provider is switched to consume it (this touches live DHCP). Built as its
-  own reviewed PR after this proposal is ratified.
+- **Reservation rendering:** a generator tool in the estate's control-plane tooling that emits
+  DHCP-provider reservations from the estate. Before the provider is switched to consume it, a
+  byte-for-byte parity check against the existing hand-maintained reservation list is run, because this
+  touches live DHCP. It is built as its own reviewed PR.
 
 ## Ties
 #267 (host-network model: `parent_device`/`lower_layer`, `device_class`), `IPAddress` +

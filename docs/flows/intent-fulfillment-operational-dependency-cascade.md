@@ -56,14 +56,14 @@ sequenceDiagram
 - **Convergence is the existing loop.** With `w>0` the container carries no new machinery — the
   `reserve → recompute-dependents` loop realizes the PVC then the container.
 - **The root is named.** The surface names the PVC (the root unsatisfied dependency), not just
-  "container waiting" — the surfacing contract (UC-008) applies here.
+  "container waiting" — the surfacing contract (case 008 of the family) applies here.
 
 ## What UDLM does not decide
 
 The **window value** (`w`) and whether a stalled transient member is eventually given up or waits
-forever, and the schedule on which the reconciler re-attempts — those are DCM policy over the
+forever, and the schedule on which the reconciler re-attempts — those are control-plane policy over the
 window/nature UDLM declares (ADR-008). UDLM defines the operational nature, the `blocked_transient`
-status, the convergence-order contract, and the surfacing obligation; DCM's reconciler drives them.
+status, the convergence-order contract, and the surfacing obligation; the control plane's reconciler drives them.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
@@ -82,4 +82,3 @@ status, the convergence-order contract, and the surfacing obligation; DCM's reco
 | Reservation vs activation | ADR-011 (validate-and-reserve) |
 | Edge strength (hard/soft) | `docs/spec/foundations/service-dependencies.md`, ADR-027 |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
-| DCM counterpart | dcm-project/dcm `docs/flows/` (the reconciler performing this flow) |

@@ -6,9 +6,9 @@ reaches an organization's estate and its downstream records. ADR-045 settled the
 (pins, debt, atomic recompilation) and ADR-046 the evidence (blue/green promotion); this
 walkthrough adds the temporal layer: change windows, ceremonies, freezes, and orchestration,
 varied across three estates that share one registry. Every section is backed by a corpus case
-(`use-cases/change-control/`), and those cases ride every normal analysis run. The contracts
-here are **proposed pending the change-control ADR** — this document and its use cases are the
-corpus-first input to that ruling.
+(`use-cases/change-control/`), and those cases ride every normal analysis run. ADR-053 (change
+control is a `schedule` clause family on the existing policy object; a clause governs *when*, never
+*whether*) records the ruling; this document and its use cases were the corpus-first input to it.
 
 The running example: the maintainer adds a new optional element — say `memory.hugepages` — to
 the Machine Base Class. Upstream this is one atomic change: descendants regenerate, gates
@@ -48,17 +48,17 @@ ceremony: evidence → approval → window → verify → debt closes, one recor
 the first unmet gate. An operator who tries to re-pin on Tuesday afternoon is refused — typed
 as a window violation, naming the policy clause, the next window, and the expedite path.
 
-Inside the estate, propagation itself is ordered: the adoption job derives its update sequence
-from the estate's own dependency edges (the same graph that derives shutdown order), updates
-in batches with per-batch verification, and on a failed batch halts with a recorded, resumable
+Inside the estate, propagation itself is ordered. The adoption job derives its update sequence
+from the estate's own dependency edges (the same graph that derives shutdown order) and updates
+in batches with per-batch verification. On a failed batch it halts with a recorded, resumable
 partial-adoption state. A fleet is never rewritten unordered.
 
 ## Estate 3 — regulated: freezes and break-glass (UC-006, UC-007)
 
 The regulated estate adds two clauses. A **freeze** (its audit period) suspends every adoption
-path including automatic ones; upstream changes accumulate as queued debt, ordered and typed
+path including automatic ones. Upstream changes accumulate as queued debt, ordered and typed
 distinctly from ordinary lag, and drain in arrival order under normal gates when the freeze
-lifts — so a quarter of silence is provably policy, not neglect. And an **expedite** clause is
+lifts. So a quarter of silence is provably policy, not neglect. And an **expedite** clause is
 the sanctioned exception for the security fix that cannot wait: elevated approver, named
 justification, flagged audit record — and the evidence gate untouched, because break-glass
 compresses schedules, never proof.
@@ -74,12 +74,12 @@ adoption trails.
 
 ## The mechanisms this asks of the model (the candidate ADR surface)
 
-Each is an extension of something that already exists, not a new subsystem: the
-change-management policy as a Policy object branching on the upstream change record's
-classification; window/freeze/expedite as dated policy clauses the orchestration evaluates;
-adoption runs as Process-family jobs (change management is itself automation intent — the same
-class system it serves); queued/windowed/frozen as typed debt states extending ADR-045's debt
-list; soak/adoption evidence as typed records ADR-046's promotion evidence already shapes; and
-the adoption trail as audit records. What is genuinely new is small and nameable: the policy
+Each is an extension of something that already exists, not a new subsystem. The
+change-management policy is a Policy object branching on the upstream change record's
+classification. Window/freeze/expedite are dated policy clauses the orchestration evaluates.
+Adoption runs are Process-family jobs (change management is itself automation intent — the same
+class system it serves). Queued/windowed/frozen are typed debt states extending ADR-045's debt
+list. Soak/adoption evidence is typed records ADR-046's promotion evidence already shapes. The
+adoption trail is audit records. What is genuinely new is small and nameable: the policy
 clause vocabulary (window, freeze, expedite, precondition-on-evidence) and the typed debt
-states. That is the decision surface for the change-control ADR.
+states. That is the decision surface ADR-053 ruled on.

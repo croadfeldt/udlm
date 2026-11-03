@@ -105,7 +105,7 @@ flowchart TD
 
 ## 4 · Brownfield — a System with no Template
 
-A running assembly that DCM did not create is **Discovered** (observed reality, no intent). It joins the model the same way any observed thing does — by **adoption**: backport a candidate Template/Pattern from the discovered state, run Converge in dry-run, compare projected vs discovered, tweak to the faithfulness knob, then approve.
+A running assembly that the control plane did not create is **Discovered** (observed reality, no intent). It joins the model the same way any observed thing does — by **adoption**: backport a candidate Template/Pattern from the discovered state, run Converge in dry-run, compare projected vs discovered, tweak to the faithfulness knob, then approve.
 
 ```mermaid
 flowchart LR
@@ -121,7 +121,7 @@ flowchart LR
 
 ---
 
-## What UDLM decides, and what it hands to DCM
+## What UDLM decides, and what it hands to the control plane
 
 - **UDLM (the stage):** the three tiers, the edges (`contained_by` for the Composite, `binds_to` for the bound processes), and the invariant that a System is a Template Realized — nothing more, nothing less than its intent plus the provider's output.
 - **The implementation (the actors):** *how* a Pattern refines into a Template (profile + placement + enrichment — the resolution policy), and *how* a Template converges into a System (the provider mechanism). Both are implementation; a conformant peer may do either differently.

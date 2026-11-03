@@ -9,10 +9,10 @@ naming you, not later in your runtime.**
 
 **In one breath.** UDLM is a portable, versioned, digest-addressable registry of resource types (each
 with a schema, a worked example, and the use cases and flows that document how it is meant to behave),
-Classes, the estate graph, and the corpus. You build against it by finding a type's schema, its
-example, and its coverage block to learn intended behavior; reading the **intent** plane or the
-**realized** plane deliberately (they are separate); declaring your read surface in a one-file consumer
-manifest; and pinning each type you read by version or digest. If you go further and *realize* intent,
+Classes, the estate graph, and the corpus. You build against it four ways. Find a type's schema, its
+example, and its coverage block to learn intended behavior. Read the **intent** plane or the
+**realized** plane deliberately (they are separate). Declare your read surface in a one-file consumer
+manifest. Pin each type you read by version or digest. If you go further and *realize* intent,
 you do it as a provider at the naturalization boundary — you wrap a native backend and report realized
 state back; you never push implementation mechanism into the portable model.
 
@@ -51,21 +51,21 @@ shape*, *what a real one looks like*, and *how it is meant to behave*.
 
 | To learn… | Read | Where it is |
 |---|---|---|
-| the **shape** (fields, required, refusals) | the type spec's `spec` (a JSON Schema) | `registry/generated/<category>.<type>.json` |
+| the **shape** (fields, required, refusals) | the type spec's `spec` (a JSON Schema) | `registry/generated/<class>.json`, the class name in lower case (`machine.vm.json`) |
 | what a **valid one looks like** | `spec.examples` — the worked example, CI-validated against the spec (ADR-055) | inside the same spec, under `spec.examples` |
 | how it is **meant to behave** | the `coverage:` block — its use cases + flows | top-level `coverage:` on the same spec |
 
 The `coverage:` block is your entry point to intended behavior. On `Machine.VM`, for
-example, it names three use cases (a standard provision, a provider-failure *refusal*, a composite
-VM-with-volume) and the flows that walk them. Read the refusal case first when you integrate — a type's
-must-reject contract (typed, actionable, non-leaking, auditable) is where the real behavior lives, and
-it is the case a naive integration gets wrong.
+example, it names three scoped-class use cases (compile a Type to its flat spec, portability derived
+from scope, a Liskov refinement accepted) and the flow that walks them. Read a type's refusal case first
+when you integrate — the must-reject contract (typed, actionable, non-leaking, auditable) is where the
+real behavior lives, and it is the case a naive integration gets wrong.
 
 The registry layout you will navigate:
 
 | Directory / file | What it holds |
 |---|---|
-| `registry/generated/` | the served type specs, compiled from the classes (compute.vm, network.vlan, …) |
+| `registry/generated/` | the served type specs, compiled from the classes (`machine.vm.json`, `vlan.json`, …) |
 | `registry/classes/` | the authored surface — the scoped Classes (ADR-061 hierarchy) |
 | `registry/examples/` | worked instances of records (policies, layers, decision records, accreditations) |
 | `registry/*.schema.json` | the meta-schemas every artifact validates against |
@@ -103,7 +103,7 @@ this distinction exists to prevent.
 Put one manifest in `registry/consumers/<you>.yaml` naming the types you read. This is not paperwork —
 it is what lets a registry change that would break you fail in the registry's CI, naming you, instead of
 failing silently in your runtime later. The motivating incident was exactly that: a control-plane
-generator mapped 5 of 46 types with no warning for the rest, found by a code sweep, not by a gate
+generator mapped 5 of 46 types with no warning for the rest. A code sweep found it, not a gate
 (ADR-044 — consumers declare what they read, the registry gates on it).
 
 The manifest shape, gated by
@@ -124,9 +124,9 @@ coverage: declared                            # `verified` is your own promotion
 ```
 
 Provide exactly one of `consumes` (a named list) or `consumes_all_types: true` (for an envelope-level
-reader — a graph ingest, the analysis engine). The gate enforces three invariants: every named type
-**exists**; no `noted_version` runs **ahead** of the registry (a claim to have verified against a
-registry that does not exist); and every registry type is consumed by ≥1 manifest **or** acknowledged in
+reader — a graph ingest, the analysis engine). The gate enforces three invariants. Every named type
+**exists**. No `noted_version` runs **ahead** of the registry (a claim to have verified against a
+registry that does not exist). Every registry type is consumed by ≥1 manifest **or** acknowledged in
 `registry/consumers/unconsumed.yaml`, which the gate regenerates and diffs so the acknowledgment can
 never drift silently. Start at `coverage: declared`; `verified` is reserved for a consumer that gates
 its own conformance against its manifest in its own CI — it is your promotion to make, never the
@@ -167,13 +167,13 @@ The load-bearing rule: **you wrap a native backend and populate the realized pla
 implementation mechanism into the portable model.** UDLM is the portable intent plus the estate graph; a
 implementation (DCM, or any independent peer) is the engine that makes intent real. The line is the ADR-008
 peer test — *anything a conformant peer could do differently is implementation, and stays out of the
-substrate*; the tenet form is T8 in [`CONTRIBUTING.md`](../../CONTRIBUTING.md) (*adopt tools by reference —
+substrate*. The tenet form is T8 in [`CONTRIBUTING.md`](../../CONTRIBUTING.md) (*adopt tools by reference —
 wrap the mature tool as a Provider, don't have the control plane reimplement it*). Concretely, a
 provider MUST report realized/discovered state back per resource with an identity correlation (your
 native id ↔ the UDLM `uuid`) — without that read-back the control plane is blind to reality and cannot
 own the lifecycle. The scale-of-integration model for that read-back and config projection is **DCM
-ADR-023** (in the DCM repo, cited throughout `provider-contract.md`; note this repo's own DCM ADR-023 is a
-different subject — host networking as data).
+ADR-023** (in the DCM repo, cited throughout `provider-contract.md`; note that row 023 of this repo's own
+decisions register is a different subject — host networking as data).
 
 What this buys you: your backend's specifics stay yours, the portable model stays portable, and any
 other conformant consumer reads the realized state you report without knowing your tool exists.

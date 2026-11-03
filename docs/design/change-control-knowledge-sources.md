@@ -1,23 +1,29 @@
 # Change-control information as a knowledge domain — design note
 
-**What this settles:** where change-control information actually comes from, and how the model
-carries it. Maintenance windows, freeze calendars, approvals, and tolerance classes have more
-than one source of truth in a real organization: some are authored inside the estate as policy
-clauses, and some live in external systems of record — the change-management/ITSM platform
-that owns the corporate change calendar, the CAB that owns approvals. This note models the
-external sources the way the registry already models external knowledge (the SBOM/CVE domain):
-as **Knowledge-family types supplied by information providers**, referenced by policies rather
-than copied into them. Contracts here are **proposed pending the change-control ADR**; the
-corpus cases (`change-control/013–015`) encode them for measurement first, per the
+**What this is:** a design note on where change-control information comes from and how the
+model carries it. Maintenance windows, freeze calendars, approvals, and tolerance classes have
+more than one source of truth in a real organization. Some are authored inside the estate as
+policy clauses. Some live in external systems of record: the IT service management (ITSM)
+platform that owns the corporate change calendar, or the change advisory board (CAB) that owns
+approvals. This note models the external sources the way the registry already models external
+knowledge (the SBOM/CVE domain): as **Knowledge-family types supplied by information
+providers**, referenced by policies rather than copied into them. The corpus cases
+(`use-cases/change-control/013–015`) encode the contracts for measurement first, per the
 corpus-first discipline.
+
+**What has been ruled since.** [ADR-053](../adr/ADR-053-change-control-policy-vocabulary.md)
+rules the clause vocabulary, including authority per scope and fail-closed staleness (§6–7).
+[ADR-048](../adr/ADR-048-staleness-as-declared-expectation.md) rules that staleness is judged
+against a declared expectation and that verdicts are derived, never stored. The table below
+is the 2026-07-25 snapshot that those rulings answered.
 
 ## The pattern, in plain terms
 
 The registry has done this once already: vulnerabilities and software inventory are
 Knowledge-family records ingested from external feeds, and policies reference them instead of
 restating them. Change-control information is the same shape. A maintenance window is not a
-fact the estate invents — for most organizations it is a record in the change-management
-system — so the model treats it as knowledge with a source, not as policy text someone
+fact the estate invents. For most organizations it is a record in the change-management
+system. So the model treats it as knowledge with a source, not as policy text someone
 re-types after every CAB meeting.
 
 Three sources, one discipline:
@@ -58,16 +64,15 @@ it read.
 | Authority-per-scope declaration in consuming policies | **MISSING** — part of the pending change-control ADR's clause vocabulary |
 
 The freshness row is the finding with reach beyond change control: it is a **family-level
-element** — exactly the shape the class system's Base tier exists for. When the Knowledge
-family gets its Base Class (the class-implementation program), freshness elements belong there
-once, and every knowledge domain — calendars, vulnerabilities, software inventory, whatever
-comes next — inherits staleness decidability. Until then it is a per-type gap.
+element**, exactly the shape the class system's Base tier exists for. Once freshness elements
+live on a shared Knowledge base, every knowledge domain inherits staleness decidability:
+calendars, vulnerabilities, software inventory, whatever comes next. Until then it is a
+per-type gap.
 
 ## Where this lands
 
 The change-calendar knowledge type and the Knowledge-family freshness elements are registry
-work (types + the family Base Class when P-phases reach Knowledge); the authority and
-staleness clause vocabulary is ruled by [ADR-053](../adr/ADR-053-change-control-policy-vocabulary.md) (§6–7); the provider
-declaration extension joins the provider contract. The corpus cases ride analysis runs now, so
-every one of these gaps is measured from today — closure flips the cases, and the scoreboard
-shows it.
+work. The authority and staleness clause vocabulary is ruled by
+[ADR-053](../adr/ADR-053-change-control-policy-vocabulary.md) (§6–7). The provider declaration
+extension joins the provider contract. The corpus cases ride analysis runs now, so every one of
+these gaps is measured from today: closure flips the cases, and the scoreboard shows it.

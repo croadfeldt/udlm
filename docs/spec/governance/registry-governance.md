@@ -526,7 +526,7 @@ registry gates emit, so that the recording story is uniform rather than per-gate
 
 - **Class tiers** ([../foundations/class-tiers.md](../foundations/class-tiers.md)) — the Base / Type / Provider Class model, the offer on the Provider Class (§5.1) and portability read off the tree (§7).
 - **Auth Providers** ([auth-providers.md](auth-providers.md)) — authentication for registry access
-- **Universal Audit Model** ([../observability/universal-audit.md](../contracts/universal-audit.md)) — all registry operations produce audit records
+- **Universal Audit Model** ([../contracts/universal-audit.md](../contracts/universal-audit.md)) — all registry operations produce audit records
 - **Federated Contribution Model** ([federated-contribution-model.md](federated-contribution-model.md)) — broader contribution pipeline for all artifact types
 
 ---

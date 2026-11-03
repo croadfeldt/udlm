@@ -6,12 +6,16 @@ material is a real, working provisioning playbook (anonymized): ~200 lines of im
 shell across three plays. The intent document below carries the same workload in ~60 lines,
 and improves on the playbook in three places the comparison table calls out.
 
-The workload: a game-server VM on a DMZ segment. 8 vCPU, 32 GiB, one 128 GB disk, a current
-Fedora Server guest, a static address on an isolated VLAN the host itself holds no address
+The workload: a game-server VM on a DMZ segment. 8 vCPU, 32 GiB, one 128 GB disk, and a current
+Fedora Server guest. It has a static address on an isolated VLAN the host itself holds no address
 on, forward and reverse DNS, and a first-boot job that grows the root filesystem into the
 full disk.
 
 ## The catalog item
+
+The composition shape (constituents, `depends_on` ordering, output bindings) is
+`registry/composition.schema.json`'s. A catalog item is a Provider Class that carries that shape; the
+record envelope below is illustrative.
 
 ```yaml
 record_type: catalog_item
@@ -103,7 +107,7 @@ as `NetworkInterface` records with `parent_device`), not re-created per workload
 ## What the source playbook exposed as model gaps
 
 Probing this playbook against the registry surfaced four intent elements the model cannot yet
-carry — each filed for a ruling rather than silently dropped: a vCPU hot-resize ceiling
+carry, each filed for a ruling rather than silently dropped. They are a vCPU hot-resize ceiling
 (`vcpus 8, max 16`), CPU passthrough mode, day-0 management-access bootstrap (an injected SSH
 key), and thin-provisioning intent for the disk. The example above expresses everything else;
 those four ride their issues.

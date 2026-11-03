@@ -1,22 +1,22 @@
 # Credential & identity — reference → resolve → scope-check → use (the flow)
 
 **What this settles:** how secrets and identities are handled without ever pulling secret material into
-the model — a **credential reference** names where a secret lives, a **directory service** is the identity
+the model. A **credential reference** names where a secret lives, a **directory service** is the identity
 source, and an **identity escrow** declares the break-glass survival set. A **lighter** flow: it **builds
-on [request-realization](request-realization.md)** and documents only what credential/identity handling
-adds — the **reference-never-value** rule, **just-in-time resolution**, the **scope check**, and the
-recovery survival allowlist.
+on [request-realization](request-realization.md)** and documents only what credential and identity
+handling adds. That is the **reference-never-value** rule, **just-in-time resolution**, the **scope
+check**, and the recovery survival allowlist.
 
 > **Use Cases:** `security/reference-credential-just-in-time`, `security/integrate-directory-service`,
 > `access/identity-escrow-survival-allowlist` (positive); `security/credential-used-outside-scope-refused`,
 > `access/escrow-unauthorized-item-refused` (must-reject). **Personas:** security-officer /
 > platform-engineer · **Perspective:** compliance-auditor.
 
-**In one breath.** A credential reference carries a *pointer* to a secret (a path/URI/handle), never the
-secret itself; it resolves just-in-time at the point of use, scope-checked against what the caller is
-authorized to read, and a use outside that scope is refused with the secret never exposed. Identities come
-from a directory service; an identity escrow declares which identities/accesses survive a recovery, and an
-item outside the escrow policy is refused. Every refusal emits an audit record
+**In one breath.** A credential reference carries a *pointer* to a secret (a path, URI or handle), never
+the secret itself. It resolves just in time at the point of use, scope-checked against what the caller is
+authorized to read. A use outside that scope is refused, and the secret is never exposed. Identities come
+from a directory service. An identity escrow declares which identities and accesses survive a recovery,
+and an item outside the escrow policy is refused. Every refusal emits an audit record
 ([audit/refusal-emits-audit-record](../../use-cases/audit/refusal-emits-audit-record.yaml)).
 
 ## The flow
@@ -37,7 +37,7 @@ flowchart TD
 ## What credential/identity handling adds
 
 - **Reference, never value** — the model holds a *pointer* to a secret, never the secret. This is the
-  PVD-001 portable-value discipline applied to secrets: a credential is a classified reference, resolved
+  PVD-001 portable-value discipline applied to secrets. A credential is a classified reference, resolved
   by the provider at use, so the portable model never carries material it must not.
 - **Just-in-time + scope-checked** — resolution happens at the point of use, and only within the caller's
   authorized scope; an out-of-scope use is a must-reject with the secret never exposed.
@@ -47,9 +47,9 @@ flowchart TD
 ## What UDLM does not decide
 
 Which secret store (Vault, a KMS) holds the material, or how a provider resolves and injects it (the
-naturalization boundary, DCM ADR-023); the rotation/lease policy on a resolved secret (Policy/DCM). UDLM
-defines the reference shape, the scope contract, the directory-source and escrow shapes, and the surfacing
-contract — never the secret itself.
+naturalization boundary, DCM ADR-023); the rotation and lease policy on a resolved secret (policy, the
+control plane's). UDLM defines the reference shape, the scope contract, the directory-source and escrow
+shapes, and the surfacing contract, never the secret itself.
 
 ## Where each piece is specified
 
@@ -58,5 +58,5 @@ contract — never the secret itself.
 | Reference-never-value (portable-value discipline) | ADR-037 (PVD-001) |
 | Refusal ⇒ audit record | `use-cases/audit/refusal-emits-audit-record`; AUD-006 |
 | Escrow replay during recovery | rehydration = replay original intent |
-| The shapes + examples | `registry/generated/{security,access}.*` (`spec.examples`, ADR-055) |
+| The shapes + examples | `registry/generated/credential-ref.json`, `directory-service.json`, `identity-escrow.json` (`spec_examples`; register row 055, examples live in the spec) |
 | Corpus | `use-cases/security/`, `use-cases/access/` |

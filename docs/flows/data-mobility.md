@@ -1,21 +1,21 @@
 # Data mobility — moving the data for rehydration, migration, and redeployment
 
 **What this settles:** how a workload's **data** is moved from a source to a target as part of rehydration,
-migration, or redeployment — the half of the job that isn't rebuilding compute. UDLM carries the
-**data-mobility requirement**; the *method and mechanism* are the **provider's** (a DR / replication
+migration, or redeployment: the half of the job that isn't rebuilding compute. UDLM carries the
+**data-mobility requirement**. The *method and mechanism* are the **provider's** (a DR or replication
 process, or an automation play), sequenced so **data lands before the systems that need it**. It **builds on
-[request-realization](request-realization.md)** and grounds **ADR-003** (data mobility — requirements are
-data, methods and mechanism are the provider) in a flow.
+[request-realization](request-realization.md)** and grounds **ADR-003** (data mobility: requirements are
+data, methods and mechanism are the provider's) in a flow.
 
 > **Use Case:** `cross-domain/data-mobility`. **Persona:** platform-engineer · **Profile:** prod.
 
-**In one breath.** A rebuild elsewhere is only half a rehydration — the workload's data has to arrive where
-it's rebuilt. The **requirement** (source, target, RPO/RTO, classification) is *data* the intent carries;
-policy checks the move is allowed (**sovereignty**, classification, approved target); the *provider* resolves
-the **method and mechanism** — an existing DR/replication process or an Ansible data play; the target
-capacity is **reserved**; the data is **moved in dependency order** so it lands before its dependents; the
-move is **verified** (integrity + RPO); then dependents realize against the landed data. The same model
-serves **rehydration** (rebuild + bring the data), **migration** (move compute *and* data), and
+**In one breath.** A rebuild elsewhere is only half a rehydration; the workload's data has to arrive where
+it's rebuilt. The **requirement** (source, target, RPO/RTO, classification) is *data* the intent carries.
+Policy checks the move is allowed (**sovereignty**, classification, approved target). The *provider* resolves
+the **method and mechanism**: an existing DR or replication process, or an Ansible data play. The target
+capacity is **reserved**. The data is **moved in dependency order**, so it lands before its dependents. The
+move is **verified** (integrity and RPO); then dependents realize against the landed data. The same model
+serves **rehydration** (rebuild and bring the data), **migration** (move compute *and* data), and
 **redeployment** (same mechanism, new target). Every step is recorded with the move's **provenance**.
 
 ## The flow
@@ -39,8 +39,8 @@ flowchart TD
 
 ## What this adds over request-realization
 - **The requirement is data; the mechanism is the provider (ADR-003).** UDLM carries *what* must move
-  (source, target, RPO/RTO, classification); *how* it moves — a DR/replication process or an automation play
-  — is the provider's method and mechanism, never modeled in the portable data.
+  (source, target, RPO/RTO, classification). *How* it moves (a DR or replication process, or an automation
+  play) is the provider's method and mechanism, never modeled in the portable data.
 - **The move is governed like any boundary crossing.** Sovereignty and data-classification gate the target
   (approved-host / zone, [ADR-057](../adr/ADR-057-sovereignty-placement-and-provenance.md)); an unapproved
   target is refused, not attempted.

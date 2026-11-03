@@ -18,10 +18,11 @@
 > Those are identifiers and wording, aligned under
 > [#405](https://github.com/croadfeldt/udlm/issues/405); the tier they name is the one above.
 
-> **Bindings are **output-resolved** — the validator checks each `bindings[].output` against the producer type's declared outputs (wave-3.2 deferral closed, wave 3.3). Machine-validatable schema:** Composite Service catalog items validate against
-> [`registry/composition.schema.json`](../../../registry/composition.schema.json)
-> (`registry/tools/validate.py` dispatches any instance carrying `record_type: class`
-> to it, and additionally enforces the cross-field rules JSON Schema cannot express:
+> **Bindings are **output-resolved** — the validator checks each `bindings[].output` against the producer type's declared outputs. Machine-validatable schema:** the constituents shape is
+> [`registry/composition.schema.json`](../../../registry/composition.schema.json); a Template class
+> (`record_type: class`, `registry/class.schema.json`) carries it, and a composition record
+> (`record_type: composition`) validates against it directly. `registry/tools/validate.py`
+> dispatches on `record_type` and additionally enforces the cross-field rules JSON Schema cannot express:
 > component_id uniqueness, sibling depends_on/binding resolution, cycle rejection, and
 > binding⊆depends_on ordering). Worked example:
 > [`registry/classes/resource/services/template/application/acme-three-tier.yaml`](../../../registry/classes/resource/services/template/application/acme-three-tier.yaml).
@@ -205,8 +206,8 @@ not compensation-triggering — their failure yields a `DEGRADED` composite (§2
 
 ### 2.5 Interop — the control plane's catalog model
 
-The field-by-field cross-walk to control-plane control plane's own catalog model lives with that control
-plane: `dcm/docs/specifications/dcm-composite-orchestration.md`. Projection is lossless downward
+The field-by-field cross-walk to a control plane's own catalog model lives with that control plane
+(for the reference implementation: `dcm/docs/specifications/dcm-composite-orchestration.md`). Projection is lossless downward
 (data-model-core §4) — a UDLM catalog item compiles onto their execution DAG; the reverse is lossy,
 which is why the typed form is the data model and their DAG is a compiled artifact at the boundary.
 
@@ -281,8 +282,8 @@ Discovered State for a Composite Entity is derived: there is no provider-side "d
 ## 4. What the control plane does with a composite
 
 Expansion, placement of `external` constituents, dispatch sequencing, status computation,
-compensation and audit aggregation are the control plane's, and are specified there:
-`dcm/docs/specifications/dcm-composite-orchestration.md`. The registering provider's scope is
+compensation and audit aggregation are the control plane's, and are specified in its own
+documentation (for the reference implementation: `dcm/docs/specifications/dcm-composite-orchestration.md`). The registering provider's scope is
 narrow by construction — it receives standard per-constituent calls and never sequences them.
 
 This document defines what a composite IS. What a control plane does with one is that control

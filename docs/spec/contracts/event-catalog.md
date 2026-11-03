@@ -23,13 +23,13 @@ events narrate.
 Every control-plane event shares a common envelope. Event-specific fields are in the `payload` object.
 
 ```yaml
-# illustrative: the event envelope has no schema yet (#723)
+# illustrative: the event envelope; no registry schema governs events
 # UDLM Event Envelope — all events
 event_uuid: <uuid>                  # RFC 9562 v7 (time-ordered — identifier-scheme §2.1); idempotency key; stable across retries
 event_type: <string>                # fully qualified: domain.event_name
 event_schema_version: "1.0"         # increments on breaking payload changes
 timestamp: <RFC 3339 UTC 'Z'>       # from Commit Log — authoritative source of truth (common-elements §8.1);
-                                    # inherits the Commit Log's microsecond-precision instant (universal-audit §7.2)
+                                    # inherits the Commit Log's microsecond-precision instant (universal-audit §7)
 implementation_version: <semver>    # version of the implementation instance that generated the event
 implementation_instance_uuid: <uuid> # identifies the implementation instance (federation context)
 
@@ -71,6 +71,7 @@ links:
 |--------|--------|-------------|
 | `request.*` | 15 | Request pipeline lifecycle |
 | `entity.*` | 13 | Resource entity lifecycle |
+| `reservation.*` | 3 | Reservation holds in two-phase realization (§4) |
 | `drift.*` | 4 | Drift detection and resolution |
 | `provider.*` | 5 | Provider registration and health |
 | `provider_update.*` | 5 | Provider-initiated update lifecycle |
@@ -96,7 +97,7 @@ links:
 | `itsm.*` | 3 | ITSM integration record lifecycle (§21) |
 | `group.*` | 4 | grouping lifecycle (appendix) |
 | `authorization.*` | 1 | Cross-tenant authorization events (appendix) |
-| **Total** | **102** | across 27 domains |
+| **Total** | **105** | across 28 domains |
 
 ---
 
@@ -346,11 +347,12 @@ payload:
 
 #### `provider.registered` / `provider.deregistered`
 ```yaml
+# illustrative: event payload fields; no registry schema governs events
 payload:
   provider_uuid: <uuid>
   provider_type: service_provider | information_provider | process_provider | peer_dcm
   # The provider KINDS of docs/spec/contracts/provider-contract.md §8/§9 (data-model-core §7 [D5],
-  # ADR-005 capability model). There is no auth_provider (or credential_provider) kind —
+  # ADR-PROV-002 capability model). There is no auth_provider (or credential_provider) kind —
   # auth/credential issuance/notification/ITSM/telemetry are CAPABILITIES a kind declares;
   # peer_dcm is the federation kind (provider-contract §8.5).
   provider_handle: <string>
@@ -726,7 +728,7 @@ policy that drives these events, and
 | `conformance.declaration_updated` | low | The publishing peer's conformance declaration was re-published (e.g., after a fresh test-suite run or independent verification). |
 | `schema.bundle_updated` | medium | The publishing peer published a new schema bundle version. Subscribers SHOULD refresh cached schemas. |
 
-### 16.5.1 Payload Schemas
+### 16a.1 Payload Schemas
 
 #### `conformance.version_deprecated`
 ```yaml
@@ -849,7 +851,7 @@ payload:
 |--------|------|
 | `EVT-001` | Every event must include the base envelope fields (`event_uuid`, `event_type`, `event_schema_version`, `timestamp`, `implementation_version`, `implementation_instance_uuid`, `urgency`). Events omitting required envelope fields are invalid and must not be published. |
 | `EVT-002` | `event_uuid` is the idempotency key. Consumers must treat duplicate `event_uuid` values as already-processed. The control plane may re-deliver events on failure; this is not a bug. |
-| `EVT-003` | `timestamp` is sourced from the Commit Log Stage 1 write and **inherits the Commit Log's RFC 3339 UTC 'Z' microsecond-precision instant** (universal-audit §7.2) — one cross-store precision, no re-stamping. It represents when the event was authoritatively recorded, not when it was delivered. |
+| `EVT-003` | `timestamp` is sourced from the Commit Log Stage 1 write and **inherits the Commit Log's RFC 3339 UTC 'Z' microsecond-precision instant** (universal-audit §7) — one cross-store precision, no re-stamping. It represents when the event was authoritatively recorded, not when it was delivered. |
 | `EVT-004` | `event_schema_version` must increment on any breaking change to a payload schema. Adding optional fields is not a breaking change. Removing fields, changing field types, or changing field semantics are breaking changes. |
 | `EVT-005` | Events with `urgency: critical` must be delivered via the push channel if the notification service supports it, regardless of consumer subscription preferences. |
 | `EVT-006` | This catalog is the authoritative source for event type names. Any event type not in this catalog is non-standard. Non-standard events may be published by providers or extensions but must use a reverse-DNS prefix (e.g. `com.acme.custom_event`). |
@@ -857,39 +859,83 @@ payload:
 
 ---
 
-## 21. ITSM Events (`itsm.*`)
-
-| Event Type | Urgency | Trigger |
-|-----------|---------|---------|
-| `itsm.record_created` | info | ITSM integration successfully created a record in the external ITSM system |
-| `itsm.record_updated` | info | ITSM integration successfully updated an existing ITSM record |
-| `itsm.record_failed` | medium | ITSM integration failed to create/update a record; or `block_until_created` timeout reached |
-
-### 21.1 Payload Schema
-
-#### `itsm.record_created` / `itsm.record_updated`
-```yaml
-payload:
-  itsm_provider_uuid: <uuid>
-  itsm_system: servicenow | jira_service_management | ...
-  action: create_change_request | create_incident | ...
-  record_type: change_request | incident | cmdb_ci | service_request
-  record_id: "<external-record-id>"    # e.g. CHG0012345, INC-4821
-  record_url: "<url>"                  # deep link to record in ITSM system
-  policy_handle: "<string>"            # which ITSM Policy triggered this
-  stored_on_entity: <bool>
+## 19. Event Type Quick Reference
 
 ```
+request.submitted          request.intent_captured      request.layers_assembled
+request.policies_evaluated request.requires_approval    request.approved
+request.placement_complete request.dispatched           request.compound_assembled
+request.dependencies_resolved  request.realized          request.failed
+request.gating_rejected    request.cancelled            request.progress_updated
 
-#### `itsm.record_failed`
-```yaml
-payload:
-  itsm_provider_uuid: <uuid>
-  action: <string>
-  failure_reason: <string>
-  timeout_expired: <bool>             # true if block_until_created timeout hit
-  policy_handle: <string>
+entity.realized            entity.state_changed         entity.modified
+entity.ttl_warning         entity.ttl_expired           entity.suspended
+entity.resumed             entity.decommissioning       entity.decommissioned
+entity.decommission_deferred   entity.ownership_transferred  entity.pending_review
+entity.expired
+
+reservation.ttl_changed    reservation.expired          reservation.expiry_unconfirmed
+
+drift.detected             drift.severity_escalated     drift.resolved
+drift.escalated
+
+provider.registered        provider.deregistered        provider.healthy
+provider.unhealthy         provider.degraded
+
+provider_update.submitted  provider_update.requires_approval  provider_update.approved
+provider_update.rejected   provider_update.auto_approved
+
+rehydration.started        rehydration.paused           rehydration.interrupted
+rehydration.completed      rehydration.blocked
+
+policy.activated           policy.deactivated           policy.evaluated
+policy.shadow_result
+
+credential.rotating        credential.revoked           credential.idle
+credential.expired
+
+approval.decision_recorded approval.quorum_reached      approval.window_expiring
+approval.expired
+
+tier_registry.proposed     tier_registry.impact_assessed
+tier_registry.degradation_detected  tier_registry.activated
+
+audit.integrity_alert      audit.integrity_break      audit.forward_failed
+
+dependency.state_changed   dependency.drift_detected
+stakeholder.resource_decommissioning
+allocation.pool_capacity_low  allocation.released
+
+ingestion.transitional_created  ingestion.enriched      ingestion.promotion_approved
+
+governance.catalog_item_deprecated  governance.profile_changed
+governance.policy_trust_elevated
+
+security.unsanctioned_provider_write
+sovereignty.violation      sovereignty.migration_required
+federation.tunnel_degraded
+auth.provider_failover
+
+conformance.version_deprecated  conformance.level_changed
+conformance.declaration_updated
+schema.bundle_updated
+
+process.timeout
+
+accreditation.verified     accreditation.status_changed accreditation.registry_mismatch
+accreditation.verification_stale  accreditation.document_expired
+accreditation.contract_event      accreditation.expiry_approaching
+
+itsm.record_created        itsm.record_updated          itsm.record_failed
+
+group.deleted              group.member_added           group.member_removed
+group.membership_expired
+authorization.granted
 ```
+
+**Total: 105 event types across 28 domains.** The index (§2), this total, and the quick reference above agree.
+
+---
 
 ---
 
@@ -953,90 +999,43 @@ accreditation.contract_event:
 
 ---
 
+## 21. ITSM Events (`itsm.*`)
 
-## 19. Event Type Quick Reference
+| Event Type | Urgency | Trigger |
+|-----------|---------|---------|
+| `itsm.record_created` | info | ITSM integration successfully created a record in the external ITSM system |
+| `itsm.record_updated` | info | ITSM integration successfully updated an existing ITSM record |
+| `itsm.record_failed` | medium | ITSM integration failed to create/update a record; or `block_until_created` timeout reached |
+
+### 21.1 Payload Schema
+
+#### `itsm.record_created` / `itsm.record_updated`
+```yaml
+payload:
+  itsm_provider_uuid: <uuid>
+  itsm_system: servicenow | jira_service_management | ...
+  action: create_change_request | create_incident | ...
+  record_type: change_request | incident | cmdb_ci | service_request
+  record_id: "<external-record-id>"    # e.g. CHG0012345, INC-4821
+  record_url: "<url>"                  # deep link to record in ITSM system
+  policy_handle: "<string>"            # which ITSM Policy triggered this
+  stored_on_entity: <bool>
 
 ```
-request.submitted          request.intent_captured      request.layers_assembled
-request.policies_evaluated request.requires_approval    request.approved
-request.placement_complete request.dispatched           request.compound_assembled
-request.dependencies_resolved  request.realized          request.failed
-request.gating_rejected    request.cancelled            request.progress_updated
 
-entity.realized            entity.state_changed         entity.modified
-entity.ttl_warning         entity.ttl_expired           entity.suspended
-entity.resumed             entity.decommissioning       entity.decommissioned
-entity.decommission_deferred   entity.ownership_transferred  entity.pending_review
-entity.expired
-
-drift.detected             drift.severity_escalated     drift.resolved
-drift.escalated
-
-provider.registered        provider.deregistered        provider.healthy
-provider.unhealthy         provider.degraded
-
-provider_update.submitted  provider_update.requires_approval  provider_update.approved
-provider_update.rejected   provider_update.auto_approved
-
-rehydration.started        rehydration.paused           rehydration.interrupted
-rehydration.completed      rehydration.blocked
-
-policy.activated           policy.deactivated           policy.evaluated
-policy.shadow_result
-
-credential.rotating        credential.revoked           credential.idle
-credential.expired
-
-approval.decision_recorded approval.quorum_reached      approval.window_expiring
-approval.expired
-
-tier_registry.proposed     tier_registry.impact_assessed
-tier_registry.degradation_detected  tier_registry.activated
-
-audit.integrity_alert      audit.integrity_break      audit.forward_failed
-
-dependency.state_changed   dependency.drift_detected
-stakeholder.resource_decommissioning
-allocation.pool_capacity_low  allocation.released
-
-ingestion.transitional_created  ingestion.enriched      ingestion.promotion_approved
-
-governance.catalog_item_deprecated  governance.profile_changed
-governance.policy_trust_elevated
-
-security.unsanctioned_provider_write
-sovereignty.violation      sovereignty.migration_required
-federation.tunnel_degraded
-auth.provider_failover
-
-conformance.version_deprecated  conformance.level_changed
-conformance.declaration_updated
-schema.bundle_updated
-
-process.timeout
-
-accreditation.verified     accreditation.status_changed accreditation.registry_mismatch
-accreditation.verification_stale  accreditation.document_expired
-accreditation.contract_event      accreditation.expiry_approaching
-
-itsm.record_created        itsm.record_updated          itsm.record_failed
-
-group.deleted              group.member_added           group.member_removed
-group.membership_expired
-authorization.granted
+#### `itsm.record_failed`
+```yaml
+payload:
+  itsm_provider_uuid: <uuid>
+  action: <string>
+  failure_reason: <string>
+  timeout_expired: <bool>             # true if block_until_created timeout hit
+  policy_handle: <string>
 ```
-
-**Total: 102 event types across 27 domains** *(recounted 2026-07-06 wave 2: `entity.state_transition` merged into `entity.state_changed` (−1, entity.\* now 13) and `group.membership_expired` added (+1, group.\* now 4) — net unchanged; the index, this total, and the quick reference above agree.)*
 
 ---
 
-*Document maintained by the control plane Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
-
 ### Additional Event Types
-
-> `entity.deleted` was MERGED into `entity.decommissioned` (§4) — one terminal decommission event.
-> `entity.state_transition` was MERGED into `entity.state_changed` (§4, 2026-07-06) — one
-> state-transition event, not an appendix near-duplicate.
 
 | Event Type | Description | Key Fields | Consumers |
 |------------|-------------|-----------|----------|
@@ -1045,3 +1044,7 @@ authorization.granted
 | `group.member_removed` | A member (actor or entity) has been removed from a grouping (actual removal only) | entity_uuid, group_uuid, member_uuid | LCM, AUD, OBS |
 | `group.membership_expired` | A time-bounded group membership reached expires_at ([universal-groups](../foundations/universal-groups.md) §9a.4, GRP-014) — distinct from removal: the `notify`/`suspend_member` on_expiry actions emit ONLY this event; the `remove` action additionally emits `group.member_removed` | group_uuid, member_uuid, expires_at, on_expiry action taken | LCM, AUD, OBS |
 | `authorization.granted` | A cross-tenant authorization has been granted | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
+
+---
+
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../../../CONTRIBUTING.md).*

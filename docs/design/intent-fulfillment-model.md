@@ -1,17 +1,19 @@
 # Intent fulfillment — dependencies (with a nature) + a convergence window
 
-**What this settles:** how a declared multi-resource intent behaves when it cannot be fully
-satisfied at once — which members realize, what happens to the ones that cannot, and what the
-consumer is told. A DAV fixture review surfaced the question; across a design conversation the
-maintainer reduced it to one insight: **peer-atomicity is not a flag — it is a dependency of a
-different nature.** The earlier framings (best_effort / all_or_nothing, a three-outcome
-cancellation axis, an `atomic` flag) all dissolved into it. The whole model is therefore
-**dependencies + a convergence window** — it extends the dependency concept the registry already
-ships (`dependencies[].strength`, the reconciliation loop) rather than adding a parallel
-mechanism. This note is the reference; the corpus family `use-cases/intent-fulfillment/` samples
-the matrix below, and a flow per case lives under [`docs/flows/`](../flows/README.md). The
-intent-fulfillment ADR follows the corpus — the ruling surface is named at the end; nothing here
-is Accepted.
+**What this is:** the design note behind
+[ADR-052](../adr/ADR-052-intent-fulfillment-dependency-nature.md). It settles how a declared
+multi-resource intent behaves when it cannot be fully satisfied at once: which members realize,
+what happens to the ones that cannot, and what the consumer is told. A fixture review in the
+example implementation surfaced the question. Across a design conversation the maintainer
+reduced it to one insight: **peer-atomicity is not a flag; it is a dependency of a different
+nature.** The earlier framings (best_effort / all_or_nothing, a three-outcome cancellation axis,
+an `atomic` flag) all dissolved into it. The whole model is therefore **dependencies + a
+convergence window**. It extends the dependency concept the registry already ships
+(`dependencies[].strength`, the reconciliation loop) rather than adding a parallel mechanism.
+This note is the reference; the corpus family `use-cases/intent-fulfillment/` samples the matrix
+below, and a flow per case lives under [`docs/flows/`](../flows/README.md). ADR-052 has since
+ruled the five calls named at the end. The `nature` field is not yet in any schema; that follows
+as an implementing change.
 
 ## The two knobs
 
@@ -49,8 +51,8 @@ the root's status flows down the operational chain, and the request nature coupl
 
 ### The convergence-status classification
 
-Every member carries one of a closed set of statuses — this vocabulary is the data point UDLM
-owns; DCM drives entities through it:
+Every member carries one of a closed set of statuses. This vocabulary is the data point UDLM
+owns; the control plane drives entities through it:
 
 | Status | Meaning |
 |---|---|
@@ -65,14 +67,15 @@ owns; DCM drives entities through it:
 ## The complete permutation matrix
 
 Every combination of **nature** {operational, request-mutual, soft} × **member status**
-{transient, permanent} × **window** {`w=0`, `w=N`, `w=∞`} — eighteen cells. The running
-illustration: an **operational** case is a container that depends on a PVC (and an app above the
-container); a **request** case is ten peer VMs coupled as a unit; a **soft** case is a container
-that soft-depends on DNS. In each cell, the *affected member* is the one that cannot realize now
-(the dependency target, or the coupled peer). Each cell states **(realized members | affected
-member fate | consumer surface)** and the corpus UC that exercises it — every cell is either
-authored directly or an **explicit derivation** of another (permanence makes the window inert;
-a soft dependent's fate is window-invariant), so no cell is unmapped.
+{transient, permanent} × **window** {`w=0`, `w=N`, `w=∞`}: eighteen cells. The running
+illustration uses three cases. An **operational** case is a container that depends on a
+persistent volume claim (PVC), with an app above the container. A **request** case is ten peer
+VMs coupled as a unit. A **soft** case is a container that soft-depends on DNS. In each cell, the
+*affected member* is the one that cannot realize now (the dependency target, or the coupled
+peer). Each cell states **(realized members | affected member fate | consumer surface)** and the
+corpus UC that exercises it. Every cell is either authored directly or an **explicit derivation**
+of another (permanence makes the window inert; a soft dependent's fate is window-invariant), so
+no cell is unmapped.
 
 ### operational nature (directional; independents proceed)
 
@@ -124,15 +127,15 @@ Three readings fall straight out of it:
   degraded across all six soft cells; only the soft target's own fate moves, and it moves as an
   ordinary operational member. Six more cells are derivations for that reason.
 - **The two must-reject cases are surface-column constraints, not cells.** UC-008
-  (`surface-names-root`) and UC-009 (`surfacing-mandatory`) do not occupy a single cell — they
+  (`surface-names-root`) and UC-009 (`surfacing-mandatory`) do not occupy a single cell. They
   assert what the **consumer surface** column must contain in *every* cell: a warning (transient)
   or a refusal-with-resolution (permanent) that names the **root** unsatisfied dependency and the
-  chain, never a silent field and never only the proximate member. They gate the whole matrix.
+  chain. Never a silent field, and never only the proximate member. They gate the whole matrix.
 
-Counting: **eighteen cells, zero unmapped** — ten exercised directly by an authored UC arm
-(UC-001/002/003/005/006/007 across their `w` variants), eight explicit derivations (the six
-window-inert permanent repeats plus the soft dependent-invariance repeats), and the surfacing
-contract (UC-008/009) constraining every cell's surface column.
+Counting: **eighteen cells, zero unmapped.** Ten are exercised directly by an authored UC arm
+(UC-001/002/003/005/006/007 across their `w` variants). Eight are explicit derivations (the six
+window-inert permanent repeats plus the soft dependent-invariance repeats). The surfacing
+contract (UC-008/009) constrains every cell's surface column.
 
 ## Grounding in the existing model
 
@@ -143,8 +146,8 @@ Nothing above is a new mechanism; each piece names an existing surface:
   **operational** coupling binds at Realized (it is about functioning, which is a Realized-layer
   property). This is why request-atomicity is "held at Requested, activated to Realized as a unit."
 - **ADR-011 (validate-and-reserve).** The request nature relies on **reservation being distinct
-  from activation**: a held unit reserves each member where it can, and no reservation becomes an
-  activation until every member can activate — so a member that reserved early is never left running
+  from activation**. A held unit reserves each member where it can, and no reservation becomes an
+  activation until every member can activate. So a member that reserved early is never left running
   while its siblings are held.
 - **The reconciliation loop (`reserve → recompute-dependents`).** Convergence is not new code — it
   is the existing loop re-attempting a blocked_transient member and recomputing its dependents,
@@ -157,12 +160,12 @@ Nothing above is a new mechanism; each piece names an existing surface:
   surfaced partial are expressed through the provider contract's existing degraded/partial vocabulary,
   not a new status.
 
-## The UDLM / DCM boundary (ADR-008)
+## The UDLM / control-plane boundary (ADR-008)
 
 The single new data point UDLM adds is the **nature** on the dependency edge. Everything else
-UDLM contributes is vocabulary and contract; the mechanics are DCM's.
+UDLM contributes is vocabulary and contract; the mechanics are the control plane's.
 
-| UDLM — the data points + contracts | DCM — operationalize, via policies |
+| UDLM — the data points + contracts | the control plane — operationalize, via policies |
 |---|---|
 | the **nature** on the dependency edge (`request` \| `operational`) — the ONE new field | the reconciler walking the graph + convergence order (`reserve → recompute-dependents`, exists) |
 | the hard/soft dependency edges (`dependencies[].strength`, exist) | **policies** deciding the window value and the cascade behavior (cascade-cancel vs hold-and-surface) |
@@ -170,9 +173,9 @@ UDLM contributes is vocabulary and contract; the mechanics are DCM's.
 | the **propagation semantics** (operational cascades directionally; request couples the unit; soft never blocks) | evaluating the surfacing contract at runtime, emitting the warning / refusal |
 | the **surfacing contract** (name the root dependency + the chain) + the **window** as an intent field | reading the window/nature off the intent and driving convergence to them |
 
-UDLM defines the vocabulary of states and how they flow; DCM's policies decide what to do when a
-chain cannot converge. No `atomic` flag and no best_effort/all_or_nothing axis exists anywhere in
-either half.
+UDLM defines the vocabulary of states and how they flow; the control plane's policies decide what
+to do when a chain cannot converge. No `atomic` flag and no best_effort/all_or_nothing axis exists
+anywhere in either half.
 
 ## The ruling surface — now ruled (ADR-052)
 
@@ -181,8 +184,8 @@ The corpus measured the model; the maintainer then made all five calls in
 the decision stay in step:
 
 - **The default window** → **defer (converge)** when the intent states none; the give-up *bound* on
-  a `w=N` window is a DCM policy (a wall-clock value would breach T3), and a profile may set a
-  different default. Safe because surfacing is mandatory — a deferring member converges *in the
+  a `w=N` window is a control-plane policy (a wall-clock value would breach T3), and a profile may
+  set a different default. Safe because surfacing is mandatory — a deferring member converges *in the
   open*, never silently.
 - **The placement of `nature`** → **one attribute on the single existing dependency edge**, not a
   second edge family. `nature` is the only new field in the portable model.
