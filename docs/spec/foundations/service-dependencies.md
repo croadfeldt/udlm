@@ -39,6 +39,11 @@ The control plane uses a hybrid model for dependency declaration that operates a
 
 ### 3.1 Type-Level Dependencies (Resource Type Specification)
 
+> The machine shape for a type-level dependency is the class's `relationships[]` template
+> (`registry/class.schema.json`: `edge_type`, `target`, `cardinality` as `0..1 | 1..1 | 0..n | 1..n`,
+> `enforcement`) — [entity-relationships](entity-relationships.md) §10.1. The blocks in §3 are
+> illustrative.
+
 Dependencies declared at the Resource Type Specification level are **portable and provider-agnostic**. They define what kinds of resources are needed — not which specific provider supplies them.
 
 - Declared in the Resource Type Specification
@@ -131,7 +136,7 @@ observed_dependency_edge:
 
 ### 3a.2 Provider Obligation
 
-A Service Provider that declares `dependency_introspection.supported: true` in its capability extension (see [Provider Contract](../contracts/provider-contract.md) §7.1) MUST return the current observed dependency set for any entity it hosts when the substrate calls the dependency-introspection endpoint. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities and surfaces this as audit-relevant.
+A Service Provider that declares `dependency_introspection.supported: true` in its capability extension (see [Provider Contract](../contracts/provider-contract.md) §8.1) MUST return the current observed dependency set for any entity it hosts when the substrate calls the dependency-introspection endpoint. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities and surfaces this as audit-relevant.
 
 The substrate MAY call the endpoint on a schedule (drift watch), on a triggering event (pre-deregister, pre-federation-handoff, post-restoration), or on operator demand.
 
@@ -202,6 +207,8 @@ Every declared dependency must specify its cardinality:
 | `one_to_many` | One or more dependency resources required | One VM needs one or more firewall rules |
 | `one_to_optional` | Zero or one dependency resource | One VM may optionally have a secondary IP |
 | `one_to_range` | A specific numeric range required | One load balancer needs 2-6 backend VMs |
+
+In a class template these are `relationships[].cardinality` values `1..1`, `1..n` and `0..1`; `one_to_range` has no schema spelling (the enum is `0..1 | 1..1 | 0..n | 1..n`).
 
 ---
 
@@ -296,6 +303,7 @@ Enriched payload dispatched to dependent resource's provider
 When a dependency is satisfied, the dependent resource's Requested State payload is enriched with the dependency entity's UUID and relevant realized data:
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 # Original request payload for VM
 vm_request:
   cpu_count: 8
@@ -310,9 +318,9 @@ vm_request:
   dependencies:
     ip_address:
       entity_uuid: <uuid of realized IP Address entity>
-      ip_address: 192.168.1.45
+      ip_address: 198.51.100.45
       network_uuid: <uuid of network entity>
-      subnet: 192.168.1.0/24
+      subnet: 198.51.100.0/24
       provenance:
         source_type: dependency_payload
         source_uuid: <uuid of IP Address realized entity>
@@ -525,19 +533,18 @@ policy decides.
 A Composite Service registration declares how its internal composition is exposed to the control plane. This determines whether sub-resources are control-plane entities subject to standard lifecycle management, or opaque to the control plane.
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
+# the fields are the class's (registry/class.schema.json: composition_visibility, selective_visible)
 composite_service_registration:
-  composition_visibility:
-    mode: <opaque|transparent|selective>
-    # opaque:      Consumer sees only top-level service entity
-    #              Sub-resources not visible in the control plane
-    # transparent: All sub-resources registered as control-plane entities
-    #              Full dependency graph visible; drift detection on all
-    # selective:   Provider declares which sub-resources are control-plane-visible
-    dcm_visible_sub_resources:    # if selective
-      - resource_type: Machine.VM
-        role: control_plane_node
-      - resource_type: LoadBalancer
-        role: api_endpoint
+  composition_visibility: <opaque|transparent|selective>
+  # opaque:      Consumer sees only top-level service entity
+  #              Sub-resources not visible in the control plane
+  # transparent: All sub-resources registered as control-plane entities
+  #              Full dependency graph visible; drift detection on all
+  # selective:   Provider declares which sub-resources are control-plane-visible
+  selective_visible:            # if selective — the component_ids that surface
+    - vm
+    - lb
 ```
 
 **Drift detection interaction:**
@@ -574,6 +581,8 @@ composite_service_registration:
 | `DEP-017` | **A member that has not realized says WHY, and what it is waiting on.** The fulfillment conditions are a **closed** family on `status.conditions[].type`. `blocked_transient` is waiting on something expected to clear; it converges when it can, gated by the convergence window. `blocked_permanent` cannot be satisfied; it is refused immediately, window-independent. `refused` is the root: this member itself cannot be satisfied. `dependency_cancelled` means a dependency was cancelled out from under it. Closed because these carry PROPAGATION semantics — a dependent inherits its dependency's status transitively (transient → waits, permanent → refused, cancelled → dependency_cancelled) — so a fifth spelling is not a new condition but an unactionable member of this one. **`blocked_on` is required on every inherited condition** and names the IMMEDIATE blocker; the root is found by walking the chain, never by copying it down (DRV-001). `refused` is exempt — it IS the root, so there is nothing upstream to point at. **Not a lifecycle state:** these are overlays on a `lifecycle_state` that never leaves its five values, exactly as recovery and health are (data-model-core §3). **Not a refusal by the model:** a member blocked on a value that arrives one step later is EARLY, not wrong — refusing it would fail a request that was always going to succeed. Whether and when a transient block becomes permanent is the execution pipeline's call, over the convergence window; what the model owes is somewhere to record what is being waited on, so that call rests on evidence rather than a stopwatch. |
 
 ---
+
+## 13a. Related Concepts
 
 - **Resource Type Specification** — declares type-level dependencies for a Resource Type
 

@@ -25,12 +25,13 @@ Getting this model right is foundational. It governs decommission safety (can th
 
 ## 2. The Three Ownership Patterns
 
-> **Note — `ownership_model` is a conceptual classifier, not (yet) a meta-schema field.** The
-> `ownership_model:` shown in the examples below expresses *intent*; it is a **deferred candidate data
-> point** (see `registry/SPEC-DESIGN-REQUIREMENTS.md` → *Candidate / deferred data points*), not a
-> validated field on a Resource Type Spec today — the patterns are currently expressed through
-> relationships (pools, stakes) and the per-field `ownership` block the merged instance schema used to carry (removed by ruling 071: one author per state record leaves nothing to referee). If adopted it will be
-> `ownership_model` (snake_case, per `registry/naming-conventions.md` §4; hyphenated enum values). Treat the examples as illustrative.
+> **Note — `ownership_model` is a Type-tier class field.** A class declares `ownership_model`
+> (`whole_allocation | allocation | shareable`), with `allocated_from_pool_type` on an allocation
+> type and `allocation_produces_type` on a pool type (`registry/class.schema.json`, one shape with
+> `registry/resource-type-spec.schema.json`). It is optional: absent means undeclared (OWN-009).
+> `publicly_stakeable` and `publicly_allocatable` are the standing waivers CTX-001 names. A pool is
+> a type that declares `allocation_produces_type`; `is_pool` is derived, never stored (DRV-001).
+> The YAML below is illustrative, not schema-checked.
 
 ### 2.1 Whole Allocation (Consumer Owns the Entity)
 
@@ -48,8 +49,9 @@ There is no relationship between VM-A and the infrastructure Tenant — the cons
 
 **Resource Type Spec declaration:**
 ```yaml
+# illustrative: shape of the record, not schema-checked
 resource_type_spec:
-  fqn: Machine.VM
+  resource_type: Machine.VM
   ownership_model: whole_allocation
   # Each consumer request produces an entity owned entirely by the requesting Tenant
 ```
@@ -79,17 +81,17 @@ The IPAddress entities are not pointers to the pool — they are real entities o
 
 **Resource Type Spec declarations (both pool and allocation):**
 ```yaml
+# illustrative: shape of the record, not schema-checked
 # The pool resource type
 resource_type_spec:
-  fqn: IPAddressPool
+  resource_type: IPAddressPool
   ownership_model: whole_allocation    # the pool entity is owned outright by the platform Tenant
-  is_pool: true
-  allocation_produces_type: IPAddress
-  capacity_tracking: true              # the control plane tracks used/available capacity
+  allocation_produces_type: IPAddress  # declaring this is what makes the type a pool
+  # available capacity is derived from the pool's active allocations, never stored
 
 # The allocation resource type
 resource_type_spec:
-  fqn: IPAddress
+  resource_type: IPAddress
   ownership_model: allocation          # each instance is an allocation from a pool
   allocated_from_pool_type: IPAddressPool
   # When a consumer requests IPAddress, an implementation:
@@ -103,6 +105,7 @@ resource_type_spec:
 Every allocation entity carries an `allocated_from` relationship to its source pool:
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 relationship:
   relationship_uuid: <uuid>
   type: allocated_from
@@ -115,8 +118,8 @@ relationship:
     allocated_at: <ISO 8601>
     allocated_by_actor_uuid: <uuid>
     allocation_metadata:
-      pool_capacity_before: 65534
-      pool_capacity_after: 65533
+      pool_capacity_before: 254
+      pool_capacity_after: 253
 ```
 
 **Decommission behavior:** When the consumer decommissions their allocation entity, the control plane dispatches a decommission payload to the provider. The provider releases the specific allocated resource back to the pool. The pool's available capacity increases. The AllocationRecord relationship is terminated. The allocation entity enters DECOMMISSIONED state. The pool entity is unaffected.
@@ -146,8 +149,9 @@ VLAN-100 belongs to NetworkOps. AppTeam, DevTeam, and OpsTeam each have a VM att
 
 **Resource Type Spec declaration:**
 ```yaml
+# illustrative: shape of the record, not schema-checked
 resource_type_spec:
-  fqn: VLAN
+  resource_type: VLAN
   ownership_model: shareable
   # A single VLAN entity exists; consumers attach to it via relationships
   # Consumers do not receive their own VLAN entity
