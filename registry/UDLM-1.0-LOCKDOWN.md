@@ -34,6 +34,11 @@ Three more, from the research in [`docs/research/udlm-1.0-research.md`](../docs/
    Until then it is experimental, whatever it looks like on paper. Every part is experimental
    today; the stable list is earned one part at a time, by a register row each. The 1.0 tag
    covers the stable parts at that time, and the maintainer decides when that set is enough.
+8. **A part graduates by a ladder, not by a declaration** (maintainer, 2026-11-03; row 145). Three
+   stages: experimental, candidate, stable. Candidate needs a worked record, a must-reject case for
+   every rule it carries, readable text, no open blocker, and a register row. Stable needs 90 days
+   as a candidate with no breaking change and a conformance report from a running implementation
+   that judged at least ten of its records. The ladder is `docs/spec/governance/graduation.md`.
 6. **A release candidate with a 30-day hold.** When the exit criteria hold, the repo is tagged
    `udlm/1.0-rc1`. 1.0 is tagged only after 30 days with no breaking change and the suite green;
    a breaking change restarts the clock (OCI's rule). The maintainer's go is recorded as a register
@@ -205,7 +210,7 @@ WP8, WP9. WP0 comes first because it changes what counts as a blocker.
 | WP6 spec text | remove implementation names, state the dot grammar, audit MUST/SHOULD, cut stale text, four short rulings | #503 #491 #416 #460 #428 #382 #328 #392 #401 |
 | WP7 conformance | suite 1.0.0: a runner that takes a record tree, a must-reject case for every checked rule, the lint blind spots, a merge check | #417 #442 #434 #383 #424 |
 | WP8 built as decided | every accepted ADR is built, superseded or narrowed; the catalog-item retirement finished | #645 #394 #407 #385 #321 #474 #477 |
-| WP9 the tag | **Ready** (row 142): `registry/tools/cut_spec_version.py` does the re-stamp and the record re-issue, dry run by default, rehearsed on a branch with every CI step green. On the maintainer's go: run it, make the three hand edits, one PR, tag `udlm/1.0-rc1`, hold 30 days, tag `udlm/1.0` | #217 |
+| WP9 the tag | first make the cut ready: the re-stamp in `VERSIONING.md` (`conforms_to`, `$id`, the meta-schema `$id`, `CONFORMANCE.md` from Draft to binding) as a script with a dry run on a branch; then, on the maintainer's go, one PR and the tag `udlm/1.0` | #217 |
 
 ## 6. Exit criteria
 
