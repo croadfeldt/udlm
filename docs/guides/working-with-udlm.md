@@ -43,7 +43,7 @@ the whole point of automating the rest.
 
 ## The deeper map
 
-- **The model itself** — `registry/` (resource types, Classes, instances, schemas) + `registry/*.schema.json`.
+- **The model itself** — `registry/` (Classes, the generated flat specs, worked examples) + `registry/*.schema.json`.
 - **The corpus** — `use-cases/` (scenarios) + `docs/flows/` (lifecycles).
 - **The rationale** — `docs/adr/` (the decisions, each row in [docs/adr/README.md](../adr/README.md) carrying its gist).
 - **The gates** — `tests/` + `.github/workflows/validate.yml`; run them all with `./scripts/signoff.sh`.

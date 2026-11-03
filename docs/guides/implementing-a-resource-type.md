@@ -2,16 +2,16 @@
 
 **Audience:** an engineer building **provider** support for a UDLM resource type.
 **What this answers:** *"can we actually implement this?"* — yes, and here is the whole path for one type,
-each step pointing to the obligation that governs it (this is a map, not a re-spec — it never restates the
-contracts). It uses `Machine.VM` throughout and **extends the four-states worked example**
+each step pointing to the obligation that governs it. This is a map, not a re-spec: it never restates the
+contracts. It uses `Machine.VM` throughout and **extends the four-states worked example**
 ([`four-states.md`](../spec/foundations/four-states.md) §2.6) from *what each state record holds* to *what you do
 to produce it*.
 
 ## The boundary — read this first, so you build the right thing
 
 You implement the **provider side**: naturalize intent → reserve → build → denaturalize → report. You do
-**not** decide policy, resolve placement, enforce sovereignty, or author the Realized graph — **DCM does**
-([ADR-008](../adr/ADR-008-udlm-dcm-boundary.md)). You **present evidence**; DCM **decides and records**. Most
+**not** decide policy, resolve placement, enforce sovereignty, or author the Realized graph — **the control
+plane does** ([ADR-008](../adr/ADR-008-udlm-dcm-boundary.md)); DCM is the example implementation throughout. You **present evidence**; DCM **decides and records**. Most
 over-building comes from crossing this line — see `sovereignty` / `policy` in [`GLOSSARY.md`](../../GLOSSARY.md).
 
 ## The path, end to end
@@ -76,8 +76,8 @@ Surfacing exactly those is the point of this walkthrough.
 ## The deeper proof (scheduled next)
 
 The strongest implementability evidence is emitting a working **TOSCA profile** for this type
-([prior-art & positioning](../design/prior-art-and-positioning.md) §9, exit-1): if the contract round-trips to a
-standard profile with acceptable ergonomics, it is buildable **by construction** — and that same spike answers the
+([prior-art & positioning](../design/prior-art-and-positioning.md) §9, exit-1). If the contract round-trips to a
+standard profile with acceptable ergonomics, it is buildable **by construction**. That same spike answers the
 "why not extend TOSCA" question. Targeted before the 1.0 freeze.
 
 ## The contracts you build against (CONFORMANCE §5)

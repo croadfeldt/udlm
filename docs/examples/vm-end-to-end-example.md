@@ -1,11 +1,11 @@
 # Worked example — a VM, end to end, and the intermediary resources it surfaces
 
-**What this settles:** a concrete trace of one VM request from intent to realized, naming **every** resource and relationship — so we can see which intermediary types the model actually needs. The headline: the **vNIC is not a new type** (`NetworkInterface` with `device_class: virtual`), and VLAN is a foundational **`VLAN`** shared reference (like `Location`), not an inline field. This grounds ADR-009 (fulfillment), `foundational-resources.md` (selections), and the P1 VM enrichment in a real flow.
+**What this settles:** a concrete trace of one VM request from intent to realized, naming **every** resource and relationship — so we can see which intermediary types the model actually needs. The headline: the **vNIC is not a new type** (`NetworkInterface` with `device_class: virtual`), and VLAN is a foundational **`VLAN`** shared reference (like `Location`), not an inline field. This grounds ADR-009 (fulfillment) and `foundational-resources.md` (selections) in a real flow.
 
 ## The request
 
 A consumer submits a catalog item `vm-service` — `consumer_fields`: `location_ref`, `network_ref`,
-`disk_size`, plus the 0.6.0 portable VM surface. Their intent:
+`disk_size`, plus the portable VM surface. Their intent:
 
 ```yaml
 catalog_ref: vm-service
@@ -13,7 +13,7 @@ location_ref: fac-rack3      # selects an existing Location
 network_ref:  net-dmz        # selects an existing VirtualNetwork
 disk_size:    100Gi
 
-# The 0.6.0 type surface — sizing is a oneOf: EITHER a provider-neutral class...
+# The type surface — sizing is a oneOf: EITHER a provider-neutral class...
 instance_size: medium        # ...OR explicit topology (cpu: {count: 4}, memory: {size: 8Gi})
 guest_os:
   os_image: linux-server-9   # a reference into the provider-advertised os_image vocabulary
@@ -78,11 +78,11 @@ composite examples' "app-server IPs feed the LB pool" flow is exactly this edge.
 
 ## How it's realized — two-phase (ADR-011)
 
-Provisioning this graph is **reserve → barrier → commit**, not a single pass. In the **reserve phase** DCM validates and *holds* every target with **no side effects** — the host placement (`host-a`), the IP on `net-vlan-20`'s segment, the volume from `pool-fast` — each returning its realize-time facts (the reserved segment, the reserved address) and a **TTL'd hold**. The IP's criteria are just the **target segment** (`net-dmz` → `net-vlan-20`), a shared reference — never the vNIC or MAC. Reservations feed each other and reconcile to a fixed point (a bounded, multi-round negotiation; a slow provider whose hold expires is named by `reservation.expired`). Only once **every** hold is valid and all applicable policy is green (the **commit barrier**) does DCM **commit** — the providers build, write realized state, and report the relationships below. Nothing is half-built: an abort, TTL expiry (implied release), or reconcile stalemate releases holds, never tears down.
+Provisioning this graph is **reserve → barrier → commit**, not a single pass. In the **reserve phase** the control plane (DCM here) validates and *holds* every target with **no side effects**: the host placement (`host-a`), the IP on `net-vlan-20`'s segment, the volume from `pool-fast`. Each returns its realize-time facts (the reserved segment, the reserved address) and a **TTL'd hold**. The IP's criteria are just the **target segment** (`net-dmz` → `net-vlan-20`), a shared reference — never the vNIC or MAC. Reservations feed each other and reconcile to a fixed point (a bounded, multi-round negotiation; a slow provider whose hold expires is named by `reservation.expired`). Only once **every** hold is valid and all applicable policy is green (the **commit barrier**) does DCM **commit** — the providers build, write realized state, and report the relationships below. Nothing is half-built: an abort, TTL expiry (implied release), or reconcile stalemate releases holds, never tears down.
 
 ## The intermediary types — what we actually need
 
-1. **vNIC — already covered, do NOT add a `VirtualInterface` class.** A virtual NIC is `NetworkInterface` with `device_class: virtual` (the enum already has `virtual | passthrough | bridge | aggregate | partition`). It carries `vlan_id` and stacks on the host bridge via `parent_device` — exactly the physical/bond/bridge/virtual stack the estate already models. Adding a parallel `Hardware.VirtualInterface` would duplicate it (minimal-surface: reject).
+1. **vNIC — already covered, do NOT add a `VirtualInterface` class.** A virtual NIC is `NetworkInterface` with `device_class: virtual` (the enum already has `physical | virtual | passthrough | bridge | aggregate | partition`). It carries `vlan_memberships` and stacks on the host bridge via `parent_device` — exactly the physical/bond/bridge/virtual stack the estate already models. Adding a parallel `Hardware.VirtualInterface` would duplicate it (minimal-surface: reject).
 
 2. **VLAN — a foundational reference, like `Location` (settled).** A VLAN/segment is **not** an inline field; it is a first-class **`VLAN`** foundational resource, owned/advertised by a network/fabric provider (or a platform data layer) and **selected by reference** — a shared reference serving the information/operational layer. `net-dmz` (VirtualNetwork) `references net-vlan-20` (`VLAN`, `encapsulation: vlan`, `segment_id: 20`); the vNIC rides that segment via the network it attaches to. One source of truth for the segment, referenced by every resource on it — so blast-radius and dependency reasoning traverse it. (A provider may offer a `NetworkInterface` variant; the org ratifies which — base guidance, not a mandate.)
 
@@ -122,12 +122,12 @@ Every shared/foundational resource a VM touches across its whole life, and who o
 | Telemetry sink | observability provider surface | logs/metrics | observability | ✔ |
 | Backup / DR target | `Storage.*` | data replication (rehydrate) | backup / DR | ✔ |
 
-**What this tells us for September:** the roots are almost all already typed (`Location`, `VLAN` (new), `VirtualNetwork`, `IPAddress`, `DNSZone`, `StoragePool`, `DirectoryService`, `CredentialRef`, `PowerFeed`, `Machine.BareMetalHost`). The gaps are **capacity/inventory advertisement** on their owning providers (September P3 — every ✔ owner must advertise what it offers so placement can select) and **quota** on consumption (P7). No new resource *types* fall out of the full lifecycle — only the provider-advertisement + eligibility surface around the roots already named here.
+**What this tells us:** the roots are all typed (`Location`, `VLAN`, `VirtualNetwork`, `IPAddress`, `DNSZone`, `StoragePool`, `DirectoryService`, `CredentialRef`, `PowerFeed`, `Machine.BareMetalHost`). The gaps are **capacity/inventory advertisement** on their owning providers (every ✔ owner must advertise what it offers so placement can select) and **quota** on consumption. No new resource *types* fall out of the full lifecycle — only the provider-advertisement + eligibility surface around the roots already named here.
 
-## Gaps this example confirms (feeds the September plan)
+## Gaps this example confirms
 
-- **`VLAN`** — created as a foundational shared reference (owned by a network/fabric provider, selected by reference like `Location`); `VirtualNetwork references VLAN`. No inline encapsulation field.
-- **P1 already landed** the VM `networks[].network_ref` + `placement.location_ref` selections this trace relies on.
-- **P4 fault domain** shows up literally: `vm-app` and every other guest on `host-a` share `host-a`'s fault domain, and everything in `fac-rack3` shares the rack's — derived from these `contained_by`/`references` edges (ADR-010), no new authoring.
+- **`VLAN`** — a foundational shared reference (owned by a network/fabric provider, selected by reference like `Location`); `VirtualNetwork references VLAN`. No inline encapsulation field.
+- **The VM selections exist**: `networks[].network_ref` + `placement.location_ref`, which this trace relies on.
+- **Fault domain** shows up literally: `vm-app` and every other guest on `host-a` share `host-a`'s fault domain, and everything in `fac-rack3` shares the rack's — derived from these `contained_by`/`references` edges (ADR-010), no new authoring.
 
 **Net:** the model realizes a full VM with **no new intermediary types** — `device_class: virtual` covers the vNIC — and VLAN modeled as a `VLAN` shared reference, consistent with every other foundational resource.

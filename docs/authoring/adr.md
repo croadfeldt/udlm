@@ -23,7 +23,8 @@ Do **not** reach here for:
 - proving a capability *behaves* — that is a Use Case ([`use-case.md`](use-case.md));
 - narrating a lifecycle across types — that is a flow ([`flow.md`](flow.md));
 - a decision recorded as **machine-validated data** rather than prose — that is a `DecisionRecord`
-  instance under `registry/examples/` (the `ADR-<FAMILY>-NNN` namespace, e.g. `ADR-038`),
+  instance under `registry/examples/` (the `ADR-<FAMILY>-NNN` namespace, e.g. `ADR-PROV-002`; the
+  worked record is `registry/examples/example-decision-record.yaml`),
   validated against [`../../registry/decision-record.schema.json`](../../registry/decision-record.schema.json).
   A file-based ADR and an instance record are the same entity in two homes; the schema's own
   description says an ADR *is* a `DecisionRecord` whose anchor is architecture. Use the instance form
@@ -80,21 +81,22 @@ in `registry/rule-id-registry.yaml` **before** you use it.
 
 ## 4. A worked pointer
 
-Copy [`../adr/ADR-048-staleness-as-declared-expectation.md`](../adr/ADR-048-staleness-as-declared-expectation.md) — it is the exemplar
-for every section: a `Background — read first` on-ramp (rule-36, ADR-051, the coverage gate, each cited
-once with what it settles), a one-decision-area body with numbered clauses, the
-Data · Policy · Provider lens, and a scope edge. Its
-one-line index row in `../adr/README.md` shows the gist a new ADR must supply.
+Copy [`../adr/ADR-048-staleness-as-declared-expectation.md`](../adr/ADR-048-staleness-as-declared-expectation.md).
+It is the exemplar for every section. Its `Background — read first` on-ramp cites rule-36, ADR-051 and
+the coverage gate once each, with what each settles. Its body covers one decision area in numbered
+clauses, then the Data · Policy · Provider lens and a scope edge. Its one-line index row in
+`../adr/README.md` shows the gist a new ADR must supply.
 
 ## 5. Run the gates
 
 ```console
 $ python3 tests/check_terminology.py && python3 tests/check_single_source.py && python3 tests/check_links.py
-550 files scanned, 0 terminology violation(s)
-rule-id single-source: 46 registered prefix(es); 400 rule IDs across the normative surface; 0 collide (0 baselined); 2 sanctioned co-home(s), 0 spread-debt entr(y/ies).
+841 files scanned, 0 terminology violation(s)
+rule-id single-source: 54 registered prefix(es); 507 rule IDs across the normative surface; 0 collide (0 baselined); 2 sanctioned co-home(s), 0 spread-debt entr(y/ies).
+vocabulary single-source: 97 closed list(s) >= 4 members across the authored registry; 1 declared in more than one file (0 baselined).
 OK — every rule-ID prefix is registered; every ID has a single definition.
-232 files scanned, 0 broken link(s)
+265 files scanned, 0 broken link(s), 0 new dead code-span path(s) (0 baselined)
 ```
 
 The pass signals are `0 terminology violation(s)`, the single-source `OK — …` line, and `0 broken
-link(s)`. All three run in `./scripts/signoff.sh` with the full set.
+link(s)`. The counts grow as files land. All three run in `./scripts/signoff.sh` with the full set.

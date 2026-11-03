@@ -64,7 +64,7 @@ belongs to.
 The provider, `lab/providers/libvirt-host-a`, reports the same fields plus **outputs** — the facts that
 exist only once something is built: IP and MAC addresses, hostname, the provider's own handle, the
 observed run state. Every output has a provenance entry naming the provider. **Dependencies** record
-the edges that now exist: contained by host-a, depending on its root volume.
+the edges that now exist: contained by host-a, depending on its root volume and on its address.
 
 The realized record carries an **integrity** block. The head is a sha256 over the canonical form of the
 record and the head of the record it superseded, so each state's history is a chain any reader can
@@ -72,7 +72,7 @@ verify. Owner: `docs/spec/contracts/audit-provenance-observability.md`.
 
 ## 6. Discovered: what is actually there
 
-Fourteen minutes later a discovery sweep found the VM. It says what it observed and how it matched it
+A discovery sweep found the VM. It says what it observed and how it matched it
 (`correlation_ids`, `matched_by`: the libvirt domain UUID). Its edges are keyed by what discovery could
 see, a SMBIOS UUID or a provider id, and resolved to entities when the key matches one.
 

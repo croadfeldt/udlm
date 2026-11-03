@@ -3,9 +3,9 @@
 > **Non-normative.** Illustrative case study. **UDLM does not depend on DAV** — DAV is one
 > *example* implementation, cited to show UDLM holds outside infrastructure (see `GLOSSARY.md`).
 >
-> **Outcome (2026-07):** the recommendation landed — the Knowledge entity-type family now exists
-> (`docs/spec/foundations/knowledge-family.md`, five types in the registry). §5's type-gap and the "Composite"
-> primary-type framing are historical (the shape is derived, ADR-027 addendum).
+> **Outcome:** the recommendation landed — the Knowledge entity-type family exists
+> (`docs/spec/foundations/knowledge-family.md`; its classes live under `registry/classes/knowledge/`). §5's
+> type-gap and the "Composite" primary-type framing are historical (the shape is derived, ADR-027 addendum).
 
 _An effectiveness analysis: does UDLM's "implementation-neutral universal substrate" claim
 hold when a system in a domain UDLM was **not** designed around adopts it? Written
