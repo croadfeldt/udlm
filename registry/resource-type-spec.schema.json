@@ -499,6 +499,15 @@
           "description": "docs/flows/ doc(s) that place this spec in a lifecycle."
         }
       }
+    },
+    "outputs_exempt": {
+      "type": "string",
+      "minLength": 1,
+      "description": "This class has no outputs of its own, and this is why. Outputs on its records are ignored (row 136)."
+    },
+    "outputs_closed": {
+      "type": "boolean",
+      "description": "When true, a record may carry only the declared outputs. Otherwise an undeclared output is kept but promised to nobody (row 136)."
     }
   },
   "allOf": [

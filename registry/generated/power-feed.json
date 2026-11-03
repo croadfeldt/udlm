@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/PowerFeed/0.9.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/PowerFeed/0.9.2",
   "conforms_to": "udlm/0.1",
   "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31",
   "resource_type": "PowerFeed",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Power Feed",
-    "description": "A power source feeding equipment: a utility circuit, a UPS, a PDU or a generator. The root of the estate graph: hosts depend on a feed, so a reverse-topological shutdown walks everything that transitively draws from it. A Base by the Base test (CLS-002): Redfish Circuit abstracts over every feed type, so a feed with a given type, capacity and redundancy is one deliverable any power provider realizes; NUT supplies UPS telemetry by reference. outputs-exempt: a feed publishes nothing of its own; a UPS feed's status, charge and runtime are the UPS's outputs, read through `supplied_by` (row 116).",
+    "description": "A power source feeding equipment: a utility circuit, a UPS, a PDU or a generator. The root of the estate graph: hosts depend on a feed, so a reverse-topological shutdown walks everything that transitively draws from it. A Base by the Base test (CLS-002): Redfish Circuit abstracts over every feed type, so a feed with a given type, capacity and redundancy is one deliverable any power provider realizes; NUT supplies UPS telemetry by reference.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "PowerFeed",
-          "version": "0.9.1",
+          "version": "0.9.2",
           "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31"
         }
       ]
@@ -138,5 +138,6 @@
       "NetworkSwitch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.",
       "Job — the shutdown job a feed's on-battery status triggers."
     ]
-  }
+  },
+  "outputs_exempt": "a feed publishes nothing of its own; a UPS feed's status, charge and runtime are the UPS's outputs, read through `supplied_by` (row 116)"
 }

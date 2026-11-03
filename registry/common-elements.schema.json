@@ -729,6 +729,11 @@
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
       "description": "An RFC 9562 version 7 UUID: the identity of a time-ordered artifact, such as a state record, an audit-chain leaf, an audit record, a commit-log entry or an event, so its stream sorts by identity (identifier-scheme §2.1). Every field that names one of these uses it (#639)."
+    },
+    "handle": {
+      "type": "string",
+      "pattern": "^([a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)*[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
+      "description": "ADVISORY human-readable identity (docs/spec/contracts/identifier-scheme.md §3). The uuid is the authoritative identity; the handle aids review and drift detection (a resolved-uuid whose current handle disagrees with a reference's recorded handle is drift, not failure). Never resolve by handle alone. Declared once here; every record schema uses it (WIR-003)."
     }
   }
 }

@@ -96,6 +96,8 @@ jobs:
       - run: python3 tests/check_stability.py
       # Record-schema enum values are snake_case or say why not (row 134).
       - run: python3 tests/check_schema_enum_casing.py
+      # Outputs on a record are checked against the class: undeclared ones are counted, refused only when the class is closed (row 136).
+      - run: python3 tests/check_undeclared_outputs.py
       - run: python3 tests/check_type_ref.py
       - run: python3 tests/check_status_claims.py
       - run: python3 tests/check_seal_facets.py

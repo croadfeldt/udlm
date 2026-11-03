@@ -359,10 +359,10 @@ A rehydration starts from any of the three stored states; this is not new struct
 
 Identity behaves in one of two ways, by scenario — mirroring the rehydration **modes** (§5.3):
 
-- **Restore in place** (the *Faithful* mode — the same resource returns on its provider). The entity **UUID is preserved**; only the **provider-side identifier** changes (recorded in `provider_entity_id_history`, `REHYDRATE` audit action). Every external reference (CMDB, cost attribution, audit, relationships, dependency declarations) is by UUID, so preserving it keeps them valid.
+- **Restore in place** (the *Faithful* mode — the same resource returns on its provider). The entity **UUID is preserved**; only the **provider-side identifier** changes (recorded on the record in `provider_entity_id_history`, `REHYDRATE` audit action). Every external reference (CMDB, cost attribution, audit, relationships, dependency declarations) is by UUID, so preserving it keeps them valid.
 - **Rebuild from intent** (the *Provider-Portable* mode — the original is gone, e.g. its provider is offline, so the workload is re-realized elsewhere). The replacement is a **new entity with a new UUID**; dependents are re-pointed to it as the dependency graph replays.
 
-In both cases lineage rides the general provenance model: `rehydration` is a provenance `source.kind`, and the new Intent records `source_store` / `source_record_uuid` for the record it was rehydrated from — so a rebuild's new UUID stays traceable to what it replaced. **The data model needs no separate rehydration-history structure**: it is reconstructable from provenance plus the `REHYDRATE` audit trail.
+In both cases lineage rides the general provenance model: `rehydration` is a provenance `source.kind`, and the new Intent carries `rebuilt_from` (`source_record_uuid`, and `source_store` when it is elsewhere) for the record it was rehydrated from — so a rebuild's new UUID stays traceable to what it replaced. **The data model needs no separate rehydration-history structure**: it is reconstructable from provenance plus the `REHYDRATE` audit trail.
 
 ### 5.3 The two invariants
 

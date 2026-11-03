@@ -18,7 +18,7 @@
     },
     {
       "class": "Template",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "instantiable": true,
       "path": "registry/classes/resource/services/template/_base.yaml",
       "types": [

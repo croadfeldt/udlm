@@ -1,12 +1,13 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/BucketClass/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/BucketClass/0.1.1
 conforms_to: udlm/0.1
 uuid: 536285a2-9842-4d94-b31d-52e9d3337d50
 record_type: class
 class: base
 resource_type: BucketClass
-version: 0.1.0
+version: 0.1.1
 family: Resource
 status: active
+outputs_exempt: 'a class is policy, not a provisioned thing; what a driver creates is a Bucket, and the Bucket carries the outputs'
 filed_under:
   - storage
 metadata:
@@ -14,8 +15,7 @@ metadata:
   description: 'The provisioning policy for object-storage buckets, as StorageClass is for volumes: which driver
     creates them, what happens to their data on release, and driver parameters. A Base by the Base test (CLS-002):
     the Kubernetes Container Object Storage Interface (COSI) BucketClass abstracts every object store (S3, Ceph RGW,
-    Azure Blob, GCS), so an order for a bucket of a class is fillable by whichever driver serves it. outputs-exempt:
-    a class is policy, not a provisioned thing; what a driver creates is a Bucket, and the Bucket carries the outputs.'
+    Azure Blob, GCS), so an order for a bucket of a class is fillable by whichever driver serves it.'
   maintainer: udlm-registry
   origination_timestamp: '2026-10-28T00:00:00Z'
 elements:

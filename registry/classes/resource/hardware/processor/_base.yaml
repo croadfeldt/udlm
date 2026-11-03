@@ -1,12 +1,13 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Processor/0.7.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Processor/0.7.4
 conforms_to: udlm/0.1
 uuid: 418c9acb-3cd8-4e73-817d-8be2bdf13442
 record_type: class
 class: base
 resource_type: Processor
-version: 0.7.3
+version: 0.7.4
 family: Resource
 status: active
+outputs_exempt: 'it publishes no realize-time binding surface (rule 36(b) documented exclusion)'
 filed_under:
   - hardware
 metadata:
@@ -14,8 +15,7 @@ metadata:
   description: 'A CPU: a physical socket, or a virtual CPU presented to a guest. A Base by the Base test (CLS-002):
     Redfish Processor (ProcessorType CPU) abstracts over both, so cores of a given architecture are one deliverable
     any host or hypervisor provider presents. An inventory component: the host carries the cpu rollup and may also
-    contain Processor records; outputs-exempt: it publishes no realize-time binding surface (rule 36(b) documented
-    exclusion).'
+    contain Processor records;'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:11:51Z'
 elements:

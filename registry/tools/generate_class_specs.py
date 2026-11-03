@@ -33,7 +33,7 @@ OUT = os.path.join(ROOT, "generated")
 GENERATOR_VERSION = "class-spec-gen/1.1.0"
 # The ownership declaration (ownership-sharing-allocation §2) rides the compiled spec verbatim.
 # Type tier only — schema-enforced — so a Provider Class cannot restate or widen who owns the result.
-OWNERSHIP_PASSTHROUGH = ("ownership_model", "allocated_from_pool_type", "allocation_produces_type",
+OWNERSHIP_PASSTHROUGH = ("outputs_exempt", "outputs_closed", "ownership_model", "allocated_from_pool_type", "allocation_produces_type",
                          "publicly_stakeable", "publicly_allocatable")
 # Resolved against the shared offline store rather than bare: resource-type-spec.schema.json $refs
 # common-elements.schema.json for the vocabularies both share, and a bare validator resolves that by

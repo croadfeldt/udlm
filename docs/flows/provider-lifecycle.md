@@ -417,54 +417,20 @@ Key UX principles for Stage 2:
 - **Back button preserves intent.** Going back to Stage 1 keeps the portable fields and re-runs
   placement (the consumer can change constraints and get a different provider).
 
-### Fill strategy per field
+### Fill strategy per field — derived, not declared
 
-The provider declares `required_inputs` at registration. Each field's fill behavior is governed by
-policy — not hardcoded in the provider. The catalog item or the enrichment policy declares the fill
-strategy:
+How a provider's `required_input` gets filled is read from the class's `supports` declaration and the
+governed data, not stored as a per-field setting (#559, the field-earns-its-place rule). The same
+three behaviours fall out of the facts:
 
-| Strategy | Behavior | When to use |
-|----------|----------|-------------|
-| `auto` | Policy fills silently; consumer never sees the field | Deterministic, no meaningful choice (e.g., single namespace per tenant) |
-| `prompt` | System presents valid options; waits for consumer selection | Multiple valid options, consumer preference matters |
-| `auto_with_override` | Policy fills a default; consumer can change before reserve | Sensible default exists but consumer may have a reason to override |
+| What the facts say | Behaviour |
+|---|---|
+| `supports` offers one value, or governed data fixes it | filled silently; the consumer never sees the field |
+| `supports` offers a range or a list and nothing fixes it | the consumer is shown the options and chooses |
+| `supports` offers a range or a list and governed data supplies a default | filled with the default; the consumer may change it before reserve |
 
-The fill strategy is data about data — declared per field in the catalog item's `consumer_fields`
-or in the enrichment policy configuration. It is not a new architectural primitive.
-
-```yaml
-# Example: catalog item declaring fill strategies for provider_specific fields
-consumer_fields:
-  # Portable fields — always shown
-  - name: cpu.count
-    type: integer
-    required: false
-    default: 2
-  - name: environment
-    type: enum
-    required: true
-    enum_values: [dev, staging, prod]
-
-  # Provider-specific fields — fill strategy governs UX
-  - name: namespace
-    type: reference
-    reference_type: KubernetesNamespace
-    required: false
-    fill_strategy: auto_with_override
-    description: "Kubernetes namespace — defaulted by policy, overridable"
-  - name: storage_class
-    type: reference
-    reference_type: StorageClass
-    required: false
-    fill_strategy: prompt
-    description: "Storage class — choose based on performance/cost needs"
-  - name: node_pool
-    type: reference
-    reference_type: KubernetesNodePool
-    required: false
-    fill_strategy: auto
-    description: "Node pool — selected automatically from workload requirements"
-```
+Nothing to declare, nothing to drift: when a provider widens or narrows what it supports, the
+behaviour follows.
 
 ---
 
