@@ -54,6 +54,14 @@ The 1.0 exit criteria are enumerated in [`UDLM-1.0-LOCKDOWN.md`](UDLM-1.0-LOCKDO
 (succeeding `UDLM-0.1-SCOPE.md` §5). Once they are met,
 declaring 1.0 is a **repo-wide, mechanical re-stamp** — not a redesign:
 
+0. **Run the cut script.** `python3 registry/tools/cut_spec_version.py --from 0.1 --to 1.0` prints what
+   the cut touches; `--apply` does steps 1–4 below and re-issues every example record the re-stamp
+   changes (a state record: new v7 id, `supersedes`, resealed; a layer: a new version in a sibling
+   file; a decision record or vocabulary term: new uuid, `supersedes`, REVISION; an accreditation: new
+   identity; a mutable document: in place). Every class takes a REVISION bump, because its bytes
+   change. Rehearsed on a throwaway branch on 2026-11-03: every validate.yml step passed afterwards.
+   What stays by hand: this section's "Spec status", README.md, `CONFORMANCE.md` line 3 (Draft →
+   binding), and any must-reject case that embeds the head of a re-issued record.
 1. **Re-stamp `conforms_to`** on every type spec, schema, and instance: `udlm/0.1 → udlm/1.0`.
 2. **Re-mint each `$id` spec-segment** to match (`.../udlm/0.1/... → .../udlm/1.0/...`).
    `tests/validate_registry.py` enforces `$id` spec-segment == `conforms_to`, so 1 and 2 move together

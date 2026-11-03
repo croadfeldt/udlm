@@ -199,7 +199,7 @@ WP8, WP9. WP0 comes first because it changes what counts as a blocker.
 | WP6 spec text | remove implementation names, state the dot grammar, audit MUST/SHOULD, cut stale text, four short rulings | #503 #491 #416 #460 #428 #382 #328 #392 #401 |
 | WP7 conformance | suite 1.0.0: a runner that takes a record tree, a must-reject case for every checked rule, the lint blind spots, a merge check | #417 #442 #434 #383 #424 |
 | WP8 built as decided | every accepted ADR is built, superseded or narrowed; the catalog-item retirement finished | #645 #394 #407 #385 #321 #474 #477 |
-| WP9 the tag | first make the cut ready: the re-stamp in `VERSIONING.md` (`conforms_to`, `$id`, the meta-schema `$id`, `CONFORMANCE.md` from Draft to binding) as a script with a dry run on a branch; then, on the maintainer's go, one PR and the tag `udlm/1.0` | #217 |
+| WP9 the tag | **Ready** (row 142): `registry/tools/cut_spec_version.py` does the re-stamp and the record re-issue, dry run by default, rehearsed on a branch with every CI step green. On the maintainer's go: run it, make the three hand edits, one PR, tag `udlm/1.0-rc1`, hold 30 days, tag `udlm/1.0` | #217 |
 
 ## 6. Exit criteria
 
