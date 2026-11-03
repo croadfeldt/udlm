@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StorageDevice/0.8.2
+$id: https://udlm.dev/registry/udlm/0.1/class/StorageDevice/0.8.3
 conforms_to: udlm/0.1
 uuid: b9b08521-7927-479c-8671-6d4fdadc9f1b
 record_type: class
 class: base
 resource_type: StorageDevice
-version: 0.8.2
+version: 0.8.3
 family: Resource
 status: active
 filed_under:
@@ -12,11 +12,11 @@ filed_under:
   - storage
 metadata:
   display_name: Storage Device
-  description: 'A storage device: a physical drive (HDD, SSD, NVMe), a whole-drive passthrough, a partition carved
-    from a drive (an NVMe namespace, a LUN), or a virtual disk presented to a guest. A Base by the Base test (CLS-002):
-    Redfish Drive abstracts over all of them, so a drive of a given capacity and media is one deliverable any host
-    or hypervisor provider inventories or presents; form Types (NVMe, SATA) may follow when they carry elements.
-    A virtual disk binds to the volume that backs it.'
+  description: 'A storage device: a physical drive (HDD, SSD, NVMe), a whole-drive passthrough, a partition of a
+    drive (NVMe namespace, LUN) or a virtual disk presented to a guest. A Base by the Base test: Redfish Drive
+    abstracts over all of them, so any host or hypervisor provider inventories or presents a drive of given capacity
+    and media (CLS-002). Form Types (NVMe, SATA) may follow when they carry elements. A virtual disk binds to the
+    volume that backs it.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:11:51Z'
 elements:

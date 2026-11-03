@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkSwitch/0.11.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/NetworkSwitch/0.11.2",
   "conforms_to": "udlm/0.1",
   "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac",
   "resource_type": "NetworkSwitch",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Network Switch",
-    "description": "A physical L2/L3 switch as a managed asset, the fabric peer of Machine.BareMetalHost. A Base by the Base test (CLS-002): Redfish Switch, IEEE 802.1AB and RFC 8345 abstract over every fabric switch, so a switch with given ports and a management VLAN is one deliverable any fabric provider inventories or realizes. Its ports are NetworkInterface records contained by it, and the LLDP-discovered `connects_to` adjacency between a host NIC and a switch port is what makes the estate graph traversable host → NIC → port → switch → power. It may sit unallocated and enter as Discovered.",
+    "description": "A physical L2/L3 switch as a managed asset, fabric peer of Machine.BareMetalHost. A Base by the Base test: Redfish Switch, IEEE 802.1AB and RFC 8345 cover every fabric switch; any fabric provider inventories or realizes one with given ports and management VLAN (CLS-002). Its ports are NetworkInterface records it contains. The LLDP-discovered `connects_to` adjacency (host NIC to switch port) makes the estate graph traversable: host → NIC → port → switch → power. It may sit unallocated, entering as Discovered.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-04T20:12:42Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "NetworkSwitch",
-          "version": "0.11.1",
+          "version": "0.11.2",
           "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac"
         }
       ]

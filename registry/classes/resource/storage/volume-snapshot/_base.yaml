@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/VolumeSnapshot/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/VolumeSnapshot/0.1.1
 conforms_to: udlm/0.1
 uuid: 828f157d-67ef-4dfe-a6a2-d74673f720dc
 record_type: class
 class: base
 resource_type: VolumeSnapshot
-version: 0.1.0
+version: 0.1.1
 family: Resource
 status: active
 filed_under:
@@ -12,9 +12,9 @@ filed_under:
 metadata:
   display_name: Volume Snapshot
   description: 'A point-in-time copy of one Volume''s data, that a new Volume can be restored from. A Base by the
-    Base test (CLS-002): Kubernetes VolumeSnapshot, CSI CreateSnapshot and the snapshot of every block and file
-    provisioner (ZFS, Ceph RBD, LVM, cloud disks) abstract to the same thing, so an order for a snapshot of a volume
-    is fillable by whatever provisions the volume. The provisioner is the provider.'
+    Base test: Kubernetes VolumeSnapshot, CSI CreateSnapshot and the snapshot of every block and file provisioner
+    (ZFS, Ceph RBD, LVM, cloud disks) abstract to the same thing (CLS-002). An order for a snapshot of a volume is
+    therefore fillable by whatever provisions the volume. The provisioner is the provider.'
   maintainer: udlm-registry
   origination_timestamp: '2026-10-26T00:00:00Z'
 elements:
