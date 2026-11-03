@@ -6,8 +6,11 @@ separate document. It comes from the AI Test Harness, which already produces thi
 code, and it is the first concrete producer of the SLSA-shaped records issue #558 asks for. It is
 written for review; the decisions it needs are at the end.
 
-**Status:** research. Two proposed classes and six worked records are in this change, validating
-against the registry. Nothing is applied to any estate.
+**Status:** applied in the registry. The classes ship under
+`registry/classes/knowledge/test-evidence/` and `registry/classes/knowledge/vex-statement/`, the
+worked records are under `registry/examples/`, and register row 074 adopted SLSA, in-toto, CTRF
+and JUnit XML (decisions 1, 6 and 7 below). Every part is still experimental
+(`registry/stability.yaml`). Nothing is applied to any estate.
 
 ## The problem
 
@@ -36,21 +39,23 @@ projection of a record that an outside verifier can check. This proposal supplie
 
 The evidence class has three tiers, per the class-tier rules. The base is what any suite can produce:
 a CI run of unit tests, a role tested with Molecule, a conformance suite against a cluster, a burn-in
-against a host. It names the test, its subject by reference to any entity, a generic kind, the result
-in an adopted report format (CTRF preferred, JUnit XML accepted; the first test-report format adopted
-here, so the standards register can follow), and the producing run. The type narrows the subject to a
-package and adds the vulnerability, its role, the VEX statement, and the version range. A suite with no vulnerability in view binds at the base, as any
-producer needing nothing beyond the base does; one tooling gap applies today: the generator emits flat
-specs for types only, so a record bound at the base validates its envelope and not its fields until the
-generator emits a flat spec for a base. The provider class carries what only the harness knows: the application revision, the call sites, and the
-generation-time validation with its mutation and flake numbers. Every record the harness makes today
-binds at the provider class and stays valid; the signed statement is adopted on the base, since any
-producer can sign a result.
+against a host. It names the test, its subject by reference to any entity, a generic kind, the result,
+and the producing run. The result is in an adopted report format: CTRF preferred, JUnit XML accepted.
+CTRF is the first test-report format adopted here, so the standards register can follow. The type
+narrows the subject to a package and adds the vulnerability, its role, the VEX statement, and the
+version range. A suite with no vulnerability in view binds at the base, as any producer needing nothing
+beyond the base does. One tooling gap applies today: the generator emits flat specs for types only. So
+a record bound at the base validates its envelope and not its fields, until the generator emits a flat
+spec for a base. The provider class carries what only the harness knows: the application revision, the
+call sites, and the generation-time validation with its mutation and flake numbers. Every record the
+harness makes today binds at the provider class and stays valid; the signed statement is adopted on the
+base, since any producer can sign a result.
 
 The lifecycle maps onto the Knowledge family's curation reading of the four states, so it is not a
-field: a candidate the generator proposes is an intent record; one under review is a requested record;
-a test a reviewer accepts is a realized record, with `scope` on it saying overlay or standard suite; a retired test is a deprecated
-record with its reason. Every change is a new record naming its predecessor.
+field. A candidate the generator proposes is an intent record. One under review is a requested record.
+A test a reviewer accepts is a realized record, with `scope` on it saying overlay or standard suite. A
+retired test is a deprecated record with its reason. Every change is a new record naming its
+predecessor.
 
 ## How a consumer verifies a claim
 
@@ -83,9 +88,9 @@ dependency-fix pull request:
 
 The harness side of this is in `croadfeldt/ai-test-harness`: the attestation stage would emit these
 records and compute the head with UDLM's canonicalization, and the packet would cite the record
-uuids. Two gaps on the harness side are visible in the Job record: the sandbox it ran in is named by
+uuids. Two gaps on the harness side are visible in the Job record. The sandbox it ran in is named by
 its resource type, `Container`, because the harness does not yet model that container as an entity to
-reference; and the sandbox image is pinned by digest here only because the digest was looked up for
+reference. And the sandbox image is pinned by digest here only because the digest was looked up for
 this example. The harness will record the digest at attestation time and reference the execution
 entity once it exists.
 

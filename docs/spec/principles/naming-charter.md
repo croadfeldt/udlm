@@ -1,4 +1,4 @@
-# the substrate and its control plane Naming Charter (Proposed)
+# UDLM Naming Charter (Proposed)
 
 > **Status: Proposed — a straw man for engineering review.** The goal is **one cohesive naming pass before
 > the 0.1 tag, then a freeze.** This charter proposes the canonical vocabulary, shows how the axes relate,
@@ -94,7 +94,7 @@ archetype — an identity is maintained, not one-shot.)*
 | **edge_type** | the relationship-kind field | `kind` (for edges) |
 | **Converge** | the single lifecycle act | realize/reconcile/rehydrate/teardown (colloquial shortcuts, not distinct acts) |
 | **implementation** | a system that implements UDLM's interfaces (UDLM is *implementation-neutral*) — DCM and DAV are non-normative examples | *realization* (system sense) — retired 2026-07-28 (ADR-056). The lifecycle sense is unchanged: **realize** (verb), **Realized** (state), **two-phase realization** (act) all keep their names |
-| **homelab** (profile) | the single-operator on-ramp — the relaxed end of the six-profile ladder (DCM ADR-017; registry `profile-homelab.yaml`) | `minimal` — retired 2026-07-23 ("fewer is better" ruling): completed rename, swept both repos + the DAV engine (rename history, non-normative); `posture-minimal`/`core-minimal` group handles are a **different vocabulary** and keep their names |
+| **homelab** (profile) | the single-operator on-ramp — the relaxed end of the six-profile ladder (DCM ADR-017; the named profiles in `design-priorities.md`) | `minimal` — retired 2026-07-23 ("fewer is better" ruling): completed rename, swept both repos + the DAV engine (rename history, non-normative); `posture-minimal`/`core-minimal` group handles are a **different vocabulary** and keep their names |
 
 *(Note a residual collision to resolve: "family" is also used for a **rule-ID prefix family** — an unrelated
 sense. If `family` is retired as an entity axis, keep it only in the rule-ID sense, or rename that too.)*

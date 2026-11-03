@@ -1,12 +1,13 @@
 # Best practices — authoring custom Base, Type, and Provider classes
 
-**Audience:** an organization (or provider) standing up its **own** classes under the scoped-Class paradigm.
-**Status:** design guidance (non-normative) applying ADR-038 (*Authorship & domain*) and its DCM implementation
-(DCM ADR-025). Not a rule family — it cites existing rules, defines none.
+**What this is:** a how-to for an organization (or provider) standing up its **own** classes under the
+scoped-Class paradigm.
+**Status:** design guidance (non-normative) applying ADR-038 (*Authorship & domain*) and its realization in the
+example implementation (DCM ADR-025). Not a rule family: it cites existing rules, defines none.
 
 UDLM defines the **spec** for Base/Type classes and ships a **canonical library**; **any authority may author its
-own classes** under that spec, as a **DCM policy/profile-driven feature** (ADR-038 *Authorship & domain*). This
-page is the how-to for doing that well. The whole discipline reduces to one sentence:
+own classes** under that spec, as a policy- and profile-driven feature of the control plane (ADR-038 *Authorship &
+domain*). This page is the how-to for doing that well. The whole discipline reduces to one sentence:
 
 > **Extend canon under your own authority; never mutate it.**
 
@@ -50,8 +51,8 @@ field in disguise. The gate for the Provider Class row is **§3**.
 
 ## 3. Authoring a Provider Class — the provider-authored layer
 
-A **Provider Class** (`Machine.VM.OCPVirt`) extends a canonical **Type Class** with **provider_specific
-elements**. UDLM defines the *grammar*; the **provider authors the definition** (ADR-038 *Authorship & domain*).
+A **Provider Class** (`Machine.VM.OCPVirt` is the illustrative name used below; no such class ships) extends a
+canonical **Type Class** with **provider_specific elements**. UDLM defines the *grammar*; the **provider authors the definition** (ADR-038 *Authorship & domain*).
 It is the sanctioned home for a genuinely provider_specific datum — a first-class, **provider-defined
 `SharedDataElement`**, not an opaque additive bag.
 
@@ -99,8 +100,8 @@ declaring set* — flagged, and the consumer notified — never a silent pin to 
 need not stay at Provider scope. A Class may define an element **at its own scope or any higher — Type or Base —
 when that scope's authority allows it** (ADR-038 §6; gated by governance, tightening with blast radius:
 Provider→Type affects all VM providers, →Base all of Machine). **Where your organization permits it, this is
-encouraged:** an element defined at **Type or Base scope is reusable by every other provider compatible with that
-Type / Base**, so the datum *ports* instead of pinning to you — prefer the highest scope your authority permits.
+encouraged.** An element defined at **Type or Base scope is reusable by every other provider compatible with that
+Type / Base**, so the datum *ports* instead of pinning to you. Prefer the highest scope your authority permits.
 If you cannot write at the higher scope directly, define at Provider scope and **contribute upward**: the element
 lands `proposed` at the target scope and canonicalizes by governance. Either way, a Provider Class element that
 recurs across providers is a Type-Class candidate — the recurring-provider-element set is the observable roadmap
@@ -108,7 +109,8 @@ of what should become canonical.
 
 **Lifecycle.** A Provider Class rides the **same one contribution lifecycle** as Base/Type classes (§6): author
 (proposed) → register (Liskov-validated against its Type parent) → use (authority-scoped, policy/profile-governed)
-→ promote or retain. Provider-contribution integration is DCM's (`contribution-pipeline.md` §5; DCM ADR-025).
+→ promote or retain. Provider-contribution integration belongs to the control plane (the example implementation's
+`contribution-pipeline.md` §5; DCM ADR-025).
 
 ## 4. How to do it well — the discipline
 
@@ -148,8 +150,9 @@ of what should become canonical.
 **author (proposed) → register (validated Liskov-conforms to its parent) → use (authority-scoped,
 policy/profile-governed) → promote** (broadly-useful → a canonical version) **or retain** (org-specific → stays
 under authority). Who may author / register / promote is policy/profile + trust (governance). This is the **same**
-register/validate/promote pipeline as data layers and vocabularies — only the data spec differs (ADR-038
-*Authorship & domain*; realized in DCM ADR-025). A Provider Class rides this pipeline unchanged (§3).
+register/validate/promote pipeline as data layers and vocabularies; only the data spec differs (ADR-038
+*Authorship & domain*; realized in the example implementation, DCM ADR-025). A Provider Class rides this pipeline
+unchanged (§3).
 
 ## 7. The guard — never redefine a canonical class in place
 
@@ -173,10 +176,11 @@ it for all.
 
 ## Related
 - **ADR-038** *Authorship & domain* — UDLM defines the spec + canonical library; any authority authors under it;
-  one DCM contribution lifecycle. *Org standards & tenancy* — Policy over shared classes vs authority-scoped
-  authoring (the line is **authority, not permission**).
-- **DCM ADR-025** / **`contribution-pipeline.md`** — the engine that registers, validates, and promotes
-  provider/org-authored classes (§5, provider-contribution integration).
+  one control-plane contribution lifecycle. *Org standards & tenancy* — Policy over shared classes vs
+  authority-scoped authoring (the line is **authority, not permission**).
+- **DCM ADR-025** / **`contribution-pipeline.md`** (both in the example implementation's repository, not this
+  one) — the engine that registers, validates, and promotes provider/org-authored classes (§5,
+  provider-contribution integration).
 - **`context-and-purpose.md` §7.1 / DCM ADR-023** (naturalization boundary) — a Provider Class element carries
   provider_specific *data*; the substrate never translates it to native form.
 - **ADR-041 / DCM ADR-027** — the information-firewall: a class-authoring contribution is an ingress crossing,

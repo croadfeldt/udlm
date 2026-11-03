@@ -1,12 +1,14 @@
 # The architecture is a Pattern — a proposal
 
-**What this settles:** that the implementation tier gets a *name and a shape* independent of any
-product, and that the shape is one UDLM already has. It proposes no new primitive.
+**What this is:** a design proposal, not a ruling. It settles that the implementation tier gets a
+*name and a shape* independent of any product, and that the shape is one UDLM already has. It
+proposes no new primitive. The open questions at the end are still open; no register row has
+ruled on them.
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles.
-- **ADR-033 (amended)** — Pattern → Template → System are two definitions and one instance, and *which one a composition is* is **derived**: a composition naming a `Capability` is a Pattern; one whose every part names something a provider can realize is a Template.
+- **ADR-033 (amended)** — Pattern → Template → System are two definitions and one instance. *Which one a composition is* is **derived**: a composition naming a `Capability` is a Pattern; one whose every part names something a provider can realize is a Template.
 - **ADR-008** — the peer test: could an independent implementation do this differently and still be valid? Yes → the implementation's; no → the substrate's.
-- **`PRV-004`** (provider-contract §10) — a peer implementation *is a typed provider*; federation is the provider abstraction applied across peers, not a second mechanism.
+- **`PRV-004`** (provider-contract §11) — a peer implementation *is a typed provider*; federation is the provider abstraction applied across peers, not a second mechanism.
 - **`CONFORMANCE.md` §4** — a conformance declaration already carries `level: full | partial` with `exclusions`.
 - **ADR-067** — a composition nobody offers is a `composition` record; offering it makes it a class.
 
@@ -16,15 +18,15 @@ product, and that the shape is one UDLM already has. It proposes no new primitiv
 
 **There is no name for the middle tier, so every sentence about it names a product.**
 
-UDLM says what data means. Something has to turn intent into a realized resource — assemble layers,
+UDLM says what data means. Something has to turn intent into a realized resource: assemble layers,
 evaluate policy, place, reserve, dispatch, reconcile. That thing has been called "DCM" throughout,
-because DCM is the one that exists.
+because DCM (the example implementation) is the one that exists.
 
 The cost is measurable. Removing implementation references from the normative tier (#503) touched
-**824 lines across 127 files**, and the honest reason there were so many is that authors had two
-choices and both were wrong: say **"DCM"** (one product, so no other implementation can read the
-sentence) or say **"the control plane"** (a role, not an artifact — nothing you can build against or
-declare conformance to).
+**824 lines across 127 files**. The honest reason there were so many is that authors had two
+choices and both were wrong. Say **"DCM"**, and the sentence names one product, so no other
+implementation can read it. Say **"the control plane"**, and the sentence names a role, not an
+artifact: nothing you can build against or declare conformance to.
 
 A provider author reading `provider-contract` could not answer *"what am I building against?"* with
 anything more precise than a product name.
@@ -52,10 +54,10 @@ ADR-033, already ruled:
 > *A composition is a **Template** when every constituent names something a provider can realize; one
 > naming a `Capability` leaves the shape open and it is still a **Pattern**.*
 
-An architecture's constituents are **capabilities** — `realize_resources`, `serve_data`,
-`authenticate`, `federate`, `execute_workflows`, each already a term in the governed
-`provider-capability` taxonomy. Capabilities are Knowledge: curated, never provisioned, never
-realized by a provider.
+An architecture's constituents are **capabilities**: `realize_resources`, `serve_data`,
+`authenticate`, `federate`, `execute_workflows`, each already a top-level term in the governed
+`provider-capability` taxonomy (`registry/taxonomies/provider-capability.yaml`). Capabilities are
+Knowledge: curated, never provisioned, never realized by a provider.
 
 So an architecture satisfies the Pattern test *by construction*, and nothing has to declare it one.
 The composition mechanism (`constituents`, `depends_on`, `binds_to`, `composition_visibility`) is the
@@ -141,9 +143,10 @@ the provider contract are all in place. This is a naming and an assembly, not a 
 2. **Where does it live?** Its own repository on its own version axis, by the rule set in #488 — a
    set with its own lifecycle does not share a release with the spec. But an architecture is closer
    to the substrate than a profile set is, so this is worth arguing rather than inheriting.
-3. **Does the capability vocabulary need to grow?** Five terms exist. An architecture strung from
-   five capabilities is coarse; the granularity that makes *partial* meaningful is the question —
-   too coarse and every implementation is "partial", too fine and the vocabulary is a task list.
+3. **Does the capability vocabulary need to grow?** Five top-level terms exist, with a few
+   narrower terms under `realize_resources` and `serve_data`. An architecture strung from five
+   capabilities is coarse. The granularity that makes *partial* meaningful is the question: too
+   coarse and every implementation is "partial", too fine and the vocabulary is a task list.
 4. **What is the conformance unit?** Today a declaration excludes *contracts*. If an architecture is
    capabilities, exclusions should name capabilities — and then "conformant" means *"provides the
    capabilities it claims, to the contracts UDLM defines"*, which is a sharper statement than today's.

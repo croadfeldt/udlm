@@ -12,7 +12,8 @@ is a peer of every other.
 
 ## Read, in this order
 
-1. [`README.md`](../../README.md) — the on-ramp and the repository layout.
+1. [`README.md`](../../README.md) — the on-ramp and the repository layout. New to the model
+   altogether? [`docs/start-here/`](../start-here/README.md) walks it in short steps.
 2. [`registry/UDLM-1.0-LOCKDOWN.md`](../../registry/UDLM-1.0-LOCKDOWN.md) — where the spec is
    on its way to 1.0: what 1.0 will promise, what is frozen, and what waits.
 3. [`docs/spec/foundations/data-model-core.md`](../spec/foundations/data-model-core.md) and
@@ -25,6 +26,20 @@ is a peer of every other.
    — what a version means and what conformance certifies.
 6. [`docs/adr/README.md`](../adr/README.md) — the decisions register. Every ruling is a dated row,
    newest on top. If you wonder why something is the way it is, the answer is a row.
+
+## Copy this file
+
+The reading list above is for someone changing the spec. To write your first artifact, copy an
+example and change it; each has a page that says what to change.
+
+| You want to write | Copy | Then read |
+|---|---|---|
+| a record | `registry/examples/example-vm-app01-intent-record.yaml` | [`docs/start-here/`](../start-here/README.md), step 2 |
+| a class for your provider | `registry/examples/classes/resource/compute/machine/vm/cexample-cloud.yaml` | [`docs/authoring/scoped-class.md`](../authoring/scoped-class.md) |
+| a layer of defaults or bounds | `registry/examples/example-layer-limits-baseline.yaml` | [`docs/authoring/layer.md`](../authoring/layer.md) |
+
+Check any of them with `python3 registry/tools/validate.py`. After a class change, run
+`./scripts/regen.sh` so the served specs and the pin manifest move with it.
 
 ## Check your own records
 

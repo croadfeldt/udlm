@@ -1,0 +1,656 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/provider-registration.schema.json",
+  "title": "Provider registration",
+  "description": "What a provider submits to register with a control plane (provider-contract.md §2 and §7). It is a set of claims and evidence. The control plane checks them and writes its own record, the registration verdict. Trust, admitted capabilities and lifecycle state live there, never here.",
+  "examples": [
+    {
+      "record_type": "provider_registration",
+      "uuid": "3f8b1d40-72c6-4a19-9e05-8d24b1706fa3",
+      "conforms_to": "udlm/0.1",
+      "handle": "lab/storage/zfs-host-a",
+      "version": "1.0.0",
+      "display_name": "ZFS host A",
+      "description": "Realizes ZFS volumes and storage pools on one lab host, and reports the network it sits on.",
+      "capabilities": [
+        "realize_resources/Storage",
+        "realize_resources/Machine",
+        "serve_data/Network"
+      ],
+      "sovereignty_declaration": {
+        "operating_jurisdictions": [
+          "US"
+        ],
+        "data_residency_zones": [
+          "US-MN"
+        ],
+        "enforcement_plane": "both",
+        "sub_processors": [],
+        "data_residency_guarantee": true,
+        "legal_frameworks": [],
+        "external_dependencies": {
+          "air_gap_capable": true,
+          "external_services": []
+        },
+        "audit_rights": {
+          "customer_audit_right": true,
+          "audit_notice_days": 14,
+          "third_party_audit_accepted": true
+        },
+        "change_notification": {
+          "notification_endpoint": "https://zfs-host-a.lab.example/notify",
+          "mandatory_notification_events": [
+            "jurisdiction_change",
+            "sub_processor_change"
+          ],
+          "notification_sla": "P2D"
+        }
+      },
+      "conformance_claims": [
+        {
+          "framework": "iso_27001",
+          "statement": "Self-assessed; no certificate yet."
+        }
+      ],
+      "accreditations": [
+        {
+          "accreditation_uuid": "7a2e4c19-5b83-4f06-a1d7-3c9e8b20f415",
+          "framework": "iso_27001"
+        }
+      ],
+      "accepts_roles": [
+        "execution"
+      ],
+      "requests_data": [
+        {
+          "path": "placement.location_ref",
+          "reason": "Places the pool on the disk shelf the estate chose; the provider cannot derive it."
+        }
+      ],
+      "health_endpoint": "https://zfs-host-a.lab.example/health",
+      "certificate": {
+        "pem": "-----BEGIN CERTIFICATE-----\n(provider leaf certificate)\n-----END CERTIFICATE-----\n",
+        "ca_chain": "-----BEGIN CERTIFICATE-----\n(lab intermediate CA)\n-----END CERTIFICATE-----\n",
+        "rotation_interval": "P90D"
+      },
+      "network_reachability": {
+        "egress": [
+          {
+            "host": "zfs-host-a.lab.example",
+            "port": 443,
+            "protocol": "https"
+          }
+        ],
+        "ingress": [
+          {
+            "endpoint": "lifecycle"
+          },
+          {
+            "endpoint": "telemetry"
+          }
+        ]
+      },
+      "telemetry": {
+        "metrics": {
+          "supported": true,
+          "exposition": [
+            "prometheus"
+          ],
+          "endpoint": "https://zfs-host-a.lab.example/metrics"
+        },
+        "logs": {
+          "supported": true,
+          "transport": [
+            "syslog"
+          ],
+          "endpoint": "https://zfs-host-a.lab.example/log-config"
+        },
+        "events": {
+          "supported": true
+        },
+        "per_resource_scoping": true,
+        "per_tenant_scoping": true,
+        "unavailable_for": [
+          "StorageDevice"
+        ]
+      }
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "uuid",
+    "conforms_to",
+    "handle",
+    "version",
+    "capabilities",
+    "sovereignty_declaration",
+    "accepts_roles",
+    "health_endpoint",
+    "certificate"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "provider_registration"
+    },
+    "uuid": {
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
+      "description": "The provider's identity. A registration verdict names it as `provider_uuid`."
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "handle": {
+      "$ref": "common-elements.schema.json#/$defs/handle"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "The version of this registration. A changed registration is a new version."
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/capability"
+      },
+      "description": "The declared capability set (ADR-PROV-002). Each entry is a verb, or a verb and domain, from provider-capability.yaml. Declaring grants nothing: every entry starts pending in the verdict (ADR-PROV-003)."
+    },
+    "sovereignty_declaration": {
+      "$ref": "#/$defs/sovereignty_declaration"
+    },
+    "conformance_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "framework"
+        ],
+        "properties": {
+          "framework": {
+            "type": "string",
+            "description": "A framework the provider claims to meet, such as iso_27001 or soc2_type2."
+          },
+          "level": {
+            "type": "string"
+          },
+          "statement": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Standards the provider claims to meet. Each is self-asserted until an accreditation attests it (accreditation matrix §3.7)."
+    },
+    "accreditations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "accreditation_uuid"
+        ],
+        "properties": {
+          "accreditation_uuid": {
+            "$ref": "common-elements.schema.json#/$defs/uuid_v4"
+          },
+          "framework": {
+            "type": "string",
+            "description": "A readability hint. The control plane reads the framework from the accreditation record."
+          }
+        }
+      },
+      "description": "References to registered accreditation records. Status and expiry are not restated; the control plane reads them from the record."
+    },
+    "accepts_roles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common-elements.schema.json#/$defs/data_role"
+      },
+      "description": "The data roles this provider accepts (data-roles.md). It only narrows: dispatch still sends nothing beyond the bound class and recorded grants (DSP-001 to DSP-003)."
+    },
+    "requests_data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "reason"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "The element the provider asks for, as a dotted path."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why the provider needs it and cannot derive it."
+          }
+        }
+      },
+      "description": "Data the provider needs beyond its class (PRV-013). Policy grants, narrows or refuses each request. A grant is recorded on the requested record."
+    },
+    "needs_from_implementation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "domain"
+        ],
+        "properties": {
+          "domain": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "What the provider needs from the implementation, matched at registration (§10.2). The provider opts in to each match; nothing is subscribed automatically (DISC-004)."
+    },
+    "health_endpoint": {
+      "type": "string",
+      "format": "uri"
+    },
+    "certificate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pem",
+        "ca_chain"
+      ],
+      "properties": {
+        "pem": {
+          "type": "string",
+          "description": "The provider's mTLS leaf certificate, PEM encoded."
+        },
+        "ca_chain": {
+          "type": "string",
+          "description": "The issuing chain the control plane pins for this provider, PEM encoded."
+        },
+        "rotation_interval": {
+          "type": "string",
+          "pattern": "^P(?!$)([0-9]+Y)?([0-9]+M)?([0-9]+W)?([0-9]+D)?(T(?=[0-9])([0-9]+H)?([0-9]+M)?([0-9]+S)?)?$",
+          "description": "The oldest certificate the control plane accepts, as an ISO 8601 duration. An older certificate is flagged at health check."
+        }
+      },
+      "description": "The provider's zero-trust identity. This is evidence: the control plane verifies it and computes the trust posture in the verdict."
+    },
+    "network_reachability": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "egress": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "host",
+              "port"
+            ],
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "port": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 65535
+              },
+              "protocol": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Destinations the control plane must be able to reach."
+        },
+        "ingress": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "endpoint"
+            ],
+            "properties": {
+              "endpoint": {
+                "enum": [
+                  "lifecycle",
+                  "telemetry"
+                ],
+                "description": "The control-plane endpoint the provider calls back: lifecycle events (§6) or telemetry (§7)."
+              }
+            }
+          },
+          "description": "Callbacks the provider makes to the control plane."
+        }
+      },
+      "description": "Declared network reachability. The platform provisions connectivity from it, so onboarding a provider needs no hand-edited firewall rule."
+    },
+    "telemetry": {
+      "$ref": "#/$defs/telemetry"
+    }
+  },
+  "$defs": {
+    "capability": {
+      "type": "string",
+      "pattern": "^[a-z][a-z_]*(/[A-Z][A-Za-z0-9.]*)?$",
+      "description": "A provider-capability term: a verb, or a verb and a resource domain such as realize_resources/Storage. validate.py checks it names a term in provider-capability.yaml."
+    },
+    "jurisdiction": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}(-[A-Z0-9]{1,3})?$",
+      "description": "An ISO 3166-1 alpha-2 country code, or an ISO 3166-2 subdivision such as US-MN."
+    },
+    "sovereignty_declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operating_jurisdictions",
+        "data_residency_zones",
+        "enforcement_plane"
+      ],
+      "properties": {
+        "operating_jurisdictions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/jurisdiction"
+          },
+          "description": "The sovereignty regimes the provider operates under, matched exactly (accreditation matrix §3.8)."
+        },
+        "data_residency_zones": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/jurisdiction"
+          },
+          "description": "Where data may reside. Residency subsumes down the hierarchy: US covers US-MN."
+        },
+        "enforcement_plane": {
+          "enum": [
+            "data",
+            "control",
+            "both"
+          ],
+          "description": "Which plane this claim covers (§3.8). A data-plane requirement is met only by a data or both claim."
+        },
+        "sub_processors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "jurisdiction"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "jurisdiction": {
+                "$ref": "#/$defs/jurisdiction"
+              },
+              "data_handled": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "description": "Third parties with access to data. An empty list says there are none."
+        },
+        "data_residency_guarantee": {
+          "type": "boolean",
+          "description": "True if data never leaves the declared zones."
+        },
+        "legal_frameworks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Legal frameworks the provider meets, such as eu_gdpr."
+        },
+        "excluded_frameworks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Frameworks the provider says it cannot meet."
+        },
+        "jurisdiction_detail": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "country"
+            ],
+            "properties": {
+              "country": {
+                "$ref": "#/$defs/jurisdiction"
+              },
+              "legal_system": {
+                "type": "string"
+              },
+              "data_center_location": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "external_dependencies": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "air_gap_capable": {
+              "type": "boolean"
+            },
+            "opt_out_available": {
+              "type": "boolean"
+            },
+            "external_services": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "service"
+                ],
+                "properties": {
+                  "service": {
+                    "type": "string"
+                  },
+                  "jurisdiction": {
+                    "$ref": "#/$defs/jurisdiction"
+                  },
+                  "data_shared": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "government_access_risk": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "jurisdictions_with_compelled_access": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/jurisdiction"
+              }
+            },
+            "legal_challenge_policy": {
+              "type": "string"
+            }
+          },
+          "description": "Exposure to compelled government access, such as the US CLOUD Act."
+        },
+        "audit_rights": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "customer_audit_right": {
+              "type": "boolean"
+            },
+            "audit_notice_days": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "third_party_audit_accepted": {
+              "type": "boolean"
+            }
+          }
+        },
+        "change_notification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "notification_endpoint"
+          ],
+          "properties": {
+            "notification_endpoint": {
+              "type": "string",
+              "format": "uri"
+            },
+            "mandatory_notification_events": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "notification_sla": {
+              "type": "string",
+              "description": "How soon a change is notified, as an ISO 8601 duration."
+            }
+          },
+          "description": "Where and how fast the provider notifies a change to anything it declared here."
+        }
+      },
+      "description": "The provider-wide sovereignty claim. A claim is self-asserted until an accreditation attests exactly its scope. A capability may override it for its own category; the finest grain wins (accreditation matrix §3.3.1)."
+    },
+    "signal": {
+      "type": "object",
+      "required": [
+        "supported"
+      ],
+      "properties": {
+        "supported": {
+          "type": "boolean"
+        },
+        "endpoint": {
+          "type": "string",
+          "format": "uri",
+          "description": "Where the control plane collects or configures delivery of this signal."
+        }
+      },
+      "description": "The part every telemetry signal shares. Each signal closes its own object."
+    },
+    "telemetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metrics",
+        "logs",
+        "events",
+        "per_resource_scoping",
+        "per_tenant_scoping"
+      ],
+      "properties": {
+        "metrics": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/signal"
+            }
+          ],
+          "properties": {
+            "supported": true,
+            "endpoint": true,
+            "exposition": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "prometheus",
+                  "openmetrics"
+                ]
+              },
+              "description": "Standard exposition formats only."
+            }
+          },
+          "unevaluatedProperties": false
+        },
+        "logs": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/signal"
+            }
+          ],
+          "properties": {
+            "supported": true,
+            "endpoint": true,
+            "transport": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "syslog",
+                  "otlp",
+                  "http_push"
+                ]
+              }
+            }
+          },
+          "unevaluatedProperties": false
+        },
+        "events": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/signal"
+            }
+          ],
+          "properties": {
+            "supported": true,
+            "endpoint": true
+          },
+          "unevaluatedProperties": false,
+          "description": "Lifecycle events (§6) are the minimum. A richer stream is declared here."
+        },
+        "per_resource_scoping": {
+          "type": "boolean",
+          "description": "True if signals carry the entity uuid or handle, so collection is attributable per resource."
+        },
+        "per_tenant_scoping": {
+          "type": "boolean",
+          "description": "True if signals carry the tenant, so collection and what is built on it isolate per tenant."
+        },
+        "unavailable_for": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Classes the provider cannot emit telemetry for. The control plane records telemetry_unavailable on their entities."
+        }
+      },
+      "description": "The telemetry descriptor (§7). The control plane reads it to learn which signals exist and where to configure delivery. It does not probe or guess."
+    }
+  }
+}

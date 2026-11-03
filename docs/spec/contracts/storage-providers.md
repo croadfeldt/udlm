@@ -43,10 +43,10 @@ pattern and consistency requirement (a provider may occupy several):
 | Store sub-profile | What it holds | Portable invariant (owned by data-store-contracts.md) |
 |---|---|---|
 | **GitOps store** | Intent / Requested state | deterministic, handle-addressable, diff-readable, independently verifiable |
-| **Write-once snapshot store** (Realized) | Realized-state snapshots | immutable, versioned, write-once (§ data-store-contracts §2.3) |
+| **Write-once snapshot store** (Realized) | Realized-state snapshots | immutable, versioned, write-once (data-store-contracts.md §2.3) |
 | **Event stream store** | State-change events | append-only, ordered, retention-bounded |
 | **Search index** | Queryable projection | **non-authoritative, rebuildable** — never ground truth (D1) |
-| **Audit store** | Provenance / audit records | append-only, tamper-evident (Merkle), § observability |
+| **Audit store** | Provenance / audit records | append-only, tamper-evident (Merkle) (data-store-contracts.md §3) |
 
 The **invariant** each must uphold is owned by [data-store-contracts.md](data-store-contracts.md). The
 **concrete API, file layout, wire envelope, retention mechanism, replication and failure topology** for each
@@ -131,8 +131,8 @@ registration or trust and are not Storage Providers.
 
 A Storage Provider declares its sovereignty like any other provider — the `sovereignty_declaration`
 structure and the provider-sovereignty policies (`SOV-001..005`) are owned by
-[provider-contract.md](provider-contract.md) §2a (A4 landed 2026-07-23: registration obligations live
-on the registration contract). The gist: every registration carries a sovereignty declaration;
+[provider-contract.md](provider-contract.md) §2a (registration obligations live on the registration
+contract). The gist: every registration carries a sovereignty declaration;
 declared-sovereignty changes are discovered drift triggering re-evaluation; violations apply the
 declared action, with auto-migration via provider-portable rehydration; expiring certifications warn
 at P30D.

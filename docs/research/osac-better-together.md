@@ -2,7 +2,9 @@
 
 _Status: proposal / vision. Grounded entirely in public OSAC artifacts (`github.com/osac-project`,
 research.redhat.com) and UDLM's own model. There is no announced partnership; this documents why the
-two fit and how they would compose._
+two fit and how they would compose. DCM is named throughout because this note is about composing OSAC
+with that example implementation; any conformant control plane could take its place. The cluster class
+it names, `Compute.Cluster`, has since been renamed `KubernetesCluster` (row 069)._
 
 ## The one-line story
 

@@ -1,9 +1,9 @@
 # Research: minimizing custom surface & limiting dependency-graph breaks
 
 **Type:** research note (decision support — not normative)
-**Date:** 2026-07-04 · **Method:** multi-source deep-research harness; every claim
-adversarially verified by 3 independent fact-checkers against primary sources (≥2/3
-refutations kill a claim; 3 claims were killed and are excluded). 12 findings survived.
+**Date:** 2026-07-04 · **Method:** multi-source deep-research harness. Every claim was
+adversarially verified by 3 independent fact-checkers against primary sources; 2 of 3
+refutations kill a claim. 3 claims were killed and are excluded. 12 findings survived.
 **Feeds:** #198 (extension model), #219/#220 (estate store), OBS/DEP rules, VERSIONING.md.
 
 ## Question
@@ -15,11 +15,11 @@ adopt-vs-invent criteria? (b) What proven mechanisms LIMIT dependency-graph brea
 ## Verified findings (all vs primary sources)
 
 **Identity & references**
-1. **UUID-authoritative + advisory names is THE proven pattern** (K8s: every object carries
-   a `uid`, typically RFC 9562 v4, existing to distinguish a same-named deleted-and-recreated
-   object; valid ownerReferences carry name AND uid, so a recreated owner is a *dangling
-   edge*, never silently rebound). *UDLM's uuid+handle reference design is validated as-is.*
-   Scope caveat: name-based late binding is legitimate for non-identity fields.
+1. **UUID-authoritative + advisory names is THE proven pattern.** In Kubernetes every object
+   carries a `uid` (typically RFC 9562 v4), which exists to distinguish a same-named
+   deleted-and-recreated object. Valid ownerReferences carry name AND uid, so a recreated owner
+   is a *dangling edge*, never silently rebound. *UDLM's uuid+handle reference design is
+   validated as-is.* Scope caveat: name-based late binding is legitimate for non-identity fields.
 2. **Constrain the reference topology by design; machine-detect invalid edges** (K8s bans
    cross-namespace ownerReferences — "referential integrity problems that one party cannot
    solve" — and emits `OwnerRefInvalidNamespace` events; invalid refs resolve
@@ -61,9 +61,9 @@ adopt-vs-invent criteria? (b) What proven mechanisms LIMIT dependency-graph brea
 12. **Synthesis recommendation** (medium confidence, not externally verified as a unit) —
     see the action table below.
 
-## Where UDLM/DCM already conforms
+## Where UDLM and the control plane already conform
 
-| Finding | UDLM/DCM today |
+| Finding | UDLM / the control plane today |
 |---|---|
 | 1 | uuid-authoritative + handle-advisory refs (identifier-scheme §2.3; estate CI enforces) ✅ |
 | 3 (partially) | `connects_to` (common-elements §9) is LLDP-*discovered*, not hand-drawn; estate CI is the integrity service for git data ✅ |
@@ -81,11 +81,11 @@ adopt-vs-invent criteria? (b) What proven mechanisms LIMIT dependency-graph brea
 | 4 | Enum discipline + extensible markers | `registry/VERSIONING.md` (enum rows + §Enum extensibility); `device_class` marked `x-extensible-enum` (0.3.1) |
 | 5 | `deprecated_in_version` | meta-schema `deprecation` object |
 | 6 | Augment-only extension model | `registry/naming-conventions.md` §Extension model (seeds #198) |
-| 7 | Reconciliation → DCM | division-of-responsibility note under DEP-006..008 |
+| 7 | Reconciliation → the control plane | division-of-responsibility note under DEP-006..008 |
 
 ### Original decision list (as proposed)
 
-1. **Degrade-don't-break rule (adopt RFC 8345 §leafref semantics).** DCM runtime treats a
+1. **Degrade-don't-break rule (adopt RFC 8345 §leafref semantics).** The control plane treats a
    dangling edge as *nonoperational + retained in intent*, never hard-fail, never silent.
    Estate CI stays hard-fail (authoring gate — validate-at-write). Add to OBS/DEP rules.
 2. **Tombstone/two-phase delete.** Never hard-delete a referenced resource: `lifecycle_state:
@@ -103,9 +103,9 @@ adopt-vs-invent criteria? (b) What proven mechanisms LIMIT dependency-graph brea
 6. **Extension model for #198 = augment-only**: vendor/custom types augment Tier-1 bases in
    their own namespace; base edits require a base revision (never per-vendor forks) — the
    anti-pattern is finding 8's 92-module fragmentation.
-7. **DCM owns reconciliation** (finding 3): finalizer-style gating, identity correlation
-   (#228), and GC-like cleanup are DCM-runtime concerns — DEFER from the spec; the spec only
-   defines the states/edges they act on.
+7. **The control plane owns reconciliation** (finding 3): finalizer-style gating, identity
+   correlation (#228), and GC-like cleanup are control-plane concerns — DEFER from the spec; the
+   spec only defines the states/edges they act on.
 
 ## Coverage caveats (honest limits)
 
