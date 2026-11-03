@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/StoragePool/0.7.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/StoragePool/0.7.2",
   "conforms_to": "udlm/0.1",
   "uuid": "643156a0-5c7b-4fa7-bcfb-089c0a06d520",
   "resource_type": "StoragePool",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Storage Pool",
-    "description": "A host-local pool of physical drives aggregated into redundancy-protected capacity that volumes are carved from. A Base by the Base test (CLS-002): SNIA Swordfish StoragePool abstracts over every host-local redundancy group (a ZFS zpool, an md array, an LVM VG, a controller virtual disk), so an order for protected capacity of a given kind is fillable by any of them; the backend is `pool_kind`, never the type name. It owns the vdev topology, so ordering holds: a pool stops after the volumes it backs and before the drives it aggregates.",
+    "description": "A host-local pool of physical drives aggregated into redundancy-protected capacity that volumes are carved from. A Base by the Base test: SNIA Swordfish StoragePool abstracts over every host-local redundancy group (ZFS zpool, md array, LVM VG, controller virtual disk), so any of them fills an order for protected capacity of a given kind (CLS-002). The backend is `pool_kind`, never the type name. It owns the vdev topology, so ordering holds: a pool stops after its volumes and before its drives.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "StoragePool",
-          "version": "0.7.1",
+          "version": "0.7.2",
           "uuid": "643156a0-5c7b-4fa7-bcfb-089c0a06d520"
         }
       ]
@@ -52,7 +52,7 @@
       },
       "vdevs": {
         "type": "array",
-        "description": "The redundancy topology as a tree: each top-level entry is a vdev whose `members` are drives (References to StorageDevice) or child vdevs, with the backend's native protection `type` (mirror, raidz2, stripe, …) and the Swordfish `raid_type` it maps to. How the backend combines top-level vdevs is the backend's semantic: zfs stripes across them, lvm allocates per VG policy, a hardware controller does not combine independent virtual disks (two VDs are two pools). A `spare` group at the top level is pool-wide; nested inside a vdev it is dedicated to it.",
+        "description": "The redundancy topology as a tree. Each top-level entry is a vdev: `members` are drives (References to StorageDevice) or child vdevs, `type` the backend's native protection (mirror, raidz2, stripe, …), `raid_type` the Swordfish mapping. How top-level vdevs combine is the backend's semantic: zfs stripes across them, lvm allocates per VG policy, a hardware controller never combines independent virtual disks (two VDs are two pools). A top-level `spare` group is pool-wide; one nested in a vdev is dedicated to it.",
         "items": {
           "$ref": "#/$defs/vdev"
         }

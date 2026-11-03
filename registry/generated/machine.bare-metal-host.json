@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.17.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.17.2",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Machine.BareMetalHost",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Bare Metal Host",
-    "description": "A physical machine as a managed asset — the box itself, one of the three forms of Machine (CLS-004, by form). It may sit unallocated in inventory, carries its aggregate capacity (cpu, memory, storage) as host attributes, and is what VMs, containers and storage daemons ultimately run on. Allocating a host to a consumer is the ownership model, not a separate type; its components (NICs, drives, GPUs, BMC) are their own records contained by it. Grounded in Redfish ComputerSystem for inventory and Metal3 BareMetalHost for provisioning.",
+    "description": "A physical machine as a managed asset: the box itself, one of Machine's three forms (CLS-004, by form). It may sit unallocated in inventory. It carries aggregate capacity (cpu, memory, storage) as host attributes; VMs, containers and storage daemons ultimately run on it. Allocating a host to a consumer is the ownership model, not a separate type. Its components (NICs, drives, GPUs, BMC) are their own records it contains. Grounded in Redfish ComputerSystem for inventory and Metal3 BareMetalHost for provisioning.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:31:44Z",
     "generated": true,
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.6.1",
+          "version": "2.6.2",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Machine.BareMetalHost",
-          "version": "0.17.1",
+          "version": "0.17.2",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/VirtualNetwork/0.9.3
+$id: https://udlm.dev/registry/udlm/0.1/class/VirtualNetwork/0.9.4
 conforms_to: udlm/0.1
 uuid: fddc45aa-8643-4a8d-8a6b-72ecf9315c1e
 record_type: class
 class: base
 resource_type: VirtualNetwork
-version: 0.9.3
+version: 0.9.4
 family: Resource
 status: active
 filed_under:
@@ -12,12 +12,11 @@ filed_under:
 ownership_model: shareable
 metadata:
   display_name: Virtual Network
-  description: 'A host- or cluster-scoped virtual network that guests attach to: the attachment point between a
-    vNIC and the host''s L2 stack. A Base by the Base test (CLS-002): a libvirt network and a Kubernetes NetworkAttachmentDefinition
-    are one forwarding contract — how guests reach a segment — so a virtual network is fillable by any host or cluster
-    provider; host and overlay dialects (OVN, libvirt, bridge) are Types when they carry elements. A VLAN is not
-    a Type here: it is a fabric segment, a Base of its own. A guest `binds_to` its virtual network, which implies
-    ordering: the network exists before the guest starts and outlives it.'
+  description: 'A host- or cluster-scoped virtual network guests attach to: where a vNIC meets the host L2 stack. A
+    libvirt network and a Kubernetes NetworkAttachmentDefinition are one forwarding contract, how guests reach a
+    segment, so any host or cluster provider fills it: a Base (CLS-002). Host and overlay dialects (OVN, libvirt,
+    bridge) are Types when they carry elements. A VLAN is a fabric segment, its own Base, not a Type here. A guest
+    `binds_to` its network, which precedes and outlives it.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-05T02:10:32Z'
 elements:

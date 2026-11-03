@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.10
+$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.11
 conforms_to: udlm/0.1
 uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
 record_type: class
 class: base
 resource_type: Job
-version: 1.2.10
+version: 1.2.11
 family: Process
 status: active
 metadata:
@@ -12,13 +12,11 @@ metadata:
   display_name: Job — the execution record
   maintainer: UDLM maintainers
   origination_timestamp: '2026-08-04T00:00:00Z'
-  description: 'One class for every execution: a Job is the tracked, inspectable record of running something, the
-    receipt of consuming a definition. An execution is started by submitting intent for a Job and stopped by a change
-    request against it; one Job per run, its lifecycle on the execution-state axis. No per-domain subtypes: the
-    bound definition carries the schemas that validate parameters and results, so domain is a derived facet of the
-    reference, queried not typed. An instantiable Base; a Type appears only if a genuinely job-shaped variant earns
-    one. Every state transition seals with its pathway; current state and results live on the record, history in
-    the ledger.'
+  description: 'The tracked, inspectable record of running something: the receipt of consuming a definition. One
+    class for every execution, one Job per run, on the execution-state axis. Submitting intent for a Job starts a
+    run; a change request against it stops it. No per-domain subtypes: the bound definition carries the parameter
+    and result schemas, so domain derives from the reference, queried not typed. An instantiable Base; a Type only
+    for a genuinely job-shaped variant. Every state transition seals with its pathway.'
 elements:
   - element: definition_ref
     scope: Job

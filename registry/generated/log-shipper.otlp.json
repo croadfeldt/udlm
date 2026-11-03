@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "LogShipper",
-          "version": "0.10.1",
+          "version": "0.10.2",
           "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922"
         },
         {

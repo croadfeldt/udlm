@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/UPS/0.2.1
+$id: https://udlm.dev/registry/udlm/0.1/class/UPS/0.2.2
 conforms_to: udlm/0.1
 uuid: db585146-41b2-4cd9-86e6-c90d086df2cf
 record_type: class
 class: base
 resource_type: UPS
-version: 0.2.1
+version: 0.2.2
 family: Resource
 status: active
 filed_under:
@@ -12,12 +12,10 @@ filed_under:
 metadata:
   display_name: Uninterruptible Power Supply
   description: 'An uninterruptible power supply: battery-backed conditioned power that carries a load through an
-    input failure and reports the state a graceful shutdown decides on. A Base by the Base test (CLS-002; ADR-075):
-    NUT and Redfish PowerEquipment abstract over every topology — double-conversion, line-interactive, standby —
-    so a unit of a given rating and low-battery policy is one deliverable any of them fills; it sits under no wider
-    power Base because nothing abstracts a UPS together with a PDU. What every unit declares (identity, rating,
-    battery, low-battery policy) is here; what it reports (status, charge, runtime, load) is outputs; the telemetry
-    producer is the provider. The circuit it protects is a PowerFeed `supplied_by` it.'
+    input failure and reports the state graceful shutdown decides on. A Base by the Base test: NUT and Redfish
+    PowerEquipment cover every topology, so a unit of given rating and low-battery policy is one deliverable any of
+    them fills (CLS-002; ADR-075). No wider power Base: nothing abstracts a UPS with a PDU. The telemetry producer
+    is the provider; the circuit it protects is a PowerFeed `supplied_by` it.'
   maintainer: udlm-registry
   origination_timestamp: '2026-09-27T00:00:00Z'
 elements:

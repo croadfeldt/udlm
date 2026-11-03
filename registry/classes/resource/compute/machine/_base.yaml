@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.6.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.6.2
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Machine
-version: 2.6.1
+version: 2.6.2
 family: Resource
 status: active
 filed_under:
@@ -15,11 +15,11 @@ metadata:
   maintainer: UDLM maintainers
   origination_timestamp: '2026-07-27T21:00:00Z'
   title: Machine Base Class
-  description: 'An OS-bearing machine ordered as one deliverable: an image booted onto cpu, memory, disk and network.
-    A Base by the Base test (CLS-002): Redfish ComputerSystem (one representation for physical, virtual and
-    partitioned systems), OpenStack Nova with Ironic, Cluster API''s Machine and TOSCA''s Compute node already treat a VM, a bare-metal host and a logical partition as one thing, so an order placed here is fillable
-    by any provider offering one of the three forms. Every element here is honoured by every form. A container or
-    a Kubernetes cluster is not a machine (rows 068, 069).'
+  description: 'An OS-bearing machine ordered as one deliverable: an image booted onto cpu, memory, disk and
+    network. A Base by the Base test, because Redfish ComputerSystem, OpenStack Nova with Ironic, Cluster API''s
+    Machine and TOSCA''s Compute node each treat VM, bare-metal host and logical partition as one thing (CLS-002).
+    Every element is honoured by every form; any provider offering one of the three forms fills the order. A
+    container or a Kubernetes cluster is not a machine (rows 068, 069).'
   prompt_version: class-p0-keystone-2026-07-27
 elements:
   - element: instance_size
@@ -124,11 +124,11 @@ elements:
     scope: Machine
     optional: true
     state: canonical
-    description: 'The machine''s disks as portable intent, in order: each a stable `name`, a `size`, and optionally a
-      governed `storage_tier` and a `role` (`boot` for the disk that carries the OS, `data`, `log`). The name is the
-      join key a realized Volume binds to through its `disk_entry`, surviving reorder and resize. Embedded here, not
-      a record of its own: every platform declares a machine''s disk list on the machine and keeps the volumes
-      separate (row 112; formerly StorageLayout). The entry shape is the shared `disk` (common-elements §2.6).'
+    description: 'The machine''s disks as portable intent, in order: each a stable `name`, a `size`, and optionally
+      a governed `storage_tier` and a `role` (`boot` for the OS disk, `data`, `log`). The name is the join key a
+      realized Volume binds to through its `disk_entry`, surviving reorder and resize. Embedded here, not a record
+      of its own: every platform declares the disk list on the machine and keeps volumes separate (row 112). The
+      entry shape is the shared `disk` (common-elements §2.6).'
     schema:
       type: array
       minItems: 1
@@ -153,12 +153,12 @@ elements:
     scope: Machine
     optional: true
     state: proposed
-    description: 'Network file shares the machine''s operating system mounts: each a FileShare (`source_ref`), which
-      of its exports (`share`, a `shares[].name`), where it is mounted (`mount_path`), and whether read-only. The
-      file counterpart of `disks`: a disk is attached by the hypervisor and realized by a Volume, a share is mounted
-      by the guest from a FileShare, the shared (read-write-many) case UDLM gives to FileShare, not Volume. Read by the
-      provider that configures the guest. Names follow UDLM''s Container `mounts` and the Kubernetes `volumeMounts`
-      (`mount_path`, `read_only`). Each entry is also a `mounts` edge to the FileShare.'
+    description: 'Network file shares the guest mounts: each a FileShare (`source_ref`), one of its exports
+      (`share`, a `shares[].name`), its mount point (`mount_path`), read-only or not. The file counterpart of
+      `disks`: a hypervisor attaches a disk (realized by a Volume), the guest mounts a share; UDLM gives the shared
+      (read-write-many) case to FileShare, not Volume. Read by the provider configuring the guest. Names follow
+      Container `mounts` and Kubernetes `volumeMounts` (`mount_path`, `read_only`). Each entry is a `mounts` edge to
+      the FileShare.'
     schema:
       type: array
       description: 'Network file shares the guest mounts: a FileShare, one of its exports, a mount path, read-only.'
@@ -186,12 +186,12 @@ elements:
     scope: Machine
     optional: true
     state: proposed
-    description: 'Object-storage buckets the machine''s workloads use: each a Bucket (`source_ref`), the CredentialRef
-      it reads the bucket with (`credential_ref`, COSI''s BucketAccess held by reference), and whether its access is
-      read-only. The object counterpart of `disks` and `mounts`. Like a share, a bucket is usually shared, so the
-      machine references an existing Bucket rather than claiming one of its own. Read by the provider that configures
-      the guest: it hands over the bucket''s `endpoint` and delivers the credential. Each entry is also a `buckets`
-      edge to the Bucket and a `bucket_credential` edge to the CredentialRef.'
+    description: 'Object-storage buckets the machine''s workloads use: each a Bucket (`source_ref`), the
+      CredentialRef that reads it (`credential_ref`, COSI''s BucketAccess held by reference), read-only or not. The
+      object counterpart of `disks` and `mounts`. A bucket is usually shared, so the machine references an existing
+      Bucket, never claims one. Read by the provider configuring the guest: it hands over the bucket''s `endpoint`
+      and delivers the credential. Each entry is also a `buckets` edge to the Bucket and a `bucket_credential` edge
+      to the CredentialRef.'
     schema:
       type: array
       description: 'Buckets the machine''s workloads use: a Bucket, the credential to reach it, read-only.'
@@ -246,12 +246,11 @@ elements:
     scope: Machine
     optional: true
     state: canonical
-    description: 'The run state the consumer wants the provider to drive the machine to: `running`, `stopped` or
-      `suspended`. One element for every form of Machine (row 111): a VM, a bare-metal host and an LPAR all have
-      one, and the provider translates it to its native spec (Metal3 `online`, a KubeVirt run strategy, an HMC
-      activate or shut down). A provider that cannot honour a value refuses the request; an LPAR never takes
-      `suspended`. Distinct from the four-state lifecycle, which says where the order is, not whether the machine
-      is on. Observed counterpart: `outputs.observed_run_state`.'
+    description: 'The run state the consumer wants the machine driven to: `running`, `stopped`, `suspended`. One
+      element for every form of Machine: VM, bare-metal host and LPAR (row 111). The provider maps it to its native
+      spec (Metal3 `online`, a KubeVirt run strategy, HMC activate or shut down). A provider that cannot honour a
+      value refuses the request; an LPAR never takes `suspended`. Not the four-state lifecycle, which says where the
+      order is, not whether the machine runs. Observed counterpart: `outputs.observed_run_state`.'
     schema:
       type: object
       properties:

@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/TestEvidence/0.5.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/TestEvidence/0.5.2",
   "conforms_to": "udlm/0.1",
   "uuid": "3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63",
   "resource_type": "TestEvidence",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
     "display_name": "Test Evidence",
-    "description": "One test and its outcome about one subject, as a fact any test suite can produce: a unit-test run, a role tested with Molecule, a conformance suite against a cluster, a burn-in against a host, a generated test against a dependency. It says what the test is, what it is about (any entity, by reference), what kind it is, what happened (in an adopted report format, by reference) and which Job ran it. A Knowledge class: observed by running the test, curated by a reviewer; a proposed test is an intent record, one under review a requested record, an accepted one a realized record with `scope`. The result body is CTRF or JUnit XML, pointed at and summarized, never restated; the signed projection of a realized record is an in-toto Statement with the test-result predicate over this record's integrity head. Types narrow the subject and purpose; a Provider Class carries what only one producer knows.",
+    "description": "One test and its outcome about one subject, from any test suite. Knowledge: observed by running the test, curated by a reviewer. Proposed is an intent record, under review a requested record, accepted a realized record with `scope`. The result body is CTRF or JUnit XML, referenced and summarized, never restated. A realized record's signed projection is an in-toto Statement (test-result predicate) over its integrity head. Types narrow subject and purpose; a Provider Class carries producer-only detail.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-09-13T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "TestEvidence",
-          "version": "0.5.1",
+          "version": "0.5.2",
           "uuid": "3b7e1c52-6a4d-4f9e-8b2a-9d5c0e7f1a63"
         }
       ]

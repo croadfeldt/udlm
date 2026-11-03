@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/IPAddressPool/0.10.1
+$id: https://udlm.dev/registry/udlm/0.1/class/IPAddressPool/0.10.2
 conforms_to: udlm/0.1
 uuid: 00257168-ae65-475c-bf34-f14f2e39f855
 record_type: class
 class: base
 resource_type: IPAddressPool
-version: 0.10.1
+version: 0.10.2
 family: Resource
 status: active
 filed_under:
@@ -13,12 +13,11 @@ ownership_model: whole_allocation
 allocation_produces_type: IPAddress
 metadata:
   display_name: IP Address Pool
-  description: 'An allocatable range of IP addresses that IPAddress records are carved from, so allocation ownership
-    is expressible: which addresses are in play, who holds each, whether the pool is exhausted. A Base by the Base
-    test (CLS-002): RFC 8344 and DHCP pool semantics abstract over every allocatable range, so a pool of a given
-    prefix and ranges is fillable by any IPAM or DHCP provider. The same pool pattern as StoragePool and Volume:
-    the carved record depends on its pool. Distinct from DHCPScope (the service-side configuration) and IPAddress
-    (one consumed address).'
+  description: 'An allocatable range of IP addresses that IPAddress records are carved from: which addresses are in
+    play, who holds each, whether the pool is exhausted. A Base by the Base test: RFC 8344 and DHCP pool semantics
+    cover every allocatable range, so any IPAM or DHCP provider fills a pool of given prefix and ranges (CLS-002).
+    Same pool pattern as StoragePool and Volume: the carved record depends on its pool. Distinct from DHCPScope
+    (service-side configuration) and IPAddress (one consumed address).'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-16T06:00:00Z'
 elements:
