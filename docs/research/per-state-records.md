@@ -5,8 +5,11 @@ state, instead of one record that carries all four inside it. It settles what a 
 the record of "what got built" must contain so it can be used on its own, and what the four
 records share. It is written for review, and the decisions it needs are at the end.
 
-**Status:** research. Nothing here is applied. This is a separate piece of work from the
-class-tier series and should not be folded into it.
+**Status:** applied. Register row 071 ruled it and the
+[per-state records program](per-state-records-program.md) landed it: `registry/state-record.schema.json`
+holds the four kinds, and the merged shape survives only as the read model
+`registry/entity-view.schema.json`. The brief is kept as written; the class it uses as its example,
+`Compute.VM`, has since been renamed `Machine.VM`.
 
 ## The problem
 
@@ -179,7 +182,7 @@ fingerprints, and what is left is a valid new order. That is how a rebuild works
 | `registry/examples/` | 12 examples in the folded shape | each becomes an order record and a built record, or is trimmed to the one state it demonstrates |
 | `registry/tools/validate.py` and four checks (`check_grant_derivation`, `check_group_invariants`, `check_offer_collapse`, `check_sovereignty_zones`) | read the built state out of one document | read the built record, or the assembled view |
 | 16 spec, flow and guide documents that name the schema | describe the folded record | describe the four records; `four-states.md` needs the least change because it already says this |
-| the DCM control plane | reads and writes the folded record | writes one record per state change; reads by entity and state |
+| the control plane | reads and writes the folded record | writes one record per state change; reads by entity and state |
 
 ## What does not change
 
@@ -198,8 +201,8 @@ everything in the class-tier series.
   people and dashboards will ask for it, and a schema for a query result is still useful.
 - **D3 — how to record the decision.** The spec already decided this and the schema is a defect
   against it. A register row and a schema change, not a new decision record.
-- **D4 — when it lands.** The DCM control plane writes this record, so the change spans both
-  repos. It lands after the class-tier series, not interleaved with it.
+- **D4 — when it lands.** The control plane writes this record, so the change spans both
+  repositories. It lands after the class-tier series, not interleaved with it.
 - **D5 — the referee rules.** Drop the `ownership` block. One author per record leaves it no job.
   If a case ever appears where two providers legitimately write one built record, that is a
   finding to investigate, not a reason to keep the field.
@@ -207,4 +210,4 @@ everything in the class-tier series.
 ## Out of scope
 
 The class model and the Base and Type definitions. The stores' contracts. Retention windows on
-the observed stream. How DCM implements the write paths.
+the observed stream. How the control plane implements the write paths.

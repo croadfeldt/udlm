@@ -1,0 +1,94 @@
+# A PROVIDER REGISTRATION: what a provider submits to join a control plane (provider-contract §2, §7).
+#
+# Everything here is a claim or evidence. The control plane checks it and writes its own record, the
+# registration verdict (example-registration-verdict.yaml), for this same provider uuid. Trust posture,
+# admitted capabilities and lifecycle state are in that verdict. A provider cannot set them here; the
+# schema has no field for them.
+#
+# This provider declares three capabilities. The verdict approves Storage, denies Machine (no compute
+# accreditation on file) and leaves serve_data/Network pending. Declaring grants nothing.
+record_type: provider_registration
+uuid: 3f8b1d40-72c6-4a19-9e05-8d24b1706fa3
+conforms_to: udlm/0.1
+handle: lab/storage/zfs-host-a
+version: 1.0.0
+display_name: ZFS host A
+description: Realizes ZFS volumes and storage pools on one lab host, and reports the network it sits on.
+
+capabilities:
+  - realize_resources/Storage
+  - realize_resources/Machine
+  - serve_data/Network
+
+# The provider-wide claim. Self-asserted until an accreditation attests exactly this scope.
+sovereignty_declaration:
+  operating_jurisdictions: [US]
+  data_residency_zones: [US-MN]
+  enforcement_plane: both
+  sub_processors: []
+  data_residency_guarantee: true
+  legal_frameworks: []
+  external_dependencies:
+    air_gap_capable: true
+    external_services: []
+  audit_rights:
+    customer_audit_right: true
+    audit_notice_days: 14
+    third_party_audit_accepted: true
+  change_notification:
+    notification_endpoint: https://zfs-host-a.lab.example/notify
+    mandatory_notification_events: [jurisdiction_change, sub_processor_change]
+    notification_sla: P2D
+
+conformance_claims:
+  - framework: iso_27001
+    statement: Self-assessed; no certificate yet.
+
+# A reference only. The control plane reads status and expiry from the accreditation record itself.
+accreditations:
+  - accreditation_uuid: 7a2e4c19-5b83-4f06-a1d7-3c9e8b20f415
+    framework: iso_27001
+
+accepts_roles: [execution]
+
+# Data beyond the bound class. Policy decides; the grant is recorded on the requested record.
+requests_data:
+  - path: placement.location_ref
+    reason: Places the pool on the disk shelf the estate chose; the provider cannot derive it.
+
+health_endpoint: https://zfs-host-a.lab.example/health
+
+certificate:
+  pem: |
+    -----BEGIN CERTIFICATE-----
+    (provider leaf certificate)
+    -----END CERTIFICATE-----
+  ca_chain: |
+    -----BEGIN CERTIFICATE-----
+    (lab intermediate CA)
+    -----END CERTIFICATE-----
+  rotation_interval: P90D
+
+network_reachability:
+  egress:
+    - host: zfs-host-a.lab.example
+      port: 443
+      protocol: https
+  ingress:
+    - endpoint: lifecycle
+    - endpoint: telemetry
+
+telemetry:
+  metrics:
+    supported: true
+    exposition: [prometheus]
+    endpoint: https://zfs-host-a.lab.example/metrics
+  logs:
+    supported: true
+    transport: [syslog]
+    endpoint: https://zfs-host-a.lab.example/log-config
+  events:
+    supported: true
+  per_resource_scoping: true
+  per_tenant_scoping: true
+  unavailable_for: [StorageDevice]

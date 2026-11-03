@@ -123,4 +123,4 @@ Store bindings satisfy this per profile ([D1]): a single instance at `homelab`/`
 
 ---
 
-*Document maintained by the control plane Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../../../CONTRIBUTING.md).*

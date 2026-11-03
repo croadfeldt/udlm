@@ -51,7 +51,7 @@
 
 ### 9. W3C Recommendation track (Process, 2025-08)
 - **What Recommendation means:** retains its status indefinitely; substantive corrections go through a 60-day review; new features need a new report unless the Recommendation allows them.
-- **The bar:** Candidate Recommendation needs a plan for showing implementation experience, 28 days of review and wide review; features may be marked at risk and dropped; Recommendation needs "adequate implementation experience" (independent, interoperable, by people other than the authors, publicly deployed), all issues addressed, and a 28-day Advisory Committee review.
+- **The bar:** Candidate Recommendation needs a plan for showing implementation experience, 28 days of review and wide review; features may be marked at risk and dropped. Recommendation needs "adequate implementation experience" (independent, interoperable, by people other than the authors, publicly deployed), all issues addressed, and a 28-day Advisory Committee review.
 - **Source:** https://www.w3.org/policies/process/
 
 ### 10. Kubernetes Gateway API 1.0 (2023-10)

@@ -1,14 +1,20 @@
 # The class-tier program: the series of changes that lands ruling 068
 
-**What this is:** the ordered series of pull requests that takes the registry from where it is
-today to the model settled on 2026-09-03 — a Base Class is a deliverable any member can realize —
-with the naming, alias, and instantiability rules that go with it. Each entry is one reviewable
-change with a stated size, its gates, and what it depends on. The reasoning behind the model is in
+**What this is:** the ordered series of pull requests that took the registry to the model settled
+on 2026-09-03: a Base Class is a deliverable any member can realize, with the naming, alias, and
+instantiability rules that go with it. Each entry is one reviewable change with a stated size, its
+gates, and what it depends on. The reasoning behind the model is in
 [the survey brief](portability-classification-survey.md); this document is the plan, and the
 survey is the evidence.
 
 **What it settles:** the order, the boundaries between changes, and what each must ship with.
 It does not re-open any decision recorded in the brief.
+
+**What has changed since.** The series is complete (rows 069–073). The `instantiable: false`
+folder Bases that PR 5 created were later dissolved by
+[ADR-082](../adr/ADR-082-classes-are-filed-under-usage-groups.md): a grouping that fails the
+Base test is now a usage group, not a class (`CLS-003`), and no folder Base remains. Class names
+below are as they stood at the time; `docs/spec/foundations/class-tiers.md` is the current rule.
 
 ## The decisions this series applies
 
@@ -114,9 +120,9 @@ test clause; row 069 in PR 1 supersedes it.
 | 4b | #577 `Storage.Class`, fleet-manager service kind, quota folded, `Platform` deprecated | merged |
 | 5 | #579 folder Bases `instantiable: false` — eight records, minor bumps | merged |
 | 6 | #580 provider-contract projection prose | merged |
-| 7 | register row 070 amending ADR-038 (an Accepted record is immutable — ADR-REAL-004 — so the amendment is a row, as 069 was for 068) | **open** |
+| 7 | register row 070 amending ADR-038 (an Accepted record is immutable — ADR-REAL-004 — so the amendment is a row, as 069 was for 068) | merged (row 070) |
 
-**Rulings waiting on the maintainer**
+**Rulings since made**
 
 - `KubernetesCluster.node_pools` (inline) versus `KubernetesNodePool` (class): ruled 2026-09-12, row 072 —
   records only; the cluster's inline list is removed.
@@ -125,8 +131,8 @@ test clause; row 069 in PR 1 supersedes it.
 
 **Follow-ups outside the series**
 
-- The per-state records program (#571): four record schemas replacing the folded one;
-  coordinated with the DCM control plane; lands after PR 7.
+- The per-state records program (#571): four record kinds replacing the folded one;
+  coordinated with the control plane; landed after PR 7 (row 071).
 - `realize_resources/Container` and `/KubernetesCluster` were added to the capability taxonomy
   in PR 3 because the triad gate required it; the `compute-provisioning` grouping label under
   them was not renamed.

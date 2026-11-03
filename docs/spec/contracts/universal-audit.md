@@ -1,16 +1,12 @@
 # UDLM — Universal Audit Model
 
-> **Machine-validatable schemas:** `registry/audit-record.schema.json` (Stage-2), `registry/commit-log-entry.schema.json` (Stage-1), `registry/audit-leaf.schema.json` (RFC 9162 Merkle leaf + signed_tree_head). `registry/tools/validate.py` dispatches by `record_type`. data-model-core §2 [D8.5].
+> **Machine-validatable schemas:** `registry/audit-record.schema.json` (Stage-2), `registry/commit-log-entry.schema.json` (Stage-1), `registry/audit-leaf.schema.json` (RFC 9162 Merkle leaf + signed_tree_head). `registry/tools/validate.py` dispatches by `record_type`. data-model-core §2 [D8].
 
 **Related Documents:** [Context and Purpose](../foundations/context-and-purpose.md) | [Audit, Provenance, and Observability](audit-provenance-observability.md) | [data stores](storage-providers.md) | [Universal Groups](../foundations/universal-groups.md)
 
->
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md).
-> more of those three abstractions.
->
->
-> The Data abstraction — Audit Record structure and the tamper-evident Merkle tree
+> [foundations.md](../foundations/foundations.md). This document details one of them:
+> the Data abstraction — the audit record structure and the tamper-evident Merkle tree.
 
 ---
 
@@ -45,9 +41,11 @@ The Universal Audit Model defines the **unconditional obligation** for every con
 ## 3. The Universal Audit Record
 
 ```yaml
+# illustrative: the audit record shape with its detail blocks; the schema is registry/audit-record.schema.json
 audit_record:
   # IDENTITY — immutable once written
   record_uuid: <uuid>
+  sequence_uuid: <uuid v7 — position in the stream, required (time-and-clock §4)>
   record_timestamp: <RFC 3339 UTC 'Z', millisecond precision permitted — when the change occurred (common-elements §8.1)>
   dcm_version: <control-plane version that produced this record>
 
@@ -391,6 +389,7 @@ audit:
 Every audit record (regardless of granularity level) is a Merkle tree leaf with this structure:
 
 ```yaml
+# illustrative: the leaf shape; the schema is registry/audit-leaf.schema.json
 audit_leaf:
   # Identity
   leaf_uuid: <uuid>
@@ -404,8 +403,7 @@ audit_leaf:
          placement_scored | dispatched | provider_callback | ...
   source: "<handle>"                        # which layer, policy, or service
   source_type: actor | layer_merge | policy_validation | policy_transformation |
-               policy_validation | constraint_resolution | placement | dispatch |
-               provider_callback | system
+               constraint_resolution | placement | dispatch | provider_callback | system
   action: <closed vocabulary>               # from Section 4
   decision: <allow | deny | applied | resolved | ...>
 
@@ -566,8 +564,7 @@ commit_log_capacity:
 Audit records for system-initiated changes use the same **nested actor shape as every other
 record** (§3, AUD-005): `actor.immediate.type: system_component` with a `system_actor` detail
 block identifying control-plane component and trigger, and the `authorized_by` chain naming the
-authorizing policy. (An earlier resolution used a flat `actor.type: human|service_account|system`
-model — superseded; the §3 nested model with the single §5.1 vocabulary is canonical.)
+authorizing policy. The §3 nested model with the single §5.1 vocabulary is canonical.
 
 ```yaml
 audit_record:
@@ -597,26 +594,27 @@ System actor records are full audit records — they appear in all queries and c
 
 ### 10.4 Distributed Audit Integrity (Q4)
 
-In distributed control-plane deployments (Hub + Regional + Sovereign DCMs), each instance maintains its own independent Merkle tree. Federation-level integrity is provided by daily Merkle root proofs.
+In distributed control-plane deployments (hub, regional and sovereign instances), each instance maintains its own independent Merkle tree. Federation-level integrity is provided by daily Merkle root proofs.
 
 ```yaml
+# illustrative: the per-instance tree model; no registry schema governs it
 distributed_audit_trees:
   model: per_instance               # each control-plane instance has its own Merkle tree
   instance_tree:
-    tree_id: <dcm-instance-uuid>    # tree scoped to this instance
+    tree_id: <instance-uuid>        # tree scoped to this instance
 
   federation_integrity_proof:
     enabled: true
     schedule: "0 0 * * *"           # daily
     mechanism: merkle_root
-    # Hub the control plane collects the Merkle roots from all Regional DCMs
+    # The hub instance collects the Merkle roots from all regional instances
     # Computes Merkle root → stores as federation_integrity_record
     # Any integrity break in any instance is detectable against this root
-    stored_at: hub_dcm_audit_store
-    signed_by: hub_dcm_service_account
+    stored_at: hub_audit_store
+    signed_by: hub_service_account
 ```
 
-**Cross-instance queries:** Records from different trees are presented as parallel trees with cross-references via `correlation_id`. Not merged into a single chain — each instance's chain remains independently verifiable. Federation-level verification requires Hub control-plane connectivity; per-instance verification is always available locally.
+**Cross-instance queries:** Records from different trees are presented as parallel trees with cross-references via `correlation_id`. Not merged into a single chain — each instance's chain remains independently verifiable. Federation-level verification requires connectivity to the hub instance; per-instance verification is always available locally.
 
 ### 10.5 System Policies — Universal Audit Gaps
 
@@ -625,7 +623,7 @@ distributed_audit_trees:
 | `AUD-020` | Merkle-tree integrity verification operates at three levels: continuous (leaf hashed and inserted on every write), scheduled sweep (weekly to every 6 hours per profile), and on-demand (operator-triggered for any time range). Verification failure triggers a security alert and integrity incident. New audit writes continue — halting writes is itself a security risk. |
 | `AUD-021` | The Commit Log has configurable maximum capacity with a declared overflow policy: alert_and_continue (standard/prod) or reject_new_ops (fsi/sovereign). Backpressure alerts fire at 75% and 90% capacity. Records older than P7D trigger escalation regardless of capacity. |
 | `AUD-016` | Audit records for system-initiated changes use the nested actor shape (AUD-005): actor.immediate.type: system_component with a system_actor detail block identifying control-plane component and trigger, and an authorized_by chain naming the authorizing policy. System actor records are full audit records appearing in all queries and compliance reports. actor.immediate.type (single vocabulary: human, service_account, system_component, policy, provider, scheduled_job) enables filtering between human-, service-account-, and system-initiated changes. |
-| `AUD-017` | In distributed control-plane deployments, each instance maintains its own independent Merkle tree scoped to that instance. Federation-level integrity is maintained via daily Merkle root proofs computed from all instance chain tips, stored at the Hub the control plane. Cross-instance audit queries present parallel chains with cross-references via correlation_id. |
+| `AUD-017` | In distributed control-plane deployments, each instance maintains its own independent Merkle tree scoped to that instance. Federation-level integrity is maintained via daily Merkle root proofs computed from all instance chain tips, stored at the hub instance. Cross-instance audit queries present parallel chains with cross-references via correlation_id. |
 
 ## 11. Audit vs Observability — The Definitive Distinction (Q16)
 
@@ -672,7 +670,7 @@ These are different questions requiring different storage architectures.
 | 1 | Should integrity verification run continuously or on-demand? | Security | ✅ Resolved — three levels: continuous write (tree append), scheduled sweep (weekly to 6-hourly per profile), on-demand (operator-triggered); failure → security alert + integrity incident (AUD-020) |
 | 2 | Should the WAL have a configurable maximum capacity, and what happens when it is reached? | Availability | ✅ Resolved — configurable max capacity; alert_and_continue (standard/prod); reject_new_ops (fsi/sovereign); backpressure at 75%/90%; P7D max age escalation (AUD-021) |
 | 3 | Should audit records for system-initiated changes (no human actor) be flagged differently in the dashboard? | Operational | ✅ Resolved — nested actor shape with actor.immediate.type: system_component + system_actor block (component/trigger) + authorized_by chain; full audit records; enables filtering in queries and dashboards (AUD-016) |
-| 4 | How does integrity verification interact with distributed control-plane deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance RFC 9162 Merkle trees with signed tree heads; federation integrity via daily cross-instance consistency proofs at Hub the control plane; cross-instance queries via parallel trees + correlation_id (AUD-017) |
+| 4 | How does integrity verification interact with distributed control-plane deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance RFC 9162 Merkle trees with signed tree heads; federation integrity via daily cross-instance consistency proofs at the hub instance; cross-instance queries via parallel trees + correlation_id (AUD-017) |
 
 ---
 
@@ -682,8 +680,8 @@ These are different questions requiring different storage architectures.
 - **Field-Level Provenance** — data lineage embedded in every payload; separate from audit records
 - **[data-store-contracts.md](data-store-contracts.md)** — Audit Store contract: append-only, WAL delivery, RFC 9162 Merkle tree (signed tree heads), retention tracking
 - **[universal-groups.md](../foundations/universal-groups.md)** — all group changes produce audit records per this model
-- **Policy Organization** (now the policy-contract / policy-groups model) — policy activation, shadow evaluation, and external evaluation queries all produce audit records
+- **[policy-contract.md](policy-contract.md)** — policy activation, shadow evaluation, and external evaluation queries all produce audit records
 
 ---
 
-*Document maintained by the control plane Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../../../CONTRIBUTING.md).*
