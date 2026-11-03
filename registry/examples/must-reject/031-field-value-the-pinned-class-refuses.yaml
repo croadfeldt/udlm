@@ -1,0 +1,84 @@
+must_reject:
+  rule: payload.fields
+  gate: conformance
+  because: The record pins Machine.VM 2.4.1 and gives `cpu.count` as a word. A record's fields are judged by the
+    class version it pins; a payload that class refuses is not that resource, whatever the record calls it.
+record:
+  record_type: intent_record
+  state: Intent
+  record_uuid: 01a2e7d0-0000-7000-8000-000000000031
+  entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  conforms_to: udlm/0.1
+  resource_type: Machine.VM
+  type_version: 2.4.1
+  type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
+  handle: lab/vm/app-01
+  generation: 1
+  origin: declared
+  at: '2026-10-25T09:00:00Z'
+  time_source: dcm-api
+  metadata:
+    display_name: app-01 (KVM guest on host-a)
+  fields:
+    cpu:
+      count: two
+  provenance:
+    cpu.count:
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
+    memory.size:
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
+    guest_os:
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
+    firmware.type:
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
+    firmware.secure_boot:
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
+    networks[0].vlan:
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
+    disks:
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
+    run_state.desired_state:
+    - source:
+        kind: actor
+        id: lab/users/app-team-lead
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-09-03T14:02:11Z'
+  supersedes:
+  - 01a17249-c680-7000-8000-00d15c000000

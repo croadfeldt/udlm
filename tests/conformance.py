@@ -28,7 +28,8 @@ The schema and payload checks are named for what they check, not given rule IDs:
 elsewhere (the schema carries CLS-010, DEP-015, RHY-007 and the WIR rules; a class carries its elements).
 
 Exit 0 = no failures. `--report FILE` writes the result as JSON, for the conformance declaration.
-`--self-test` runs the suite over this repository's worked records (all must pass) and every must-reject case
+`--self-test` runs the suite over this repository's worked records (all must pass), checks that every rule
+the suite applies has at least one must-reject case, and runs every must-reject case
 bound to a rule the suite applies (each must be refused for the rule it names).
 
 Usage:
@@ -222,7 +223,7 @@ def self_test():
     ex = load_tree([os.path.join(REG, "examples")])
     res = run(ex, rv, cv)
     problems = [f"worked record refused: {r} {w}: {d}" for r, w, d in res["failures"]]
-    n_cases = 0
+    n_cases, covered = 0, set()
     for p in sorted(glob.glob(os.path.join(REG, "examples", "must-reject", "*.yaml"))):
         case = yaml.safe_load(open(p, encoding="utf-8")) or {}
         mr, rec = case.get("must_reject") or {}, case.get("record")
@@ -236,11 +237,18 @@ def self_test():
         got = {r for r, w, _d in run(ex + [(rec, os.path.basename(p))], rv, cv)["failures"] if w == os.path.basename(p)}
         if want not in got:
             problems.append(f"must-reject {os.path.basename(p)}: expected {want} ({rule}), suite raised {sorted(got) or 'nothing'}")
+        else:
+            covered.add(want)
+    # Coverage (WP7d, #434): every rule this suite applies has at least one case it must refuse. A rule
+    # with no case could stop refusing and nothing would notice, which is the failure the corpus exists for.
+    uncovered = [r for r in RULES if r not in covered]
+    problems += [f"rule {r} has no must-reject case: add one to registry/examples/must-reject/" for r in uncovered]
     for m in problems:
         print(f"  FAIL {m}")
     if problems:
         return 1
-    print(f"self-test OK: {len(ex)} worked records pass; {n_cases} must-reject cases refused for their rule")
+    print(f"self-test OK: {len(ex)} worked records pass; {n_cases} must-reject cases refused for their rule; "
+          f"all {len(RULES)} rules covered")
     return 0
 
 

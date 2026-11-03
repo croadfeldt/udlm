@@ -130,7 +130,20 @@ def _ownership(record):
     return m.check_ownership_declaration(record)
 
 
+def _conformance(record):
+    """INT, TRN, DSP and payload as the conformance suite judges them (WP7d, #434). The case's record is
+    judged beside this repository's worked records, so a reference or a supersession can resolve against
+    them; only findings on the case itself count."""
+    import warnings
+    warnings.filterwarnings("ignore")
+    m = _load("tests/conformance.py", "conformance")
+    ex = m.load_tree([os.path.join(ROOT, "registry", "examples")])
+    return [f"{rule} {where}: {detail}" for rule, where, detail in m.run(ex + [(record, "<case>")])["failures"]
+            if where == "<case>"]
+
+
 GATES = {
+    "conformance": _conformance,
     "check_grant_derivation": _grant_derivation,
     "check_ownership_declaration": _ownership,
     "check_group_invariants": _group_invariants,
@@ -160,7 +173,7 @@ def main():
             continue
         checked += 1
         case = doc.get("record") or {}
-        errors = GATES[gate](case if gate == "schema" else _ev.as_view(case))
+        errors = GATES[gate](case if gate in ("schema", "conformance") else _ev.as_view(case))
         if not errors:
             fails.append(f"MRJ-001 {rel}: {gate} ACCEPTED it. The case claims {rule} refuses this; "
                          f"either the model stopped refusing it, or the case no longer provokes it.")
