@@ -11,10 +11,11 @@ The CNCF's ladder is for a project, not a feature: Sandbox, Incubating, Graduate
   roadmap, a contributing guide, a code of conduct, separation from any product, and a description
   of the spec if the project is one. Breaking changes are expected.
 - **Incubating** asks for discoverable governance, a maintainer lifecycle, a contributor ladder, a
-  public roadmap, a documented release process, a security reporting process and self-assessment,
-  an OpenSSF Best Practices passing badge, a public adopters list with at least three independent
-  adopters, and five to seven adopter interviews. For a spec: known implementations, the change
-  process for normative content, and conformance or interoperability testing.
+  public roadmap, a documented release process, and a security reporting process with
+  self-assessment. It also asks for an OpenSSF Best Practices passing badge, a public adopters list
+  with at least three independent adopters, and five to seven adopter interviews. For a spec: known
+  implementations, the change process for normative content, and conformance or interoperability
+  testing.
 - **Graduated** adds maintainers from at least two organizations, a contributor ladder that has
   produced them, a release document, a third-party security review, production adopters, and for
   a spec the conformance results across implementations.

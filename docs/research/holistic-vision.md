@@ -26,9 +26,9 @@ prioritized capabilities → strategy + roadmap.
 
 ## UDLM's role: the substrate beneath all three pillars
 
-UDLM models data **from intent to realization** in a implementation-neutral, wire-compatible
+UDLM models data **from intent to realization** in an implementation-neutral, wire-compatible
 way. In the holistic model, the pillars (Platform, People/Process, Enablement) are
-*implementations*; UDLM is the **substrate that represents their data universally** so that
+*implementations*. UDLM is the **substrate that represents their data universally**, so that
 UC drivers, assessment inputs, gaps, capabilities, and roadmaps are exchangeable across
 pillars and tools rather than trapped in any one of them.
 
@@ -38,10 +38,10 @@ for *infrastructure* resources; **DAV realizes UDLM for architecture/capability
 Both emit UDLM-conformant Data. The capability catalog maps onto UDLM's four states —
 **Discovered** = capabilities an assessment observes in the field; **Intent** = a
 proposed capability/term; **Realized** = the curated canonical entry; the **gap** between
-them = DAV's analysis. UDLM needs a new entity-type family for this knowledge domain
-(current types — Resource, Composite, Process — are infra-oriented); that
-type-family definition is the prereq for DAV's UDLM-conformant schema. See
-`dav/docs/capability-catalog-design.md` (UDLM CONFORMANCE).
+them = DAV's analysis. When this was captured, UDLM had no entity-type family for this
+knowledge domain. It does now: the **Knowledge** family
+(`docs/spec/foundations/knowledge-family.md`), with `Capability` and `TaxonomyTerm` among its
+classes. See `dav/docs/capability-catalog-design.md` (UDLM CONFORMANCE) in the DAV repository.
 
 The model's spine — **intent (Use Cases / desired outcomes) → implementation (the three
 pillars)** — is exactly UDLM's "intent to realization" lifecycle. As People/Process and

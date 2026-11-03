@@ -14,13 +14,13 @@ recorded here as settled unless overturned:
 | D1 — the identity of a record | `record_uuid` is a time-ordered UUID (v7); `entity_uuid` stays the stable v4 |
 | D2 — the merged view | kept, renamed as an explicit read model assembled from the records and never written |
 | D3 — how to record the decision | register row 071; no new ADR |
-| D4 — sequencing | after the class-tier series; coordinated with the DCM control plane for the write path |
+| D4 — sequencing | after the class-tier series; coordinated with the control plane for the write path |
 | D5 — `ownership` | dropped; one author per record leaves it no job |
 
 One implementation choice differed from the brief and is recorded in PR 1: one closed schema
-with four kinds rather than four schemas sharing an envelope, because the shared-envelope form
-resolves through a path that ignores the offline schema store and fails CI. Same guarantees,
-stronger closure.
+with four kinds rather than four schemas sharing an envelope. The shared-envelope form resolves
+through a path that ignores the offline schema store and fails CI. Same guarantees, stronger
+closure.
 
 ## The series
 
@@ -59,9 +59,9 @@ stronger closure.
 
 ### Outside this repository
 
-The DCM control plane writes these records. Its read and write paths change with PR 1's
-schema and PR 3's rename, and that work is coordinated across the UDLM / DCM boundary rather
-than done here.
+The control plane writes these records. Its read and write paths change with PR 1's
+schema and PR 3's rename, and that work is coordinated across the UDLM / control-plane boundary
+rather than done here.
 
 ## Discipline that applies to every PR
 
@@ -72,11 +72,11 @@ than done here.
 - The four-state vocabulary has one home; do not restate it.
 - `bash scripts/signoff.sh`, untruncated, before opening the PR. Merging is the maintainer's action.
 
-## Status — 2026-09-12, evening
+## Status
 
 | PR | State |
 |---|---|
 | 1 (#582) | merged |
 | 2 (#584) | merged |
 | 3 (#585) | merged |
-| 4 | open — the flows say who writes which record |
+| 4 | landed: `docs/flows/request-realization.md` and `docs/flows/provider-lifecycle.md` now name the record each step writes |

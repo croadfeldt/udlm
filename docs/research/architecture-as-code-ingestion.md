@@ -3,8 +3,11 @@
 _Status: proposal / vision. References public specifications from
 [FINOS CALM](https://calm.finos.org/) and [LikeC4](https://likec4.dev/),
 alongside UDLM's own model. This documents why architecture-as-code tools
-are natural ingestion sources for UDLM Composites and how
-the mapping would work under T5._
+are natural ingestion sources for UDLM compositions and how the mapping
+would work under T5, the adopt-outward core tenet. Written before the
+spec settled the name: what this note calls a "Composite" is a Template
+(ADR-034; `docs/spec/foundations/template-composition-model.md`), and a
+composition nobody offers is a `composition` record (ADR-067)._
 
 ## The one-line story
 
@@ -32,13 +35,13 @@ detection — without re-expressing the topology language itself.
    | Drift detection | Not modeled (CALM `diff` compares documents, not live state) | Realized vs Discovered gap |
    | Policy / governance | CALM: declarative controls (annotations). LikeC4: none | Executable policy with typed output schemas, governance matrix |
    | Audit / provenance | Not modeled | Field-level provenance, append-only audit, Merkle proofs |
-   | Provider contracts | Not modeled | Unified base contract, 12 typed provider types |
+   | Provider contracts | Not modeled | One base contract plus declared capabilities (there are no provider types; ADR-PROV-002) |
 
 3. **T5 is designed for this.** Architecture-as-code specifications are
    Tier 2 adopted standards under the disposition test
-   (`docs/spec/principles/adopted-standards.md` §1): they standardize the
-   *shape of a whole dataset* (a topology graph), their versions change
-   their shape, and UDLM should carry only the identity + pointer — never
+   (`docs/spec/principles/adopted-standards.md` §1). They standardize the
+   *shape of a whole dataset* (a topology graph), and their versions change
+   their shape. So UDLM should carry only the identity + pointer, never
    re-express the topology schema.
 
 4. **Both are open.** CALM is Apache-2.0 under FINOS. LikeC4 is MIT. Clean
