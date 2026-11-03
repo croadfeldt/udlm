@@ -21,16 +21,16 @@ Read both schemas and both worked examples before choosing.
 ## 1. When to use it — which shape, and when neither
 
 **Author a Process-family Class** when the recurring problem is **platform-to-platform automation
-migration**: two engines (blue today, green tomorrow) must run *the same* OS-patch or backup definition,
-org policy gates the portable definition, and lock-in should be readable as exactly the elements sitting
-at engine scope. Resource-provider migration
-is episodic; automation-engine migration is recurring — this shape exists for the recurring case.
+migration**. Two engines (blue today, green tomorrow) must run *the same* OS-patch or backup definition.
+Org policy gates the portable definition. Lock-in should be readable as exactly the elements sitting at
+engine scope. Resource-provider migration is episodic; automation-engine migration is recurring — this
+shape exists for the recurring case.
 
 **Instantiate the `Job` class** when you need **a run as a graph node with real
-dependencies** — its executor host, the fabric it traverses, the name service it resolves through — so an
-ordered operation (a UPS-triggered graceful shutdown, a rolling upgrade) falls out of the reverse-topological
-sort with no hand-written runbook, and so a resource can cite the job that changed it in its provenance.
-It carries the automation intent (`definition_ref`, `parameters`, `targets`, `schedule`) portably, but
+dependencies** — its executor host, the fabric it traverses, the name service it resolves through. An
+ordered operation (a UPS-triggered graceful shutdown, a rolling upgrade) then falls out of the
+reverse-topological sort with no hand-written runbook. A resource can also cite the job that changed it
+in its provenance. It carries the automation intent (`definition_ref`, `parameters`, `targets`, `schedule`) portably, but
 does not itself model multiple engines competing on one definition.
 
 Do **not** author a process when:
@@ -111,11 +111,11 @@ conformant Job record:
   blast-radius element and the `idempotency` codelist), `registry/classes/process/automation/ospatch/_base.yaml` (Type),
   and `registry/classes/process/automation/ospatch/engine-blue.yaml` + `…engine-green.yaml` (the two Provider Classes
   that make migration a provider swap).
-- **The `Job` class:** copy `registry/classes/process/job/_base.yaml` — with `depends_on` graph
-  edges, the portable-intent block
-  (`definition_ref` / `parameters` / `targets` / `schedule`), the run outputs (`results` / `started_at` / `completed_at`), its
-  `spec.examples`, and its `coverage:` block naming `use-cases/automation/run-automation-job.yaml`
-  (idempotent run with a declared blast-radius) and `docs/flows/automation-migration-and-promotion.md`.
+- **The `Job` class:** copy `registry/classes/process/job/_base.yaml`. It carries `depends_on` graph
+  edges, the portable-intent block (`definition_ref` / `parameters` / `targets` / `schedule`), the run
+  outputs (`results` / `started_at` / `completed_at`) and its `spec_examples`. Its corpus is
+  `use-cases/automation/run-automation-job.yaml` (an idempotent run with a declared blast-radius) and
+  `docs/flows/automation-migration-and-promotion.md`.
 - **Corpus and flow:** `use-cases/process-migration/` (`automation-staged-promotion`,
   `blue-green-engine-verification`, `engine-migration-canary-cutover`, `engine-upgrade-regression`,
   `process-portability-structural-query`) and `docs/flows/automation-migration-and-promotion.md` — how
@@ -134,10 +134,10 @@ python3 registry/tools/generate_class_specs.py --check
 python3 registry/tools/spec_coverage.py --check
 ```
 
-Pass: `N class(es) checked, 0 Liskov violation(s)`; a `ok (fresh)  Automation.OSPatch → registry/generated/automation.ospatch.json (N props)`
-line ending `N Type Class(es) compiled, 0 issue(s)`; and `… 0 dangling` — each exit 0.
+Pass: `N class(es) checked, 0 Liskov violation(s)`; an `ok (fresh)  Automation.OSPatch → generated/automation.ospatch.json (N props)`
+line, with the run ending `N class(es) compiled (types + orderable bases), 0 issue(s)`; and `… 0 dangling` — each exit 0.
 
-**Shape B — an `Job` resource type:**
+**Shape B — a `Job` resource type:**
 
 ```
 python3 tests/check_spec_examples.py

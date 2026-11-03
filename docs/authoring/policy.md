@@ -12,7 +12,7 @@ gates pass; skip one and a gate names it.
 
 Author a Policy when you are encoding a **decision the estate makes at request or lifecycle time** —
 allow/deny, permit/block, a field mutation, a placement constraint, a recovery action, an override of a soft
-rule. The schema's `policy_type` enum is the menu: `validation`, `transformation`, `gating`, `recovery`,
+rule. The schema's `policy_type` enum is the menu: `validation`, `transformation`, `recovery`,
 `orchestration_flow`, `governance_matrix_rule`, `placement`, `lifecycle`, `itsm_action`, `override`.
 
 **When *not* to:**
@@ -22,11 +22,10 @@ rule. The schema's `policy_type` enum is the menu: `validation`, `transformation
   the *what*; Policies decide the *how* (`layer.schema.json` description).
 - You want a new *kind* of temporal rule (a maintenance window, a freeze, an expedite). Do **not** mint a new
   `policy_type`. **ADR-053 — change-control is a `schedule` clause family on the existing policy object, not a
-  new policy_type; a schedule clause governs *when*, never *whether*.** You add a `schedule` clause to a
-  `gating`/`orchestration_flow` policy; the evidence gate stays a separate `gating` clause the schedule can
-  never reference away. (The `schedule` block is ratified vocabulary; its JSON-Schema shape lands in the
-  implementing PR ADR-053 §"What this does not decide" names — until then, model the timing decision as the
-  Validation Policy it sits on and cite ADR-053.)
+  new policy_type; a schedule clause governs *when*, never *whether*.** You add a `schedule` clause to
+  the policy that governs the change; the evidence gate stays a separate `match` rule the schedule can
+  never reference away. `schedule` is a property of `policy.schema.json`: an array of clauses, each with
+  a `kind` of `window`, `freeze`, `expedite` or `precondition`.
 - Before coining any new match source or output field, show no existing one composes to cover it (review
   sweep tenet **T7** — reduce to existing).
 
@@ -36,15 +35,17 @@ rule. The schema's `policy_type` enum is the menu: `validation`, `transformation
    with one). Set the required fields (`policy.schema.json` `required`): `record_type: policy`, a fresh v4
    `uuid`, `conforms_to: udlm/0.1`, `name`, `version` (semver), `tenant_uuid` (the platform tenant for a
    system-domain policy), `policy_type`, `match`, `output`.
-2. **Write `match`** — the conditions that make the policy fire (`match.conditions`, or nested
-   `match.all_of`/`any_of`). Each condition is `{field, operator, value}`. `field` is a request/entity
-   dot-path or a known source — `data_classification`, `sovereignty_zone`, `tenant_uuid`, `resource_type`,
-   the `graph.*` cycle/blast-radius diagnostics, `quota.*`, `reserved.*` during reconciliation (see the
-   `match.conditions.field` description for the full source list).
+2. **Write `match`** — what the policy binds to. `match.facts` lists the facts the policy reads, each a
+   term in the policy-fact taxonomy (`registry/taxonomies/policy-fact.yaml`): `data_classification`,
+   `sovereignty_zone`, `tenant_uuid`, `resource_type`, the `graph.*` cycle and blast-radius diagnostics,
+   `quota.*`, or `reserved.*` during reconciliation. `match.rule` carries the engine-native rule body
+   (`engine` plus the body), which UDLM never parses. Declaring a fact says the policy reads it, not what
+   it concludes; `tests/check_policy_facts.py` (PFACT-001) refuses a fact the taxonomy does not carry.
 3. **Write `output`** — what the policy produces when it fires. The inner shape is **conditional on
-   `policy_type`** (the schema's `allOf`): a `validation` output requires `decision` ∈
-   allow/deny/pass/fail; `gating` requires `decision` ∈ permit/block/dual_approval; `placement` requires
-   `constraints`; `transformation` requires `mutations`; `override` requires `scope` **and** `expires_at`.
+   `policy_type`** (the schema's `allOf`): a `validation` or `governance_matrix_rule` output requires
+   `decision` (`allow`/`deny`/`pass`/`fail` for validation); `recovery` requires `action`;
+   `orchestration_flow` requires `ordered`; `placement` requires `constraints`; `transformation` requires
+   `mutations`; `override` requires `scope` **and** `expires_at`.
 4. **Set precedence and enforcement.** `domain` sets precedence scope (`resource_type` override wins over
    `tenant` wins over profile default); `enforcement` is `hard` (blocking) or `soft` (advisory).
    `lifecycle_scope.operations` names which operations it evaluates on — compliance-class validation and
@@ -95,11 +96,12 @@ $ python registry/tools/validate.py
 ALL VALID — 0 invalid
 
 $ python tests/check_single_source.py
-rule-id single-source: 46 registered prefix(es); 400 rule IDs across the normative surface; 0 collide (0 baselined); 2 sanctioned co-home(s), 0 spread-debt entr(y/ies).
+rule-id single-source: 54 registered prefix(es); 507 rule IDs across the normative surface; 0 collide (0 baselined); 2 sanctioned co-home(s), 0 spread-debt entr(y/ies).
+vocabulary single-source: 97 closed list(s) >= 4 members across the authored registry; 1 declared in more than one file (0 baselined).
 OK — every rule-ID prefix is registered; every ID has a single definition.
 
 $ python tests/check_terminology.py
-550 files scanned, 0 terminology violation(s)
+841 files scanned, 0 terminology violation(s)
 ```
 
 Each exits `0`. `validate.py` prints an advisory change-impact section before the verdict — that is not a

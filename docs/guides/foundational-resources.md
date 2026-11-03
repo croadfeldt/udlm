@@ -1,6 +1,6 @@
 # Foundational (root) resources — the selectable base of the dependency graph
 
-**What this settles:** a class of resources — **Locations, Networks, and their kin** — are not things a consumer or provider *invents per request*; they are **existing, selectable resources that everything else depends on**. They are **shared references** whose purpose is to serve the **information and operational aspect** of the data model — one source of truth that many resources point at, so blast-radius, dependency ordering, placement, and information queries all reason over the same anchors. This names the class, says how it is populated and selected, and fixes the rule that dependents **reference** a foundational resource rather than defining one inline.
+**What this settles:** a class of resources — **Locations, Networks, and their kin** — are not things a consumer or provider *invents per request*; they are **existing, selectable resources that everything else depends on**. They are **shared references** that serve the **information and operational aspect** of the data model: one source of truth that many resources point at. Blast-radius, dependency ordering, placement, and information queries then all reason over the same anchors. This names the class, says how it is populated and selected, and fixes the rule that dependents **reference** a foundational resource rather than defining one inline.
 
 ## The class
 
@@ -8,12 +8,12 @@ A **foundational resource** (equivalently, a *root resource*) is one that:
 
 1. **Is a root of the dependency graph** — other resources `depends_on` / `references` / `contained_by` it; it depends on little or nothing itself. In the derived shutdown order it sits in the **deepest tiers** (it outlives its dependents); in blast-radius it is the resource whose loss has the widest reach.
 2. **Is selected, not invented** — a consumer's intent and a provider's implementation **reference an existing** foundational resource by identity; they do not carry a free-form copy of it. A VM does not describe a network segment — it selects a `VirtualNetwork`. It does not describe a rack — it selects a `Location`.
-3. **Is populated by the platform and/or a responsible provider** — the selectable set of foundational resources comes from **a platform-level data layer** (an admin/SRE defines the catalog of locations/networks as a base layer, `layering-and-versioning.md`) **and/or** the **provider that owns them advertises them** (a Location provider, a network provider) with their capacity/capability (`provider-contract.md` registration).
+3. **Is populated by the platform and/or a responsible provider.** The selectable set comes from **a platform-level data layer** (an admin/SRE defines the catalog of locations/networks as a base layer, `layering-and-versioning.md`). It can also come from the **provider that owns them**, which advertises them (a Location provider, a network provider) with their capacity/capability (`provider-contract.md` registration).
 4. **Is eligibility-governed** — which foundational resources a given consumer may select is **policy** (`policy-contract.md`) over the provider-supplied and platform-defined data, not a free choice. The responsible provider's data + policy decide the eligible set; the consumer selects within it.
 
 ## Base guidance, org ratification, provider variants
 
-UDLM ships the **base definition** of each foundational resource as **guidance**, plus the **mechanisms to support and enforce** its production and consumption (typed relationships, policy match sources, the Governance Matrix). It does **not** mandate a closed vocabulary. **The organization ratifies** what a base resource definition is for their estate, and **providers define their offerings** — a provider may offer a variant base type (a `NetworkInterface` in place of `VirtualNetwork`, say), and the org decides — via policy/Governance-Matrix — which base or variant its providers must **produce** and its consumers may **consume**. The graph, placement, and diagnostics read whatever typed edges exist; they never require one specific type. So this table is the *recommended* base set and starting guidance, not a fixed list.
+UDLM ships the **base definition** of each foundational resource as **guidance**, plus the **mechanisms to support and enforce** its production and consumption (typed relationships, policy match sources, the Governance Matrix). It does **not** mandate a closed vocabulary. **The organization ratifies** what a base resource definition is for their estate, and **providers define their offerings**. A provider may offer a variant base type (a `NetworkInterface` in place of `VirtualNetwork`, say). The org then decides, through policy and the Governance Matrix, which base or variant its providers must **produce** and its consumers may **consume**. The graph, placement, and diagnostics read whatever typed edges exist; they never require one specific type. So this table is the *recommended* base set and starting guidance, not a fixed list.
 
 ## The members (initial set)
 
@@ -41,7 +41,7 @@ This keeps one source of truth per foundational resource, lets policy govern sel
 ## Consequences
 
 - **Resource types that consume a foundational resource declare a `references`/`depends_on` relationship to it** (guidance/example per DCM ADR-009 §4 — a template, not a gate), and put the *selection* (`*_ref`) in their spec.
-- **Providers of foundational resources advertise their inventory + capacity** at registration (feeds placement — the September P3 capacity gap), and **policy governs eligibility** over that data.
-- **Foundational resources anchor fault domains** — a `Location` is the natural home for the shared-fault-domain reasoning the dependency graph needs (the September P4 gap): resources selecting the same location share its fault domain.
+- **Providers of foundational resources advertise their inventory + capacity** at registration (this feeds placement), and **policy governs eligibility** over that data.
+- **Foundational resources anchor fault domains** — a `Location` is the natural home for the shared-fault-domain reasoning the dependency graph needs: resources selecting the same location share its fault domain.
 
 See `docs/spec/foundations/entity-relationships.md`, `docs/spec/foundations/layering-and-versioning.md` (the platform data layer), `docs/spec/contracts/provider-contract.md` §1b (selection vs realized relationships), and `docs/guides/graph-integrity.md` (the graph these roots anchor).

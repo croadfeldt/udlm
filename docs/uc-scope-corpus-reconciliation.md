@@ -2,7 +2,7 @@
 
 **What this settles:** which of the 21 release-scope use cases (`registry/UDLM-0.1-SCOPE.md`) already
 exist in the `use-cases/` corpus under a different handle, and which are genuinely absent. The corpus
-is the broader register (149 entries) and **should contain the 21**; when this was written, **none of
+is the broader register (166 entries today) and **should contain the 21**; when this was written, **none of
 the 21 resolved** and all 23 flow citations dangled.
 
 **Why it matters:** every `uc-NN-*.md` flow ends with `UC source: <handle>` — the one pointer that makes
@@ -11,8 +11,8 @@ it an engineer reading a flow has nowhere to go.
 
 **State as of 2026-08-07:** 7 mapped (section A), 14 to author (section B), 0 unresolved. 14 of 44
 citations resolve; the rest are declared debt in `tests/uc_traceability_baseline.txt`, which only
-shrinks — `tests/check_uc_traceability.py` fails if a fixed pointer re-breaks OR if a resolved one is
-left in the baseline.
+shrinks. `tests/check_uc_traceability.py` fails if a fixed pointer re-breaks OR if a resolved one is
+left in the baseline. (The "What remains" section below carries the current state: all 44 resolve.)
 
 ---
 
@@ -93,11 +93,11 @@ provider, so those five need a namespace decision, not just a rename.
 
 ## What remains
 
-Nothing in the baseline. Section B's fourteen entries are closed: nine were imported unchanged from the
-sibling use-case corpus on 2026-09-14 (rows 10, 12, 13, 14, 15, 16, 19, 20, 21), and the remaining five
-(rows 01, 04, 05, 07, 08) plus the two flows without a release row (`governance/governed-automation`,
-`governance/secure-software-supply-chain`) were authored from their flow documents on 2026-09-15.
-`tests/uc_traceability_baseline.txt` carries no entries.
+Nothing in the baseline. Section B's fourteen entries are closed. Nine were imported unchanged from the
+sibling use-case corpus (rows 10, 12, 13, 14, 15, 16, 19, 20, 21). The remaining five (rows 01, 04, 05,
+07, 08) were authored from their flow documents, as were the two flows without a release row
+(`governance/governed-automation`, `governance/secure-software-supply-chain`).
+`tests/uc_traceability_baseline.txt` carries no entries, and all 44 flow citations resolve.
 
 **Blast-radius derivability** (the UC-09 gap above) is settled in `cross-domain/udlm-dependency-graph-data-model`:
 its fifth criterion states that the blast radius of a missing or failed dependency is derivable from the

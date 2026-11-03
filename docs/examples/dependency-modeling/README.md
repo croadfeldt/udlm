@@ -17,12 +17,13 @@ python3 <estate-explorer>/ingest/shutdown_order.py .
 Power is a **direct dependency of the host** on the feed(s) it draws from — `Machine.BareMetalHost
 depends_on PowerFeed` is `0..n`, so redundancy is authored as *more than one edge*, not
 inferred through a component. `host-a` declares **two** feed edges — `depends_on feed-a` +
-`depends_on feed-b`, two independent rails — so losing one feed leaves it up; the blast radius of
+`depends_on feed-b`, two independent rails — so losing one feed leaves it up. The blast radius of
 `feed-a` includes `host-a`, but `host-a` survives because it has a second path across a distinct
 power fault domain. `host-b` shows the non-redundant case: a single `depends_on feed-wall`. (Component
 inventory like a PSU is out of scope — DCM ADR-013; DCM is not a hardware system-of-record. Where a
 dependency genuinely routes through a *managed* component, model it there — e.g. a
-`NetworkInterface` `connects_to` a switch port — but power roots at the host.)
+`NetworkInterface` `connects_to` a switch port — but power roots at the host.) DCM is the example
+control plane throughout.
 
 ### Bundling — declare deps on a node, depend on the node
 `core-services` declares the shared platform dependencies **once**: `depends_on idm` + `depends_on

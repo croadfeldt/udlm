@@ -31,9 +31,10 @@ and never enters the portable model.
 
 ### A. The capability declaration — `provider-adopted-standards.schema.json`
 
-1. **Write the record** at `docs/spec/contracts/provider-contract.md` §2 (the registration payload — standing provider artifacts retired 2026-08-04; capabilities are the Provider Classes a provider supports or injects at DCM registration) (e.g. `service/` or `information/`). Set
-   the required top level (`provider-adopted-standards.schema.json` `required`): `provider` and
-   `adopted_standard_support`.
+1. **Write the declaration.** It is the registration payload of `docs/spec/contracts/provider-contract.md`
+   §2, not a repo file: the control plane admits it at registration, and the capabilities it names are
+   the Provider Classes the provider supports or injects. Set the required top level
+   (`provider-adopted-standards.schema.json` `required`): `provider` and `adopted_standard_support`.
 2. **`provider`** — `name`, a v4 `uuid`, and `version`. **The `uuid` is frozen at registration and never
    rotates on edit (ADR-051): it is the `subject_uuid` every accreditation binds to; a moved anchor orphans
    every attestation.** `version` is the declared surface's semver — surface changes bump it under the publish
@@ -81,12 +82,11 @@ onto the one Governance Matrix; it is distinct from the capability *declaration*
 
 ## 4. A worked pointer
 
-Copy [`../../contracts/provider-contract.md §2 examples`](../spec/contracts/provider-contract.md)
+Copy the §2 examples in [`docs/spec/contracts/provider-contract.md`](../spec/contracts/provider-contract.md)
 — a `service` provider that consumes Redfish/KubeVirt/Kubernetes and declares three capabilities (VM,
 Container, Cluster lifecycle), each spanning several `(verb × domain)` categories with per-category
 `topology_capability`, `operational_capability`, and (on the container capability) a narrowed `sovereignty`
-block. [`../../contracts/provider-contract.md §8 (serve_data)`](../spec/contracts/provider-contract.md)
-is the `information`-kind counterpart.
+block. The same document's §8 (`serve_data`) is the `information`-kind counterpart.
 
 For the matching accreditation, see
 [`../../registry/examples/accreditation-state-mn.yaml`](../../registry/examples/accreditation-state-mn.yaml)
@@ -97,9 +97,9 @@ declaration in A. (The provider *lifecycle* — how a declaration is registered 
 
 ## 5. Where the gates run
 
-Provider declarations are not repo artifacts — they are submitted at DCM registration
+Provider declarations are not repo artifacts. They are submitted at DCM registration
 (`../flows/provider-lifecycle.md`), and every checklist row above is enforced there as an
-admission check: an invalid declaration, an unresolvable standard token, a duplicate anchor
+admission check. An invalid declaration, an unresolvable standard token, a duplicate anchor
 uuid, or an unparseable `supports` range refuses registration. What stays in-repo is the wire
 shape itself (`registry/provider-adopted-standards.schema.json`) and the adoption register the
 tokens resolve against; `tests/check_standards_registered.py` remains as a **report-only**
