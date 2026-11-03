@@ -159,7 +159,6 @@ RDB-001 docs/spec/governance/accreditation-and-authorization-matrix.md:c6e317b2f
 RDB-001 docs/spec/governance/accreditation-and-authorization-matrix.md:c7c4b37853
 RDB-001 docs/spec/governance/accreditation-and-authorization-matrix.md:cfbba432e8
 RDB-001 docs/spec/governance/accreditation-and-authorization-matrix.md:e8deac9030
-RDB-001 docs/spec/governance/accreditation-and-authorization-matrix.md:eddb10ac63
 RDB-001 docs/spec/governance/accreditation-and-authorization-matrix.md:ff68aa9466
 RDB-001 docs/spec/governance/auth-providers.md:3aede83282
 RDB-001 docs/spec/governance/auth-providers.md:AUTH-012:825e82d03a

@@ -1027,7 +1027,8 @@
       "description": "The sovereign placement of the realized entity. These are realized from `immutable`/createOnly type fields — they cannot change without replace + Governance-Matrix re-evaluation (cross-cutting P4).",
       "properties": {
         "zone": {
-          "type": "string"
+          "type": "string",
+          "description": "The SovereigntyZone record this entity is placed in, by handle. The record carries the zone's ISO 3166 jurisdictions and its regimes, and the residency rule (accreditation matrix §3.8) is evaluated through them. A zone that names no jurisdiction cannot be matched, and that is a finding, not a pass (#385)."
         },
         "classification": {
           "type": "string"
