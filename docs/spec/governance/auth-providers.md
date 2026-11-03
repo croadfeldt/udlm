@@ -25,12 +25,12 @@ Every authentication mode UDLM admits — static API key, local users, GitHub OA
 
 ## 2. Auth and Credentials as Capabilities
 
-Authentication and credential issuance are **capabilities** (yields) a provider declares — **not** separate provider kinds; there are no provider types, only capabilities (ADR-PROV-002). The verb vocabulary, capability categories, and registration floor are [provider-contract](../contracts/provider-contract.md) §§2, 8–9. Auth is declared via `auth_capability`; credential issuance via `Credential.*` + `credential_capability` ([Credentials](credentials.md) §1, the broker model). There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities any provider declares.
+Authentication and credential issuance are **capabilities** (yields) a provider declares — **not** separate provider kinds; there are no provider types, only capabilities (ADR-PROV-002). The verb vocabulary, capability categories, and registration floor are [provider-contract](../contracts/provider-contract.md) §§2, 8–9. Auth is declared via `auth_capability`; credential issuance via `CredentialRef` + `credential_capability` ([Credentials](credentials.md) §1, the broker model). There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities any provider declares.
 
 > **Identity-model authority (UDLM vs an implementation's auth architecture).** This document and the
 > `Identity.*` types (`Identity.Person` / `Identity.ServiceAccount` / `IdentityGroup`, the RBAC bridge (`Grouping` subject_bindings + the function-capability matrix))
 > are the **authoritative data contract** for actors/identities and the actor-type vocabulary (incl. the
-> `provider` actor). An implementation's authentication *implementation* — e.g. The control plane's IDM/IAM Authentication
+> `provider` actor). An implementation's authentication *implementation* — e.g. the control plane's IDM/IAM Authentication
 > Layer (`dcm-project/enhancements/.../authentication/authentication.md`: Keycloak/IdP, middleware,
 > OpenAPI security, flows, and its internal `Actor`/`Actor Identity` tables + status enforcement) — is
 > **implementation architecture** (ADR-008): it owns *how* actors authenticate and the external-identity
@@ -264,11 +264,12 @@ auth_provider:
 ### 4.5 OIDC
 
 ```yaml
+# illustrative: shape of the record, not schema-checked
 auth_provider:
   provider_type: oidc
   config:
     issuer: https://accounts.google.com      # or: Okta, Azure AD, Keycloak, Dex
-    client_id: dcm-production
+    client_id: control-plane-production
     client_secret_ref:
       service_provider: internal
       path: "auth/oidc/client-secret"
@@ -341,10 +342,10 @@ auth_provider_chain:
 
 ## 6. Credential Types and Issuance (Data Model)
 
-Credential issuance is a **capability** a provider declares (`credential_capability` + `Credential.*` resource types — [credentials.md](credentials.md) §9), **not** a separate provider kind (§2; PROV-002/PROV-003 capability-not-kind). "Credential Provider" here means *a provider that declares that capability* — a cross-cutting dependency any implementation component or provider registration references for secret resolution. The substrate REQUIRES that credentials are never stored directly by the implementation; they are always referenced. The canonical capability declaration (assurance, attestation, credential types, secret engines) is defined once in [credentials.md](credentials.md) §9; the block below adds only the backend-connection specifics.
+Credential issuance is a **capability** a provider declares (`credential_capability` plus the `CredentialRef` class — [credentials.md](credentials.md) §1.2 and §9), **not** a separate provider kind (§2; ADR-PROV-002 and ADR-PROV-003, capability-not-kind). "Credential Provider" here means *a provider that declares that capability* — a cross-cutting dependency any implementation component or provider registration references for secret resolution. The substrate REQUIRES that credentials are never stored directly by the implementation; they are always referenced. The canonical capability declaration (assurance, attestation, credential types, secret engines) is defined once in [credentials.md](credentials.md) §9; the block below adds only the backend-connection specifics.
 
 The registration shape is owned by [credentials.md](credentials.md) — the `credential_capability`
-declaration (§8 summary, §13 full shape incl. external-CA config) and the closed `credential_types`
+declaration (§1.2 summary, §9 full shape, §13 external-CA config) and the closed `credential_types`
 vocabulary (§2). Backend-flavored names fold into the canonical types (nothing lost): a
 connection_string / username_password / ldap_bind / hmac_secret is a `secret`; a bearer token is a
 `service_account_token`; a raw private key is `ssh_key`/`signing_key`. Backend connection, health
@@ -494,9 +495,9 @@ Substrate invariant: roles are NOT SCIM-provisioned. This prevents privilege esc
 
 - **Webhooks and Messaging** — ingress/egress actor model; webhook actor registration (implementation-side)
 - **Credentials** ([credentials.md](credentials.md)) — full credential lifecycle and types
-- **Universal Audit Model** ([../observability/universal-audit.md](../contracts/universal-audit.md)) — auth provider and ingress context in every audit record
+- **Universal Audit Model** ([../contracts/universal-audit.md](../contracts/universal-audit.md)) — auth provider and ingress context in every audit record
 - **Credential Provider** — resolves all Auth Provider connection secrets
-- **Universal Group Model** ([../observability/universal-groups.md](../foundations/universal-groups.md)) — group memberships resolved via Auth Provider group sync
+- **Universal Group Model** ([../foundations/universal-groups.md](../foundations/universal-groups.md)) — group memberships resolved via Auth Provider group sync
 
 ---
 

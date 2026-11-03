@@ -2,7 +2,7 @@
 
 UDLM is a **substrate**, not just a schema. Beyond the four-state lifecycle, every Resource Type
 Specification and every conformant implementation must serve a set of cross-cutting requirements that
-The control plane — the canonical operationalizer — holds as **hard** requirements: **auditability, observability,
+the control plane — the canonical operationalizer — holds as **hard** requirements: **auditability, observability,
 an explicit dependency graph, and sovereignty.** These are design principles, not options; they
 shape how specs are authored and how providers realize them.
 
@@ -77,13 +77,13 @@ boundaries.
   data** any host runs offline — never a dependency on a reachable central authority.
 - **Boundary-crossing is visible.** Cross-scope edges (P3) make any dependency that crosses a
   sovereignty boundary explicit and enforceable by the Matrix.
-- **Provenance / admission (Proposed — [ADR-057](../../adr/ADR-057-sovereignty-placement-and-provenance.md)).**
+- **Provenance / admission ([ADR-057](../../adr/ADR-057-sovereignty-placement-and-provenance.md), accepted; engineering ratification pending).**
   Sovereignty governs not only *where an entity lives* but *where it comes from*: an estate may require
   that an entity — and the sources that realize it — be **approved for the boundary** (the
   approved-source / approved-list dimension: "did this server come from an approved source; is this
   firewall on the approved list?"). UDLM **codifies** this requirement as data and **communicates** it —
   by reference to accreditation subjects + attestation evidence, not a new primitive — and does **not**
-  vet or enforce; the control plane's Governance Matrix decides and enables enforcement. Pending ratification (ADR-057).
+  vet or enforce; the control plane's Governance Matrix decides and enables enforcement. Engineering ratification is pending (ADR-057).
 
 ---
 

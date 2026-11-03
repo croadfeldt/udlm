@@ -200,20 +200,6 @@ of them is a second status field (core tenet T7: every field earns its place).
 | What the consumer wants | `desired_state`, a spec element: `active`, `suspended` or `cancelled`. The same pattern as Machine.VM's `run_state.desired_state`. |
 | Where the terms stand | Derived from `terms`, never stored. Renewal is due within `renewal_advance_notice` of `expires_at` when `auto_renew` is set. The subscription is expired once `expires_at` passes without renewal. |
 
-**What each older status value was.** An earlier draft kept one status field with these values:
-
-| Older status | Now |
-|---|---|
-| `PENDING` | Intent or Requested: policy evaluation and approval are running |
-| `PROVISIONING` | Requested, before the provider reports the subscription realized |
-| `ACTIVE` | Realized, with `desired_state: active` |
-| `SUSPENDED` | Realized, with `desired_state: suspended`; managed entities follow through their own run state |
-| `RENEWAL_PENDING` | Derived from the terms: renewal is due |
-| `TIER_CHANGE_PENDING` | A request for the new tier: Requested, not yet Realized |
-| `EXPIRED` | Derived from the terms: past `expires_at` without renewal |
-| `CANCELLED` | `desired_state: cancelled` |
-| `DECOMMISSIONING`, `DECOMMISSIONED` | Decommissioned; decommissioning is that request in flight |
-
 **Grace period.** When a subscription expires, or its `desired_state` becomes `cancelled`, managed
 entities are not decommissioned at once. A configurable grace period (default P30D) lets the consumer
 renew, export data or move to another subscription. During it, managed entities stay realized but no
@@ -410,4 +396,4 @@ specified in control-plane architecture docs.
 
 ---
 
-*Part of the UDLM specification. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For questions or contributions see [GitHub](https://github.com/croadfeldt/udlm).*

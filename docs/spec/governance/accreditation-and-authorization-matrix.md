@@ -131,10 +131,10 @@ accreditation:
   last_verified_at: <ISO 8601>            # when the implementation last confirmed still active
 
   # What the accreditation covers — EXPLICITLY keyed to provider + capability so the sovereignty
-  # 1-1 match (accreditation-and-authorization-matrix.md §3.3.1) is machine-checkable. `subject_uuid` above names the PROVIDER; the
+  # 1-1 match (§3.3.1) is machine-checkable. `subject_uuid` above names the PROVIDER; the
   # fields here name WHICH of that provider's capabilities and WHICH residency scope it attests.
   scope:
-    # BINDING GRAIN is org/platform-admin policy (profile-governed — accreditation-and-authorization-matrix.md §3.3.1). UDLM carries all
+    # BINDING GRAIN is org/platform-admin policy (profile-governed — §3.3.1). UDLM carries all
     # three grains; the platform picks the required strictness and whether a capability change EXPIRES it:
     capability_scope:
       - capability_uuid: <uuid>                 # binds a specific capability (matches capabilities[].capability_uuid).
@@ -147,6 +147,7 @@ accreditation:
       #   - provider_wide: true
     geographic_scope: [US]                      # residency/jurisdiction this attests — the axis a
                                                 #   sovereignty claim's jurisdictions/residency match against
+    plane: both                                 # data | control | both — which plane this attests (§3.8)
     data_classifications: [phi, restricted]     # which data classifications this covers
     framework_capabilities: [data_at_rest, data_in_transit, access_control, audit_logging]  # compliance-framework capabilities — a DIFFERENT axis from capability_scope
     exclusions: [<explicit exclusions from scope>]
@@ -181,11 +182,11 @@ For the appraisal, an **active, verified accreditation** must match the claim **
 - **data classification** — `scope.data_classifications` covers the claim (a `sovereign`-data claim is not vouched for by an `internal`-scoped accreditation);
 - **plane** — `scope.plane` covers the claim's `enforcement_plane` (§3.8): data-plane residency and control-plane operator-access are attested separately.
 
-No accreditation matching **all** axes → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, DCM ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Machine` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes accreditation-and-authorization-matrix.md §3.3.1's **pipeline propagation** enforceable. Each downstream hop in a capability's implementation pipeline must present its **own** verified, 1-1-matching accreditation for the propagated constraint. Trust is re-verified per hop, never inherited.
+No accreditation matching **all** axes → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, DCM ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Machine` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes §3.3.1's **pipeline propagation** enforceable. Each downstream hop in a capability's implementation pipeline must present its **own** verified, 1-1-matching accreditation for the propagated constraint. Trust is re-verified per hop, never inherited.
 
 **This generalizes beyond sovereignty (§3.7).** The same claim→attestation link governs every `conformance_claim` a subject declares: a declared adherence (ISO 27001, SOC 2, FedRAMP-Moderate, SecNumCloud, …) is `self_asserted` until an accreditation whose `framework` matches attests it for the scope.
 
-**Binding grain + expiry are configurable (platform-admin policy, profile-governed).** How deterministic the capability axis must be is the org's choice, not a fixed rule (accreditation-and-authorization-matrix.md §3.3.1): **grain 1** provider-wide, **grain 2** a capability across its versions (`capability_uuid`, no `version`), or **grain 3** an exact `(capability_uuid, version)` — any grain optionally narrowed to a single `category` within the capability. At grain 3, when a provider changes a capability (a new `version`), the accreditation bound to the prior version **no longer matches** and the claim reverts to `self_asserted` until re-attested — the deterministic, drift-proof posture (e.g. sovereign/fsi profiles). Grains 1–2 are looser (e.g. dev/eval). The **`provider.capability_changed`** lifecycle event (`provider-contract.md` §6) fires accreditation re-evaluation. Whether that change **expires** a binding is decided by the grain the platform requires. The same event therefore supports both the strict "expire on any change" and the loose "provider-wide, survives changes" postures.
+**Binding grain + expiry are configurable (platform-admin policy, profile-governed).** How deterministic the capability axis must be is the org's choice, not a fixed rule (§3.3.1): **grain 1** provider-wide, **grain 2** a capability across its versions (`capability_uuid`, no `version`), or **grain 3** an exact `(capability_uuid, version)` — any grain optionally narrowed to a single `category` within the capability. At grain 3, when a provider changes a capability (a new `version`), the accreditation bound to the prior version **no longer matches** and the claim reverts to `self_asserted` until re-attested — the deterministic, drift-proof posture (e.g. sovereign/fsi profiles). Grains 1–2 are looser (e.g. dev/eval). The **`provider.capability_changed`** lifecycle event (`provider-contract.md` §6) fires accreditation re-evaluation. Whether that change **expires** a binding is decided by the grain the platform requires. The same event therefore supports both the strict "expire on any change" and the loose "provider-wide, survives changes" postures.
 
 ### 3.4 Accreditation Lifecycle
 
@@ -271,7 +272,7 @@ Three refinements keep a claim honest — the industry-wide failure mode is a re
 
 - **Residency vs sovereignty are different matches.** *Residency* (`data_residency_zones` — physical location of bytes) **subsumes down a declared jurisdiction hierarchy**: an authorization for `US` covers `US-MN` residency. *Sovereignty* (`operating_jurisdictions` — the legal regime the resource is operated under) is matched **exactly**: a `US` authorization does **not** cover `US-MN` as a *state sovereignty regime* (Minnesota's own law is a distinct regime, attested separately). The jurisdiction hierarchy (ISO 3166 country ⊃ 3166-2 subdivision, plus region groupings) is **first-class, org-declared data compiled down to exact membership**. The gate always does exact-match against the *expanded* set; it never infers geography (the enforcement norm across OPA/Kyverno, IAM, OAuth). The entity side speaks the same vocabulary. `sovereignty.zone` names a SovereigntyZone record, and that record's `jurisdictions` (ISO 3166) and `regimes` are what this rule compares. A zone with no jurisdiction cannot be matched; it is a finding (#385).
 - **The plane axis (the universal leak).** A `sovereignty` stance and an accreditation each carry a `plane` (`data` | `control` | `both`). *Data-plane* residency (bytes at rest / in process) and *control-plane* sovereignty (operator access, support, telemetry) are attested **separately**. That is because every real commitment (EU Data Boundary, the hyperscaler sovereign clouds) is strong on data-at-rest and carves out exactly the control-plane path. A data-only accreditation does **not** attest operator access stays in-jurisdiction.
-- **UDLM declares + verifies; the provider enforces at the byte level; the control plane conveys.** the substrate and its control plane is a *declaration + verification + placement-gating* layer (like Gaia-X), **not** a byte-level residency enforcer. Only a separate in-jurisdiction control plane or customer-held keys make residency a physical fact, and that is the **provider's** architecture. The control plane's job at realization is to **convey the sovereignty requirement + the `role: execution` data slice** (docs/spec/contracts/data-roles.md) to the enforcing provider, and to require the provider's accreditation (matching `plane`) attesting it enforces at the data plane. The requirement travels with the reserve/commit dispatch; the provider attests it can hold it.
+- **UDLM declares + verifies; the provider enforces at the byte level; the control plane conveys.** The substrate and its control plane are a *declaration + verification + placement-gating* layer (like Gaia-X), **not** a byte-level residency enforcer. Only a separate in-jurisdiction control plane or customer-held keys make residency a physical fact, and that is the **provider's** architecture. The control plane's job at realization is to **convey the sovereignty requirement + the `role: execution` data slice** (docs/spec/contracts/data-roles.md) to the enforcing provider, and to require the provider's accreditation (matching `plane`) attesting it enforces at the data plane. The requirement travels with the reserve/commit dispatch; the provider attests it can hold it.
 
 ### 3.9 Verification summary (attestation result) + delegation
 
@@ -295,13 +296,13 @@ This model is a specialization of the industry attestation vocabulary, not a coi
 | `status` / `expires_at` | `credentialStatus` / `validUntil` | freshness (nonce / epoch) | ConMon / POA&M currency | Expired / Deprecated / Revoked |
 | override (policy-contract §18) | — | — | POA&M risk acceptance | — |
 | verification summary (§3.9) | — | Attestation Result ("Passport") | leveraged-authorization | — |
-| pipeline propagation (accreditation-and-authorization-matrix.md §3.3.1) | — | layered attestation | — | (in-toto layout + MATCH) |
+| pipeline propagation (§3.3.1) | — | layered attestation | — | (in-toto layout + MATCH) |
 
 Field names retained where they are themselves standard compliance terms (accreditation, accreditor, subject); `proof` / `verification_method` / `proof_purpose` / `trust_anchor` are taken directly from the VC vocabulary; `validFrom`/`validUntil` are carried as `issued_at`/`expires_at` with the VC meaning.
 
 ---
 
-> **Scope:** This document covers the accreditation model (Sections 2-3) and zero trust interaction model (Section 5). Data and capability boundary enforcement is specified in the [Unified Governance Matrix](governance-matrix.md), which consumes the accreditation and classification models defined here as inputs.
+> **Scope:** This document covers the accreditation model (§2–3), the content of the authorization matrix (§4), and the zero trust interaction and federation models (§5–7). The decision semantics for boundary enforcement are specified in the [Unified Governance Matrix](governance-matrix.md), which consumes the accreditation and classification models defined here as inputs.
 
 ## 4. Data/Capability Authorization Matrix
 
@@ -380,7 +381,7 @@ data_authorization_matrix:
 ```
 
 **One decision vocabulary.** The `on_missing_accreditation` values above are matrix *content* — they resolve
-onto the Governance Matrix's decision enum (governance-matrix.md §4, the single boundary-decision vocabulary):
+onto the Governance Matrix's decision enum (governance-matrix.md §3.2, the single boundary-decision vocabulary):
 `DENY_REQUEST` → `DENY`; `STRIP_FIELD` → `STRIP_FIELD`; `WARN_AND_ALLOW` → `AUDIT_ONLY`; `DENY_CAPABILITY` →
 `DENY` scoped to the capability axis; `ALLOW` → `ALLOW`. This file defines the accreditation *inputs* and matrix
 content; the decision semantics live in governance-matrix.md and are not redefined here.
@@ -511,7 +512,7 @@ Interaction attempt
 
 ### 5.3 Credential Model — Scoped, Short-Lived, Non-Transferable
 
-Zero trust requires that credentials are scoped to the minimum necessary operation and expire quickly. The interaction-credential **record and its `operation_scope` operation vocabulary are defined once in [credentials.md](credentials.md) §3** (`credential_record`, `dcm_interaction` type) — this section does not restate the wire shape or the operation enum. The zero-trust properties that matter here: the credential is scoped to a single operation + entity + provider, is **non-transferable** (never delegated or relayed), MAY be **IP-bound** for `fsi`/`sovereign`, and is **short-lived** (see the profile guidance below).
+Zero trust requires that credentials are scoped to the minimum necessary operation and expire quickly. The interaction-credential **record and its `scope.operations` vocabulary are defined once in [credentials.md](credentials.md) §3** (`credential_record`, `dcm_interaction` type) — this section does not restate the wire shape or the operation enum. The zero-trust properties that matter here: the credential is scoped to a single operation + entity + provider, is **non-transferable** (never delegated or relayed), MAY be **IP-bound** for `fsi`/`sovereign`, and is **short-lived** (see the profile guidance below).
 
 **Credential lifetime is profile-governed and single-sourced.** The per-profile `max_lifetime` for the interaction credential (and every credential type) is defined once in the profile config block [`credentials.md`](credentials.md) §12.1 — the `dcm_interaction` row is `homelab PT1H · dev PT30M · standard PT1H · prod PT30M · fsi PT15M · sovereign PT15M`. This section does not restate it. Shorter is the default posture because interaction credentials **auto-refresh**; a compliance overlay may tighten further (§12.3).
 
