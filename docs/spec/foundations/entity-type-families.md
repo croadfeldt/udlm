@@ -64,8 +64,8 @@ Automotive). These are **not two notions of "family"** — they are the one conc
 grouping different *kinds* of definition. A definition has a family; whether the
 definition is a type or a term does not change what a family is. Consequently the two
 things that can look like "two families" for one entity are really two *different
-definitions*, each in one family: a `Capability` **type** lives in the **Knowledge**
-family (recorded once, at the type level), while a specific **term** like "Provider"
+definitions*, each in one family. A `Capability` **type** lives in the **Knowledge**
+family (recorded once, at the type level). A specific **term** like "Provider"
 lives in the **the control plane** family (recorded on that term's row). No row carries two families;
 no second definition of "family" exists.
 
@@ -75,7 +75,7 @@ Modeling a non-infrastructure system (the first Knowledge-family implementation)
 substrate/contracts while the entity-type *definitions* are domain-specific in meaning
 (see the case study). Families are simply the catalog structure that follows: **one
 universal substrate; a growing, universally-usable set of definitions; organized into
-domain-named families for findability.** An implementation does not "own" or "gate" a family —
+domain-named families for findability**. An implementation does not "own" or "gate" a family —
 it may *contribute* definitions (which then belong to everyone) and *use* any definition
 from any family. This is what makes "implementation-neutral; any conformant implementation is a
 peer" concrete and non-fragmenting.
@@ -131,7 +131,7 @@ domains.
 Mechanics:
 - The same term string may have **multiple definitions, one per family**, each tagged with
   its family. Disambiguation is "**term + family**", not "term" alone.
-- A definition normally carries **one** family tag (the home of its meaning); the tag set
+- A definition normally carries **one** family tag (the home of its meaning). The tag set
   permits more where a definition is genuinely shared verbatim across families.
 - Consistent with **grouping ≠ boundary**: the family tag is a *namespace for meaning* — a
   disambiguator. It does **not** restrict who may use the definition. Instance scope is a

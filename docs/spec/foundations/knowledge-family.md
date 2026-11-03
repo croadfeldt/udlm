@@ -18,7 +18,7 @@
 
 The Knowledge family models **architecture and capability knowledge** — the artifacts a
 system reasons about when it asks *"what should be able to happen, what does it take, and
-where are the gaps?"* Where the Resource family tracks resources through **provisioning**,
+where are the gaps"*? Where the Resource family tracks resources through **provisioning**,
 the Knowledge family tracks definitions through **curation**: proposed → reviewed →
 canonical, against a backdrop of what is **observed** in the field.
 
@@ -54,18 +54,22 @@ to the Resource family's Realized-vs-Discovered drift. This *is* the first imple
   and status (layering-and-versioning §4b); field-level
   provenance; data classification; contributor identity (the LLM-proposes / human-curates
   step is UDLM's federated-contribution model).
+
 - **Provenance is first-order:** every field records origin — e.g. a `Capability.domain`
   sourced from the control plane taxonomy vs an `evidence` field sourced from a specific assessment
   finding.
+
 - **Classification defaults:** canonical, shared vocabulary (TaxonomyTerm, Alias,
   Antipattern seeded from public taxonomy) defaults **public**; field-derived
   instances (e.g. capabilities discovered in a client assessment) default
   **client-confidential**. Set per instance, per field.
+
 - **Family tag:** every definition here carries `family: knowledge` — the disambiguation
   namespace (see [Entity-Type Families §6](entity-type-families.md)). So
   `Capability [Knowledge]` is distinct from any same-named term in another family, and
   collision-prone words (`Process`, `Policy`, `Service`, `Provider`, `Capability`) stay
   unambiguous as "term + family". It disambiguates meaning; it does not restrict use.
+
 - **Ownership / scope is instance-level**, per
   [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md):
   global / shared / domain / project tiers (the first implementation's tier+tags model maps onto this). The
@@ -76,40 +80,53 @@ to the Resource family's Realized-vs-Discovered drift. This *is* the first imple
 ### 4.1 Capability
 A discrete ability that must be present to realize use cases (platform, people/process, or
 enablement). The unit the catalog inventories and the roadmap sequences.
+
 - **Fields:** name (handle), description, pillar, domain (capability-domain prefix),
   normalization_status (normalized | proposed-gap | unmapped), demand (count/refs of UCs
   requiring it), leverage (foundational-dependency metric), evidence.
+
 - **Relationships:** `normalized_to` → TaxonomyTerm; `depends_on` → Capability;
   `required_by` → UseCase *(future)*; `surfaced_by` → Assessment/Finding *(future)*.
+
 - **States:** typically enters as `observed` (from an assessment) and/or `proposed`, then
   `under_review` → `canonical`; `deprecated` is terminal.
 
 ### 4.2 TaxonomyTerm
 A canonical vocabulary term — the **normalization authority** the catalog normalizes onto.
+
 - **Fields:** term (handle), definition, pillar, domain (prefix + name), parent
   (→ TaxonomyTerm), normalization_rules (how to normalize items for this subject matter),
   category (source grouping).
+
 - **Relationships:** `parent` → TaxonomyTerm; normalized **by** Capability/Alias.
+
 - **States:** `proposed` (a back-fill candidate the catalog surfaced) → `under_review` →
   `canonical`. Seeded `canonical` from an authoritative taxonomy (e.g. The control plane Taxonomy).
   `deprecated` for retired terms.
+
 - **Note:** TaxonomyTerm is the "spec"; Capability is "reality." Their gap drives back-fill
   (Discovered/observed capabilities with no term ⇒ propose a term ⇒ the taxonomy grows).
 
 ### 4.3 Alias
 A normalization rule mapping a non-canonical string/term to its canonical TaxonomyTerm —
 i.e. anti-vocabulary ("avoid → use instead") and discovered synonyms.
+
 - **Fields:** avoid (handle), use_instead, reason, source (taxonomy | discovered | manual).
+
 - **Relationships:** `resolves_to` → TaxonomyTerm.
+
 - **States:** `canonical` when seeded from a taxonomy's anti-vocabulary; `proposed` →
   `canonical` for synonyms discovered during normalization.
 
 ### 4.4 Antipattern
 A pattern to avoid relative to the taxonomy/architecture (a "what not to do," with the
 recommended alternative).
+
 - **Fields:** name (handle), description, why, instead (recommended pattern), pillar,
   domain.
+
 - **Relationships:** `related_to` → TaxonomyTerm / Capability.
+
 - **States:** `proposed` → `canonical`; `deprecated` when superseded.
 
 ### 4.5 DecisionRecord (a Decision Record / ADR — adopted, not invented)
@@ -122,32 +139,40 @@ validation**. It records *why* a decision was made — the rationale resolving a
 Capability / dependency / spec element — so any implementation carries decision provenance natively (pairs with
 [Universal Audit](../contracts/universal-audit.md) + field-level provenance). **An ADR = a DecisionRecord whose
 anchor is architecture;** process/enablement decisions are DecisionRecords too.
-- **Fields:** title (handle, e.g. `DCM ADR-017`-style within an owning scope), **`rationale` / body (the prose ADR
-  narrative — kept first-class; the structure is an *envelope* around it, never a replacement)**, question/finding
-  refs, options_considered, decision, action (`answer | clarify | change_spec | defer | wontfix`),
-  validation_evidence *(optional — see Note)*, supersedes, provenance (proposed_by: human + model/prompt version),
-  **`abstraction_decomposition` (required: the `Data · Policy · Provider` aspects of the decision — the three
-  foundational abstractions; SPEC-DESIGN-REQUIREMENTS §29). A record that can't name all three (or mark one
+
+- **Fields:** title (handle, e.g. `DCM ADR-017`-style within an owning scope). **`rationale` / body is the prose
+  ADR narrative — kept first-class; the structure is an *envelope* around it, never a replacement**. The remaining
+  fields: question/finding refs, options_considered, decision, action (`answer | clarify | change_spec | defer |
+  wontfix`), validation_evidence *(optional — see Note)*, supersedes, provenance (proposed_by: human + model/prompt
+  version). **`abstraction_decomposition` is required: the `Data · Policy · Provider` aspects of the decision — the
+  three foundational abstractions; SPEC-DESIGN-REQUIREMENTS §29. A record that can't name all three (or mark one
   "n/a, because…") isn't fully scoped.**
+
 - **Relationships:** `decides` → Finding(s) *(future member; M:N — one record closes a class)*;
   `about` → Capability / TaxonomyTerm / spec element (the anchor it justifies); `produces` → a change/proposal
   *(implementation-specific)*; `supersedes` → DecisionRecord.
+
 - **States (curation = ADR status):** `proposed` (drafted) → `under_review` → `canonical` (accepted / the
   authoritative WHY) → re-`observed` if its premises drift; `deprecated`/superseded when a later record replaces
   it (ADR's "never edit, supersede" rule *is* UDLM immutability + `supersedes`).
+
 - **Note (validation is a gate *where applicable*, not universal):** when the decision is testable, it reaches
   `canonical` **only with passing use-case validation** (evaluated against UCs — submitted + generated-with-
-  variance — on the same engine that finds gaps) — the WHY is *earned, not asserted*. Non-validatable decisions
+  variance — on the same engine that finds gaps). The WHY is *earned, not asserted*. Non-validatable decisions
   (e.g. a naming choice) may be `canonical` without it, preserving compatibility with ordinary ADRs.
   Implementation: `dav/docs/findings-resolution-design.md`; answers the "`depends_on` says *what* but not *why*"
   feedback by making the WHY a first-class, queryable record.
+
 - **Scope & scope-appropriate validation.** A record's anchor places it in one of three scopes (the
   `Data · Policy · Provider` triad), and each reaches `canonical` through *its own* mechanism — there is **no single
   "validation runner"**; validation is the scope's existing machinery:
+
   - **architecture-scoped** (an ADR; anchor = a foundational/architecture decision) → **use-case / conformance
     validation**.
+
   - **policy-scoped** (the *why* of a policy) → **Policy-Engine validation + Shadow Mode** (a `proposed` policy
     evaluated against real traffic, never applied).
+
   - **provider-scoped** (the *why* of a provider / capability adoption) → **attestation verification + conformance**.
 
   This is **distinct from a *runtime* decision** (a policy firing, a placement / provider selection), which is
@@ -165,8 +190,8 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
 
 ### 4.6 SoftwareImage · SoftwarePackage · Vulnerability — the software-supply-chain triad
 Facts *about* resources (their bill-of-materials and its known vulnerabilities), discovered by a scanner sweep
-and referenced by the resource estate — the first **knowledge-domain ingestion** under this family (the reusable
-method: a discovery avenue → Knowledge classes → references-context edges → filter + blast-radius).
+and referenced by the resource estate — the first **knowledge-domain ingestion** under this family. The reusable
+method: a discovery avenue → Knowledge classes → references-context edges → filter + blast-radius.
 
 > **⚠ Proof of concept — not best practice.** Materializing these software facts as
 > local-discovery Knowledge records is a **POC** to demonstrate filter + blast-radius; it is
@@ -180,14 +205,19 @@ method: a discovery avenue → Knowledge classes → references-context edges �
 > Tracked: [udlm#197](https://github.com/croadfeldt/udlm/issues/197) (principle),
 > [udlm#188](https://github.com/croadfeldt/udlm/issues/188) (SBOM SoR),
 > [dcm#66](https://github.com/croadfeldt/dcm/issues/66) (OCP/gitops SOR, control-plane-at-home).
+
 - **`SoftwareImage`** — a container image (correlation id: **digest**). *Adopts:* OCI image-spec. `contains`
   (→ SoftwarePackage) is its SBOM; referenced by `Container` via `runs_image`.
+
 - **`SoftwarePackage`** — a library/package (correlation id: **purl**). *Adopts:* Package-URL + SPDX/CycloneDX
   component. One record per purl, shared by every image that contains it. `affected_by` (→ Vulnerability).
+
 - **`Vulnerability`** — a CVE / GHSA / OSV advisory (correlation id: **id**). *Adopts:* OSV / NVD-CVE (+ VEX for
   status). Terminal in the chain; blast-radius reverse-walks from here.
+
 - **Lifecycle:** curated upstream (NVD/OSV), **`Discovered`** locally (a scanner is a discovery avenue,
   dcm DCM ADR-017) — never provider-realized.
+
 - **Edges** are `edge_type: references` (non-ordering, so outside the shutdown sort) but **walked by
   blast-radius/impact in reverse** — "everything pointing to `Vulnerability#X`" = the affected package → image →
   container → app → host set.
@@ -196,16 +226,18 @@ method: a discovery avenue → Knowledge classes → references-context edges �
 A pattern to follow — the reusable "what a thing of this kind IS" at type level: Antipattern's
 twin, positive polarity. ADR-033 places Pattern in Knowledge as a **definition** — the first of the
 Pattern → Template → System chain's two definition tiers, where a Pattern leaves parts open and a
-Template has cut them — and deliberately deferred the schema implementation "unless a use case
-pulls it in" — the pull
-arrived: an external field-device fleet adopter models "what a field device of role X is"
+Template has cut them. ADR-033 also deliberately deferred the schema implementation "unless a use
+case pulls it in". The pull arrived: an external field-device fleet adopter models "what a field device of role X is"
 (the capabilities a role requires, the shape a season build asserts) as reusable role
 definitions, exactly this member.
+
 - **Fields:** name (handle), description, why (the outcome the pattern serves), pillar,
   domain — Antipattern's field shape at positive polarity.
+
 - **Relationships:** `related_to` → TaxonomyTerm / Capability (the capabilities the pattern
   requires or asserts); a Template (ADR-033) `refines` a Pattern — a reference between two
   definitions, so one Pattern yields many Templates.
+
 - **States:** `proposed` → `canonical`; `deprecated` when superseded.
 
 ### 4.8 SovereigntyZone
@@ -216,11 +248,14 @@ A zone declares the jurisdictions it spans in the accreditation's own vocabulary
 match from an assumption into a computation. Knowledge rather than Resource because a zone is
 declared, curated and never realized by a provider — the Vulnerability shape: a structured record
 whose truth is held by the party that declares it.
+
 - **Fields:** jurisdictions (ISO 3166-1/3166-2, required and non-empty), regimes (supranational,
   e.g. EU), description. **Physical location is deliberately absent** — that is `Location`,
   and it does not cross a peer boundary.
+
 - **Relationships:** cited by a realized entity's `sovereignty.zone`; matched against an
   accreditation's `scope.geographic_scope`.
+
 - **States:** `proposed` → `canonical`; established at setup and governed thereafter.
 
 ## 5. Relationship graph (summary)

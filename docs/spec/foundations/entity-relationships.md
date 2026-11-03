@@ -19,7 +19,7 @@ what builds ON that model: the cross-tenant rules (`XTA-*`), the allocated- and 
 operational models, relationship lifecycle policies, the declaration tiers, bundled expansion,
 notification traversal, and the graph itself (`ERL-*`, `REL-005+`).
 
-**Why relationships exist at all.** Relationships are not bookkeeping — they are what lets the control plane act on a system instead of a pile of independent resources. From the graph the control plane **auto-resolves dependencies** (a VM that `requires` a network triggers the network's provisioning), **orders lifecycle operations** (build, suspend, destroy, and rehydrate in dependency order), computes **blast radius** (what is affected if this entity changes state), and rolls up cost and ownership. Without the relationship the platform cannot sequence or reason about impact; the relationship is the price of that automation.
+**Why relationships exist at all.** Relationships are not bookkeeping — they are what lets the control plane act on a system instead of a pile of independent resources. From the graph the control plane **auto-resolves dependencies** (a VM that `requires` a network triggers the network's provisioning) and **orders lifecycle operations** (build, suspend, destroy, and rehydrate in dependency order). It computes **blast radius** (what is affected if this entity changes state), and rolls up cost and ownership. Without the relationship the platform cannot sequence or reason about impact; the relationship is the price of that automation.
 
 **Users should rarely hand-write relationships.** The common case is **inferred**, not authored. A class declares its standard relationships once as templates (§10.1); when a consumer requests it, the control plane derives the edges from them (§11). A consumer only writes an explicit relationship for the **exception** — a non-standard cross-link the catalog could not know about.
 
@@ -29,7 +29,7 @@ notification traversal, and the graph itself (`ERL-*`, `REL-005+`).
 
 An edge is **declared one-sided and derived two-sided**: it lives on the declaring entity's
 record as a `dependencies[]` entry (`registry/state-record.schema.json`), and the inverse
-reading is **computed**, never stored — every `edge_type` has a derivable inverse, so the graph
+reading is **computed**, never stored. Every `edge_type` has a derivable inverse, so the graph
 is navigable both ways without a second record (`GRAPH-001..003`,
 `tests/check_graph_integrity.py`). There is no relationship object with its own uuid, no
 `direction` field, and no inverse *type* — an old `required_by` is just the inbound reading of a
@@ -115,8 +115,11 @@ combinations are not representable. The recurring patterns:
 **Behavioral rules:**
 
 - Any `constituent` or `operational` relationship **must** declare a lifecycle policy (ERL-004, REL-008)
+
 - Constituent edges are the strongest coupling — cross-tenant is prohibited (`GRP-INV-002`)
+
 - `depends_on` with derived `operational` nature is the **allocated resource cell** — where cross-tenant allocations are modeled (§7)
+
 - `references` with derived `informational` nature is the **business context cell** — Business Unit, Cost Center, Person relationships live here
 
 ---
@@ -169,11 +172,11 @@ submitter anywhere. The refusal is emitted as `authz.cross_tenant_unauthorized` 
 mechanism that would make the reference legal — a `cross_tenant_authorization` grant from the
 owning tenant, recorded as a grouping of that class (`registry/profile.schema.json` / `Grouping`).
 
-The third is **over-explaining**. A refusal that helpfully describes what the submitter tried
-to reach — its type, its name, its state — has disclosed another tenant's inventory to prove
-they may not see it. The refusal discloses existence-as-forbidden and nothing further, and it
-gives the same answer whether or not the target exists, so that the error channel cannot be
-used to enumerate a foreign estate one identifier at a time
+The third is **over-explaining**. A refusal that helpfully describes what the submitter tried to
+reach — its type, its name, its state — has disclosed another tenant's inventory to prove they may
+not see it. The refusal discloses existence-as-forbidden and nothing further, and it gives the same
+answer whether or not the target exists. That way the error channel cannot be used to enumerate a
+foreign estate one identifier at a time
 ([`docs/spec/contracts/error-model.md`](../contracts/error-model.md) §3.3 — the existence-disclosure
 rule, which is where not-found and not-authorized are separated for the whole model).
 
@@ -183,11 +186,11 @@ tenants, so the refusal record names both — today's denial records carry a sin
 
 ### 6.3 System Policies for Cross-Tenant Relationships
 
-Three relationship rules govern this surface and are **defined in §13.1**, not restated here:
-`GRP-INV-002` (a constituent relationship may not cross a tenant boundary), `REL-011` (a cross-tenant
-operational relationship needs authorization from the owning *and* the consuming Tenant), and
-`REL-012` (a Tenant set to `deny_all` participates in no cross-tenant relationship in either
-direction). The cross-tenant authorization rules below are defined here.
+Three relationship rules govern this surface and are **defined in §13.1**, not restated here. They
+are `GRP-INV-002` (a constituent relationship may not cross a tenant boundary) and `REL-011` (a
+cross-tenant operational relationship needs authorization from the owning *and* the consuming
+Tenant). The third is `REL-012` (a Tenant set to `deny_all` participates in no cross-tenant
+relationship in either direction). The cross-tenant authorization rules below are defined here.
 
 | Policy | Rule |
 |--------|------|
@@ -196,7 +199,7 @@ direction). The cross-tenant authorization rules below are defined here.
 | `XTA-003` | More specific authorizations take precedence: field_specific > resource_specific > tenant_global |
 | `XTA-004` | All cross-tenant authorization decisions are policy-driven and control-plane-enforced |
 | `XTA-005` | Sovereignty constraints declared by either Tenant must be honored by all cross-tenant relationships |
-| `XTA-006` | An intent whose dependency targets an entity in another Tenant without an active `cross_tenant_authorization` is refused **whole** at request validation — never repaired by dropping the edge and realizing the remainder, and never partially accepted. The refusal is emitted as `authz.cross_tenant_unauthorized`, names the grant that would make the reference legal, and discloses nothing about the target beyond existence-as-forbidden: no attributes, no type, no state, and the same response whether or not the target exists (`docs/spec/contracts/error-model.md` §3.3) |
+| `XTA-006` | An intent whose dependency targets an entity in another Tenant without an active `cross_tenant_authorization` is refused **whole** at request validation — never repaired by dropping the edge and realizing the remainder, and never partially accepted. The refusal is emitted as `authz.cross_tenant_unauthorized`, names the grant that would make the reference legal, and discloses nothing about the target beyond existence-as-forbidden. That means no attributes, no type, no state, and the same response whether or not the target exists (`docs/spec/contracts/error-model.md` §3.3) |
 | `XTA-007` | The refusal record for a cross-tenant crossing names **both** Tenant identities and the attempted target identifier, alongside the refusing policy (`AUD-024` — a refusal record names every subject of the crossing it refused). A single-tenant denial record is insufficient: the owning Tenant is a party to the attempt and cannot audit what it cannot see |
 
 ---
@@ -401,9 +404,9 @@ This rule applies automatically and silently when the hierarchy resolves cleanly
 | Immutable lifecycle lock overridden by REL-018 | `critical` | Notify entity owner, policy owner, and platform admin |
 
 **The record is an obligation, not a shape.** When a conflict is surfaced (REL-019), control-plane records
-durably: the full recommendation set (per edge — the recommended action and the policy or
-lifecycle declaration it came from), the resolved action and the rule that resolved it, the
-severity, and the notifications dispatched — citable from the affected entity's audit trail.
+durably: the full recommendation set (per edge — the recommended action and the policy or lifecycle
+declaration it came from). It also records the resolved action and the rule that resolved it, the
+severity, and the notifications dispatched. All of it is citable from the affected entity's audit trail.
 The record's shape is the control plane's implementation; the content above is the contract.
 
 ### 8.4 Lifecycle Policy Authority Hierarchy
@@ -510,12 +513,11 @@ Deferred destruction record created (if action was deferred)
 ### 9.4 Deferred Destruction — the Obligation
 
 When a destruction is deferred because active edges remain (REL-015), control-plane records durably: the
-triggering request, the entity whose edge was being released, the derived count before and
-after, the remaining blocking edges (declaring entity + edge_type + strength), and the reason —
-citable from the shared entity's audit trail. When the count later reaches the declared
-`minimum_relationship_count` and destruction proceeds, the destruction audit record cites the
-deferral, closing the loop. The record shapes are the control plane's implementation; this content is the
-contract.
+triggering request, the entity whose edge was being released, and the derived count before and after. It
+also records the remaining blocking edges (declaring entity + edge_type + strength) and the reason. All
+of it is citable from the shared entity's audit trail. When the count later reaches the declared
+`minimum_relationship_count` and destruction proceeds, the destruction audit record cites the deferral,
+closing the loop. The record shapes are the control plane's implementation; this content is the contract.
 
 ### 9.5 Unified with the Allocated Resource Model
 
@@ -669,10 +671,14 @@ All relationships across all entities form a traversable **Entity Relationship G
 ### 12.1 Graph Properties
 
 - Every node is a Resource/Service Entity (internal or external reference)
+
 - Every edge is a typed dependency declared on exactly one entity
+
 - The graph is traversable in both directions — the inverse reading of every edge is derived (GRAPH-003), never stored
+
 - Every node exists exactly once — shared entities appear once with multiple relationship edges
-- Cycles over the **ordering** edge_types (`depends_on`, `contained_by`) are invalid and must be rejected (the CYCLE gate); non-ordering `references` cycles — including reflexive self-reference (the multi-cluster self-managed hub, `docs/examples/multi-cluster-hub-example.md`) — are legal and outside the ordering sort
+
+- Cycles over the **ordering** edge_types (`depends_on`, `contained_by`) are invalid and must be rejected (the CYCLE gate). Non-ordering `references` cycles — including reflexive self-reference (the multi-cluster self-managed hub, `docs/examples/multi-cluster-hub-example.md`) — are legal and outside the ordering sort
 
 ### 12.2 Graph and the Four States
 
@@ -740,8 +746,11 @@ Class default
 **Within the Policy Engine**, the priority schema governs conflicts between policies at the same tier. Highest numeric priority value within a tier runs first. The first policy to set `override: immutable` on a lifecycle policy field locks it — all subsequent policies in that execution find it locked and cannot modify it.
 
 **Conflict detection at ingestion** applies to lifecycle policy declarations in policies exactly as it does to layer fields:
+
 - Two policies both declare `on_related_destroy` for the same relationship type without priority differentiation → CONFLICT ERROR at ingestion — both owners notified
+
 - One has higher priority value → Higher wins, documented in provenance
+
 - Equal priority → CONFLICT ERROR
 
 **`immutable_ceiling: absolute` applies here.** A sovereign compliance mandate that storage must always be retained when a VM is destroyed — `on_related_destroy: retain` with `immutable_ceiling: absolute` — cannot be overridden by any future policy regardless of priority.
@@ -817,10 +826,10 @@ The minimum stake-strength threshold per event type is platform-domain policy co
 ### 14.3 Notification Traversal and Graph Depth
 
 **UDLM declares no traversal depth and no audience.** How far a notification travels, and who is
-told about a security event, are governance choices — an estate may legitimately want the affected
+told about a security event, are governance choices. An estate may legitimately want the affected
 tenant informed of a sovereignty violation immediately, or may want it contained to a security
 function, and both are conformant. Depth per event type is declared by platform-domain policy
-(`REL-022`); UDLM ships no default for it, because a default here has no provenance — it would apply
+(`REL-022`); UDLM ships no default for it, because a default here has no provenance. It would apply
 in every estate that ever used the model, with no record of who chose it (NDF-001).
 
 **What UDLM does fix is the CONTENT, not the reach** (`REL-023`): a cross-tenant notification carries
@@ -836,7 +845,7 @@ it consumes these declarations.
 
 | Policy | Rule |
 |--------|------|
-| `REL-022` | Notification traversal follows relationship edges from the changed entity. Traversal depth per event type is declared by platform-domain policy — **UDLM declares no default and fixes no depth for any event type**, including security events; how far a notice travels is a posture choice, and a shipped default would apply in every estate with no record of who chose it (NDF-001). Stake strength is derived from the edge declaration (§14.1), never stored. |
+| `REL-022` | Notification traversal follows relationship edges from the changed entity. Traversal depth per event type is declared by platform-domain policy — **UDLM declares no default and fixes no depth for any event type**, including security events. How far a notice travels is a posture choice, and a shipped default would apply in every estate with no record of who chose it (NDF-001). Stake strength is derived from the edge declaration (§14.1), never stored. |
 | `REL-023` | Notification traversal respects sovereignty boundaries. Cross-tenant notifications carry only content authorized for the receiving Tenant. |
 | `REL-024` | The same actor reached via multiple relationship paths receives a single notification with all applicable audience_roles listed. |
 

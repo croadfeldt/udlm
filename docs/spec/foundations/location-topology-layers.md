@@ -26,8 +26,11 @@ The substrate requires that every resource allocation be located *somewhere*, an
 **What the substrate does NOT specify:**
 
 - The specific layer types in the hierarchy (Country, Region, Zone, etc.) — these are an implementation choice
+
 - The number of layers in the hierarchy — implementations MAY have 3 layers or 12
+
 - The specific fields each layer type carries — these are implementation-declared via the schema-sharing protocol
+
 - Placement engine algorithms — those are implementation mechanics
 
 ---
@@ -88,8 +91,11 @@ When a consumer selects a leaf layer, the implementation MUST assemble the full 
 The substrate requires that custom layer types can be added without modifying the substrate itself. Custom types follow the same registration and assembly contract as substrate-defined types:
 
 - A custom layer type is registered with a unique `type_name`, a `parent_type` (or `null` for root-level custom types), and a field schema
+
 - Layer instances of custom types are created and managed exactly like substrate-defined instances
+
 - Custom types participate in ancestry assembly via the same rules
+
 - Custom types are declared in the schema bundle so federation peers can resolve them
 
 ---
@@ -206,9 +212,13 @@ The substrate requires that organizations can define custom layer types without 
 **Substrate-required properties of custom types:**
 
 - A unique `type_name` within the deployment
+
 - A `parent_type` (or `null` for root-level custom types) — must reference an existing layer type
+
 - A `level` ordering value (substrate format permits decimal levels to allow insertion between existing levels)
+
 - A field schema declared and exchanged via the schema-sharing protocol
+
 - An owning authority declared at registration
 
 Custom type instances are created and managed exactly like substrate-defined instances — same registration workflow, same authority ownership, same versioned/immutable model, same ancestry assembly rules.
@@ -245,4 +255,4 @@ custom_location_type:
 
 ---
 
-*UDLM substrate document. The specific layer hierarchy (e.g., DCM's canonical 9-layer Country → Region → Zone → Site → Data Center → Hall → Cage → Rack → Unit scheme), placement engine algorithms, priority band allocations, consumer selection mechanics, authority-and-ownership models, and capacity-tracking implementations are implementation choices. The DCM implementation's canonical hierarchy and operational mechanics live in the DCM implementation's documentation.*
+*UDLM substrate document. The specific layer hierarchy (e.g., DCM's canonical 9-layer Country → Region → Zone → Site → Data Center → Hall → Cage → Rack → Unit scheme) is an implementation choice. So are placement engine algorithms, priority band allocations, consumer selection mechanics, authority-and-ownership models, and capacity-tracking implementations. The DCM implementation's canonical hierarchy and operational mechanics live in the DCM implementation's documentation.*

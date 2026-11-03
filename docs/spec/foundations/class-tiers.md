@@ -3,9 +3,9 @@
 **Related Documents:** [Registry Governance](../governance/registry-governance.md) | [Provider Contract](../contracts/provider-contract.md) | [Portable-value discipline](../principles/portable-values.md)
 
 The home of the **CLS** rule family. This document defines the three class tiers the registry is
-built from and the one question every tier answers: *who can realize an order placed here?*
-ADR-038 (scoped Classes of shared data elements — portability read off where an element sits)
-holds the why. ADR-068 (a Base is earned, not assumed — `Compute` split into `Container`,
+built from. It also states the one question every tier answers: *who can realize an order placed
+here?* ADR-038 (scoped Classes of shared data elements — portability read off where an element
+sits) holds the why. ADR-068 (a Base is earned, not assumed — `Compute` split into `Container`,
 `KubernetesCluster` and `Machine`) and ADR-069 (a Base is a deliverable any member can realize)
 are the rulings this document turns into rules. ADR-082 (a class is defined once and filed under
 usage groups like hard links; the folder Bases dissolve) adds the grouping system in §3. The rules
@@ -50,9 +50,9 @@ This is testable. A grouping earns a Base when all three hold:
 2. **Every Base element is honorable by every Type and every Provider Class beneath it.** This is
    how `Compute` failed: `Container` inherited `guest_os`, which no container provider can honor.
    The Liskov gate (`LSK-001`, `tests/check_class_liskov.py`) enforces the half of this that is
-   decidable — a descendant may add or refine, and may never contradict or drop what its
-   ancestors declared — and the class schema offers no way to exclude an inherited element, so
-   the other half holds by construction.
+   decidable: a descendant may add or refine, and may never contradict or drop what its
+   ancestors declared. The class schema offers no way to exclude an inherited element, so the
+   other half holds by construction.
 3. **An offering declared at any tier accepts orders at every tier above it.** A provider that
    declares `Machine.VM.OCPVirt` satisfies `Machine.VM` and bare `Machine`. Policy-fill
    (DCM ADR-024) completes the blanks a Base-level order leaves. This is what makes "every Class is
@@ -78,10 +78,10 @@ Two systems share the registry and are kept apart on purpose (ADR-082):
   no digest change, no record touched.
 
 The former folder Bases (`Hardware`, `Network`, `Storage`, `Security`, `Software`, `Data`,
-`Facility`, `Observability`) mixed the two systems: a folder was a Base that could not pass the Base
+`Facility`, `Observability`) mixed the two systems. A folder was a Base that could not pass the Base
 test, and every member carried a name that promised a family contract the folder could not honour.
 They dissolve into group terms. Each former member becomes a Base in its own right if it passes
-CLS-002, or is re-homed under a Base that does; `Hardware` is a group, not a Base, because it
+CLS-002, or is re-homed under a Base that does. `Hardware` is a group, not a Base, because it
 represents no portable data — `device_class` is a discriminator, not a deliverable.
 
 **On disk** (ADR-061 kept): a class's directory is named for the class. Git has no hard links, so a
@@ -142,8 +142,8 @@ Three words name three different things:
 - A provider's **offer** (its *catalog item*) is not prose beside the class. It
   is declared on the Provider Class: what the provider **requires** to realize a request is an element it
   adds with `optional: false`; what it **supports**, the values and ranges on offer, is `supports` on the
-  element. `schema` says what is valid and stays portable; `supports` says what is offered here, may
-  narrow the schema and never exceeds it, and a child's clauses sit inside its parent's (`LSK-001`).
+  element. `schema` says what is valid and stays portable. `supports` says what is offered here; it
+  may narrow the schema and never exceeds it. A child's clauses sit inside its parent's (`LSK-001`).
 - A **request** is the offer with its ranges collapsed: each range becomes one selected value, or
   nothing where the element is optional. Layers and policy perform the collapse until every range is a
   value, which is what makes placement eligibility computable: a provider is eligible exactly when every
@@ -187,11 +187,11 @@ the tier an element sits at is that classification seen structurally:
 | `provider_specific` | Provider Class element | using it binds the request to that provider; marked `portability_breaking` |
 | `exclusive` | Provider Class element | one provider is the only implementor of the technology; declared, not inferred |
 
-Five requirements hold regardless of tier: a `universal` element MUST be supported by every provider
-implementing the class; a `provider_specific` element MUST be marked `portability_breaking`; a consumer
-MUST be warned when a request carries one; `exclusive` is the only sanctioned exception to vendor
-neutrality, declared in the registry; and a class that carries a provider_specific element as universal
-is invalid. The classification rides each element's `portability` block in the flat spec
+Five requirements hold regardless of tier. A `universal` element MUST be supported by every provider
+implementing the class. A `provider_specific` element MUST be marked `portability_breaking`, and a
+consumer MUST be warned when a request carries one. `exclusive` is the only sanctioned exception to
+vendor neutrality, declared in the registry. A class that carries a provider_specific element as
+universal is invalid. The classification rides each element's `portability` block in the flat spec
 (`registry/resource-type-spec.schema.json`). The tree names and validates. The portability of a given
 *request* is computed from the classification and what providers advertise (ADR-PROV-002), never from
 the tree alone.
@@ -201,7 +201,7 @@ the tree alone.
 | Rule | Statement |
 |---|---|
 | `CLS-001` | **Three tiers, keyed to the declaration.** `class` states the tier; `parent` derives it: a Base has no parent, a Type's parent is a Base, a Provider Class's parent is a Type. The name renders the ancestry — one segment per tier, `Base.Type.Provider` — and MUST agree with it; the name never defines the tier. Each tier extends the one above by add or refine, never contradict (`LSK-001`). Depth is three; the `resource_type` pattern is the cap. |
-| `CLS-002` | **A Base Class is a deliverable that any member can realize.** A grouping earns a Base only when (a) an existing, widely used API already abstracts over its members, (b) every Base element is honorable by every descendant, and (c) an offering declared at any tier accepts orders at every tier above it. A grouping that fails (a) is a folder (`CLS-003`). |
+| `CLS-002` | **A Base Class is a deliverable that any member can realize.** A grouping earns a Base only when all three hold. (a) An existing, widely used API already abstracts over its members. (b) Every Base element is honorable by every descendant. (c) An offering declared at any tier accepts orders at every tier above it. A grouping that fails (a) is a folder (`CLS-003`). |
 | `CLS-003` | **A grouping that fails the Base test is a usage group, not a class.** Nothing is filed as a Base to be found; it is filed under a term of the usage-group vocabulary (`CLS-010`). A member of a former folder becomes a Base in its own right when it passes `CLS-002`, else is re-homed under a Base that does. An `instantiable: false` Base was tolerated only while its dissolution was in progress (ADR-082); none remains: the Access family gained its group level in row 089. |
 | `CLS-004` | **The Type tier is spent on one axis per family.** The second segment narrows by form or by dialect, whichever carries the definition structure. Form and dialect MUST NOT both appear as Types under one Base. |
 | `CLS-005` | **A Provider Class exists only for provider_specific data.** A provider needing nothing beyond the Type binds at the Type. Two deployments with the same data are instances on the authority axis. An offering that requires consumer-supplied data the Type lacks MUST declare a Provider Class carrying it as elements, never as an opaque blob. |

@@ -21,7 +21,7 @@ UDLM establishes a **unified, versioned, declarative single source of truth** fo
 
 ## 2. The Data Model as Inter-Component Contract
 
-The data model is not owned by any single component — it is the **contract between all of them**. Every component of an implementation acts on the data in some well-defined way (assembling a request payload, evaluating policy, provisioning via a provider, recording audit at each state transition, comparing states for drift, attributing cost, discovering current state, gating access, exposing a catalog), and even components that never talk directly are coupled through the shared data model. This is what lets each component be built, tested, and evolved independently.
+The data model is not owned by any single component — it is the **contract between all of them**. Every component of an implementation acts on the data in some well-defined way. One assembles a request payload; others evaluate policy, provision via a provider, record audit at each state transition, compare states for drift, attribute cost, discover current state, gate access, or expose a catalog. Even components that never talk directly are coupled through the shared data model. This is what lets each component be built, tested, and evolved independently.
 
 *How a specific implementation's components consume the data model — the component roster and each one's read/write relationship to the data — is implementation architecture, not part of the data model. See control-plane architecture documentation for that mapping.*
 
@@ -29,7 +29,7 @@ The data model is not owned by any single component — it is the **contract bet
 
 ## 3. Universal Identity (why it matters)
 
-Every data object in UDLM is identified by a **UUID**, and that single decision is what makes the rest of the model work: unambiguous reference across every component, policy, and layer; provenance anchoring (each recorded change references the UUID of the entity that caused it); dependency mapping by reference rather than by name; audit fidelity across renames; and correlation of the same resource across the Intent, Requested, Realized, and Discovered states. Because identity is the anchor for provenance and cross-state correlation, it cannot be optional.
+Every data object in UDLM is identified by a **UUID**. That single decision is what makes the rest of the model work. It gives unambiguous reference across every component, policy, and layer. It anchors provenance: each recorded change references the UUID of the entity that caused it. It lets dependencies map by reference rather than by name, keeps audit fidelity across renames, and correlates the same resource across the Intent, Requested, Realized, and Discovered states. Because identity is the anchor for provenance and cross-state correlation, it cannot be optional.
 
 The **normative** identifier rules — UUID required on every entity, the allowed UUID versions and reject-at-ingest behavior, handle syntax, and reference resolution — are defined in [identifier-scheme.md](../contracts/identifier-scheme.md) and [data-model-core](data-model-core.md). This section is the motivation; those specs bind.
 
@@ -74,14 +74,16 @@ Without field-level provenance, it is impossible to determine after the fact whe
 What is **normative** is that a field's evolution is *reconstructable*: for any field, who/what/why/when set each value can be recovered from stored facts. Provenance is a structural property of the data, not a side log to be reconciled after the fact. This ensures that:
 
 - Any consumer of the data can recover its lineage without querying a separate system
+
 - Provenance survives data export, migration, and portability scenarios
+
 - The audit capability reads lineage that was recorded at the point of change, not reconstructed from logs
 
 **Where** provenance is stored is an implementation choice, with one ruled home (ADR-059): the
 modification history lives in the **audit/OL record family** — sealed, chained, in-model — while
 the working record carries state claims only. "Without querying a separate system" reads as
 *without leaving the model*: the audit records are a UDLM record family, so lineage stays
-recoverable from stored model facts; it is housed in the family whose job is history, not
+recoverable from stored model facts. It is housed in the family whose job is history, not
 inline with the working data. `layering-and-versioning.md` §3a's tiered storage models and
 LAY-008's full-reconstruction guarantee apply to that family. The obligation is
 reconstructability; inline co-location is not required — and for the working record, not
@@ -108,7 +110,7 @@ shape.
 
 ### 4.5 The Provenance Obligation
 
-Provenance recording is a **data-model obligation, not optional**: any entity that creates or modifies a field value records, alongside that value, the source UUID and source type that produced it, the timestamp, and — for modifications — the operation type and reason (the schema shape §4.4 points at). A process that modifies data without recording this violates the data-model contract.
+Provenance recording is a **data-model obligation, not optional**. Any entity that creates or modifies a field value records, alongside that value, the source UUID and source type that produced it and the timestamp. For modifications it also records the operation type and reason (the schema shape §4.4 points at). A process that modifies data without recording this violates the data-model contract.
 
 This obligation is stated **normatively**, together with the assembly and storage models that satisfy it (LAY-00x / OPS-00x), in [layering-and-versioning.md](layering-and-versioning.md) — the layering/assembly spec. This section summarizes why it matters; that spec binds.
 
@@ -119,8 +121,11 @@ This obligation is stated **normatively**, together with the assembly and storag
 An implementation's audit capability reads provenance data that is intrinsic to every data object. This means:
 
 - Audit does not reconstruct history from logs — it reads lineage that was recorded at the point of change
+
 - Any data object can be audited at any time, in any state, by any authorized persona
+
 - The audit trail is as durable and immutable as the data itself
+
 - Compliance evidence is produced from the data, not from a separate audit system that could diverge from the data
 
 ---
@@ -134,8 +139,11 @@ UDLM is governed by three foundational constraints that apply universally and wi
 Data in the model describes **what something is or should be**, not how to achieve it. Every entity in the data model is a complete, self-describing statement of state. The procedures required to achieve that state are the concern of the Service Provider, not the data model.
 
 This means:
+
 - A resource definition declares its desired configuration, not the steps to configure it
+
 - A policy declares its conditions and outcomes, not its execution logic
+
 - A layer declares its overrides, not the merge algorithm used to apply them
 
 ### 5.2 Idempotent in Operation
@@ -143,9 +151,13 @@ This means:
 Applying the same data to the same system multiple times must always produce the same result. No operation on the model's data should have different outcomes based on how many times it has been applied.
 
 This is critical for:
+
 - **Drift reconciliation** — reapplying desired state to a drifted resource must produce correct results
+
 - **DC rehydration** — replaying the full set of declared states must reconstruct the environment correctly
+
 - **Retry scenarios** — failed operations can be safely retried without risk of inconsistent state
+
 - **Audit and compliance** — the same data, applied by anyone at any time, produces the same verifiable outcome
 
 ### 5.3 Immutable if Versioned
@@ -153,10 +165,15 @@ This is critical for:
 Once a version of any entity is published, it cannot be modified. If a change is required, a new version must be created. The previous version remains intact and accessible.
 
 This constraint is what makes the following capabilities trustworthy:
+
 - **Audit trails** — every state at every point in time is preserved and verifiable
+
 - **Drift detection** — comparison between states is meaningful because neither state can change retroactively
+
 - **Intent portability** — a previously declared intent can be replayed against **current** tenancy/sovereignty/authorization policies while the **original intent record stays immutable**; only resource-*configuration* policy MAY optionally be pinned to a historical version. This is the rehydration invariant RHY-001 — the intent record is historical, the governing policies are current-by-default (see [four-states.md](four-states.md) §5)
+
 - **Rollback** — reverting to a previous version is always possible because previous versions are never destroyed
+
 - **Chain of trust** — the provenance of any configuration can be traced through an unbroken chain of immutable versions
 
 ---
@@ -204,8 +221,11 @@ The four states, their definitions, storage contracts, and the operations across
 The data model defines the boundary between an implementation and its providers. The implementation is explicitly **not concerned with how a provider accomplishes its work** — only with the data that crosses the boundary in both directions. This is a data-model property:
 
 - Providers are interchangeable as long as they honor the data contract
+
 - New providers can be added without changing the core data model
+
 - Provider implementation can evolve independently of the implementation
+
 - The contract is enforced at the data level — conformant data in, conformant data out
 
 This separation of concerns is what makes an implementation technology-agnostic while maintaining a consistent and trustworthy data model across all providers.
@@ -231,8 +251,8 @@ and they compound:
    be asserting authority over behavior it does not, and cannot, fully see.
 
 **The corollary — this is UDLM's actual job.** Because the substrate does *not* translate, its contribution
-is to be a **consistent, unambiguous, well-documented** expression of intent and realized state, so the
-provider has the **context it needs** to translate correctly and safely into its native form. This is why the
+is to be a **consistent, unambiguous, well-documented** expression of intent and realized state. That gives
+the provider the **context it needs** to translate correctly and safely into its native form. This is why the
 model's discipline is not housekeeping: **one home per rule, settled vocabulary, no duplicated data, written
 for engineers** — each is what makes the substrate a reliable, legible source of context that every provider
 naturalizes *from*. A vague or drifting substrate hands providers ambiguous intent; a rigorous one hands them
@@ -240,7 +260,7 @@ ground truth.
 
 **Caveat — carrying provider_specific data is not translating it.** Declining to *translate* is not the same as
 declining to *carry* provider_specific data. The substrate holds such data as a **Provider Class element** — a
-provider-authored `SharedDataElement` scoped to that provider (ADR-038): the provider owns its definition, and
+provider-authored `SharedDataElement` scoped to that provider (ADR-038). The provider owns its definition;
 UDLM **custodies** it like any other state (identity, provenance, versioning, tenancy) and passes it to the
 provider to apply. What UDLM never does is render it into a native spec — naturalization stays at the provider
 edge (DCM ADR-023). Because provider-scoped data does not carry to another provider, an entity that depends on it is
@@ -263,10 +283,15 @@ not here.
 ## 9. Related Concepts
 
 - **Sovereign Execution Posture** — the target end state the data model enables by providing a verified, auditable chain of custody through the full resource lifecycle
+
 - **CMDB Replacement** — the control plane's four-state model is intended to replace the fragmented multi-CMDB problem by becoming the singular resource domain
+
 - **GitOps** — an ingress/carrier profile: consumers who prefer PR-based workflows can submit intent via Git; at the `homelab` profile git is itself a conforming State-Store carrier. Store bindings are contract-based per profile + sovereignty policy ([data-model-core](data-model-core.md) §6, ruling D1)
+
 - **Data Lineage** — the chain of custody of a field value from origin through every modification; defined canonically with field-level provenance in [layering-and-versioning.md](layering-and-versioning.md) (see [GLOSSARY](../../../GLOSSARY.md) and §4 here for the summary)
+
 - **Field-Level Provenance** — the structural mechanism by which data lineage is captured and carried; defined canonically in [layering-and-versioning.md](layering-and-versioning.md) (§4 here summarizes it)
+
 - **UUID** — the universal identity mechanism that makes provenance references, dependency mapping, and cross-state correlation unambiguous and durable; defined normatively in [identifier-scheme.md](../contracts/identifier-scheme.md)
 
 ---

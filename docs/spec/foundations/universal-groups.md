@@ -18,9 +18,13 @@
 The **Universal Group Model** expresses every grouping need — tenancy, resource groups, policy groups and profiles, layer domains, activation scopes, cross-tenant authorization — as a single `grouping` entity distinguished by the grouping record kind metadata. One mental model. One API. One registry. The same UUID, versioning, lifecycle, policy targeting, and audit trail apply to every group regardless of its class, and a natural organizational structure ("everything related to Payments") is one construct, not eight.
 
 **The model:**
+
 - Every grouping construct is one `Grouping` record; per-class APIs are class-filtered views of the one group store
+
 - Structural invariants are per-class (one Tenant per resource, no constituent cross-tenant, etc.)
+
 - Policy enforcement is governed by the active Profile, not per-group configuration
+
 - `tenant_boundary` groups carry the hard-tenancy isolation guarantees
 
 ---
@@ -317,8 +321,11 @@ corporate_tenant (tenant_boundary)
 ### 4.2 Structural Invariants for Nested Tenants
 
 - A resource belongs to the **leaf** tenant_boundary group — never the parent (GRP-INV-004)
+
 - Parent Tenant has **governance overlay** — not ownership
+
 - Parent Tenant destruction requires all child Tenants to be resolved first (GRP-INV-003)
+
 - Constituent relationships cannot cross any tenant_boundary boundary — including parent-child (GRP-INV-002)
 
 ### 4.3 Policy Inheritance Direction
@@ -345,8 +352,11 @@ nested_tenant_config:
 ### 4.4 Nested Tenant Use Cases
 
 - **Enterprise structure:** Corporate → Business Unit → Team Tenants
+
 - **Multi-region deployment:** Global Tenant → Regional Tenants → Zone Tenants
+
 - **Multi-tier compliance:** Organization Tenant → PCI-scope Tenant → Payment-processing Tenant
+
 - **Partner/customer isolation:** Platform Tenant → Customer A Tenant → Customer B Tenant
 
 ---
@@ -364,8 +374,11 @@ A **Federated Tenant** structure is a `federation` group containing multiple ind
 ### 5.2 Federation Capabilities
 
 - **Shared policy application:** `policy_collection` groups included in the federation apply to all member Tenants (per `shared_policy_inheritance` setting)
+
 - **Cross-member visibility:** federation members can declare mutual `cross_tenant_authorization` scoped to federation membership — without requiring separate bilateral authorizations
+
 - **Consolidated reporting:** cost, audit, and observability queries scoped to the federation group return aggregated results across all member Tenants
+
 - **Federation-level governance:** policies targeting the federation group apply to all member Tenants
 
 ### 5.3 Federation vs Nesting
@@ -488,11 +501,17 @@ policy:
 Tenant decommission is the highest-stakes lifecycle operation in the control plane. It requires mandatory pre-decommission validation and follows a staged sequence.
 
 **Phase 1 — Pre-decommission validation (blocking):**
+
 - All resources in decommissionable state (not PROVISIONING or active incidents)
+
 - Cross-tenant operational relationships accounted for (consuming Tenants notified)
+
 - Allocated resources claimed by other Tenants addressed (returned or migrated)
+
 - Active rehydration leases released
+
 - Compliance holds reviewed (HIPAA/PCI records may need archival)
+
 - Child tenant_boundary groups resolved first (GRP-INV-003)
 
 **Phase 2 — Resource decommission (per lifecycle policy):**
@@ -530,12 +549,11 @@ member:
 ```
 
 Membership expiry produces a `MEMBERSHIP_EXPIRE` audit record (event
-`group.membership_expired` — [event catalog](../contracts/event-catalog.md)) with
-`reason: membership_ttl_expired`. `MEMBER_REMOVE` is emitted **only** when a member is
-actually removed — i.e. the `remove` on_expiry action additionally produces a
-`MEMBER_REMOVE` record; `notify` and `suspend_member` emit the expire event alone (the
-membership persists with `membership_status: expired` / the member is suspended, nothing is
-removed).
+`group.membership_expired` — [event catalog](../contracts/event-catalog.md)) with `reason:
+membership_ttl_expired`. `MEMBER_REMOVE` is emitted **only** when a member is actually
+removed — i.e. the `remove` on_expiry action additionally produces a `MEMBER_REMOVE`
+record. `notify` and `suspend_member` emit the expire event alone: the membership persists
+with `membership_status: expired`, or the member is suspended, and nothing is removed.
 
 ### 9a.5 Group Policy Inheritance — Nested Groups (Q39)
 
@@ -566,7 +584,7 @@ dcm_group:
 | Policy | Rule |
 |--------|------|
 | `GRP-011` | The record kind set is closed — system behavior is tied to declared classes only. group_subclass is open and advisory. The control plane maintains a community subclass catalog as a non-authoritative reference. No validation or enforcement on subclass values. |
-| `GRP-012` | Sovereignty interaction is record kind-specific. tenant_boundary groups never span sovereignty boundaries (structural). resource_grouping groups may span sovereignty boundaries by default — policy may restrict for classified resources. policy_collection and layer_grouping groups always permitted cross-sovereignty. composite groups are governed by the sovereignty rules of their most restrictive member type. |
+| `GRP-012` | Sovereignty interaction is record kind-specific. Groups of kind tenant_boundary never span sovereignty boundaries (structural). Groups of kind resource_grouping may span sovereignty boundaries by default — policy may restrict for classified resources. Groups of kind policy_collection and layer_grouping are always permitted cross-sovereignty. Composite groups are governed by the sovereignty rules of their most restrictive member type. |
 | `GRP-013` | Tenant decommission requires pre-decommission validation (resource state, cross-tenant relationships, compliance holds, child group resolution). Resources follow declared lifecycle policy. Child tenant_boundary groups must be resolved before parent decommission. Audit records enter post-lifecycle retention — never destroyed as part of Tenant decommission. |
 | `GRP-014` | Group memberships support time-bounded validity via valid_from and expires_at. Membership expiry is enforced by the Lifecycle Constraint Enforcer. Expiry produces a MEMBERSHIP_EXPIRE audit record (event group.membership_expired); MEMBER_REMOVE is additionally produced only by the `remove` on_expiry action, when the member is actually removed. on_expiry action (remove, notify, suspend_member) declared per membership. Default: notify. |
 | `GRP-015` | Group policy inheritance is record kind-specific and profile-governed. tenant_boundary: opt_out (standard/prod) or opt_in (homelab/dev/fsi/sovereign). federation: always opt_in — peer consent required. composite: opt_out by default. resource_grouping and policy_collection: not applicable. |
@@ -574,9 +592,13 @@ dcm_group:
 ## 11. Related Concepts
 
 - **[resource-grouping.md](resource-grouping.md)** — original resource grouping model, now implemented via `resource_type: Grouping`
+
 - **Policy Organization** (now the policy-contract / policy-groups model) — Policy Groups and Profiles, now implemented via `record kind: policy_collection` and `record_type: profile`
+
 - **[entity-relationships.md](entity-relationships.md)** — cross-tenant authorized relationships between groups
+
 - **[universal-audit.md](../contracts/universal-audit.md)** — all group changes produce audit records
+
 - **[ingestion-model.md](../lifecycle/ingestion-model.md)** — migration of existing constructs to universal groups
 
 ---
@@ -671,7 +693,7 @@ Authorization revoked (by granting Tenant admin, platform admin, or expiry)
 | `CTX-002` | Cross-tenant authorization revocation places all active dependent entities in PENDING_REVIEW. Revocation does not immediately release allocations. |
 | `CTX-003` | Cross-tenant authorization expiry is treated identically to explicit revocation. |
 | `CTX-004` | Platform Admin may create cross-tenant authorizations on behalf of any Tenant. All platform-managed authorizations carry a platform_managed flag and are visible in the platform admin audit log. |
-| `CTX-005` | The **required-grant set** for a request or catalog offering is DERIVED from its edge graph — each cross-tenant edge resolved to its target's owning Tenant and diffed against the requesting Tenant's active authorizations — and surfaced to the requesting Tenant **before admission**. A cross-tenant relationship whose authorization is missing is refused at request validation, never first discovered at dispatch. The set is computed, never stored (DRV-001). |
+| `CTX-005` | The **required-grant set** for a request or catalog offering is DERIVED from its edge graph: each cross-tenant edge is resolved to its target's owning Tenant and diffed against the requesting Tenant's active authorizations. The set is surfaced to the requesting Tenant **before admission**. A cross-tenant relationship whose authorization is missing is refused at request validation, never first discovered at dispatch. The set is computed, never stored (DRV-001). |
 | `CTX-006` | **Structural release.** The existence of a cross-tenant edge, its relation and nature, its target's owning authority and resource type, and the grant's status are releasable to the requesting Tenant. The target's spec, configuration, and realized outputs are NOT. A tenant boundary governs what a subject may *do*, not what a subject may *know*; a profile may narrow what is released but may not withhold the existence of a required grant. |
 | `CTX-007` | A cross-tenant act is audited to **both** the granting and the receiving Tenant. A `platform_managed` authorization (CTX-004) is visible to the Tenant on whose behalf it was created, not only to the platform administrator — a grant made in a Tenant's name is auditable by that Tenant. |
 | `CTX-009` | A grant ends by criteria it states, never by omission. `expires_at` is required. `ends_when` may add criteria (`bound`, `uses`, `quota`, `time`), each with a score, and a threshold: the grant ends when the scores of the criteria that hold reach the threshold. A negative score is an exception that keeps the grant alive. The list order breaks ties. Use counts are derived from the relationships formed under the grant, not stored. Ending follows CTX-002. There is no auto-renew: a renewal is a new grant. (#406) |

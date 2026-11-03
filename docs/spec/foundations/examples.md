@@ -143,11 +143,17 @@ spec:
 ```
 
 **Pre-assembly checks (substrate vocabulary):**
+
 - Policy pre-validation: no Validation Policy violations detected (4 CPU is within AppTeam's quota)
+
 - Cost estimation: ~$0.32/hour based on current provider rates
+
 - Dependency check: no dependencies declared — clean
+
 - Sovereignty check: AppTeam's Tenant has `data_residency: EU-WEST` — placement must honor this
+
 - Authorization check: actor b2c3d4e5 has `request:compute:vm` permission in AppTeam Tenant
+
 - Auto-approve evaluation: meets all auto-approve criteria → intent transitions toward Requested
 
 ### 3.2 Assembly Produces Requested State
@@ -226,11 +232,17 @@ monitoring_endpoint:
 ```
 
 **Placement selects provider (substrate vocabulary):**
+
 - Sovereignty pre-filter: eligible providers must satisfy `data_residency: EU-WEST`
+
 - Reserve query to 3 eligible OpenStack instances
+
 - EU-WEST-Prod-1 responds: capacity available, confidence 94
+
 - EU-WEST-Prod-2 responds: capacity available, confidence 87
+
 - EU-WEST-Prod-3: insufficient capacity
+
 - Tie-breaking: EU-WEST-Prod-1 selected (highest confidence score)
 
 **Requested State committed:**

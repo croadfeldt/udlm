@@ -16,11 +16,10 @@ result; they are not layers** (§1b). This is how many small, reusable definitio
 one complete, provider-ready, fully-attributed payload without anyone hand-writing the whole
 thing.
 
-**Background — read first** (skip if you have it):
-[four-states.md](four-states.md) — Requested is the assembled, pre-realization record the merge
-produces · [foundations.md](foundations.md) — the Data·Provider·Policy triad this document's
-mechanism sits inside (this is the Data abstraction) ·
-[policy-contract.md](../contracts/policy-contract.md) — what the policies applied over the
+**Background — read first** (skip if you have it). [four-states.md](four-states.md): Requested is
+the assembled, pre-realization record the merge produces. Next, [foundations.md](foundations.md):
+the Data·Provider·Policy triad this document's mechanism sits inside (this is the Data abstraction).
+Last, [policy-contract.md](../contracts/policy-contract.md): what the policies applied over the
 merge may do.
 
 → **§1a** shows the whole mechanism on one field (the fastest way in); **§6** is the
@@ -42,7 +41,9 @@ Before the full contract, here is the whole mechanism on a single field. A VM re
 | ⟂ | Policy (applied over the merged result) | policy owners | compliance validation passes | `90` — **provenance: Request; constrained by Core** |
 
 Two edges the same rules produce:
+
 - Consumer requests `10` → **rejected** at assembly Step 3: below the Core `constrained` floor of `30` (`LAY-005`).
+
 - On the `sovereign` profile a compliance-class Validation Policy sets `disk_encryption: true` as `immutable` at runtime → a consumer `false` is **overridden**, not merged — compliance-class policy overrides everything, including consumer input (§3.6, `LAY-005`).
 
 **The precedence chain, and the rule that governs each step:**
@@ -70,11 +71,17 @@ A layer answers **"what values should these fields have?"** — passive, declara
 priority order, first. (The full definition is §2.)
 
 **What belongs in a layer:**
+
 - Infrastructure defaults (DNS servers, NTP servers, MTU values)
+
 - Organizational context (data center location, rack assignment, environment tier)
+
 - Service-specific configuration defaults (VM sizing defaults, storage class preferences)
+
 - Compliance metadata (data classification labels, retention tags, jurisdiction markers)
+
 - Provider-specific configuration (provider default settings, tooling parameters)
+
 - Business context (cost center defaults, environment labels, team tags)
 
 ### Policies Are Logic
@@ -84,11 +91,17 @@ A policy answers **"given this data, is it valid? what should change? should thi
 result, validates, transforms, injects derived values, and gates. Policies come after layers.
 
 **What belongs in a policy:**
+
 - Validation rules ("this field must be present and within these bounds")
+
 - Compliance enforcement ("all resources must have a classification label")
+
 - Derived value injection ("inject cost center from OIDC claims")
+
 - Placement constraints ("must be in EU sovereignty zone")
+
 - Approval gates ("resources above X size require manager approval")
+
 - Security enforcement ("encryption must be enabled — if not, enable it or reject")
 
 ### The Flow Is Strictly Unidirectional
@@ -105,12 +118,12 @@ Policies cannot set static configuration — that is a layer's job. A policy tha
 
 Layers cannot enforce rules — that is a policy's job. A layer that contains conditional logic or rule evaluation is being misused — that logic belongs in a policy.
 
-**The provider-required-input case** (the rule applied): inputs a provider requires but intent
-does not carry are resolved by a **post-placement transformation policy** reading governed data —
-a tenant or platform layer, or a governed mapping keyed by provider and resource type. The layer
-holds the values; the policy selects for the chosen provider and injects into the provider's
-Provider-Class `SharedDataElement` (ADR-038). One generic policy scales by data, not by rules; a
-missing mapping **gates prescriptively** at reserve with a named reason; and a coverage check at
+**The provider-required-input case** (the rule applied): inputs a provider requires but intent does
+not carry are resolved by a **post-placement transformation policy** reading governed data. That
+data is a tenant or platform layer, or a governed mapping keyed by provider and resource type. The
+layer holds the values; the policy selects for the chosen provider and injects into the provider's
+Provider-Class `SharedDataElement` (ADR-038). One generic policy scales by data, not by rules. A
+missing mapping **gates prescriptively** at reserve with a named reason. A coverage check at
 provider registration asserts every provider-required field has a fill path — the gap surfaces at
 config time, never on a user's request. There is no self-selecting-data primitive.
 
@@ -127,12 +140,19 @@ config time, never on a user's request. There is no self-selecting-data primitiv
 A Layer is a **declarative, immutable, versioned unit of data** that contributes some or all of its fields to a merged payload. Layers do not execute — they declare. The assembly process is what merges them.
 
 Every layer:
+
 - Has a **UUID** that uniquely identifies it
+
 - Has a **version** following the universal Major.Minor.Revision scheme
+
 - Is **immutable once published** — changes produce a new version
+
 - Carries a **reference to its parent entity** (UUID and version)
+
 - Has an **origination timestamp**
+
 - Can be **deprecated** following the universal deprecation model
+
 - Contributes **provenance metadata** for every field it sets — any field set by a layer records that layer's UUID as its source
 
 Layers are stored in Git following GitOps practices. They are the configuration source of truth — not the assembled payload.
@@ -167,9 +187,13 @@ The control plane defines six layer types. Each has a distinct purpose, scope, o
 **Ownership:** the control-plane platform or platform implementor.
 
 **Characteristics:**
+
 - Every layer chain must begin with a Base Layer
+
 - Base Layers contain only universal fields — no provider_specific data
+
 - A Base Layer for a typed resource must conform to the Resource Type Specification's universal field requirements
+
 - Multiple Base Layers can exist for the same context — the applicable one is selected based on the request context
 
 **Examples:**
@@ -188,10 +212,15 @@ The control plane defines six layer types. Each has a distinct purpose, scope, o
 **Ownership:** the control-plane platform, infrastructure teams, or platform implementors.
 
 **Characteristics:**
+
 - Applied to every request regardless of resource type
+
 - Cannot contain service-specific or provider_specific data
+
 - Carry location, organizational, and infrastructure context
+
 - Stored in the Core Layer Store
+
 - Cached in the Service Layer Cache at deployment time
 
 **Examples:**
@@ -218,9 +247,13 @@ The control plane defines six layer types. Each has a distinct purpose, scope, o
 **Ownership:** Organizational teams, domain owners, platform implementors.
 
 **Characteristics:**
+
 - Stack between Core Layers and Service Layers in the precedence chain
+
 - Encode organizational structure (business unit, enclave, logical unit)
+
 - Allow organizational customization without modifying base standards
+
 - The Git repo hierarchy typically mirrors the intermediate layer hierarchy
 
 **Examples:**
@@ -251,16 +284,25 @@ type_scope:
 **Ownership:** Service Providers or service domain teams. Stored in Service Layer SCM (source control management). Registered with the control plane as part of Service Provider registration.
 
 **Characteristics:**
+
 - Only applied when the request resource type matches the layer's declared type scope
+
 - Carry service-specific configuration, defaults, and constraints
+
 - Must not contain provider_specific data unless marked as portability-breaking
+
 - Cached in the Service Layer Cache at Service Provider registration time
 
 **Examples:**
+
 - VM sizing layer (small, medium, large configurations for `Machine.VM`)
+
 - Web server configuration layer for `Machine.VM`
+
 - Network port configuration layer for `NetworkInterface`
+
 - CL Web Service Data Layer for `Machine.VM` (exact scope)
+
 - General compute placement layer for `Machine.VM` and descendants
 
 ---
@@ -274,11 +316,17 @@ type_scope:
 **Ownership:** Consumer (via Web UI or Consumer API).
 
 **Characteristics:**
+
 - Created at the time the consumer submits a request
+
 - Contains only what the consumer explicitly declares — it does not need to be complete
+
 - The gap between what the consumer declares and what the provider needs is filled by the lower layers in the chain
+
 - Has higher precedence than all data layers below it — consumer-declared values override layer defaults
+
 - Is the direct source of the **Intent State** — the Request Layer as submitted by the consumer is stored in the Intent Store before any processing occurs
+
 - After assembly and policy processing, the enriched payload becomes the **Requested State**
 
 **Examples:**
@@ -304,10 +352,15 @@ type_scope:
 | **Validation Policy (compliance-class)** | Highest authority. Can override any field regardless of what was declared in lower layers or the Request Layer. Can halt execution entirely. Used for sovereignty constraints, security mandates, and hard compliance rules. | Overrides everything — including consumer input |
 
 **Characteristics:**
+
 - Policies operate only on the policy definition, core data, and the data in the request payload
+
 - Policy outcomes are deterministic — same input always produces same output for a given policy version
+
 - All policy modifications are recorded in field-level provenance with policy UUID, operation type, and reason
+
 - Policies are versioned using the universal versioning scheme
+
 - Policies are maintained via GitOps practices
 
 ---
@@ -315,18 +368,22 @@ type_scope:
 ### 3.7 Reference Data Layers
 
 **All of the control plane's data — including Resource Type Specifications — is built on the same
-layer model.** A Resource Type Specification is itself a data layer artifact: versioned,
-owned by a declared Resource Type Authority, stored in GitOps, subject to the standard
-lifecycle, and subject to the same domain-based access control as all other layers. The
-only distinction is that Resource Type Specifications live in the Resource Type Registry
-(which is itself a specialized layer store) rather than the Core Layer Store.
+layer model.** A Resource Type Specification is itself a data layer artifact. It is versioned, owned
+by a declared Resource Type Authority, stored in GitOps, subject to the standard lifecycle, and
+subject to the same domain-based access control as all other layers. The only distinction is that
+Resource Type Specifications live in the Resource Type Registry (which is itself a specialized layer
+store) rather than the Core Layer Store.
 
 This unified model means:
+
 - The same governance tooling manages resource type definitions, reference data, and
   service configuration
+
 - The same lifecycle (developing → proposed → active → deprecated → retired) applies
   to all three
+
 - The same ownership declarations, the same GitOps workflow, the same authority tiers
+
 - Provider extension layers (domain: `provider`) extend resource types for a specific
   catalog item without modifying the Resource Type Specification itself — they are
   injected during payload assembly only when that catalog item is selected
@@ -355,21 +412,28 @@ for a field constraint.
 | `gpu_profile` | Platform Team | Approved GPU configurations |
 
 **Characteristics:**
+
 - Same lifecycle as all other layers: `developing → proposed → active → deprecated → retired`
+
 - Same governance: GitOps workflow, owned by declared authority, approved by designated tier
+
 - Same versioning: `Major.Minor.Revision` — breaking changes require a major bump
+
 - Same security: domain-based access control, same policy enforcement
+
 - **Not merged into the request payload directly** — they are resolved at catalog render time
   to produce the field constraint `allowed_values` list
+
 - **Their structured data IS injected** when a consumer selects a value: selecting a
   location layer injects all location context; selecting an OS image layer injects
   image UUID, SHA, version, and EOL date into the payload
 
-**Adding a new allowed value** for any layer-referenced field means adding a new
-Reference Data Layer instance of the appropriate type. No changes to the Resource Type
-Specification, the catalog item, or any policy. Catalog items reference the layer type by **named head**, so the new value becomes available to every
-referencing catalog item when its named-head resolution next runs — the same dual-anchor model (pin or named
-head) the class documents use (DCM ADR-012 dual anchor / ADR-054 references-context).
+**Adding a new allowed value** for any layer-referenced field means adding a new Reference Data
+Layer instance of the appropriate type. No changes to the Resource Type Specification, the catalog
+item, or any policy. Catalog items reference the layer type by **named head**, so the new value
+becomes available to every referencing catalog item when its named-head resolution next runs. This
+is the same dual-anchor model (pin or named head) the class documents use (DCM ADR-012 dual anchor /
+ADR-054 references-context).
 
 **Retiring an allowed value** means retiring the Reference Data Layer instance.
 Existing resources that used that value are unaffected. Future requests cannot
@@ -448,9 +512,10 @@ computes the match (the acting side).
 
 - **Target (the layer publishes):** `covers` — ONE URF filter (identifier-scheme §9;
   e.g. `estate?resource_type==Machine.*` or `estate?labels.concern==payments`) naming which
-  resources the layer *may* inject into; and
+  resources the layer *may* inject into. Then
   `applies_on` — the convergence scenario(s) it injects during, named by ADR-030's vocabulary
   (`realize` · `reconcile` · `reconfigure` · `rehydrate` · `decommission`; absent = every scenario).
+
 - **Source (the request/policy layer subscribes):** `from_layers` — an **optional override**, a URF
   filter selecting which layers feed *this* request; and `skip` — the governed negative form, the
   same grammar.
@@ -464,7 +529,7 @@ authority-qualified. When both are present they must agree (`covers` matches the
 
 **Tenant isolation is the default, not a re-declaration.** Absent `from_layers`, assembly is
 tenant-scoped from the existing ownership fields: a request draws its own tenant's layers
-(`tenant_uuid`) plus platform/system-domain layers (`domain`), and **never** another tenant's — so a
+(`tenant_uuid`) plus platform/system-domain layers (`domain`), and **never** another tenant's. So a
 tenant-A request excludes a tenant-B layer whose `covers` would match, with no `from_layers` needed.
 `from_layers`/`skip` are for selecting an *explicit subset* beyond that default.
 
@@ -613,7 +678,7 @@ For Model A: entity record alone is sufficient
 | `LAY-007` | Field-level provenance model is configurable: full_inline, layer_chain_ref (deduplicated), tiered, or layer_chain_ref_tiered. Profile activates the appropriate Policy Group as default. Organizations override by replacing the active provenance group. Model B (layer_chain_ref) is the recommended default for standard+ profiles. |
 | `LAY-008` | Regardless of provenance model, full provenance must always be reconstructable from the combination of entity record, layer chain store, and Audit Store. The provenance model governs storage location and access pattern — not data availability. |
 | `LAY-009` | **A layer may declare `limits`** — an envelope, keyed by field, that its descendants must stay inside. Clauses use the shared constraint grammar (`common-elements.schema.json#/$defs/constraint_clause`), so containment is the same decidable question the class tier asks of `supports`. **Absent limits mean unbounded, never empty** (NDF-001): a layer constrains only what it names. Where a layer `extends` several parents, every applicable ancestor envelope binds at once — **limits INTERSECT while values OVERRIDE**, so extending one more parent can only tighten. A bound has no override: declining the layer via `skip` is the audited route, and it is visible as a skip, where accepting a layer and ignoring what it said would be visible as nothing. UDLM carries the envelope as data; a `validation` policy enforces it, because a layer holds an estate's configuration and what is permitted there is the estate's call. Assembly computes which envelopes applied and where a value fell, and publishes that as facts of the pass — `limits.violations`, `limits.binding_layers`, `limits.skipped_layers` (`registry/taxonomies/policy-fact.yaml`, evaluation-context). A policy reads those; the worked example is `registry/examples/example-policy-layer-limit.yaml`. An envelope is preferred to a bare 'tighten only' direction because a direction can be judged only against whatever happened to merge beneath it, leaving a layer's legality unanswerable without assembling everything under it. |
-| `LAY-010` | **An assembly denial must be attributable.** Where a layer's `limits` refuse a request, the assembly capability MUST surface, in the refusal: the **layer** that bound it (uuid + handle + version), its **owner** (`tenant_uuid` and `contributor`), the **field path** and the **value** that was rejected, the **binding clause** — the specific clause, including its `reason` where declared — and, where several ancestors bound the field, **each** contributing layer rather than only the tightest. Refusal code `validation.layer_limit_exceeded`. This is not a nicety: extension chains here are deep and multi-parent by design, so at any real depth an unattributed *"value not permitted"* is unactionable — the reader cannot tell which of a dozen ancestors objected, who owns it, or what to ask for. Provenance (`LAY-008`) answers *which layer set a value*; this is the matching obligation for *which layer forbade one*. The refusal names paths, rule identities and the submitted value; the **audit** record of it follows the value-exclusion discipline in `error-model.md` §6a. |
+| `LAY-010` | **An assembly denial must be attributable.** Where a layer's `limits` refuse a request, the assembly capability MUST surface the following in the refusal. The **layer** that bound it (uuid + handle + version) and its **owner** (`tenant_uuid` and `contributor`). The **field path** and the **value** that was rejected. The **binding clause** — the specific clause, including its `reason` where declared. Where several ancestors bound the field, **each** contributing layer rather than only the tightest. Refusal code `validation.layer_limit_exceeded`. This is not a nicety: extension chains here are deep and multi-parent by design, so at any real depth an unattributed *"value not permitted"* is unactionable. The reader cannot tell which of a dozen ancestors objected, who owns it, or what to ask for. Provenance (`LAY-008`) answers *which layer set a value*; this is the matching obligation for *which layer forbade one*. The refusal names paths, rule identities and the submitted value; the **audit** record of it follows the value-exclusion discipline in `error-model.md` §6a. |
 
 ---
 
@@ -651,8 +716,11 @@ for the catalog item `provider_extension_layer_handles` declaration. A `tenant` 
 Just as Policy Groups organize policies into cohesive concern-based collections, **Layer Groups** organize layers. A Layer Group is a `grouping` with an `Grouping` — a versioned, audited, GitOps-managed collection of related layers.
 
 Layer Groups enable:
+
 - **Discovery** — "show me all layers related to PCI compliance"
+
 - **Composition** — include a group in a profile rather than listing individual layers
+
 - **Governance** — activate or deactivate a concern's worth of layers in one operation
 
 ```yaml
@@ -854,15 +922,20 @@ documents say a contribution "enters proposed status", they mean this stage.
 While a policy change is under review, the control plane runs it in **shadow mode** against real request traffic:
 
 - Executes alongside active policies on every relevant request
+
 - Output is captured in a `proposed_evaluation_record` — what it would have done
+
 - Output is **never applied** to the actual request
+
 - Shadow output feeds the Validation Dashboard for reviewer analysis
+
 - Policy authors can see aggregate impact before activation
 
-Per real request evaluated, the control plane captures durably: the shadow policy identity (uuid + version),
-the request and tenant, whether the policy would have applied, and the full would-have output
-(rejection + reason, patches, warnings) — never applied to the request, feeding the Validation
-Dashboard. The capture's shape is the control plane's implementation; this content is the contract.
+Per real request evaluated, the control plane captures durably: the shadow policy identity (uuid +
+version), the request and tenant, whether the policy would have applied, and the full would-have
+output (rejection + reason, patches, warnings). That output is never applied to the request; it
+feeds the Validation Dashboard. The capture's shape is the control plane's implementation; this
+content is the contract.
 
 ### 4b.4 Owner contact and notifications (no schema field yet)
 
@@ -934,8 +1007,10 @@ flowchart TD
 Because conflict detection runs at ingestion, all layers resident in the control plane are pre-validated:
 
 - No two active layers of the same type and scope conflict without explicit priority resolution
+
 - The assembly process never encounters an ambiguous merge — all conflicts are resolved at definition time
-- If a conflict is discovered after the fact (e.g., a new layer is activated that conflicts with an existing one that was already active when the new layer was ingested), the newer layer's ingestion pipeline should have caught this. A background validation job runs periodically to detect any edge cases.
+
+- If a conflict is discovered after the fact (e.g., a newly activated layer conflicts with one that was already active when the new layer was ingested), the newer layer's ingestion pipeline should have caught this. A background validation job runs periodically to detect any edge cases.
 
 ---
 
@@ -964,8 +1039,11 @@ When layers are merged to produce the assembled payload, fields from higher-prec
 ### 5.1 Override Behavior
 
 - A higher-precedence layer that declares a field **overrides** the value from all lower-precedence layers
+
 - A higher-precedence layer that does **not** declare a field leaves the lower-precedence value intact
+
 - Fields not declared at any layer level are absent from the payload — providers must declare all required fields as being covered by at least one layer in the chain
+
 - Compliance-class Validation Policies can override **any** field including consumer-declared Request Layer values — this is the mechanism for enforcing sovereignty constraints, security mandates, and hard compliance rules
 
 ### 5.2 Additive vs. Override Fields
@@ -983,8 +1061,11 @@ field_name:
 ### 5.3 Conflict Resolution
 
 When two layers at the same precedence level declare conflicting values for the same field:
+
 - The conflict is recorded and surfaced as a validation error
+
 - The request is not processed until the conflict is resolved
+
 - Conflict resolution is never silent — it is always recorded in provenance
 
 ---
@@ -1014,9 +1095,13 @@ Field override control is the mechanism by which the control plane governs **who
 Enforced by the Request Payload Processor as the control plane System behavior. Not configurable. Always applied:
 
 - A layer entity is immutable once versioned — no override can modify a published version
+
 - A child layer cannot remove a field declared in a parent layer — it can only override the value
+
 - The layer precedence order is fixed — Base → Core → Intermediate → Service → Request → Policy
+
 - Circular layer references are rejected unconditionally
+
 - A Service Layer without a declared type scope is rejected unconditionally
 
 **Category 2 — Business Rules (Policy Engine — configurable)**
@@ -1212,10 +1297,15 @@ Custom actors follow the universal versioning and deprecation model. A custom ac
 Actor expansion follows a strict hierarchy:
 
 - **`policy.global`** and **`admin_override`** at global scope — can grant expansion to any actor for any field, including fields declared `immutable` at lower levels
+
 - **`policy.tenant`** and **`admin_override`** at tenant scope — can grant expansion within their tenant, cannot expand beyond what Global permits
+
 - **`policy.user`**, **`consumer_request`**, **`provider`** — can never grant expansion regardless of what they receive
+
 - **`sre_override`** — can never grant expansion but can be granted expansion by Tenant or Global
+
 - **`process_resource`** — denied by default, can be granted expansion by Tenant or Global via `trusted_grants`
+
 - **Custom actors** — denied by default, can be granted expansion by the level that registered them or higher
 
 **Trusted grants expire** — if an `expires` timestamp is set, the grant is automatically revoked at that time. Expired grants are retained in provenance for audit purposes but are no longer applied.
@@ -1240,7 +1330,7 @@ flowchart TD
 
 ### 5a.9 Override Control and Rehydration
 
-During rehydration, the estate's declared **touch-trigger stance** decides which policy revisions the replay evaluates under (ADR-045 §8: adopt-on-touch, offer-on-touch, or provenance-until-explicit — a policy clause declared once, never improvised per touch; rehydration is a touch like any other, and the platform surfaces the provenance-distance rather than imposing a stance). Under the common **adopt-current default**, the Intent State is replayed through the **current** Policy Engine: override control declared in current policies is applied fresh, and a field that was `allow` in the original request may be `immutable` if a new compliance-class Validation Policy was added since.
+During rehydration, the estate's declared **touch-trigger stance** decides which policy revisions the replay evaluates under (ADR-045 §8: adopt-on-touch, offer-on-touch, or provenance-until-explicit — a policy clause declared once, never improvised per touch). Rehydration is a touch like any other, and the platform surfaces the provenance-distance rather than imposing a stance. Under the common **adopt-current default**, the Intent State is replayed through the **current** Policy Engine: override control declared in current policies is applied fresh. A field that was `allow` in the original request may be `immutable` if a new compliance-class Validation Policy was added since.
 
 The original consumer intent is preserved unchanged in the Intent Store. The new realized state reflects current governance. Both are auditable and traceable.
 
@@ -1331,7 +1421,7 @@ classification_level:
 
 **`immutable_ceiling: absolute` is the nuclear option.** Use it sparingly — only for fields where the governance requirement is genuinely non-negotiable regardless of any future organizational policy change. Sovereignty zone on a sovereign deployment. Data classification on a restricted system. Encryption standard under a regulatory mandate with no variance permitted.
 
-**Audit behavior:** When a policy attempts to override a field with `immutable_ceiling: absolute`, the attempt is rejected silently from the requesting policy's perspective (the field simply doesn't change) but is fully logged in the Audit Store with the policy UUID, the attempted value, the rejection reason, and the UUID of the policy that set the ceiling.
+**Audit behavior:** When a policy attempts to override a field with `immutable_ceiling: absolute`, the attempt is rejected silently from the requesting policy's perspective (the field simply doesn't change). It is nonetheless fully logged in the Audit Store with the policy UUID, the attempted value, the rejection reason, and the UUID of the policy that set the ceiling.
 
 ---
 
@@ -1342,17 +1432,26 @@ The consumer's Request Layer is received and stored as the **Intent State** in t
 
 ### Step 2 — Layer Resolution
 The Request Payload Processor determines which layers apply to this request:
+
 - Identifies the Resource Type from the Request Layer
+
 - Retrieves the applicable Base Layer for the request context
+
 - Retrieves all applicable Core Layers (type-agnostic — all apply)
+
 - Retrieves applicable Intermediate/Customization Layers based on organizational context
+
 - Retrieves applicable Service Layers whose declared type scope matches the request Resource Type
+
 - Orders all retrieved layers according to the precedence chain
 
 ### Step 3 — Layer Merge
 Layers are merged in precedence order (lowest to highest). For each field:
+
 - The value from the highest-precedence layer that declares it is used
+
 - The source layer UUID and layer type are recorded in the field's provenance metadata
+
 - Additive fields accumulate values from all layers that declare them
 
 ### Step 4 — Request Layer Application
@@ -1372,6 +1471,7 @@ Pre-placement policies produce **placement constraints** — declarative require
 Placement takes the policy-processed payload and the **placement constraints** from Step 5 and selects a provider that satisfies them. The selection *protocol* — candidate iteration, atomic capacity **reserve/hold with TTL**, per-candidate policy re-evaluation, exhaustion handling, and the reserve-query **wire contract** with providers — is implementation concern (see control-plane operational model and the provider contract). What the data model retains from this step is two records:
 
 - **Policy-gap record** — when a field is absent and *no* policy declares `required_context` for it, an `implicit_approval` record is written (field, `provider_uuid`, reason, `recorded_at`, `resolution_expected: realized_payload`). This is the same road-not-taken provenance discipline UDLM applies elsewhere: the fact that a field went un-evaluated is recorded, not silently dropped.
+
 - **Metadata completeness** — metadata a provider cannot supply at placement is completed later via the **realized payload** (primary) or **discovery** (fallback); the realized entity carries `enrichment_status: pending | partial | complete`. Same pattern as the ingestion model.
 
 ### Step 7 — Post-Placement Policy Processing
@@ -1411,9 +1511,13 @@ policy:
 
 ### Step 8 — Requested State Storage
 The fully assembled, policy-processed, placement-confirmed payload is stored as the **Requested State** in the Requested Store. The Requested State includes:
+
 - All assembled resource fields with full provenance chain
+
 - Complete `placement` block: selected provider, hold UUID, all reserve query responses per iteration, all policy evaluations per iteration, placement constraints applied, alternatives considered
+
 - All `policy_gap_record` entries for implicit approvals
+
 - `enrichment_status` reflecting metadata completeness at dispatch time
 
 ### Step 9 — Provider Dispatch
@@ -1431,9 +1535,13 @@ Core Layers are type-agnostic by default. They are applied to every request rega
 
 ### 8.2 Service Layer Scope Enforcement
 Service Layers must declare a Resource Type scope. The Request Payload Processor enforces this during Layer Resolution:
+
 - A Service Layer whose declared Resource Type does not match the request Resource Type is excluded from the merge
+
 - A Service Layer with `scope_inheritance: exact` is only included if the request Resource Type exactly matches the declared type
+
 - A Service Layer with `scope_inheritance: descendants` is included if the request Resource Type is the declared type or any descendant type in the inheritance hierarchy
+
 - A Service Layer with no declared type scope is invalid and must be rejected
 
 ### 8.3 Unanticipated Data Interaction Prevention
@@ -1595,15 +1703,25 @@ policy:
 ## 15. Related Concepts
 
 - **Request Payload Processor** — control-plane component that executes the assembly process; enforces structural layer rules
+
 - **Policy Engine** — executes Policy Layers (Validation Policy, Transformation) during the assembly process; the sole authority for setting field override control
+
 - **Field Override Control** — the mechanism governing who can change what field, under what conditions, at what policy level
+
 - **Override Preference** — per-field metadata declaring `allow`, `constrained`, or `immutable` — the formalization of the original data model "override preference" subtag
+
 - **Service Layer Cache** — caches Service Layer data at Service Provider registration time for efficient retrieval during assembly
+
 - **Core Layer Store** — stores all Core Layer definitions
+
 - **Intent State** — the Request Layer as submitted, before assembly
+
 - **Requested State** — the fully assembled, policy-processed payload
+
 - **Field-Level Provenance** — every field in the assembled payload records which layer set it and which policy modified it
+
 - **Resource Type Hierarchy** — defines the type scope that Service Layers must declare and that the assembly process enforces
+
 - **GitOps** — all layers are stored in Git, versioned and immutable
 
 ---

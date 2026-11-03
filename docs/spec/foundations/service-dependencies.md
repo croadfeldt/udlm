@@ -42,9 +42,13 @@ The control plane uses a hybrid model for dependency declaration that operates a
 Dependencies declared at the Resource Type Specification level are **portable and provider-agnostic**. They define what kinds of resources are needed — not which specific provider supplies them.
 
 - Declared in the Resource Type Specification
+
 - Apply to all Provider Catalog Items implementing that Resource Type
+
 - Use Resource Type UUIDs — not provider_specific references
+
 - Required for all implementations of the Resource Type
+
 - Portable — the dependency can be fulfilled by any provider implementing the required Resource Type
 
 **Example:**
@@ -97,8 +101,11 @@ Declared dependencies (§3) tell the substrate what *should* be true for a reque
 ### 3a.1 Definition
 
 An **observed dependency** is an edge in the Entity Relationship Graph where:
+
 - The dependent endpoint is a realized resource entity hosted by a Service Provider.
+
 - The depended-upon endpoint is another entity (UDLM-known, or external by handle).
+
 - The edge was contributed by the hosting Service Provider in response to a substrate query, not by a catalog/spec declaration.
 
 Observed dependencies are recorded with provenance:
@@ -131,9 +138,13 @@ The substrate MAY call the endpoint on a schedule (drift watch), on a triggering
 ### 3a.3 Why Observed Dependencies Do Not Break Idempotency
 
 Observed dependencies are **observational, not orchestrational**:
+
 - They are not consulted by the Policy Engine for placement or cost decisions.
+
 - They are not consulted by the Request Payload Processor during assembly.
+
 - They are not consulted by rehydration to decide what to recreate.
+
 - They flow only into post-implementation workflows: drift detection, blast-radius analysis, deregister-safety checks, and federation reconciliation.
 
 Two different Service Providers hosting equivalent implementations of the same Request MAY legitimately report different observed dependency sets — that asymmetry is a useful signal, not a bug. The Request's idempotency is preserved by §3 because the *declared* graph (used as orchestration input) is identical in both cases.
@@ -248,8 +259,11 @@ The dependency graph contains each resource exactly once — circular references
 The dependency graph is part of the request's data from the moment it is constructed:
 
 - **Intent State** — consumer's request, no dependency graph yet
+
 - **Requested State** — dependency graph constructed and attached, all nodes in PENDING state
+
 - **Realized State** — nodes updated to REALIZED as providers fulfill each dependency
+
 - **Discovered State** — dependency graph used to scope discovery — discover all nodes in the graph
 
 ---
@@ -314,9 +328,13 @@ The dependency graph determines resolution order. Resources with no unsatisfied 
 ### 8.1 Resolution Rules
 
 - A resource node can only be dispatched when all its `hard` dependencies are in SATISFIED state
+
 - `soft` dependencies do not block dispatch — they are attempted but failure does not block
+
 - `conditional` dependencies are evaluated by the Policy Engine before the graph is constructed — if conditions are not met, the conditional dependency node is not added to the graph
+
 - Independent branches of the dependency graph can be resolved in parallel — the Orchestration component determines parallelism
+
 - Circular dependencies are invalid — the Policy Engine rejects any dependency graph with circular references
 
 ### 8.2 Failure Handling
@@ -340,7 +358,7 @@ The dependency graph is the primary mechanism enabling **DC Rehydration** — th
 
 ### 9.1 Rehydration Process
 
-Rehydration uses the **Intent State** of the original request — not the Realized State — to reconstruct the dependency graph. Intent-based replay is what makes either touch-trigger stance possible (ADR-045 §8): the estate's declared clause — §11a's `re_evaluate` flag is the existing mechanism — decides whether the replay adopts current policies and standards or proceeds under governing provenance; adopt-current is the common default.
+Rehydration uses the **Intent State** of the original request — not the Realized State — to reconstruct the dependency graph. Intent-based replay is what makes either touch-trigger stance possible (ADR-045 §8). The estate's declared clause — §11a's `re_evaluate` flag is the existing mechanism — decides whether the replay adopts current policies and standards or proceeds under governing provenance. Adopt-current is the common default.
 
 ```
 Rehydration initiated for a Tenant / Group / Entity
@@ -369,16 +387,23 @@ New Realized States recorded
 ### 9.2 Intent Portability in Rehydration
 
 Because rehydration uses Intent State rather than Realized State:
+
 - Resources can be rehydrated to a different provider — as long as the provider supports the required Resource Types
+
 - Current organizational standards and policies are applied when the estate's touch-trigger stance elects it (`re_evaluate: true`, §11a — the common default); a provenance-pinned replay (`re_evaluate: false`) is an equally legal, recorded outcome
+
 - Provider-specific dependencies (portability-breaking) may prevent rehydration to a different provider — this is surfaced as a portability warning during rehydration planning
 
 ### 9.3 Rehydration Scope
 
 Rehydration can be scoped to:
+
 - A single Resource/Service Entity and its full dependency graph
+
 - A Resource Group — all entities in the group and their dependency graphs
+
 - A Tenant — all entities owned by the Tenant
+
 - A full Data Center — all entities across all Tenants in a location
 
 The dependency graph ensures that rehydration is always complete — no orphaned resources, no missing dependencies.
@@ -422,7 +447,7 @@ catalog_item:
 | `DEP-003` | Provider-specific dependencies must be marked portability-breaking | Enforced at provider catalog item registration |
 | `DEP-004` | Dependency payloads must be passed to dependent providers in the control plane unified format | Enforced at dependency satisfaction |
 | `DEP-005` | Every node in a dependency graph must have a UUID | Enforced at graph construction |
-| `DEP-006` | **Dangling-reference semantics (degrade, don't break):** a reference whose target cannot be resolved renders the *referencing* entity nonoperational in the OPERATIONAL projection while remaining intact in the INTENDED projection, until the target appears or the reference is repointed (adopts RFC 8345 leafref semantics). Never hard-fail at runtime; never silently tolerate. | The control plane runtime, at operational-state derivation. Authoring stores (git estates) instead validate-at-write and REJECT dangling references — the authoring gate is hard-fail by design. |
+| `DEP-006` | **Dangling-reference semantics (degrade, don't break):** a reference whose target cannot be resolved renders the *referencing* entity nonoperational in the OPERATIONAL projection while remaining intact in the INTENDED projection. That holds until the target appears or the reference is repointed (adopts RFC 8345 leafref semantics). Never hard-fail at runtime; never silently tolerate. | The control plane runtime, at operational-state derivation. Authoring stores (git estates) instead validate-at-write and REJECT dangling references — the authoring gate is hard-fail by design. |
 | `DEP-007` | **Two-phase decommission (tombstone):** an entity with inbound edges MUST NOT be hard-deleted. Transition to `lifecycle_state: Decommissioned` first (its UUID remains resolvable and is never reused — identifier-scheme §5); referencing entities then repoint or retire; hard removal only once no inbound edges remain. Edges to a `Decommissioned` entity are valid-but-flagged (the tombstone window). | Authoring validation (retire-first suggestion on removal) + control-plane decommission workflow. |
 | `DEP-008` | **Constrained reference topology:** edge types carry structural constraints and violations are machine-reported with typed codes, never silently accepted (Kubernetes cross-namespace-ownerReference analog). Initial normative set: `connects_to` (common-elements §9) only between `device_class: physical` NetworkInterface instances; `lower_layer` and `parent_device` only between interfaces of the SAME containing device. Types may declare further constraints in `relationships[]`. | Authoring validation + control-plane graph construction. |
 
@@ -483,7 +508,7 @@ The full dependency chain is always traceable from the Requested State record �
 ## 11c. Dependency Graph Depth
 
 **There is no maximum dependency-graph depth in UDLM.** A depth ceiling is a governance choice —
-how much composition an estate is willing to operate — and the data model does not make governance
+how much composition an estate is willing to operate. The data model does not make governance
 choices (rule 42; ADR-060: policies dictate, the substrate enables). An implementation that wants a
 ceiling declares one as policy, over the depth the graph already exposes; UDLM's obligation is to
 make the depth **computable**, which it is, from the declared edges.
@@ -516,8 +541,11 @@ composite_service_registration:
 ```
 
 **Drift detection interaction:**
+
 - `opaque` — drift detection only on what the composite service definition reports via realized payload; sub-resources are provider's responsibility
+
 - `transparent` — drift detection on all sub-resources as full control-plane entities
+
 - `selective` — drift detection on declared control-plane-visible sub-resources only
 
 ---
@@ -541,18 +569,24 @@ composite_service_registration:
 | `DEP-013` | Dependency graphs are versioned as properties of their parent catalog item. New required dependency or removed dependency is a major (breaking) version bump. The dependency graph version used in an implementation is captured in assembly provenance. |
 | `DEP-014` | The declared dependency graph is embedded in the Resource Type Specification. The resolved dependency graph is embedded in the Requested State assembly provenance (placement.yaml). No separate dependency graph entity is required. |
 | `DEP-015` | **Every requested record names its root request.** `root_request_uuid` is the record_uuid of the requested record at the root of the order. A root names itself. A record the control plane expanded from a declared dependency (DEP-014) or a composition names the root's. It is the record form of §6.1's `dependency_graph.root_request_uuid`. Causation, not structure: `parent_composite_uuid` (CMP-007) is the other axis. Required on requested records; refused on intent, realized and discovered. Register row 079. |
-| `DEP-018` | **A request one provider makes to another names the request that caused it — provenance, never authority.** When a provider's need crosses a provider boundary (PRV-012), its request is a requested record of its own: in the provider's tenant, under its authority, with its own `root_request_uuid`. It carries `caused_by_request`, the consumer's requested record. Never walked for authority. The consumer's sovereignty and zone constraints arrive as placement requirements, re-evaluated under current policy. The runtime link back is DEP-017 `blocked_on`. The fulfilling provider gets the request's execution slice and placement requirements only: not the consumer's tenant, entity, request or reason (data-roles.md §3). |
+| `DEP-018` | **A request one provider makes to another names the request that caused it — provenance, never authority.** When a provider's need crosses a provider boundary (PRV-012), its request is a requested record of its own. It sits in the provider's tenant, under its authority, with its own `root_request_uuid`. It carries `caused_by_request`, the consumer's requested record. Never walked for authority. The consumer's sovereignty and zone constraints arrive as placement requirements, re-evaluated under current policy. The runtime link back is DEP-017 `blocked_on`. The fulfilling provider gets the request's execution slice and placement requirements only: not the consumer's tenant, entity, request or reason (data-roles.md §3). |
 | `DEP-016` | composite service definitions declare composition_visibility as opaque, transparent, or selective. Transparent and selective modes register sub-resources as control-plane entities subject to standard lifecycle management and drift detection. Opaque mode delegates sub-resource management entirely to the provider. |
-| `DEP-017` | **A member that has not realized says WHY, and what it is waiting on.** The fulfillment conditions are a **closed** family on `status.conditions[].type` — `blocked_transient` (waiting on something expected to clear; converges when it can, gated by the convergence window), `blocked_permanent` (cannot be satisfied; refused immediately, window-independent), `refused` (the root: this member itself cannot be satisfied), `dependency_cancelled` (a dependency was cancelled out from under it). Closed because these carry PROPAGATION semantics — a dependent inherits its dependency's status transitively (transient → waits, permanent → refused, cancelled → dependency_cancelled) — so a fifth spelling is not a new condition but an unactionable member of this one. **`blocked_on` is required on every inherited condition** and names the IMMEDIATE blocker; the root is found by walking the chain, never by copying it down (DRV-001). `refused` is exempt — it IS the root, so there is nothing upstream to point at. **Not a lifecycle state:** these are overlays on a `lifecycle_state` that never leaves its five values, exactly as recovery and health are (data-model-core §3). **Not a refusal by the model:** a member blocked on a value that arrives one step later is EARLY, not wrong — refusing it would fail a request that was always going to succeed. Whether and when a transient block becomes permanent is the execution pipeline's call, over the convergence window; what the model owes is somewhere to record what is being waited on, so that call rests on evidence rather than a stopwatch. |
+| `DEP-017` | **A member that has not realized says WHY, and what it is waiting on.** The fulfillment conditions are a **closed** family on `status.conditions[].type`. `blocked_transient` is waiting on something expected to clear; it converges when it can, gated by the convergence window. `blocked_permanent` cannot be satisfied; it is refused immediately, window-independent. `refused` is the root: this member itself cannot be satisfied. `dependency_cancelled` means a dependency was cancelled out from under it. Closed because these carry PROPAGATION semantics — a dependent inherits its dependency's status transitively (transient → waits, permanent → refused, cancelled → dependency_cancelled) — so a fifth spelling is not a new condition but an unactionable member of this one. **`blocked_on` is required on every inherited condition** and names the IMMEDIATE blocker; the root is found by walking the chain, never by copying it down (DRV-001). `refused` is exempt — it IS the root, so there is nothing upstream to point at. **Not a lifecycle state:** these are overlays on a `lifecycle_state` that never leaves its five values, exactly as recovery and health are (data-model-core §3). **Not a refusal by the model:** a member blocked on a value that arrives one step later is EARLY, not wrong — refusing it would fail a request that was always going to succeed. Whether and when a transient block becomes permanent is the execution pipeline's call, over the convergence window; what the model owes is somewhere to record what is being waited on, so that call rests on evidence rather than a stopwatch. |
 
 ---
 
 - **Resource Type Specification** — declares type-level dependencies for a Resource Type
+
 - **Provider Catalog Item** — declares provider_specific additional dependencies
+
 - **Request Payload Processor** — constructs the dependency graph during assembly
+
 - **Policy Engine** — evaluates conditional dependencies, enforces dependency policies, governs failure handling
+
 - **Intent Portability** — rehydration uses Intent State to allow replay with different providers
+
 - **Field-Level Provenance** — dependency payload data is recorded with source Entity UUID
+
 - **Resource Grouping** — rehydration can be scoped to groups and tenants
 
 ---

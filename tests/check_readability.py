@@ -36,8 +36,12 @@ REG_ROW = re.compile(r"^\|\s*(\d{3})\s*\|(.*)\|\s*$")
 
 
 def sentences(text):
-    text = re.sub(r"`[^`]*`", lambda m: m.group(0).replace(". ", "·"), text)  # a path in code is not a sentence end
-    parts = re.split(r"(?<=[.!?])\s+(?=[A-Z`*(\"'])", text.replace("\n", " "))
+    """Split prose into sentences. A list item is its own sentence (the marker starts one); a bold
+    lead-in like `**Why.**` ends one; a period inside a code span does not."""
+    text = re.sub(r"`[^`]*`", lambda m: m.group(0).replace(". ", "·"), text)
+    text = re.sub(r"\n\s*(?:[-*+]|\d+\.)\s+", "\n\u2063", text)          # list marker -> boundary mark
+    text = text.replace("\n", " ")
+    parts = re.split(r"(?<=[.!?:])\s+(?=[A-Z`*(\"'\[])|(?<=[.!?]\*\*)\s+|\s*\u2063", text)
     return [p.strip() for p in parts if p.strip()]
 
 
