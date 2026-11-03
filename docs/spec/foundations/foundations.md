@@ -27,10 +27,10 @@ The three abstractions are **peers** in the decomposition — no fixed importanc
 a Provider is how external reality is reached under contract; a Policy is how a decision is declared over Data.
 
 **Connecting them at runtime is the control plane's concern.** At runtime these operate as a trigger-driven,
-re-entrant convergence loop — an event (a Data state change, a provider outcome, a denial) re-evaluates the
-matching Policies, whose results invoke Providers or produce new Data, which emit new events, until the
-target state converges. That loop is the **operational model of an implementation**, not part of the data model:
-it is specified in control-plane architecture docs, with its soundness rules (bounded convergence, idempotent
+re-entrant convergence loop. An event (a Data state change, a provider outcome, a denial) re-evaluates the
+matching Policies. Their results invoke Providers or produce new Data, which emit new events, until the
+target state converges. That loop is the **operational model of an implementation**, not part of the data model.
+It is specified in control-plane architecture docs, with its soundness rules (bounded convergence, idempotent
 re-entry, causal audit of every trigger) in [ADR-006 — Convergence control model](../../adr/ADR-006-convergence-control-model.md).
 UDLM defines the three abstractions and their contracts; an implementation wires them into a running system.
 
@@ -43,19 +43,27 @@ lifecycle state. Data is always versioned, always identified by UUID, and always
 describing where each field value came from.
 
 **The universal properties of all Data:**
+
 - **UUID** — every Data artifact has a universally unique identifier, stable across its full lifecycle
+
 - **Type** — every Data artifact has a declared type that determines its schema and valid field set
+
 - **Lifecycle state** — every Data artifact is in exactly one lifecycle state at any moment
+
 - **Identity, version and status** — every Data artifact carries its own `uuid`, `handle`, `version` and `status`; who did what is the audit record, and what changed is version control. [layering-and-versioning.md](layering-and-versioning.md) §4b maps each job to its home
+
 - **Provenance** — every field in every Data artifact carries lineage metadata describing its origin and all modifications
+
 - **Data classification** — every field carries a classification (public → classified) governing what may cross interaction boundaries
+
 - **Immutability if versioned** — once a version is published, it cannot be modified; changes produce new versions
+
 - **Contributor identity** — every Data artifact records who contributed it (platform admin, consumer/tenant, service provider, or peer implementation) and what review it received before activation. The model defaults to a federated contribution model — all authorized actor types can create Data within the bounds their role permits. See [Federated Contribution Model](../governance/federated-contribution-model.md).
 
-**The Data taxonomy** — the enumerated Data/resource types (resource and process entities, the four states,
-data layers, policies and policy groups, accreditations, groups, tokens, drift and audit records, and the
-rest) are defined canonically in the **[registry](../../../registry)** (the Resource Type Specifications and the
-instance meta-schema). This document defines the Data *abstraction* and its universal properties; it does
+**The Data taxonomy** is the enumerated Data/resource types: resource and process entities, the four
+states, data layers, policies and policy groups, accreditations, groups, tokens, drift and audit records,
+and the rest. They are defined canonically in the **[registry](../../../registry)** (the Resource Type
+Specifications and the instance meta-schema). This document defines the Data *abstraction* and its universal properties; it does
 not restate the member list, so there is a single source of truth and no drift with the registry.
 
 **How Data flows — the four lifecycle stages:**
@@ -97,21 +105,28 @@ Data, act on it, and return Data. The contract governs how this exchange happens
 does internally.
 
 **The universal properties of all Providers:**
+
 - **Registration** — every Provider registers, declaring its capabilities, sovereignty, and accreditation
+
 - **Health check** — every Provider exposes a health endpoint that an implementation can monitor
+
 - **Sovereignty declaration** — every Provider declares where it operates and what jurisdictions it covers
+
 - **Accreditation** — every Provider declares its compliance certifications, enforced via the Governance Matrix
+
 - **Governance Matrix enforcement** — every interaction with a Provider is subject to the Governance Matrix before data crosses the boundary
+
 - **Zero trust** — every Provider interaction is authenticated and authorized; no implicit trust from network position
+
 - **Lifecycle** — every Provider registration goes through a defined lifecycle (SUBMITTED → VALIDATING → ACTIVE → DEREGISTERED)
 
 The single interface every Provider implements — the base contract, and the capability declaration that
 distinguishes one Provider type from another — is defined in [provider-contract.md](../contracts/provider-contract.md).
 
-**The Provider taxonomy** — the enumerated Provider types (Service Provider, Information Provider, data
+**The Provider taxonomy** is the enumerated Provider types (Service Provider, Information Provider, data
 store, External Policy Evaluator, credential management service, Auth Provider, notification service, event
 routing service, Resource Type Registry, Peer implementation, ITSM integration, …) and their capability
-declarations are defined canonically in the **[Provider Contract](../contracts/provider-contract.md)**. This
+declarations. They are defined canonically in the **[Provider Contract](../contracts/provider-contract.md)**. This
 document defines the Provider *abstraction* and its universal properties; the member list lives in one place
 there, not restated here.
 
@@ -132,12 +147,19 @@ typed output (decision, mutation, action, or directive), and is enforced accordi
 Policies govern every transition, transformation, and constraint over Data.
 
 **The universal properties of all Policies:**
+
 - **Match conditions** — every Policy declares when it fires, using the four governance matrix axes (subject, data, target, context) or payload type + field conditions
+
 - **Typed output schema** — every Policy produces one of seven output types; the output type determines how the result is applied
+
 - **Enforcement level** — hard (cannot be overridden) or soft (can be tightened by more-specific policies)
+
 - **Domain precedence** — policies at more-specific domains win within their concern type; system > platform > tenant > resource_type > entity
+
 - **Lifecycle** — every Policy follows the standard artifact lifecycle (developing → proposed → active → deprecated → retired)
+
 - **Shadow mode** — proposed Policies execute against real traffic without applying results; safe validation before activation
+
 - **Audit** — every Policy evaluation produces an audit record regardless of outcome
 
 UDLM is deliberately **policy-language-agnostic**: it defines the policy *contract* (match conditions, typed
@@ -156,9 +178,9 @@ All Policy types implement this base contract. What varies is the output schema.
 **Policies as orchestration — two levels that compose:**
 
 *Level 1 — Named Workflow Artifacts (explicit, visible, auditable):* An Orchestration Flow Policy with
-`concern_type: orchestration_flow` (`concern_type` is a policy's concern category — the typed axis policies
-are grouped and precedence-ordered by; the enumerated categories live in
-[policy-contract.md](../contracts/policy-contract.md)) and `ordered: true` is a named workflow. It declares steps in explicit
+`concern_type: orchestration_flow` and `ordered: true` is a named workflow. (`concern_type` is a policy's
+concern category — the typed axis policies are grouped and precedence-ordered by; the enumerated
+categories live in [policy-contract.md](../contracts/policy-contract.md).) It declares steps in explicit
 sequence. Named workflows are first-class Data artifacts — versioned, GitOps-managed, profile-bound. Adding
 an explicit pipeline step = adding a step to a workflow Policy artifact.
 
@@ -183,17 +205,17 @@ is the Policy abstraction applied at interaction boundaries.
 ## 5. Connecting the three at runtime — the control plane's concern
 
 The three abstractions are connected, at runtime, by machinery that is **implementation architecture, not the
-data model**: an event bus that routes Data state-changes to a policy evaluator, the evaluator that fires
-matching Policies, the results that invoke Providers or produce new Data, and the control-plane components
-that specialize this loop (placement, discovery scheduling, drift reconciliation, notification routing, a
-queryable search projection, and the rest).
+data model**. That machinery is an event bus that routes Data state-changes to a policy evaluator, the
+evaluator that fires matching Policies, and the results that invoke Providers or produce new Data.
+Control-plane components specialize this loop (placement, discovery scheduling, drift reconciliation,
+notification routing, a queryable search projection, and the rest).
 
 By the boundary test ([ADR-008](../../adr/ADR-008-udlm-dcm-boundary.md)), all of that is the control plane: a peer could
 implement the event bus, the evaluator, and each control-plane component differently and still honor the
 same Data, Provider, and Policy contracts. So it is **specified in control-plane architecture docs, not here.**
 
 What UDLM fixes — and what any conforming implementation must preserve — is the *contract* the runtime operates
-over: the four states and their transitions ([four-states.md](four-states.md)), the layer-assembly precedence
+over. That is the four states and their transitions ([four-states.md](four-states.md)), the layer-assembly precedence
 ([layering-and-versioning.md](layering-and-versioning.md)), the Provider base contract
 ([provider-contract.md](../contracts/provider-contract.md)), and the Policy evaluation contract
 ([policy-contract.md](../contracts/policy-contract.md)). Given those, the runtime is an implementation concern.
@@ -248,7 +270,7 @@ type by defining an output schema; a new data type by defining a schema. No core
 
 ## Design Priority Order
 
-The priority order that governs every design decision — **security → ease of use → extensibility → fit-for-purpose** (higher wins on conflict; all apply where none conflicts) — is defined once, with its decision procedure, profile scaling table, and `DPO-001–006` policies, in [Design Priorities](../principles/design-priorities.md). It is not restated here.
+The priority order that governs every design decision is **security → ease of use → extensibility → fit-for-purpose** (higher wins on conflict; all apply where none conflicts). It is defined once, with its decision procedure, profile scaling table, and `DPO-001–006` policies, in [Design Priorities](../principles/design-priorities.md). It is not restated here.
 
 ---
 

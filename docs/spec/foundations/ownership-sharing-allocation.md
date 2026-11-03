@@ -14,7 +14,9 @@
 This document defines the complete ownership model for UDLM entities — specifically the three ownership patterns that govern how resources are owned, shared, and allocated across Tenants. It establishes precise vocabulary and clear boundaries between concepts that are frequently conflated:
 
 - **Ownership** — who is accountable for a resource's lifecycle and costs
+
 - **Shareable** — multiple entities have a stake in a single resource that they do not own
+
 - **Allocatable** — a pool resource yields independently owned sub-resources to consumers
 
 Getting this model right is foundational. It governs decommission safety (can this resource be removed?), cost attribution (who pays for this?), cross-tenant visibility (who can see this?), drift accountability (whose responsibility is remediation?), and placement decisions (which providers serve allocation requests?).
@@ -217,7 +219,9 @@ The consumer-facing 203.0.113.128/26 is an allocation — AppTeam owns it. The p
 Each ownership model implies a different placement shape. Placement itself is admin-policy-driven and runtime (see control-plane architecture documentation and [policy-contract.md](../contracts/policy-contract.md) `placement`); what the data model fixes is *what placement is selecting for* in each case:
 
 - **Whole Allocation:** placement selects a provider with available capacity; the provider provisions the resource and returns it owned by the requesting Tenant.
+
 - **Allocation:** placement selects an eligible **pool** resource with sufficient available capacity; the pool provider carves an allocation, and a new allocation entity is created in the requesting Tenant with an `allocated_from` AllocationRecord to the pool.
+
 - **Shareable:** placement finds the existing shareable resource instance that satisfies the consumer's attachment constraints; **no new entity is provisioned** — a stake relationship is registered. If no eligible shareable instance exists, the request fails outright (unlike Allocation, where failure means insufficient pool capacity).
 
 ---
@@ -227,27 +231,45 @@ Each ownership model implies a different placement shape. Placement itself is ad
 The three patterns have different decommission safety behaviors:
 
 **Whole Allocation decommission:**
+
 - Owner Tenant initiates decommission
+
 - Policy checks for required relationships (do other entities depend on this?)
+
 - If required dependencies exist → `DECOMMISSION_DEFERRED` until dependencies release
+
 - If no required dependencies → dispatch decommission to provider → DECOMMISSIONED
 
 **Allocation decommission:**
+
 - Consumer Tenant initiates decommission of their allocation entity
+
 - the control plane dispatches decommission to pool provider
+
 - Pool provider releases the resource back to pool
+
 - AllocationRecord relationship terminated
+
 - Pool availability (derived from its active allocations) increases
+
 - Allocation entity → DECOMMISSIONED
+
 - Pool entity is unaffected
 
 **Shareable decommission:**
+
 - Resource owner Tenant initiates decommission of the shared resource
+
 - the control plane counts active `required` stakes (derived from the graph — never a stored counter)
+
 - If required stakes > 0 → `DECOMMISSION_DEFERRED`
+
   - Notifications to all required stakeholders
+
   - Owner retries decommission after stakeholders release
+
 - If required stakes == 0 → dispatch decommission to provider → DECOMMISSIONED
+
   - Any remaining `optional` stakes are automatically terminated
 
 ---

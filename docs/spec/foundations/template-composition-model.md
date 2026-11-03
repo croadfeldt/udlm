@@ -50,15 +50,20 @@ The control plane uses that declaration to:
 A Service Provider that registers a Composite Service operates as a standard Service Provider for each constituent resource type it owns (those flagged `provided_by: self`). The control plane's standard machinery handles everything else: placement, sequencing, failure handling, compensation, and audit.
 
 **A Composite Service is not an orchestrator.** Its definition does not:
+
 - Select constituent providers — the placement does this
+
 - Sequence execution rounds — the dependency graph informs the control plane's Orchestration Flow Policy
+
 - Manage parallel execution — parallelism is derived from the dependency graph (resources with no unresolved dependencies execute simultaneously)
+
 - Run compensation — the control plane's Recovery Policy executes compensation using the dependency graph in reverse
+
 - Make routing decisions — these are control-plane policy decisions
 
 ### 1.2 Applications Are Composite Catalog Items
 
-An "application" is modeled as a composition — constituents + dependency edges + bindings — not as a flat resource type. The application's structure (a database tier, an application tier bound to the database's connection output, a web tier bound to the application's endpoint) is exactly the constituent/`depends_on`/`bindings` declaration this document defines, and its provision/teardown ordering is the forward/reverse topological projection of those same edges (data-model-core §4). The worked example [`registry/classes/resource/services/template/application/acme-three-tier.yaml`](../../../registry/classes/resource/services/template/application/acme-three-tier.yaml) is a three-tier application expressed this way.
+An "application" is modeled as a composition — constituents + dependency edges + bindings — not as a flat resource type. The application's structure (a database tier, an application tier bound to the database's connection output, a web tier bound to the application's endpoint) is exactly the constituent/`depends_on`/`bindings` declaration this document defines. Its provision/teardown ordering is the forward/reverse topological projection of those same edges (data-model-core §4). The worked example [`registry/classes/resource/services/template/application/acme-three-tier.yaml`](../../../registry/classes/resource/services/template/application/acme-three-tier.yaml) is a three-tier application expressed this way.
 
 ---
 
@@ -74,6 +79,7 @@ until they are distinguished a reader cannot tell them apart:
 - `contained_by` (the default) — the composite **creates and owns** this part. At realization it
   becomes an entry in the System's `constituents[]`, and `GRP-INV-002` makes it co-tenant with the
   composite, non-overridably.
+
 - `binds_to` — the composite **uses** something that already exists and belongs to someone else: a
   stake in a shared VLAN, a platform namespace, an activity bound to the stack. At realization it
   becomes a `dependencies[]` edge carrying this edge_type, and it is how a relationship legitimately
@@ -115,9 +121,13 @@ constituents:
 Field semantics:
 
 - **`component_id`** — Stable identifier for the constituent within this composite. Used in `depends_on` references, runtime status reporting (`constituent_status`), and (in transparent visibility mode) UUID derivation.
+
 - **`resource_type`** — Standard resource type identifier from the Resource Type Registry.
+
 - **`provided_by`** — Either `self` (the registering provider fulfills it) or `external` (placement selects a provider).
+
 - **`depends_on`** — Component IDs whose realized state must exist before this constituent can be dispatched. The dependency graph is constructed from these declarations.
+
 - **`required_for_delivery`** — See §2.4.
 
 ### 2.2 provided_by Declaration
@@ -189,8 +199,8 @@ partial_delivery_policy:
 ```
 
 **Compensation semantics** (stated once): compensation executes in reverse dependency order, highest
-`compensation_order` first; a compensation-step failure enters `COMPENSATION_FAILED` and triggers immediate
-orphan detection (runtime detail: operational-models §6.3); `required_for_delivery: partial` constituents are
+`compensation_order` first. A compensation-step failure enters `COMPENSATION_FAILED` and triggers immediate
+orphan detection (runtime detail: operational-models §6.3). `required_for_delivery: partial` constituents are
 not compensation-triggering — their failure yields a `DEGRADED` composite (§2.4, CMP-004).
 
 ### 2.5 Interop — the control plane's catalog model
@@ -291,8 +301,11 @@ A Composite Service registration declares its `composition_visibility`:
 | `selective` | A declared subset of constituents are surfaced as control-plane entities; the remainder are opaque. Useful when some constituents are implementation detail and others are operationally relevant. |
 
 Visibility affects:
+
 - Status reporting: per-constituent state is surfaced for transparent and (selectively) for selective; not for opaque
+
 - Audit query: queryable per-constituent for transparent and selective; only at composite level for opaque
+
 - Decommission targeting: in transparent mode, an operator can decommission individual constituents (subject to policy); in opaque mode, only the composite as a whole
 
 ### 5.1 Transparent Mode Entity UUIDs
@@ -389,7 +402,7 @@ Compensation in nested composites runs bottom-up: the innermost composite compen
 
 ## 9. Scoring Model Integration
 
-The only data-model-relevant rule for scoring a composite is the **bottleneck rule**: a composite candidate scores as its *weakest* constituent, so a composite with one strong and one weak constituent is not preferred over a single-resource provider that scores well on the actually-needed resource. How scores are computed — the placement scoring function, and the fact that an `external` constituent's contribution reflects current placement state — is implementation concern (see control-plane architecture documentation).
+The only data-model-relevant rule for scoring a composite is the **bottleneck rule**: a composite candidate scores as its *weakest* constituent. So a composite with one strong and one weak constituent is not preferred over a single-resource provider that scores well on the actually-needed resource. How scores are computed — the placement scoring function, and the fact that an `external` constituent's contribution reflects current placement state — is implementation concern (see control-plane architecture documentation).
 
 ---
 
@@ -426,7 +439,7 @@ restated — one requirement, one definition.
 |---|---|
 | `CMP-010` | A `depends_on` references an undeclared component_id. Ordering is derived from these edges (CMP-002), so an edge pointing at nothing leaves a constituent that can never become dispatchable — and it fails at expansion, long after the catalog accepted it. |
 | `CMP-011` | A constituent references a resource type that resolves to neither a registered Class nor a flat resource type. Expansion has to compile the constituent against its type; a name resolving to nothing is a request that cannot be assembled, and the catalog is the last place it can be refused cheaply. |
-| `CMP-012` | A constituent declares whether the composite OWNS it (`edge_type: contained_by`, the default) or merely USES it (`binds_to`). A constituent with `fulfillment: consumer` — the consumer supplying an existing resource — cannot be `contained_by`: a thing you were handed a reference to is not a thing you created. The distinction is structural rather than stylistic, because GRP-INV-002 is non-overridable — the parts of one thing may not span two owners — so a borrowed resource modelled as a part is either refused at realization or, worse, silently transfers ownership of something other tenants also use. |
+| `CMP-012` | A constituent declares whether the composite OWNS it (`edge_type: contained_by`, the default) or merely USES it (`binds_to`). A constituent with `fulfillment: consumer` — the consumer supplying an existing resource — cannot be `contained_by`: a thing you were handed a reference to is not a thing you created. The distinction is structural rather than stylistic, because GRP-INV-002 is non-overridable — the parts of one thing may not span two owners. A borrowed resource modelled as a part is therefore either refused at realization or, worse, silently transfers ownership of something other tenants also use. |
 
 Also rejected, by rules defined elsewhere:
 
@@ -434,9 +447,9 @@ Also rejected, by rules defined elsewhere:
 - a binding names an `output` the producing constituent's resource type does not declare (`CMP-009`)
 
 Two further conditions are stated but **not currently enforced**, and are named here rather than
-left to look like coverage: total constituent count exceeding the profile's limit (profile-governed,
-so there is no single value to check against), and `selective_visible` referencing undeclared
-component_ids.
+left to look like coverage. They are: total constituent count exceeding the profile's limit
+(profile-governed, so there is no single value to check against), and `selective_visible`
+referencing undeclared component_ids.
 
 Registration is otherwise validated like any other catalog item.
 
@@ -450,7 +463,7 @@ with how well it is written: it ran *once*, against the state of the world on th
 catalog item was admitted.
 
 Two things move afterwards. A producer type is re-versioned, and an output the composite binds
-against is removed or renamed — the catalog item that passed admission now names an output that
+against is removed or renamed. The catalog item that passed admission now names an output that
 no longer exists, and no re-check is scheduled, because change-impact reporting in this model is
 advisory by design and never rewrites an admitted artifact. Separately, a request may compose
 items in a combination the catalog never checked together. In both cases the binding is invalid
@@ -463,7 +476,7 @@ same binding caught at dispatch costs a partially realized composite and a compe
 Nothing is provisioned, so nothing is rolled back.
 
 The refusal reuses the admission gate's message contract — it names the producer type, the
-requested output, and the outputs the type actually declares — and is typed
+requested output, and the outputs the type actually declares. It is typed
 `validation.binding_undeclared_output`, a binding-contract violation distinct from a policy
 denial and from a provider failure. The declared output surface is cited as the authority for
 the decision, because it is the authority: typed outputs are the type's referenceable binding
@@ -489,7 +502,7 @@ producer re-versions — would make the catalog's contents depend on when they w
 | `CMP-006` | `provided_by: external` constituents are placed by the placement using standard placement rules. The Composite Service definition does not influence external constituent provider selection. |
 | `CMP-007` | In transparent composition visibility mode, constituent entity UUIDs are `deterministic_uuid(parent_composite_uuid + component_id)` — stable across rehydration. |
 | `CMP-009` | Constituent bindings are re-resolved against the producing type's **current** declared output surface at request validation, not only at catalog admission — so a producer re-versioned after admission, or a composition the catalog never checked together, still refuses. The check runs after expansion and before policy and dispatch (§7), so no constituent is provisioned and no compensation is needed. The refusal is emitted as `validation.binding_undeclared_output` and names the producer type, the requested output, and the outputs that type declares; the declared output surface is cited as the authority. A producer type absent from the registry is a refusal, not a skip — an unresolvable producer cannot be shown to declare anything. The refusal's audit record names the catalog item, the failing constituent, and the undeclared output as subjects (`AUD-024`) — stated here so an implementer working from this rule alone carries all three, not only the producer surface. |
-| `CMP-013` | A consumer MUST be able to learn, **before ordering**, that a composition contains parts they would not be able to read once realized. The model carries the fact — `composition.unreadable_constituents`, the component_ids unreadable to THIS actor over THIS placement — and the decision is policy's: a catalog may withhold the item, mark it unorderable, or offer it anyway. UDLM picks none of those (rule 42). Where a policy refuses, the refusal NAMES the unreadable parts: "denied" alone tells a consumer nothing they can act on, whereas naming the database tells them exactly which access to request. Evaluated at catalog render and again at request validation — the CMP-009 placement, before dispatch, so nothing is provisioned and no compensation is needed. **`composition_visibility` does not cover this**: it declares ADDRESSABILITY — whether a part has an identity you could refer to — and a part can be fully addressable and still unreadable to you, because access is decided by the grouping it lands in. Real visibility is addressability AND access. *Conformance target: `runtime`* — it binds a live catalog and a live evaluation pass, so no in-repo artifact can test it; the artifact half is the fact's existence in the governed vocabulary (PFACT-001).
+| `CMP-013` | A consumer MUST be able to learn, **before ordering**, that a composition contains parts they would not be able to read once realized. The model carries the fact — `composition.unreadable_constituents`, the component_ids unreadable to THIS actor over THIS placement — and the decision is policy's: a catalog may withhold the item, mark it unorderable, or offer it anyway. UDLM picks none of those (rule 42). Where a policy refuses, the refusal NAMES the unreadable parts: "denied" alone tells a consumer nothing they can act on, whereas naming the database tells them exactly which access to request. Evaluated at catalog render and again at request validation — the CMP-009 placement, before dispatch, so nothing is provisioned and no compensation is needed. **`composition_visibility` does not cover this**: it declares ADDRESSABILITY — whether a part has an identity you could refer to. A part can be fully addressable and still unreadable to you, because access is decided by the grouping it lands in. Real visibility is addressability AND access. *Conformance target: `runtime`* — it binds a live catalog and a live evaluation pass, so no in-repo artifact can test it; the artifact half is the fact's existence in the governed vocabulary (PFACT-001).
 
 ---
 

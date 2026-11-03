@@ -15,8 +15,11 @@ An entity's life is tracked as **four parallel records — not four sequential s
 different question, and they coexist:
 
 - **Intent** — *what the consumer asked for* (immutable, the raw declaration).
+
 - **Requested** — *what was approved and dispatched* to a provider (assembled + policy-processed + provider chosen).
+
 - **Realized** — *what the provider actually built* (provider-confirmed, with the real IPs/IDs it added).
+
 - **Discovered** — *what is observed to exist right now* (ground truth, refreshed each discovery cycle).
 
 All four share **one Entity UUID** (§3), so the whole story links. **Drift** is simply *Realized and Discovered
@@ -64,9 +67,13 @@ The four states answer four distinct questions:
 The **Intent State** is the immutable record of a consumer's original declaration. It is captured at the moment a request is submitted — before any layer assembly, before any policy evaluation, before any provider selection.
 
 **Characteristics:**
+
 - Immutable once created — the consumer's original intent is never modified
+
 - Stored in a profile-bound Commit Log per the [D1] contract — append-only, versioned, tenant-isolated; git is the conforming carrier at `homelab` and the PR-based ingress at `standard`/`prod`
+
 - Fully versioned — every revision of an intent is traceable
+
 - The entity UUID is assigned at Intent State creation — it follows the entity through all subsequent states
 
 **When created:** Every request submission, every rehydration operation, every drift remediation authorization
@@ -78,11 +85,17 @@ The **Intent State** is the immutable record of a consumer's original declaratio
 The **Requested State** is the fully assembled, policy-processed, provider-ready payload. It is produced from the Intent State by request assembly — after layer assembly, after all policy evaluation, after provider selection.
 
 **Characteristics:**
+
 - Immutable once created — a new Requested State is created for each request cycle
+
 - Stored in a profile-bound State Store per the [D1] contract — committed, versioned
+
 - Contains the complete assembled payload with full field-level provenance
+
 - Contains the results of all policy evaluations — which policies ran, what they did, what they locked
+
 - Contains provider selection — which provider will realize this request
+
 - Is the authoritative record of what was instructed to be built
 
 **When created:** After Intent State approval, after successful policy processing
@@ -94,11 +107,17 @@ The **Requested State** is the fully assembled, policy-processed, provider-ready
 The **Realized State** is the provider-confirmed record of what was actually built. It is the denaturalized result of the provider's execution, translated back to UDLM format.
 
 **Characteristics:**
+
 - Write-once complete snapshots — each Realized State record is a full entity state, never modified after writing
+
 - Every Realized State record is traceable to exactly one Requested State record — no exceptions
+
 - Contains provider_specific details not in the Requested State — assigned IPs, generated passwords, actual storage sizes, provider-internal IDs
+
 - Is the authoritative record of what actually exists
+
 - Drift is detected by comparing the most recent Realized State snapshot against Discovered State
+
 - Carries a supersession chain — each snapshot knows which snapshot it superseded and which superseded it
 
 **Three write sources (all require a corresponding Requested State record):**
@@ -110,8 +129,11 @@ The **Realized State** is the provider-confirmed record of what was actually bui
 | Provider update notification | `provider_update` | Provider reports an authorized state change (auto-healing, maintenance) |
 
 **What does NOT write to the Realized store:**
+
 - Drift detection — drift only compares, never writes
+
 - Discovery cycles — discovery writes to the Discovered stream only
+
 - Unsanctioned provider changes — these are drift events until evaluated and explicitly approved
 
 **When created:** When a provider confirms implementation of any authorized request (initial, consumer update, or approved provider update notification)
@@ -126,43 +148,54 @@ model fixes is **the guarantee and the artifacts, not the procedure**: nothing i
 request is validated and reserved. *How* an implementation gets there is control-plane runtime (below).
 
 **The contract (data model):**
+
 - **A reservation is a first-class, TTL'd artifact.** A reserve validates the request against a provider's
-  capacity/identity/policy and **holds** the result, yielding a **`reservation_hold_uuid`** plus the
-  provider's **computed realize-time facts** (a reserved placement's port, a reserved address) — recorded
-  in the Requested-state resolution (`reservation_hold_uuid` in `placement.yaml`,
+  capacity/identity/policy and **holds** the result. It yields a **`reservation_hold_uuid`** plus the
+  provider's **computed realize-time facts** (a reserved placement's port, a reserved address). Both are
+  recorded in the Requested-state resolution (`reservation_hold_uuid` in `placement.yaml`,
   `docs/spec/foundations/service-dependencies.md` §11), so the whole reserved graph is **auditable before commit**. A
   reserve **builds nothing** and writes **no** Realized State.
+
 - **Reserved facts feed dependents.** A dependency whose criteria derive from a parent's realize-time state
   (`fulfillment: provider`, DCM ADR-009) is satisfiable from the parent's *reserved* facts — nothing is built
   to resolve the graph.
+
 - **Commit is all-or-nothing at a barrier.** Nothing commits until **every** reservation in the effective
   graph is held-and-valid **and** all applicable policy (placement, governance-matrix, cycle, quota) is
   green against the **fully reserved** graph. Commit is the only phase that mutates infrastructure and
   writes Realized State (§2.3).
+
 - **Release is a hold-drop, not a teardown.** Any held reservation not committed is released — on
   validation failure, cancellation, or hold-TTL expiry — and because reserve built nothing, there is no
   orphaned resource to compensate.
+
 - **No sixth lifecycle state.** `lifecycle_state` stays on its five canonical values; an active hold is a
   `RESERVATION_HELD` **`status.conditions`** overlay (§2.5), not a state.
 
-**The mechanism (implementation / the control plane).** *How* an implementation reaches a consistent set of holds — the
-reserve→recompute-dependents **reconciliation loop**, its multi-round negotiation and iteration to a fixed
-point, the re-entrant convergence it runs inside, and its terminal conditions
-(`RESERVE_QUERY_ALL_EXHAUSTED`, `RESERVATION_RECONCILE_STALEMATE`) — is implementation architecture, specified
-by ADR-011 / [ADR-006](../../adr/ADR-006-convergence-control-model.md) and control-plane docs, not by this data
-model. A peer that upholds the guarantee and the artifacts above conforms, however it converges. Policies
-that opt into that loop (`reconciliation.participates`, policy-contract §7.6) re-evaluate as reserved facts
-land; others evaluate once at the commit barrier.
+**The mechanism (implementation / the control plane).** *How* an implementation reaches a consistent
+set of holds is implementation architecture, specified by ADR-011 /
+[ADR-006](../../adr/ADR-006-convergence-control-model.md) and control-plane docs, not by this data
+model. That covers the reserve→recompute-dependents **reconciliation loop**, its multi-round
+negotiation and iteration to a fixed point, the re-entrant convergence it runs inside, and its
+terminal conditions (`RESERVE_QUERY_ALL_EXHAUSTED`, `RESERVATION_RECONCILE_STALEMATE`). A peer that
+upholds the guarantee and the artifacts above conforms, however it converges. Policies that opt into
+that loop (`reconciliation.participates`, policy-contract §7.6) re-evaluate as reserved facts land;
+others evaluate once at the commit barrier.
 
 ### 2.4 Discovered State
 
 The **Discovered State** is what is observed actually existing through active discovery — polling providers, querying infrastructure APIs, interrogating resources. It is the ground truth of what physically exists, independent of what the model believes exists.
 
 **Characteristics:**
+
 - Append-only snapshot stream — each discovery cycle produces a new snapshot
+
 - Ephemeral — recent history retained, older snapshots archived or discarded
+
 - High-frequency and machine-generated — not appropriate for human review
+
 - Consumed by drift detection (comparing against Realized State) — one of the two roles of the dual-role model below
+
 - May contain resources that were never provisioned — brownfield resources discovered for ingestion
 
 **When created:** On every discovery cycle, on demand for specific entities
@@ -171,52 +204,53 @@ The **Discovered State** is what is observed actually existing through active di
 
 **Raw / unallocated resources (discovered-first entry).** A resource MAY exist with **only** its Discovered State populated and **no Intent** — a freshly racked server, a spare drive, any brownfield asset that physically exists but has not been allocated. This is the **discovered-first** lifecycle entry, the peer of intent-first (declare → realize): the estate ingests the raw resource purely for **inventory and tracking**, with Discovered records and no Intent (that is what unallocated means). The resource is later **adopted** — an Intent is attached (allocation / brownfield ingestion), moving it into the managed lifecycle — and adoption **preserves the Entity UUID** (§3), so all inventory history accrues to the same entity.
 
-**Discovered has a dual role (dcm ADR-017 Decision A, #222).** Discovered is (1) the **ephemeral per-cycle snapshot stream** consumed by drift detection, *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what exists*, including discovered-but-**unclaimed** resources (no provider attached). These are one domain, not two stores: the durable inventory record is the latest reconciled observation per entity; the snapshot stream is its history. The durable-inventory role is exempt from snapshot-stream retention ceilings; the reconciled inventory record persists until claim or retirement ([data-model-core](data-model-core.md) §3). **Unclaimed = inventoried, not managed** (queryable, excluded from lifecycle operations); a provider claim/adoption moves the entity Discovered → Realized preserving its UUID, and a long-lived unclaimed resource is surfaced as visible inventory debt — its age is the signal; claiming or retiring it is the estate's decision (advisory best practice, never an imperative). Multiple discovery sources correlate to ONE entity via `correlation_ids` (entity-view.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../../../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and `registry/common-elements.md` §6.
+**Discovered has a dual role (dcm ADR-017 Decision A, #222).** Discovered is (1) the **ephemeral per-cycle snapshot stream** consumed by drift detection, *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what exists*. That inventory includes discovered-but-**unclaimed** resources (no provider attached). These are one domain, not two stores: the durable inventory record is the latest reconciled observation per entity; the snapshot stream is its history. The durable-inventory role is exempt from snapshot-stream retention ceilings; the reconciled inventory record persists until claim or retirement ([data-model-core](data-model-core.md) §3). **Unclaimed = inventoried, not managed** (queryable, excluded from lifecycle operations). A provider claim/adoption moves the entity Discovered → Realized preserving its UUID. A long-lived unclaimed resource is surfaced as visible inventory debt — its age is the signal; claiming or retiring it is the estate's decision (advisory best practice, never an imperative). Multiple discovery sources correlate to ONE entity via `correlation_ids` (entity-view.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../../../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and `registry/common-elements.md` §6.
 
-**A sweep sees edges as well as fields (RHY-007).** A probe on a host sees which domains run on it; a
-probe in a guest sees the WWN of the disk passed through to it; an LLDP walk sees which switch port a
-NIC is cabled to. These are observations of the same standing as a discovered field, and they ride the
-discovered record as `dependencies` — with one difference in shape that is the whole rule. An observed
-edge names its target by the **natural key the probe read** (`target_key`: a `correlation_ids` scheme
-and value — a libvirt domain UUID, a WWN, a MAC, a chassis id; a compound key such as a switch port
-uses a scheme that names the compound). **A key that is unique only within a scope carries the scope in
-its value**, rooted at the isolation domain the probe observed it in, because two VLAN 100s or two
-198.51.100.0/24s coexist on purpose exactly when they sit in different domains (row 118): a segment is
-`segment_id: <observer>/<domain>/<id>`, the observing device's own key, then the bridge domain, VRF,
-bridge or overlay, then the tag or VNI. An observer-rooted key is an **observation, never an identity**:
-a VLAN trunked across three switches is seen as three keys, one per chassis, and nothing in them says
-they are one broadcast domain. Working that out from LLDP neighbours and trunk tag lists is the fabric
-controller's knowledge, and it breaks under tag translation, QinQ or a deliberate duplicate, so UDLM
-never infers that two observer keys name the same VLAN (row 119). A VLAN record's identity is its owning
-provider's own identifier, `provider_id` (a fabric controller's network id); the record lists the
-observer keys that resolve to it. A fabric with no provider reporting its VLANs has no authoritative VLAN
-identity, and an observed edge stays key-only (REF-003) until a provider-backed record claims its key,
-which is a valid state, not a failure. A bridge or overlay a host owns is keyed at the host, because
-there the host is the provider; a subnet
-is `subnet_prefix: <segment>#<cidr>`, with `gateway_mac`, the MAC that answers the gateway address, as
-a second key that separates a masqueraded test copy from the original. A record MAY carry several keys;
-resolution matches on what it has and refuses a tie as `ambiguous` rather than merging on a guess, the
-same refusal a reference gets (URF-004). Resolving that key to an entity is the control plane's act,
-not the sweep's: `target_uuid` is present once the key has matched an entity and absent until then,
-and an unresolved observed edge is a true observation the sweep writes anyway — it is the signal that
-something exists which no record yet names (the durable inventory role above), reported by the estate
-gate, never refused. Resolution is not disclosure: `target_uuid` is written only where the resolved
-entity is visible to the record's tenant — the same tenant, or another tenant under a grant
-(`GRD-001`); a key that resolves across a tenant boundary with no grant leaves the edge key-only and
-raises a finding (ADR-060) for the platform, because a UUID in a tenant's record tells that tenant
-the entity exists. This is why a provider never supplies a UUID for an observed edge: it would need
-the estate's key→entity index, which is exactly the cross-tenant knowledge it must not hold. A
-provider names UUIDs only where the control plane issued them to it — as the executor of a request
-(the resolved edges in its dispatch slice, echoed on the realized record) or as the owner of a
-composition whose constituents the control plane expanded on its behalf, in the parent's tenant and
-under the parent's authority (`template-composition-model.md` §5.1). A dependency a provider needs
-in order to realize is declared on the type (`DEP-014`) and resolved before dispatch. A provider may
-also **originate a request of its own** when realizing calls for another provider's offering (a VM
-provider whose pool is full requests raw storage): it requests substrate *it* owns, in its own tenant
-and under its own authority, and the link to the consumer's request is cause, never authority —
-`caused_by_request`, not `root_request_uuid` (`PRV-012`, `DEP-018`; register row 080). The UUIDs it
-then knows are, again, ones the control plane issued to it as the requester. And it carries **no declared semantics**:
-no `strength`, `relation`, `bound_field` or `target_field` — a probe sees that a disk is in a host, not
+**A sweep sees edges as well as fields (RHY-007).** A probe on a host sees which domains run on it;
+a probe in a guest sees the WWN of the disk passed through to it. An LLDP walk sees which switch
+port a NIC is cabled to. These are observations of the same standing as a discovered field, and they
+ride the discovered record as `dependencies` — with one difference in shape that is the whole rule.
+An observed edge names its target by the **natural key the probe read** (`target_key`: a
+`correlation_ids` scheme and value — a libvirt domain UUID, a WWN, a MAC, a chassis id). A compound
+key such as a switch port uses a scheme that names the compound. **A key that is unique only within
+a scope carries the scope in its value**, rooted at the isolation domain the probe observed it in.
+Two VLAN 100s or two 198.51.100.0/24s coexist on purpose exactly when they sit in different domains
+(row 118). So a segment is `segment_id: <observer>/<domain>/<id>`: the observing device's own key,
+then the bridge domain, VRF, bridge or overlay, then the tag or VNI. An observer-rooted key is an
+**observation, never an identity**: a VLAN trunked across three switches is seen as three keys, one
+per chassis, and nothing in them says they are one broadcast domain. Working that out from LLDP
+neighbours and trunk tag lists is the fabric controller's knowledge, and it breaks under tag
+translation, QinQ or a deliberate duplicate, so UDLM never infers that two observer keys name the
+same VLAN (row 119). A VLAN record's identity is its owning provider's own identifier, `provider_id`
+(a fabric controller's network id); the record lists the observer keys that resolve to it. A fabric
+with no provider reporting its VLANs has no authoritative VLAN identity, and an observed edge stays
+key-only (REF-003) until a provider-backed record claims its key, which is a valid state, not a
+failure. A bridge or overlay a host owns is keyed at the host, because there the host is the
+provider. A subnet is `subnet_prefix: <segment>#<cidr>`, with `gateway_mac`, the MAC that answers
+the gateway address, as a second key that separates a masqueraded test copy from the original. A
+record MAY carry several keys; resolution matches on what it has and refuses a tie as `ambiguous`
+rather than merging on a guess, the same refusal a reference gets (URF-004). Resolving that key to
+an entity is the control plane's act, not the sweep's: `target_uuid` is present once the key has
+matched an entity and absent until then. An unresolved observed edge is a true observation the sweep
+writes anyway. It is the signal that something exists which no record yet names (the durable
+inventory role above), reported by the estate gate, never refused. Resolution is not disclosure:
+`target_uuid` is written only where the resolved entity is visible to the record's tenant — the same
+tenant, or another tenant under a grant (`GRD-001`). A key that resolves across a tenant boundary
+with no grant leaves the edge key-only and raises a finding (ADR-060) for the platform, because a
+UUID in a tenant's record tells that tenant the entity exists. This is why a provider never supplies
+a UUID for an observed edge: it would need the estate's key→entity index, which is exactly the
+cross-tenant knowledge it must not hold. A provider names UUIDs only where the control plane issued
+them to it. That happens as the executor of a request (the resolved edges in its dispatch slice,
+echoed on the realized record). It also happens as the owner of a composition whose constituents the
+control plane expanded on its behalf, in the parent's tenant and under the parent's authority
+(`template-composition-model.md` §5.1). A dependency a provider needs in order to realize is
+declared on the type (`DEP-014`) and resolved before dispatch. A provider may also **originate a
+request of its own** when realizing calls for another provider's offering (a VM provider whose pool
+is full requests raw storage). It requests substrate *it* owns, in its own tenant and under its own
+authority. The link to the consumer's request is cause, never authority — `caused_by_request`, not
+`root_request_uuid` (`PRV-012`, `DEP-018`; register row 080). The UUIDs it then knows are, again,
+ones the control plane issued to it as the requester. And it carries **no declared semantics**: no
+`strength`, `relation`, `bound_field` or `target_field` — a probe sees that a disk is in a host, not
 what the host is allowed to do without it. Those belong to the requested record (placement) and the
 realized record (the provider), and the two lists are what drift compares (§6): a requested
 `contained_by` one host and an observed `contained_by` another is a placement that moved. An edge a
@@ -253,9 +287,13 @@ values are illustrative — the normative shapes are the resource-type spec + `r
 | **Discovered** | a later discovery cycle observes the VM running at `198.51.100.20`, correlated to `…a1b2` via `correlation_ids`. It **matches** Realized → **no drift**. | discovery |
 
 **The point the example makes:**
+
 - Each state is a *different question about the same entity*, held as its own record — not one object mutated in place.
+
 - The transition Requested → Realized is where **two-phase reserve/commit** (§2.3a) sits: the `reservation_hold_uuid` proves the whole graph was reservable *before* anything was built.
+
 - If a later discovery saw `ip: 203.0.113.9` while Realized still said `198.51.100.20`, that mismatch **is drift** (§6) — Discovered never overwrites Realized; it only compares.
+
 - Had this VM been a pre-existing server instead, it would enter **Discovered-first** (§2.4) with Discovered records only, then gain an Intent on adoption — same UUID, story running the other direction.
 
 ## 2.7 The record of each state
@@ -298,8 +336,8 @@ block to referee several writers on one document, the per-state records need non
 each.
 
 And the map between the states is checkable: every field that differs between a record and the
-record it references is attributed in that record's `provenance`, or the gate fails — an unknown change
-cannot enter the chain of records (TRN-001; `audit-provenance-observability.md` §2.5).
+record it references is attributed in that record's `provenance`, or the gate fails. An unknown
+change cannot enter the chain of records (TRN-001; `audit-provenance-observability.md` §2.5).
 
 Worked example: `registry/examples/example-vm-app01-{intent,requested,realized}-record.yaml`, one
 VM as three records sharing one `entity_uuid`. Enforced: `RHY-006` — a folded record fails CI.
@@ -341,7 +379,7 @@ All four states are distinct data domains, each with specific immutability rules
 
 ## 5. Rehydration
 
-Rehydration is using a previously stored state record as the starting point for a new request — for DR, cloning, environment refresh, or replacing a failed resource. It is **not** a shortcut around governance: the estate's declared touch-trigger stance (ADR-045 §8 — adopt-on-touch, offer-on-touch, or provenance-until-explicit, declared once as a policy clause) decides which policy revisions govern the replay, with adopt-current the common default; RHY-001's floor (§5.3 — tenancy, sovereignty, cross-tenant authorization always current) applies under every stance.
+Rehydration is using a previously stored state record as the starting point for a new request — for DR, cloning, environment refresh, or replacing a failed resource. It is **not** a shortcut around governance. The estate's declared touch-trigger stance (ADR-045 §8 — adopt-on-touch, offer-on-touch, or provenance-until-explicit, declared once as a policy clause) decides which policy revisions govern the replay, with adopt-current the common default. RHY-001's floor (§5.3 — tenancy, sovereignty, cross-tenant authorization always current) applies under every stance.
 
 **Rehydration adds almost nothing to the data model.** It is an *operation over data UDLM already carries* — replay a stored **Intent / Requested / Realized** record through the **dependency graph** (which supplies the correct order). The entity's identity is preserved on a **restore in place** and re-established on a **rebuild** (§5.2). UDLM contributes only the three irreducible things below; *how* an implementation runs the replay — placement re-evaluation, policy-version pinning, leases, concurrency, the tenancy-conflict pause — is implementation concern (see control-plane operational model, `docs/flows/uc-10-dynamic-rehydration.md`).
 
@@ -360,9 +398,10 @@ A rehydration starts from any of the three stored states; this is not new struct
 Identity behaves in one of two ways, by scenario — mirroring the rehydration **modes** (§5.3):
 
 - **Restore in place** (the *Faithful* mode — the same resource returns on its provider). The entity **UUID is preserved**; only the **provider-side identifier** changes (recorded on the record in `provider_entity_id_history`, `REHYDRATE` audit action). Every external reference (CMDB, cost attribution, audit, relationships, dependency declarations) is by UUID, so preserving it keeps them valid.
+
 - **Rebuild from intent** (the *Provider-Portable* mode — the original is gone, e.g. its provider is offline, so the workload is re-realized elsewhere). The replacement is a **new entity with a new UUID**; dependents are re-pointed to it as the dependency graph replays.
 
-In both cases lineage rides the general provenance model: `rehydration` is a provenance `source.kind`, and the new Intent carries `rebuilt_from` (`source_record_uuid`, and `source_store` when it is elsewhere) for the record it was rehydrated from — so a rebuild's new UUID stays traceable to what it replaced. **The data model needs no separate rehydration-history structure**: it is reconstructable from provenance plus the `REHYDRATE` audit trail.
+In both cases lineage rides the general provenance model: `rehydration` is a provenance `source.kind`, and the new Intent carries `rebuilt_from` (`source_record_uuid`, and `source_store` when it is elsewhere) for the record it was rehydrated from. So a rebuild's new UUID stays traceable to what it replaced. **The data model needs no separate rehydration-history structure**: it is reconstructable from provenance plus the `REHYDRATE` audit trail.
 
 ### 5.3 The two invariants
 
@@ -371,11 +410,11 @@ Everything genuinely data-model about rehydration reduces to two rules:
 | Policy | Rule |
 |--------|------|
 | `RHY-001` | Tenancy, sovereignty, and cross-tenant authorizations always use **current** policies during rehydration — they cannot be pinned to a historical version (only resource-configuration policy may be pinned). |
-| `RHY-005` | On a **restore in place** (Faithful mode) the entity **UUID is preserved** and only the provider-side identifier changes (recorded in `provider_entity_id_history`); a **rebuild** (Provider-Portable mode — the original is gone) is a **new entity with a new UUID**, kept traceable to its source by lineage (§5.2). Rehydration is transactional either way — a failed target leaves the pre-rehydration state intact. |
+| `RHY-005` | On a **restore in place** (Faithful mode) the entity **UUID is preserved** and only the provider-side identifier changes (recorded in `provider_entity_id_history`). A **rebuild** (Provider-Portable mode — the original is gone) is a **new entity with a new UUID**, kept traceable to its source by lineage (§5.2). Rehydration is transactional either way — a failed target leaves the pre-rehydration state intact. |
 | `RHY-006` | **One record per state — never a folded record.** An entity's four states are stored as four separate records (`registry/state-record.schema.json`), each written once by one party and superseded, never edited. A document carrying a `states` block is the **entity view** — a read model assembled on demand (`registry/entity-view.schema.json`) — and MUST NOT be authored, stored, or validated as a record; the only authored view is the worked example `registry/examples/orders-db.json`. `drift` and `ownership` are never stored on any record. This is the model as originally specified; the folded instance schema that replaced it for a year was the deviation. Gate: `tests/check_state_records_only.py` (SRO-001/002/003). |
 | `RHY-007` | **An observed edge is a discovered fact and rides the discovered record.** A `discovered_record` MAY carry `dependencies` for edges a sweep saw. Each names its target by the key the probe read (`target_key`: a `correlation_ids` scheme + value; a compound key uses a scheme that names it). The control plane resolves the key: `target_uuid` is present once resolved and absent until then; an unresolved edge is written and reported by the estate gate, never refused. `target_uuid` is written only where the record's tenant may see the target (same tenant, or a grant, `GRD-001`); otherwise the edge stays key-only and the resolution is a finding (ADR-060). A provider never supplies a UUID for an observed edge; it knows only UUIDs the control plane issued to it (its dispatch slice, a composition expanded for it — `template-composition-model.md` §5.1 — or a request of its own, `PRV-012`/`DEP-018`). `strength`, `relation`, `bound_field` and `target_field` are refused on a discovered record; `target_key` is refused on intent, requested and realized records. Drift compares the requested/realized list with the observed one (§6). An edge no probe can key-match is intent, entered by claiming. Schema: `registry/state-record.schema.json` (discovered `allOf`); view: `entity_view.py` folds `dependencies` realized → requested → discovered. |
 
-*The rest is implementation/policy, not data model, and lives in control-plane operational model: the placement × policy-version **"modes"** (Faithful / Provider-Portable / Historical) are operational request flags; **`min_auth_level`** rehydration constraints are an authorization policy; and the pipeline, leases, TTL, concurrency, and PENDING_REVIEW pause are runtime (`RHY-002/003/004/006/007/008/010/011/012`).*
+*The rest is implementation/policy, not data model, and lives in control-plane operational model. The placement × policy-version **"modes"** (Faithful / Provider-Portable / Historical) are operational request flags; **`min_auth_level`** rehydration constraints are an authorization policy. The pipeline, leases, TTL, concurrency, and PENDING_REVIEW pause are runtime (`RHY-002/003/004/006/007/008/010/011/012`).*
 
 ---
 
@@ -425,10 +464,15 @@ An **unsanctioned change** is a change made directly to a resource without a cor
 ## 8. Related Concepts
 
 - **data store** — the formal provider type for all stores
+
 - **Entity UUID** — the universal linking key across all four states
+
 - **Rehydration** — using a prior state record as the starting point for a new request (data-model aspects here; runtime in control-plane operational model)
+
 - **Provider-Portable Rehydration** — rehydration with provider selection re-evaluated
+
 - **Drift Detection** — comparing Realized State against Discovered State
+
 - **Unsanctioned Change** — a discovered resource modification with no corresponding request
 
 ---
