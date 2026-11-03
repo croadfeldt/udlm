@@ -10,7 +10,7 @@
 
 ## 1. The reciprocal contract
 
-Cost is a **two-way** contract between a UDLM-conformant implementation (e.g. The control plane) and a cost engine — neither side owns both halves:
+Cost is a **two-way** contract between a UDLM-conformant implementation (for example, the control plane) and a cost engine — neither side owns both halves:
 
 ```
                  outbound: metering inputs
@@ -67,7 +67,7 @@ Given an `entity_uuid`, a conformant implementation MUST be able to resolve ever
 
 ## 3. Worked example — a bare-metal host, capex + opex
 
-`Machine.BareMetalHost` v0.2.0 carries (see `registry/generated/machine.bare-metal-host.json`):
+No registry class declares `metering` yet. A `Machine.BareMetalHost` could declare, for example:
 
 | Dimension | class | source | Meaning |
 |-----------|-------|--------|---------|
@@ -77,7 +77,7 @@ Given an `entity_uuid`, a conformant implementation MUST be able to resolve ever
 | `provisioned_hours` | capex | lifecycle `realized_to_decommissioned` | its in-service window |
 | `power_kwh` | opex | telemetry `host.power.draw` | actual energy consumed |
 
-`priced_by → onprem-baremetal-2026-q3` in the cost engine. The control plane resolves the capex dimensions from fields + the lifecycle clock and the opex dimension from a power-telemetry provider. It hands them to the engine with the `priced_by` ref, and consumes the returned `cost.attributed {capex, opex}`, attributing it to the host's owning tenant. A **VM** (`Machine.VM`) follows the identical pattern — capex = allocated vCPU/memory/disk over `provisioned_hours`; opex = `cpu_hours_used`, `network_egress_gb`, `power_kwh`.
+`priced_by → onprem-baremetal-2026-q3` in the cost engine. The control plane resolves the capex dimensions from fields + the lifecycle clock and the opex dimension from a power-telemetry provider. It hands them to the engine with the `priced_by` ref, and consumes the returned `cost.attributed {capex, opex}`, attributing it to the host's owning tenant. A **VM** (`Machine.VM`) would follow the identical pattern — capex = allocated vCPU/memory/disk over `provisioned_hours`; opex = `cpu_hours_used`, `network_egress_gb`, `power_kwh`.
 
 ---
 
