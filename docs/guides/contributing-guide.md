@@ -1,8 +1,8 @@
 # Contributing to UDLM — the newcomer's on-ramp
 
-**What this settles:** how contributing to UDLM works *socially and procedurally* — what to expect, the
-shape of a pull request from fresh `main` to merge, the guidelines that keep the model coherent, and where
-to go for the technical *how*. Read it once before your first contribution and you can make that first
+**What this settles:** how contributing to UDLM works *socially and procedurally*. It covers what to
+expect, the shape of a pull request from fresh `main` to merge, the guidelines that keep the model
+coherent, and where to go for the technical *how*. Read it once before your first contribution and you can make that first
 contribution correctly. The one promise: **the gates handle the bookkeeping, so review — and your
 attention — is spent on judgment.**
 
@@ -24,7 +24,7 @@ Four things are true of every contribution, and knowing them up front saves a su
   change. (Full rule: [`CONTRIBUTING.md`](../../CONTRIBUTING.md) §"Subject-scoped pull requests".)
 - **Every human-read artifact is written for a reader who wasn't there** — the DOC-001 standard. A spec, a
   use case, a flow, an ADR, a PR description, a review comment: each is read by someone without your
-  context, so it names the problem in ordinary words, carries every reference's gist in one line, and passes
+  context. So it names the problem in ordinary words, carries every reference's gist in one line, and passes
   the cold-reader test. (Full rule: [`CONTRIBUTING.md`](../../CONTRIBUTING.md) §"Write for a reader who wasn't
   there".)
 - **The gates do the bookkeeping.** Validity, identity, coverage, vocabulary, single-source — the automated

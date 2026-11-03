@@ -18,10 +18,10 @@ docs/udlm-native.md in that repository.
 | **Control plane** | Something evaluates, orders, places, records, or refuses. Two sub-cells: **design** (a DCM architecture decision whose title covers the row) and **code** (a code path in the control-plane monolith). | Design: croadfeldt/dcm, `architecture/adr/`. Code: croadfeldt/control-plane, a fork of the dcm-project monolith, synced with upstream at dd2caea (2026-09-23) on 2026-09-27; the `udlm-native` branch carries increments 1–5 of its UDLM plan. |
 | **Provider** | Something realizes the resource from intent, or reports what it found. | croadfeldt/dcm-provider-libvirt (Ansible VM reconciler, DCM wrap is design-only). The homelab discovery sweep, which writes records into the homelab estate repository (private). No OSAC provider exists. |
 
-Cell vocabulary: `shape` (model layer present), `designed` (a DCM ADR covers it), `code` (a code path
-exists and does what the row needs), `partial` (a code path exists but does less than the row needs;
-the cell says what), `reports` (a provider writes discovered records for it), `realizes` (a provider
-builds it from intent), `none`.
+Cell vocabulary: `shape` (model layer present); `designed` (a DCM ADR covers it); `code` (a code path
+exists and does what the row needs); `partial` (a code path exists but does less than the row needs;
+the cell says what). Then `reports` (a provider writes discovered records for it), `realizes` (a provider
+builds it from intent), and `none`.
 
 ## The map
 
@@ -61,13 +61,13 @@ builds it from intent), `none`.
 
 ## What moved since 2026-09-15
 
-- **The fork's `udlm-native` branch** (croadfeldt/control-plane, PRs #4 to #11): service types generated
-  from `registry/generated/` with UDLM `outputs` as read-only fields; intent, requested and realized
-  records written from placement, validated against `registry/state-record.schema.json` and sealed
-  into the entity's chain; a read API serving the records and the entity view (a port of
-  `registry/tools/entity_view.py`, parity-tested on the registry's worked example); field-level
-  provenance; CEL output bindings checked against the class's declared outputs. Rows 1 and 5 move to
-  `code`; rows 3, 13, 14 gain their first code.
+- **The fork's `udlm-native` branch** (croadfeldt/control-plane, PRs #4 to #11) added five things.
+  Service types generated from `registry/generated/` with UDLM `outputs` as read-only fields. Intent,
+  requested and realized records written from placement, validated against
+  `registry/state-record.schema.json` and sealed into the entity's chain. A read API serving the records
+  and the entity view (a port of `registry/tools/entity_view.py`, parity-tested on the registry's worked
+  example). Field-level provenance. CEL output bindings checked against the class's declared outputs.
+  Rows 1 and 5 move to `code`; rows 3, 13, 14 gain their first code.
 - **Upstream** (dcm-project/control-plane, synced to dd2caea): agent-based provisioning, DAG progression
   and reversion with compare-and-swap and retries, composite rehydration, runtime output fields.
   Rows 8, 9 move from `none` to `partial`; rows 2, 10, 11, 17 gain code.

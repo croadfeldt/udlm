@@ -1,27 +1,28 @@
 # The six built-in profiles — personas, environments, and what actually differs
 
 **A profile — a *deployment* profile — is one activatable unit**: its contents are the
-governance artifacts that posture turns on, and engaging it is a deployment act (`registry/profile.schema.json`; the six
-the standard postures are the UDLM Profile Set's, croadfeldt/udlm-profiles; the worked example is `registry/examples/example-profile.yaml`). Authoring your own posture:
+governance artifacts that posture turns on, and engaging it is a deployment act (`registry/profile.schema.json`).
+The six standard postures are the UDLM Profile Set's (croadfeldt/udlm-profiles); the worked example is
+`registry/examples/example-profile.yaml`. Authoring your own posture:
 [`../authoring/profile.md`](../authoring/profile.md).
 
 **What this settles (orientation, non-normative).** One page defining each built-in profile on five criteria —
 **persona, target environment & estate lifetime, durability posture, failure semantics, approvals/automation** —
 plus its expected use cases and the characteristics that actually differ between profiles. The authorities this
 page defers to: **ADR-007** (what a profile *is*: a composed **set with a floor**, built-ins immutable,
-fork-on-modify, platform-scoped), the per-profile ADRs (**017–022**, the *why* of each floor), the shipped
-instances (the Profile Set's postures, or your own), and
-[`registry/profile-settings-index.md`](../../registry/profile-settings-index.md) (one home per profile-governed
-setting — **the** index for "what settings does a profile turn").
+fork-on-modify, platform-scoped) and the per-profile register rows (**017–022**, the *why* of each floor).
+It also defers to the shipped instances (the Profile Set's postures, or your own) and to
+[`registry/profile-settings-index.md`](../../registry/profile-settings-index.md), one home per
+profile-governed setting — **the** index for "what settings does a profile turn".
 
-The ladder: **`homelab → dev → standard → prod → fsi → sovereign`**. (`minimal` is the retired pre-DCM ADR-017 name
+The ladder: **`homelab → dev → standard → prod → fsi → sovereign`**. (`minimal` is the retired name
 for `homelab` — naming charter.) Two facts frame everything: **a floor is a minimum, not a filter** (nothing
 above the floor is disabled), and **every security property exists in every profile** (DPO-001) — profiles turn
 strictness, thresholds, and automation, never existence.
 
 ---
 
-## homelab — the single-operator on-ramp (DCM ADR-017)
+## homelab — the single-operator on-ramp (register row 017)
 
 **Floor (the guaranteed minimum):** the `dev`-sized substrate — structural validation,
 single-tenant ownership, resolved-profile evaluation, append-only audit, four-state tracking.
@@ -41,7 +42,7 @@ making one of these floor-required is the custom-profile fork path.
 **Expected use cases:** personal infrastructure under real management; learning the system by living on it;
 the adoption on-ramp that later grows into `standard`. **Not** for teams or anything customer-facing.
 
-## dev — the evaluation & co-engineering target (DCM ADR-018; the shipped default)
+## dev — the evaluation & co-engineering target (register row 018; the shipped default)
 
 **Floor:** the smallest set that still runs the release use cases — structural validation,
 single-tenant ownership, resolved-profile evaluation, append-only audit, four-state tracking,
@@ -64,7 +65,7 @@ environments. The floor is deliberately the smallest that runs the whole archite
 **homelab vs dev in one line:** identical wire contracts, opposite *durability* orientation — homelab is a tiny
 prod, dev is a scratchpad. That axis is why both exist.
 
-## standard — baseline production (DCM ADR-019)
+## standard — baseline production (register row 019)
 
 **Floor:** `dev`'s **plus** the three things that separate "runs" from "operates" —
 `policy/governance-matrix` (boundary enforcement on every DCM→Provider crossing),
@@ -82,13 +83,13 @@ cadence). `standard ⊃ dev` — profiles compare by floor-containment (profile-
 
 **Expected use cases:** the default choice for real workloads without a regulatory driver.
 
-## prod — hardened production (DCM ADR-020)
+## prod — hardened production (register row 020)
 
-**Floor:** `standard`'s **plus** blast-radius-aware change control and bounded execution —
-`policy/blast-radius-impact` (changes gated against what they actually reach),
-`policy/dual-approval-destructive` (a human gate on irreversible actions), and
-`recovery/bounded-convergence` + tighter dispatch timeouts (retries bounded with a
-terminal-failure surface, so convergence cannot loop indefinitely). `prod ⊃ standard ⊃ dev`.
+**Floor:** `standard`'s **plus** blast-radius-aware change control and bounded execution.
+That is `policy/blast-radius-impact` (changes gated against what they actually reach) and
+`policy/dual-approval-destructive` (a human gate on irreversible actions). It is also
+`recovery/bounded-convergence` + tighter dispatch timeouts: retries bounded with a
+terminal-failure surface, so convergence cannot loop indefinitely. `prod ⊃ standard ⊃ dev`.
 
 | Criterion | |
 |---|---|
@@ -100,13 +101,13 @@ terminal-failure surface, so convergence cannot loop indefinitely). `prod ⊃ st
 
 **Expected use cases:** production with uptime/cost governance obligations but no sector regulator.
 
-## fsi — regulated financial services (DCM ADR-021)
+## fsi — regulated financial services (register row 021)
 
-**Floor:** `prod`'s **plus** the compliance dimension — tamper-evident Merkle-transparency
-audit with inclusion/consistency proofs (universal-audit §8, RFC 9162); attestation-gated,
-**verifiable** provider admission (the accreditation's proof chains to a trust anchor and is
-verified before scope is appraised — the two-gate, matrix §3.7/§3.8); governance-matrix on
-**every** lifecycle operation; the time-bounded override-approval workflow; attested time; and
+**Floor:** `prod`'s **plus** the compliance dimension. Tamper-evident Merkle-transparency
+audit with inclusion/consistency proofs (universal-audit §8, RFC 9162). Attestation-gated,
+**verifiable** provider admission: the accreditation's proof chains to a trust anchor and is
+verified before scope is appraised (the two-gate, matrix §3.7/§3.8). Governance-matrix on
+**every** lifecycle operation. The time-bounded override-approval workflow, attested time, and
 regulatory retention. A distinct *kind* of set (a compliance posture), not merely `prod`+more.
 
 | Criterion | |
@@ -119,12 +120,12 @@ regulatory retention. A distinct *kind* of set (a compliance posture), not merel
 
 **Expected use cases:** FSI estates where the regulator reads the audit trail.
 
-## sovereign — data sovereignty, the strictest floor (DCM ADR-022)
+## sovereign — data sovereignty, the strictest floor (register row 022)
 
-**Floor:** `fsi`'s **plus** the sovereignty dimension — in-boundary key material (audit
-signing keys never leave the boundary, AUD-012); sovereign-only placement with the sovereignty
-declaration **attested**, never self-asserted; data-plane-attested residency (conveyed to and
-attested by the enforcing provider — `enforcement_plane`, matrix §3.8); and sub-processor
+**Floor:** `fsi`'s **plus** the sovereignty dimension. In-boundary key material (audit
+signing keys never leave the boundary, AUD-012). Sovereign-only placement with the sovereignty
+declaration **attested**, never self-asserted. Data-plane-attested residency, conveyed to and
+attested by the enforcing provider (`enforcement_plane`, matrix §3.8). Sub-processor
 restriction (no unauthorized downstream access). Spatial confinement is its own dimension; a
 stricter need forks `sovereign` as a custom profile.
 
@@ -156,9 +157,9 @@ Each row names the axis and its **owning table** (values live there, once — ci
 | Tenancy enforcement (`advisory` at homelab → hard boundaries) | `docs/spec/foundations/universal-groups.md` §enforcement model |
 | Trust/attestation floors per plane (implementation defaults) | DCM architecture/trust-profiles.md in the DCM repo (implementation-side) |
 
-**The durability axis** (the one this page adds, per the profile ADRs' intent): homelab and dev sit at the same
-*strictness* end of the ladder but opposite *durability* ends — a distinction the settings tables don't carry
-because it lives in defaults orientation (TTL/expiry, retention, cleanup automation), not floors.
+**The durability axis** (the one this page adds, per the profile rows' intent): homelab and dev sit at the same
+*strictness* end of the ladder but opposite *durability* ends. The settings tables don't carry that
+distinction, because it lives in defaults orientation (TTL/expiry, retention, cleanup automation), not floors.
 
 ---
 

@@ -46,7 +46,8 @@ returns.
 
 ## The outputs a binder consumes
 
-At Realized, `hub-prod` publishes `hub_ready`, `api_endpoint`, `managed_cluster_count` — a
+At Realized, `hub-prod` publishes outputs such as `hub_ready`, `api_endpoint` and
+`managed_cluster_count` (illustrative here; the `Workload` class declares `endpoints` today). A
 spoke-provisioning request binds on `hub_ready`; a fleet dashboard binds `managed_cluster_count`
 (a published reading of the inbound edges, not a second source of truth).
 
