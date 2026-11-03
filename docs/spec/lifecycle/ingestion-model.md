@@ -2,12 +2,8 @@
 
 **Related Documents:** [Context and Purpose](../foundations/context-and-purpose.md) | [Four States](../foundations/four-states.md) | [Resource/Service Entities](../foundations/resource-service-entities.md) | [Entity Relationships](../foundations/entity-relationships.md) | [Resource Grouping](../foundations/resource-grouping.md)
 
->
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md).
-> more of those three abstractions.
->
->
+> [foundations.md](../foundations/foundations.md). This document applies two of them.
 > Data: ingestion state artifacts. Provider: discovery provider invocation.
 
 ---
@@ -165,15 +161,15 @@ The **priority order** in which signals are evaluated is an implementation confi
 
 ---
 
-## 8. Brownfield Ingestion
+## 7. Brownfield Ingestion
 
-### 8.1 Overview
+### 7.1 Overview
 
 Brownfield ingestion brings infrastructure that already exists in the real world — but is unknown to the substrate — under lifecycle management. The source is the **Discovered State**: a Service Provider interrogates existing infrastructure and creates Discovered State records for everything it finds.
 
 This is the "greening the brownfield" use case — taking an unmanaged estate and progressively bringing it under governance without requiring a big-bang cutover.
 
-### 8.2 Brownfield Flow
+### 7.2 Brownfield Flow
 
 ```
 Service Provider performs discovery scan
@@ -211,7 +207,7 @@ Service Provider performs discovery scan
      The implementation now manages the full lifecycle of this previously unmanaged entity
 ```
 
-### 8.3 Discovered → Realized Promotion Contract
+### 7.3 Discovered → Realized Promotion Contract
 
 When a brownfield entity is promoted, its Discovered State record is promoted to become the
 initial Realized State — the moment the implementation assumes lifecycle authority. Promotion
@@ -225,7 +221,7 @@ From this point, the standard drift detection cycle runs: future discoveries are
 
 ---
 
-## 9. Relationship to the Four States
+## 8. Relationship to the Four States
 
 Ingestion interacts with the Four States model as follows:
 
@@ -239,7 +235,7 @@ In all cases: once an entity reaches `PROMOTED`, it has a Realized State record 
 
 ---
 
-## 10. UDLM System Policies — Full List
+## 9. UDLM System Policies — Full List
 
 | Policy | Rule |
 |--------|------|
@@ -262,7 +258,7 @@ In all cases: once an entity reaches `PROMOTED`, it has a Realized State record 
 
 ---
 
-## 11. Related Concepts
+## 10. Related Concepts
 
 - **`__transitional__` Tenant** — system-managed holding Tenant for unassigned ingested entities
 - **Ingestion Record** — provenance record carried by every ingested entity

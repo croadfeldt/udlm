@@ -113,8 +113,8 @@ data:
     # curation ladder a standard term used.
 ```
 
-> **`action`, not `capability`** (maintainer ruling 2026-08-11). Three different axes had collided
-> on one word:
+> **`action`, not `capability`** (maintainer ruling 2026-08-11). Three different things share one
+> word, and the matrix keeps them apart:
 >
 > | | is | lives in |
 > |---|---|---|
@@ -122,10 +122,9 @@ data:
 > | **thing** | what it offers — `Machine.VM`, `Volume` | the class system |
 > | **action** | what may be DONE to that thing — `read`, `replicate` | `taxonomies/action.yaml` |
 >
-> This axis was previously labelled `capability` and carried ten terms of its own, overlapping the
-> audit vocabulary on **two words** — so *"was this action authorized?"* could not be answered by
-> matching a permit against a record. `read` is not something a provider is *capable of*; it is
-> something an actor *does to* a resource. One vocabulary now serves both sides.
+> `read` is not something a provider is *capable of*; it is something an actor *does to* a
+> resource. One vocabulary serves both the matrix and the audit record, so *"was this action
+> authorized?"* is answered by matching a permit against a record.
 >
 > UDLM carries the vocabulary and the format. **Whether a given actor may perform a given action is
 > policy's call and the implementation's** — the matrix declares the axes a decision is made over,
@@ -230,9 +229,10 @@ governance_matrix_rule:
   # soft: downstream rules at same or higher domain can tighten further
 
   # Obligations that must hold for ALLOW_WITH_CONDITIONS. Declarative requirements, not
-  # comparisons: each names a REQUIRED STATE, and §3.8's subsumption rule says how a broader
-  # holding satisfies a narrower requirement. The decision shape is UDLM's (policy-contract §5);
-  # the comparison language is not (§2.5).
+  # comparisons: each names a REQUIRED STATE, and the subsumption rule in
+  # accreditation-and-authorization-matrix.md §3.8 says how a broader holding satisfies a narrower
+  # requirement. The decision shape is UDLM's (policy-contract §5); the comparison language is not
+  # (policy-contract §2.5).
   requires:
     target.trust_posture: verified
     context.tls_mutual: required
