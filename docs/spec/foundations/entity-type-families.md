@@ -27,7 +27,7 @@ discovery and coherence. It is **not** a boundary on who may use them.
 > **Entity-Type Family**
 > A **logical grouping** of UDLM entity-type definitions, named for the domain in whose
 > context they were first defined (e.g. the **Resource** family, first exercised by the control plane
-> implementation; the **Knowledge** family, first exercised by the DAV implementation). A family
+> implementation; the **Knowledge** family, first exercised by an architecture-knowledge implementation). A family
 > organizes definitions; **it is not a usage boundary, a scope, a permission, or an
 > ownership.** The named implementations are **non-normative examples** (`GLOSSARY.md`) —
 > a family is defined by UDLM and depends on no implementation.
@@ -71,7 +71,7 @@ no second definition of "family" exists.
 
 ## 3. Why families (design rationale)
 
-Modeling a non-infrastructure system (DAV) on UDLM showed the universality lives in the
+Modeling a non-infrastructure system (the first Knowledge-family implementation) on UDLM showed the universality lives in the
 substrate/contracts while the entity-type *definitions* are domain-specific in meaning
 (see the case study). Families are simply the catalog structure that follows: **one
 universal substrate; a growing, universally-usable set of definitions; organized into
@@ -143,7 +143,7 @@ Mechanics:
 |------|---------|---------|
 | **family** | Whose vocabulary defines this meaning? | `Drive [Computing]` |
 | **domain / domain_prefix** | Which sub-domain within the family? | capability domain `PRV`, `automation` |
-| **pillar** | Which implementation pillar (DAV)? | platform / people-process / enablement |
+| **pillar** | Which pillar of the implementation's own model? | platform / people-process / enablement (one implementation's values) |
 | **scope** (instances) | Who may see/own this artifact? | global / shared / domain / project |
 
 **Recommendation:** `family` should be a **standard tag on all UDLM Data** (a candidate for
