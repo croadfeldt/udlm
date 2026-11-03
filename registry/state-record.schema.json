@@ -436,7 +436,13 @@
             "vlan": "lab/net/vlan-20"
           }
         ],
-        "disks": [{"name": "root", "size": "100Gi", "role": "boot"}],
+        "disks": [
+          {
+            "name": "root",
+            "size": "100Gi",
+            "role": "boot"
+          }
+        ],
         "run_state": {
           "desired_state": "running"
         }
@@ -577,7 +583,13 @@
             "network_ref": "lab/net/dmz"
           }
         ],
-        "disks": [{"name": "root", "size": "100Gi", "role": "boot"}],
+        "disks": [
+          {
+            "name": "root",
+            "size": "100Gi",
+            "role": "boot"
+          }
+        ],
         "placement": {
           "location_ref": "lab/facility/rack-3"
         },
@@ -919,7 +931,8 @@
                   "True",
                   "False",
                   "Unknown"
-                ]
+                ],
+                "x-standard": "Kubernetes:meta/v1 Condition.status"
               },
               "reason": {
                 "type": "string"
@@ -1177,12 +1190,12 @@
       "properties": {
         "execution_state": {
           "enum": [
-            "REQUESTED",
-            "INITIATED",
-            "EXECUTING",
-            "COMPLETED",
-            "FAILED",
-            "CANCELLED"
+            "requested",
+            "initiated",
+            "executing",
+            "completed",
+            "failed",
+            "cancelled"
           ],
           "description": "The current run's state (§6.2). Distinct from lifecycle_state."
         },

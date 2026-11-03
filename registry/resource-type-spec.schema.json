@@ -268,7 +268,8 @@
               "0..n",
               "1..n"
             ],
-            "default": "0..n"
+            "default": "0..n",
+            "x-value-form": "notation"
           },
           "description": {
             "type": "string"
@@ -532,7 +533,8 @@
             "enum": [
               "Atomic",
               "Composite"
-            ]
+            ],
+            "x-value-form": "name"
           }
         }
       }
@@ -551,7 +553,8 @@
             "enum": [
               "Atomic",
               "Composite"
-            ]
+            ],
+            "x-value-form": "name"
           }
         }
       }
@@ -580,7 +583,8 @@
               "SovereigntyZone",
               "TestEvidence",
               "VexStatement"
-            ]
+            ],
+            "x-value-form": "name"
           }
         },
         "required": [
@@ -603,7 +607,8 @@
               "Identity",
               "Escrow",
               "Grouping"
-            ]
+            ],
+            "x-value-form": "name"
           }
         },
         "required": [

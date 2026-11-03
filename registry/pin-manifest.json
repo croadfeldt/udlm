@@ -101,6 +101,13 @@
    "1.0.0": "sha256:5612aea8fb0a5c72387a455b960fd09b69cc98dfb62578bea8e395a8800fefbc"
   }
  },
+ "decision_record:adr-example-001": {
+  "current": "1.0.1",
+  "path": "registry/examples/example-decision-record.yaml",
+  "versions": {
+   "1.0.1": "sha256:70f786e31eb06fed3385e540e8a031fdc0898efc5619546269862c95cc9ffbe3"
+  }
+ },
  "layer:base-virtual-machine": {
   "current": "1.1.0",
   "path": "registry/examples/example-layer-base.yaml",
@@ -1013,13 +1020,14 @@
   }
  },
  "type:Job": {
-  "current": "1.2.9",
+  "current": "1.2.10",
   "path": "registry/classes/process/job/_base.yaml",
   "versions": {
    "1.0.0": "sha256:df3916a76072426854257089815099bdf764d883d3c5838ff268b6ccbf88b804",
    "1.1.0": "sha256:c66010ad6b8aed9edf8ce9d7155f426a878d9145c7bc5f3e325b3d1ce2352f3d",
    "1.2.0": "sha256:a83798908089ba8e234ae6549407531920bfe8ccc76dde4378c058032415582b",
    "1.2.1": "sha256:7a9b467dba3ff694b0408cf4e7dbecad469acb8c512552c3535f2869874cb438",
+   "1.2.10": "sha256:ab7fc05bf5375f273c1e38fff737cbb8dc3ada018d0f85e81248f7c3f02eda73",
    "1.2.2": "sha256:ac838f830d65ae38b056a844f5e932a719054de1c4ab865146d21b1fcae1c715",
    "1.2.3": "sha256:1db6978d62cd2b6034651ac286e390e3d729fcec50d2645d337186e4874f7bc1",
    "1.2.4": "sha256:6dc31f9cbeff84e39dcc1e27f3301d42790815750e29c4caa1bbf065279fef7c",
