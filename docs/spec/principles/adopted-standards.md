@@ -77,7 +77,7 @@ Run these in order:
 
 **Worked example (DecisionRecord / ADR).** The decision-record need → adopt the **ADR / MADR** standard (don't coin
 a new term); it is *complementary* to UDLM audit/provenance/versioning (reuse, step 1); it cleanly *consolidates*
-two homegrown forms an implementation built twice — DAV's self-improvement `improvement_proposals` and its architecture
+two homegrown forms an implementation built twice — its self-improvement `improvement_proposals` and its architecture
 resolutions — into **one target-parameterized Resolution/Decision Record** (step 3, net-negative); **SARIF** does not
 cleanly fit architecture findings → adopt its principles only (step 4); the Knowledge-family `Antipattern` is related
 but not the same → don't force. Defined as a Knowledge entity type in `../foundations/knowledge-family.md` §4.5.

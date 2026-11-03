@@ -458,6 +458,13 @@ Each hard constraint cites the UDLM contract it derives from.
     as portable intent does not make it invisible: it returns as realized state and typed outputs,
     observed with provenance. *Not authored* is not *not known*.
 
+43. **The working record carries what operations need to act now without any other system; the
+    ledger carries what audit needs to explain the past** (ADR-059's record-content test, #428).
+    The reason is retention, not taxonomy: a record is unbounded in lifetime, audit is kept for
+    years and observability for weeks, so an operation that reads the ledger to decide works until
+    the day it silently does not. Ask "will an operation need this after the audit record is gone?",
+    not "is this state or history?".
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.

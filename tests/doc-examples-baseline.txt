@@ -142,10 +142,8 @@ docs/spec/foundations/examples.md fb56afd6a57549c4
 docs/spec/foundations/examples.md fd1539a448c25b85
 docs/spec/foundations/four-states.md 02d563a4b43fb633
 docs/spec/foundations/layering-and-versioning-annex.md 6d78d5dce09866e1
-docs/spec/foundations/layering-and-versioning-annex.md 7ccf7b6d7edd954c
 docs/spec/foundations/layering-and-versioning-annex.md 89198526dbd87020
 docs/spec/foundations/layering-and-versioning-annex.md c9983d068955ce7e
-docs/spec/foundations/layering-and-versioning-annex.md cc1c9ac6efe9601b
 docs/spec/foundations/layering-and-versioning-annex.md cd1e1eeaca86d7f6
 docs/spec/foundations/layering-and-versioning.md 083cdea04f1773c7
 docs/spec/foundations/layering-and-versioning.md 5020e7cfab3b0ef9

@@ -1,6 +1,6 @@
 # Rename map — the path-rename discipline made mechanical.
 #
-# Commitment (DAV-session interface commitment): any rename of a handle, rule ID, or file
+# Commitment (an interface commitment made to an implementation's sessions): any rename of a handle, rule ID, or file
 # path ships IN THE SAME CHANGE with an explicit old -> new map, so no consumer, gate, or
 # reader is left resolving a rename by guesswork. Gates that diff against a base ref
 # (tests/ci_compat_gate.py, tests/check_identity_integrity.py) consult this map to treat a
@@ -105,7 +105,7 @@ renames:
   registry/instances/adr-cost-metering-placement.json: docs/adr/ADR-COST-001-metering-placement-reference-dont-model.md
   registry/instances/adr-cost-metering-linkage.json: docs/adr/ADR-COST-002-cost-metering-linkage-hooks.md
   registry/instances/adr-aep-alignment.json: docs/dr/DR-AEP-001-adopt-aep-conventions.md
-  registry/instances/adr-udlm-dcm-boundary.json: docs/dr/DR-UDLM-DCM-001-runtime-prose-lives-in-dcm.md
+  registry/instances/adr-udlm-dcm-boundary.json: docs/dr/DR-UDLM-DCM-001-runtime-prose-lives-in-dcm.md  # a path identifier, non-normative
 
 # Retired records — removed, not renamed. A retirement is DECLARED (never silent), and the
 # identity gate consults this map so a deliberate removal is not read as a vanished record.
@@ -320,7 +320,7 @@ retired:
     (provider_extensions) is retired and now only a rejection guard. ADR-038 records the
     alternative it evaluated.
   registry/instances/adr-dcm-rbac-function-matrix.json: >-
-    ADR-RBAC-001 — DCM-scoped and stale: its carrier (DCMGroup) was removed. The current
+    ADR-RBAC-001 — scoped to the control plane and stale: its carrier (DCMGroup) was removed. The current
     RBAC bridge is Access.Grouping subject_bindings plus
     registry/function-capability-matrix.schema.json.
 
