@@ -1,30 +1,33 @@
 # UC-16 · Policy override approval workflow — the stage
 
 **What this settles:** how a governance policy that is *blocking* a request gets a **time-bounded, scoped
-override** — evaluated against that policy's own override rules, routed to an authorized approver, and
-recorded — without ever letting a hard-enforcement policy be waived. A **lighter** flow — it **builds on
+override**. The request is evaluated against that policy's own override rules, routed to an authorized
+approver, and recorded. A hard-enforcement policy is never waived. A **lighter** flow: it **builds on
 [request-realization](request-realization.md)** and documents only what this case adds.
 
 > **Use Case:** `governance/policy-override-approval`. **Persona:** platform-engineer · **Profile:** prod.
 
 **In one breath.** A soft policy is failing and holding up a business-critical deployment. The engineer asks
-for a temporary override; the system checks the *policy's own* override-eligibility declaration, routes the
-request to the role authorized for that override class (not the requester), and — if granted — records an
+for a temporary override. The system checks the *policy's own* override-eligibility declaration and routes
+the request to the role authorized for that override class, never the requester. If granted, it records an
 override scoped to that one request, bounded in time, with a rationale. Later evaluations honor it and every
 suppressed event is audit-linked. Hard policies never reach an approval attempt.
 
 ## What this adds over request-realization
-- **A new object on the policy-application state** — an `override_request` that *modifies* how policies apply
-  to one matched request scope. Implementation (assemble → place → enrich → reserve → commit) is unchanged; what
+- **A new object on the policy-application state.** The use case calls it an `override_request`; in the
+  model the grant is an override policy (`policy_type: override`,
+  [policy-contract §18.1](../spec/contracts/policy-contract.md)) that *modifies* how policies apply to one
+  matched request scope. Implementation (assemble → place → enrich → reserve → commit) is unchanged; what
   changes is the outcome of a failing policy evaluation.
-- **Eligibility is per-policy, not global** — the override is checked against *that policy's* declared
+- **Eligibility is per-policy, not global.** The override is checked against *that policy's* declared
   override rules. A policy that declares itself unoverridable (hard enforcement) is rejected up front, with no
-  approval routed.
-- **Separation of duties** — approval goes to the role authorized for this override class, never to the
+  approval routed (`POL-003`: an override policy cannot target a hard policy).
+- **Separation of duties.** Approval goes to the role authorized for this override class, never to the
   requester. Human escalation is part of the flow, not a bypass of it.
-- **The grant is narrow and bounded** — scoped to the specific matched request, given a duration, and carrying
-  the approver and rationale. It is not a global "policy off" switch.
-- **Suppression is audited** — the grant *and* every subsequent policy event it suppresses are audit-linked,
+- **The grant is narrow and bounded.** `target_policy_uuid` names the soft policy it suppresses, `scope` is
+  the narrowed match scope (never global), and `expires_at` is mandatory (`POL-009`: no permanent overrides).
+  It carries the approver and rationale. It is not a global "policy off" switch.
+- **Suppression is audited.** The grant *and* every subsequent policy event it suppresses are audit-linked,
   so a reviewer can see exactly what the override let through and for how long.
 
 ## The flow — only what's different
@@ -35,7 +38,7 @@ flowchart TD
   E -- "hard enforcement" --> X["Reject — unoverridable<br/>(no approval attempted)"]
   E -- "eligible" --> R["Route to authorized approver role<br/>(never the requester)"]
   R -- denied --> Y["Stays blocked — recorded"]
-  R -- granted --> G["Record override<br/>scope · duration · approver · rationale"]
+  R -- granted --> G["Record override policy<br/>target · scope · expires_at · approver · rationale"]
   G --> P["Re-evaluate — matched scope now passes<br/>suppressed events audit-linked to the grant"]
 ```
 Everything else is request-realization.
@@ -48,11 +51,11 @@ Everything else is request-realization.
 - The override grant and every subsequent policy-suppressed event are audit-linked.
 
 ## Data · Policy · Provider
-- **Data:** the `override_request` and the resulting override record — scope, duration, approver, rationale —
+- **Data:** the override policy record (`target_policy_uuid`, `scope`, `expires_at`, approver, rationale)
   attached to the policy-application state, plus the audit links to suppressed events.
-- **Policy:** each policy declares its own override eligibility and enforcement class (soft vs hard); the
+- **Policy:** each policy declares its `enforcement` (`soft` or `hard`) and its override eligibility; the
   approval routing to an authorized role is itself policy.
-- **Provider:** unchanged — the provider only builds once the (now-overridden) policy set passes.
+- **Provider:** unchanged; the provider only builds once the (now-overridden) policy set passes.
 
 ## Who provides what, and when
 
@@ -67,3 +70,4 @@ request existed, exactly as the lifecycle answer describes.
 
 ## Pointers
 - Base flow: [request-realization](request-realization.md). UC source: `governance/policy-override-approval`.
+- The override model (`POL-003`, `POL-009`, §18): [`docs/spec/contracts/policy-contract.md`](../spec/contracts/policy-contract.md).
