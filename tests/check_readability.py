@@ -11,8 +11,10 @@ splitting it, never by dropping a MUST, a rule id or an invariant.
   RDB-002  a register row over 150 words                                                -> FAIL
   RDB-003  a class, element or record-schema description over 80 words                 -> FAIL
 
-Scope: docs/adr/README.md rows, docs/spec/**/*.md, registry/classes/**/*.yaml, registry/*.schema.json.
-Code blocks, tables other than rule rows, and YAML examples are not prose and are skipped.
+Scope: docs/adr/README.md rows; every Markdown document a person reads (docs/**, the root, and
+registry/*.md), except generated files and the agent-facing files (AGENTS.md, CLAUDE.md); plus
+registry/classes/**/*.yaml and registry/*.schema.json. Code blocks, tables other than rule rows, and
+YAML examples are not prose and are skipped.
 
 Baseline: tests/readability-baseline.txt lists the violations that predate the gate, one per line
 (`RULE key`). A listed violation only warns; an unlisted one fails; a listed one that no longer
@@ -57,6 +59,31 @@ def shash(s):
     return hashlib.sha1(s.encode("utf-8")).hexdigest()[:10]
 
 
+# Markdown a person reads. Not in scope: files a tool writes (regenerate, never edit), the
+# agent-facing files, the CNCF code of conduct, and the decision records under docs/adr and docs/dr
+# (a decision is a record: it is superseded by a new one, never edited). The register's rows are
+# checked on their own above.
+PROSE_GLOBS = ("*.md", "docs/**/*.md", "registry/*.md")
+PROSE_SKIP = {
+    "AGENTS.md", "CLAUDE.md", "CODE_OF_CONDUCT.md",
+    "registry/TYPE-CATALOG.md", "registry/MODEL-HEALTH.md",
+}
+PROSE_SKIP_DIRS = ("docs/adr/", "docs/dr/")
+
+
+def prose_files():
+    out = set()
+    for g in PROSE_GLOBS:
+        out.update(glob.glob(os.path.join(REPO, g), recursive=True))
+    keep = []
+    for f in out:
+        rel = os.path.relpath(f, REPO)
+        if rel in PROSE_SKIP or rel.startswith(PROSE_SKIP_DIRS):
+            continue
+        keep.append(f)
+    return sorted(keep)
+
+
 def findings():
     out = []  # (rule, key, detail)
 
@@ -72,8 +99,8 @@ def findings():
             if words(s) > SENTENCE_MAX:
                 out.append(("RDB-001", key("register", n, shash(s)), f"row {n}: {words(s)}-word sentence: {s[:70]}…"))
 
-    # spec prose and rule rows
-    for f in sorted(glob.glob(os.path.join(REPO, "docs", "spec", "**", "*.md"), recursive=True)):
+    # prose and rule rows: every document a person reads
+    for f in prose_files():
         rel = os.path.relpath(f, REPO)
         text = open(f, encoding="utf-8").read()
         text = re.sub(r"```.*?```", "", text, flags=re.S)

@@ -129,7 +129,6 @@ eleven rows moved to §4.2 because their part is experimental.
 | #490 | two picked numbers (request groups capped at 50, auto-approve score capped at 50) | a local decision shipped as a rule would have to be kept | WP5 |
 | #503 | the spec names an implementation (57 lines in 21 files left, from 482) | "independent of any implementation" has to be true at the tag | WP6 |
 | #491 | a dot means three things and the spec says two | a grammar statement; it already caused one wrong design | WP6 |
-| #416 | 319 MUST against 9 SHOULD | partial conformance (§3.2) means nothing without levels | WP6 |
 | #428 | ADR-059's record test has no written reason | the rule exists; a reader needs the why | WP6 |
 | #382 | reference aliases: the rule for resolving an unpinned name was never written | a resolution rule added later changes behaviour | WP6 |
 | #328 | identity is not address | one paragraph: UDLM never says how a provider reaches a thing | WP6 |
@@ -207,7 +206,7 @@ WP8, WP9. WP0 comes first because it changes what counts as a blocker.
 | WP3 provider contract | a provider-registration schema; entity-relationships matched to the schema | #634 #632 |
 | WP4 ADR-082 closeout | prune zone and tier from network classes; fill the adopts gaps | #614 #612 #646 |
 | WP5 profiles out | move the profiles and per-profile values to `udlm-profiles`; remove the picked numbers | #488 #489 #490 |
-| WP6 spec text | remove implementation names, state the dot grammar, audit MUST/SHOULD, cut stale text, four short rulings | #503 #491 #416 #460 #428 #382 #328 #392 #401 |
+| WP6 spec text | remove implementation names, state the dot grammar, audit MUST/SHOULD, cut stale text, four short rulings | #503 #491 #460 #428 #382 #328 #392 #401 (#416 moved to 1.x by row 139) |
 | WP7 conformance | suite 1.0.0: a runner that takes a record tree, a must-reject case for every checked rule, the lint blind spots, a merge check | #417 #442 #434 #383 #424 |
 | WP8 built as decided | every accepted ADR is built, superseded or narrowed; the catalog-item retirement finished | #645 #394 #407 #385 #321 #474 #477 |
 | WP9 the tag | first make the cut ready: the re-stamp in `VERSIONING.md` (`conforms_to`, `$id`, the meta-schema `$id`, `CONFORMANCE.md` from Draft to binding) as a script with a dry run on a branch; then, on the maintainer's go, one PR and the tag `udlm/1.0` | #217 |
