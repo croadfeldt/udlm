@@ -3,9 +3,9 @@
 **What this gets you.** A **deployment profile** — the posture a deployment engages, called
 simply a *profile* everywhere after this sentence. One activatable unit that turns on (or off) the
 capabilities, policies, settings, and mechanisms appropriate to a use and an environment:
-*engage the `fsi` profile*. Six ship built-in; authoring your own posture — "our regulated
-posture," "our lab posture" — is authoring another profile record, and nothing about the model
-changes when you do.
+*engage the `fsi` profile*. Six standard postures ship in the UDLM Profile Set, a separate
+repository. Authoring your own posture — "our regulated posture," "our lab posture" — is authoring
+another profile record, and nothing about the model changes when you do.
 
 > **Read once, first:** [`README.md`](README.md) (the universal authoring contract),
 > `registry/profile.schema.json` (the record you are writing), and
@@ -77,10 +77,10 @@ the thing to be absent, and say why in `reason` (required for security-relevant 
    marks `required` — you cannot compose `fsi` and turn its attestation `off`. The validator
    refuses it (`registry/tools/validate.py` `check_profile`). If you need a weaker posture,
    compose a lower built-in instead of weakening a higher one.
-5. **Identity and versioning.** Mint a UUIDv4, take a handle in your own namespace
-   (`acme/profile/regulated-eu` — never `udlm/…`, which is the substrate's), start at `1.0.0`,
-   and version it like any artifact: a published (identity, version) pair is immutable, so any
-   change ships a bump (`registry/VERSIONING.md`).
+5. **Identity and versioning.** Mint a UUIDv4 and take a handle in your own namespace
+   (`acme/profile/regulated-eu` — never `udlm/…`, which is the substrate's). Start at `1.0.0` and
+   version it like any artifact: a published (identity, version) pair is immutable, so any change
+   ships a bump (`registry/VERSIONING.md`).
 6. **Validate.** `python3 registry/tools/validate.py` — the profile must validate against
    `profile.schema.json` and pass `check_profile` (URF-parseable refs, `off` reasons on
    security-relevant entries, no weakening on composition). `bash scripts/signoff.sh` runs
@@ -106,7 +106,8 @@ is a question you ask the deployment, not the registry.
 
 ## 6. A worked pointer
 
-Read `registry/examples/example-profile.yaml` — the worked example of the mechanism:
-`required` floor entries, `advisory` operational entries with their settings, and one `off`
-with its reason. The Profile Set's `fsi` shows a compliance posture where nearly
-everything is `required`; `profile.schema.json`'s inline `examples` entry is the minimal shape.
+Read `registry/examples/example-profile.yaml` — the worked example of the mechanism: five
+`required` floor entries and an `activation` block, the smallest profile that exercises every
+required mechanic. The `contains` snippet in step 3 shows the `advisory` and `off` forms. The
+Profile Set's `fsi` shows a compliance posture where nearly everything is `required`;
+`profile.schema.json`'s inline `examples` entry is the minimal shape.

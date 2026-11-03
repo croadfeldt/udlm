@@ -74,7 +74,7 @@ spec:
 ```
 
 The bare-metal provisioning provider (Metal3/BMC-class) derives its controller configuration FROM
-this declared pool — the host type carries no RAID fields (see Machine.BareMetalHost 0.6.0's
+this declared pool — the host type carries no RAID fields (see Machine.BareMetalHost's
 provisioning-intent surface: image/root-hints/boot, with storage topology living here).
 
 ## Hot spares — scope by tree position

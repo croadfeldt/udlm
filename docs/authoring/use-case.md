@@ -65,13 +65,13 @@ A UC references a decision; it never argues one.
 | A must-reject UC's success = the refusal, honoring ADR-003's five elements | authored into `success_criteria` (no separate gate — this is the author's job) |
 | No estate tokens (personal host/site names, estate IPs) | `tests/check_estate_tokens.py` |
 
-**The refusal contract (must-reject UCs).** Success is the REFUSAL, and per
-[ADR-003](../adr/README.md) (data-mobility + process-validation
-— the origin of the refusal-contract elements, as [`../../use-cases/PERSONAS.yaml`](../../use-cases/PERSONAS.yaml)
-attributes them) the refusal must be **typed** (machine-matchable, distinct from not-found and
-schema-invalid), **actionable** (surfaced, naming the constraint and its resolution), **whole** (no
-silent partial or truncation), **non-leaking** (no reference escapes a boundary it was not released
-for — ADR-041), and **auditable** (an immutable record of the decision). Write those five into
+**The refusal contract (must-reject UCs).** Success is the REFUSAL. The five elements come from
+[ADR-003](../adr/README.md) (data-mobility + process-validation), as
+[`../../use-cases/PERSONAS.yaml`](../../use-cases/PERSONAS.yaml) attributes them. The refusal must be
+**typed** (machine-matchable, distinct from not-found and schema-invalid) and **actionable** (surfaced,
+naming the constraint and its resolution). It must be **whole** (no silent partial or truncation) and
+**non-leaking** (no reference escapes a boundary it was not released for — ADR-041). And it must be
+**auditable** (an immutable record of the decision). Write those five into
 `success_criteria`, and tag the file `must-reject` + `refusal-contract`. The exemplar 002 does exactly
 this: it refuses before implementation, types the error as quota exhaustion, forbids silent truncation and
 indefinite Pending, names requested-vs-available, and records the comparison.
@@ -97,8 +97,8 @@ Copy the storage triad — one complete per-type set:
 
 ```console
 $ python3 tests/check_uc_dimensions.py && python3 tests/check_uc_personas.py
-138 use case(s) checked, 0 off-vocabulary value(s)
-138 use case(s) checked, 0 unresolved persona reference(s)
+166 use case(s) checked, 0 off-vocabulary value(s)
+166 use case(s) checked, 0 unresolved persona reference(s)
 ```
 
 The pass signal is the trailing `0 off-vocabulary value(s)` and `0 unresolved persona reference(s)`

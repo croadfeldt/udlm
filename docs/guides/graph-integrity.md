@@ -3,8 +3,8 @@
 **What this settles:** the dependency graph the estate forms has one hard invariant — it must be a
 **DAG** — and when that invariant is violated the violation is **first-class, exposed data**, not a
 buried resolver error. This defines the invariant, the `DependencyCycle` diagnostic UDLM exposes, and
-how policy addresses it. DCM computes it (see the DCM dependency-resolution architecture); UDLM owns
-the shape and the invariant.
+how policy addresses it. The control plane computes it (DCM, the example implementation, in its
+dependency-resolution architecture); UDLM owns the shape and the invariant.
 
 ## The invariant
 
@@ -41,9 +41,9 @@ one-sided *graph*:
   inverse map cannot drift from the allowed edge types).
 - **`GRAPH-002`** — every edge `target` resolves to a real resource type or Class; a dangling target is
   refused, because the derived inverse would otherwise land on nothing.
-- **`GRAPH-003`** — every declared edge has a derivable inverse; the gate builds the two-sided adjacency
-  (declared + derived) and can emit it (`--emit` → a dependency-graph JSON file, emitted on demand and not committed) for a
-  consumer or the estate-explorer that wants the materialized bidirectional graph.
+- **`GRAPH-003`** — every declared edge has a derivable inverse. The gate builds the two-sided adjacency
+  (declared + derived) and can emit it with `--emit` as a dependency-graph JSON file, on demand and never
+  committed, for a consumer or the estate-explorer that wants the materialized bidirectional graph.
 
 ## The exposed data: `DependencyCycle`
 
@@ -66,9 +66,9 @@ same first-class, referenceable shape as any other finding the platform acts on:
   soft edge yields a valid order, at the cost of that (non-load-bearing) dependency. Orderable, but
   flagged so the relaxation is a recorded decision, not a silent one.
 
-Provenance matters as much as membership: an *authored ⇄ authored* cycle is an estate-authoring
-mistake; an *authored ⇄ discovered* cycle is an intent-vs-reality conflict (what was declared disagrees
-with what a probe observed); an *… ⇄ policy-injected* cycle means a broad rule closed a loop on a
+Provenance matters as much as membership. An *authored ⇄ authored* cycle is an estate-authoring
+mistake. An *authored ⇄ discovered* cycle is an intent-vs-reality conflict (what was declared disagrees
+with what a probe observed). An *… ⇄ policy-injected* cycle means a broad rule closed a loop on a
 specific resource. Same cycle shape, very different remediation — so the mechanism tags travel with it.
 
 ## Policy addresses it (Data·Policy·Provider)
@@ -82,7 +82,7 @@ specific resource. Same cycle shape, very different remediation — so the mecha
   the members, warn, or auto-relax a soft edge with a recorded resolution. The response is *authored*,
   so an operator sets how strict an estate is, rather than the engine hard-coding it.
 
-Policy `match` sources (see `policy.schema.json`): `graph.has_cycle` (bool), `graph.cycle_severity`
+Policy facts a `match.facts` list may name (`registry/taxonomies/policy-fact.yaml`): `graph.has_cycle` (bool), `graph.cycle_severity`
 (`blocking` | `degraded`), `graph.cycle_members` (set membership — "any cycle touching this resource"),
 and `graph.cycle_mechanisms` (e.g. deny only cycles that a discovered or policy-injected edge closed).
 

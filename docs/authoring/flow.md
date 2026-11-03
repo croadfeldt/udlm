@@ -11,9 +11,10 @@ template.
 
 ## 1. When to use it — and when not
 
-Author a flow when a capability spans **more than one type or more than one step** and the ordering,
-the branch points, and the refusal paths are the thing worth documenting — how a pool, a dataset, and
-a share compose into one implementation; how an observed resource is normalized or quarantined.
+Author a flow when a capability spans **more than one type or more than one step**, and the ordering,
+the branch points, and the refusal paths are the thing worth documenting. Two examples: how a pool, a
+dataset, and a share compose into one implementation; how an observed resource is normalized or
+quarantined.
 
 Do **not** reach here for:
 
@@ -45,8 +46,8 @@ restates the base loop, it is too heavy — cut back to the delta.
    - **`## Where each piece is specified`** — a pointer table: each piece → its contract (an ADR, a
      spec path, the corpus directory). References carry their gist, never a bare number.
 3. **Wire the flow into `coverage:`.** In each spec whose story the flow completes, add the flow's
-   path under `coverage.flows:` (see `registry/classes/resource/storage/storage-pool/_base.yaml` — its
-   `coverage.flows` lists `docs/flows/storage-provisioning-lifecycle.md`). A flow no spec references is
+   path under `coverage.flows:` (see `registry/classes/resource/network/subnet/_base.yaml` — its
+   `coverage.flows` lists `docs/flows/uc-04-vm-intent-osac-placement.md`). A flow no spec references is
    an orphan.
 
 ## 3. The completeness checklist — and the gate for each
@@ -83,7 +84,7 @@ Copy the closest of these two:
 
 ```console
 $ python3 tests/check_links.py
-232 files scanned, 0 broken link(s)
+265 files scanned, 0 broken link(s), 0 new dead code-span path(s) (0 baselined)
 ```
 
 The pass signal is the trailing `0 broken link(s)`. To confirm the flow is a resolvable coverage
