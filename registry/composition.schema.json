@@ -2,12 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/composition.schema.json",
   "title": "UDLM Composition Shape",
-  "description": "The shape of a composition — its constituents and how much of itself it exposes — held once, where anything that composes can reference it. A catalog item is a PROVIDER CLASS (maintainer ruling 2026-08-09: 'a catalog_item is a consumable class defined by the providers or some 3rd party entity ... it could be a template, it could be a single resource class'), so this shape belongs to the class layer rather than to a record kind. Definitions only: no identity, no tenancy, no lifecycle — those belong to whatever carries the composition.",
+  "description": "The shape of a composition — constituents and how much it exposes — held once for anything composing to reference. A catalog item is a PROVIDER CLASS (maintainer ruling 2026-08-09: 'a catalog_item is a consumable class defined by the providers or some 3rd party entity ... it could be a template, it could be a single resource class'). It belongs to the class layer, not a record kind. Definitions only: identity, tenancy and lifecycle belong to whatever carries it.",
   "$defs": {
     "constituents": {
       "type": "array",
       "minItems": 1,
-      "description": "The composite payload declaration (template-composition-model.md §2.1): which constituent resource types make up the service, how they order (depends_on), how data moves between them (bindings), who fulfills each one (provided_by), and how each one's failure affects the composite (failure_effect). component_ids must be unique within the item; depends_on and bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic (CMP-002/§2.3) — registry/tools/validate.py enforces all three.",
+      "description": "The composite payload declaration (template-composition-model.md §2.1): which constituent resource types make up the service, how they order (depends_on), how data moves between them (bindings), who fulfills each one (provided_by), and how each one's failure affects the composite (failure_effect). `component_ids` must be unique within the item; `depends_on` and `bindings.from_component` must reference sibling component_ids; the depends_on graph must be acyclic (CMP-002/§2.3). All three are enforced by registry/tools/validate.py.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -39,7 +39,7 @@
               "binds_to"
             ],
             "default": "contained_by",
-            "description": "Whether the composite OWNS this part or merely uses it. Realization needs it: a composite's single constituents[] list fans out into two places on the realized record — an owned part becomes an entry in the System's `constituents[]`, a borrowed one becomes a `dependencies[]` edge carrying this same edge_type. contained_by = the composite creates and owns it; it is a part, and GRP-INV-002 makes it non-overridably co-tenant with the composite. binds_to = the composite uses something that exists and belongs to someone else — a stake in a shared resource, or an activity bound to the stack — which is how a relationship legitimately crosses a tenant boundary, behind a cross-tenant authorization (CTX-001). Defaults to contained_by, which is what every constituent meant before this field existed. `depends_on` and `references` are deliberately not offered: sibling ordering is already the `depends_on` FIELD below, and a pure pointer with no lifecycle coupling is a field value rather than a constituent.",
+            "description": "Whether the composite OWNS this part or merely uses it; realization fans constituents[] out by it. `contained_by` = the composite creates and owns it: an entry in the System's `constituents[]`, non-overridably co-tenant (GRP-INV-002). `binds_to` = the composite uses something that belongs to someone else: a `dependencies[]` edge carrying this edge_type, crossing tenants only under cross-tenant authorization (CTX-001). Defaults to `contained_by`. `depends_on` and `references` are not offered: ordering is the `depends_on` FIELD; a pure pointer is a field value.",
             "$comment": "CMP-012 checks the coherence with fulfillment: a BYO resource cannot be owned."
           },
           "provided_by": {
@@ -56,7 +56,7 @@
               "consumer"
             ],
             "default": "platform",
-            "description": "Who procures this constituent's request content, and when (UDLM ADR-009). platform = the control plane's loop assembles it from the class's `supports` at assembly-time (default); provider = the realizing provider brokers a sub-intent THROUGH the control plane at realize-time, contributing realization-time specifics via a binding; consumer = the consumer supplies an existing resource reference (BYO). Orthogonal to provided_by (the realizer axis) — fulfillment is the procurement axis. The control plane always orchestrates and applies policy + cycle detection regardless of mode."
+            "description": "Who procures this constituent's request content, and when (UDLM ADR-009). `platform` = the control plane's loop assembles it from the class's `supports` at assembly-time (default). `provider` = the realizing provider brokers a sub-intent THROUGH the control plane at realize-time, contributing realization-time specifics by binding. `consumer` = the consumer supplies an existing resource reference (BYO). Orthogonal to provided_by (the realizer axis); this is the procurement axis. The control plane always orchestrates and applies policy + cycle detection in every mode."
           },
           "depends_on": {
             "type": "array",
@@ -115,7 +115,7 @@
         "transparent",
         "selective"
       ],
-      "description": "How constituents surface as control-plane entities (template-composition-model.md §5): opaque = composite uuid only; transparent = every constituent is a first-class entity with a deterministic uuid (CMP-007); selective = only selective_visible constituents surface. ADDRESSABILITY, NOT ACCESS: this says whether a part HAS an identity you could refer to, never whether a given actor may READ it — a part can be fully addressable and still invisible to the person who ordered it, because access is decided by the grouping it lands in. Real visibility is addressability AND access; the second half is policy's, reading `composition.unreadable_constituents` (CMP-013)."
+      "description": "How constituents surface as control-plane entities (template-composition-model.md §5). `opaque` = composite uuid only. `transparent` = every constituent is a first-class entity with a deterministic uuid (CMP-007). `selective` = only selective_visible constituents surface. ADDRESSABILITY, NOT ACCESS: whether a part HAS a referable identity, never whether an actor may READ it. A part can be addressable yet invisible to whoever ordered it; the grouping it lands in decides access. Real visibility is addressability AND access; the latter is policy's, reading `composition.unreadable_constituents` (CMP-013)."
     },
     "selective_visible": {
       "type": "array",

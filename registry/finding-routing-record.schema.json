@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/finding-routing-record.schema.json",
   "title": "UDLM Finding-Routing Record (a contradicted compatibility claim, routed upstream)",
-  "description": "Machine-validatable finding-routing record — the inbound carrier that takes a contradicted compatibility claim from an organization's estate back to the registry, with the evidence attached. The situation it exists for: the registry publishes a change and classifies it compatible; an organization tests that claim before adopting it by compiling its own intent corpus against both the pinned and the candidate revisions and diffing the declared typed outputs; the diff comes back dirty. Promotion is refused and the estate stays where it was (ADR-046 Decision 4) — but the interesting fact is upstream, not local: a 'compatible' verdict that produces a dirty diff in the field is a defect in the classifier, and the only party who can see it is the organization that ran the test. This record is how that observation travels. It carries the claim being contradicted (which upstream artifact, at which revision, classified how and by what), the evidence (a summary naming which declared outputs differed and how, plus a reference to the full diff artifact), the reporting estate, the corpus ref both compilations ran at, and the status the registry has moved it to. Reporting is deliberately cheap on the reporter and deliberately structural: the record names output NAMES and change kinds, never realized values, and identifies the estate by an opaque reference it mints for itself — the information-firewall discipline of ADR-041, where the address may cross a boundary even when the datum behind it may not. In the surface/decide/enable division of labour (docs/design/operational-response-matrix.md) this is the carrier for the ESCALATE disposition: contest the change rather than absorb or skip it. Without it the contract's headline feedback loop — the one lockfile ecosystems never closed — has no mechanism, and ADR prose is not a mechanism.",
+  "description": "Carries a contradicted compatibility claim from an organization's estate back to the registry. The registry classified a change compatible; the organization's typed-output diff (its intent corpus compiled against pinned and candidate revisions) came back dirty. Promotion is refused (ADR-046 Decision 4), but the defect is upstream, in the classifier. It names output NAMES and change kinds, never realized values, and identifies the estate by an opaque self-minted reference (ADR-041's information firewall). The ESCALATE disposition's carrier (surface/decide/enable; docs/design/operational-response-matrix.md).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -110,7 +110,7 @@
         "diff_summary",
         "diff_artifact_ref"
       ],
-      "description": "What the estate actually observed. The typed-output diff is the whole promotion gate (ADR-046 Decision 2), so it is also the whole evidence here: two dry-run realizations of the same intent, compared on declared outputs only — never provider internals — with outputs the model declares volatile excluded by declaration rather than ad hoc.",
+      "description": "What the estate actually observed. The typed-output diff is the whole promotion gate (ADR-046 Decision 2), so it is also the whole evidence here. Two dry-run realizations of the same intent are compared on declared outputs only, never provider internals, with outputs the model declares volatile excluded by declaration rather than ad hoc.",
       "properties": {
         "diff_summary": {
           "type": "object",
@@ -149,7 +149,7 @@
                       "value_changed",
                       "cardinality_changed"
                     ],
-                    "description": "How it differed. removed and type_changed break any consumer bound to the output; value_changed on a non-volatile output is the subtler case — the shape held but the realized fact moved, which is exactly what a compatibility claim promised would not happen."
+                    "description": "How it differed. `removed` and `type_changed` break any consumer bound to the output. `value_changed` on a non-volatile output is the subtler case: the shape held but the realized fact moved, which is exactly what a compatibility claim promised would not happen."
                   },
                   "bound_consumer_count": {
                     "type": "integer",
@@ -287,7 +287,7 @@
       "required": [
         "estate_ref"
       ],
-      "description": "Who is reporting, at the resolution they chose to disclose. Every field beyond the opaque reference is the estate's own egress decision (ADR-041: sovereignty and tenancy are enforced on the way out, by the data owner, before the crossing), so this block is built to be useful when it holds nothing but a pseudonym. What must NOT appear here, in this or any other block: instance or tenant uuids, hostnames, network addresses, site or region names, or any part of the intent corpus. The registry needs to correlate reports and weigh evidence; it does not need to know whose estate it is looking at.",
+      "description": "Who is reporting, at the resolution they chose. Every field beyond the opaque reference is the estate's own egress decision (ADR-041: sovereignty and tenancy are enforced on egress, by the data owner). The block is useful holding only a pseudonym. What must NOT appear, here or in any block: instance or tenant uuids, hostnames, network addresses, site or region names, or any part of the intent corpus. The registry correlates and weighs; it need not know whose estate it sees.",
       "properties": {
         "estate_ref": {
           "type": "string",
@@ -348,7 +348,7 @@
         "withdrawn",
         "duplicate"
       ],
-      "description": "Where the registry has this finding in its own handling. submitted = filed, untouched; under_review = a maintainer is reproducing it; accepted = the registry agrees the claim was wrong and owns the fix; resolved = the fix landed (see resolution); declined = the registry disagrees on stated grounds, which the reporter can contest with a new filing; not_reproducible = the registry could not reproduce it from what the record carries, which is often a request for the withheld artifact rather than a dismissal; withdrawn = the reporter retracted it; duplicate = another finding already carries the same claim, named in resolution. The reporter owns submitted and withdrawn; the registry owns the rest."
+      "description": "Registry handling state. `submitted` = filed, untouched. `under_review` = a maintainer is reproducing. `accepted` = claim wrong; the registry owns the fix. `resolved` = fix landed (see resolution). `declined` = disagreed on stated grounds; contestable by a new filing. `not_reproducible` = not reproducible from the record; often a request for the withheld artifact. `withdrawn` = the reporter retracted it. `duplicate` = another finding carries the claim, named in resolution. The reporter owns `submitted` and `withdrawn`; the registry owns the rest."
     },
     "status_history": {
       "type": "array",
@@ -406,7 +406,7 @@
             "insufficient_evidence",
             "superseded_by_finding"
           ],
-          "description": "reclassified = the change was re-declared at its true classification; classifier_defect_fixed = the rule that mis-classified it was corrected, which fixes every future change of that shape; artifact_corrected = the upstream artifact itself was changed; claim_upheld = the registry examined it and stands by the classification; insufficient_evidence = the record did not carry enough to reproduce; superseded_by_finding = another filing carries it forward, named below."
+          "description": "`reclassified` = the change was re-declared at its true classification. `classifier_defect_fixed` = the rule that mis-classified it was corrected, which fixes every future change of that shape. `artifact_corrected` = the upstream artifact itself was changed. `claim_upheld` = the registry examined it and stands by the classification. `insufficient_evidence` = the record did not carry enough to reproduce. `superseded_by_finding` = another filing carries it forward, named below."
         },
         "at": {
           "type": "string",

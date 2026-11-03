@@ -111,7 +111,7 @@
       "required": [
         "facts"
       ],
-      "description": "What the policy binds to — the FACTS it consumes, never how it compares them. UDLM specifies the policy-engine contract, not the predicate language (§7.2a: an external engine is 'a Provider of policy decisions, bound by the contract, not by shared storage'). The comparison lives in the engine's own rule body, in the engine's own language; UDLM carries the DEPENDENCY, which is what makes a policy analyzable without evaluating it — impact analysis when a fact changes, and a refusal when a policy binds to data the model does not carry.",
+      "description": "What the policy binds to: the FACTS it consumes, never how it compares them. UDLM specifies the policy-engine contract, not the predicate language (§7.2a: an external engine is 'a Provider of policy decisions, bound by the contract, not by shared storage'). The comparison lives in the engine's rule body. UDLM carries the DEPENDENCY, making a policy analyzable without evaluating it: impact analysis when a fact changes, and a refusal when a policy binds to data the model does not carry.",
       "properties": {
         "facts": {
           "type": "array",
@@ -141,11 +141,11 @@
           "required": [
             "engine"
           ],
-          "description": "The engine-native rule body — OPAQUE to UDLM, which never parses, validates, or interprets it. Same treatment a provider's internal implementation gets (T9: the substrate never translates into a provider's native spec). Carried so a policy record stays a complete governed artifact under §6 lifecycle, provenance, and audit; a peer that does not run this engine can still read the record's identity, facts, decision shape, and audit obligations without being able to evaluate it. OPTIONAL BY CONTRACT, not by oversight: under §7.2a's delegated mode the implementation \"does not see or store the external engine's policies — only the data in and the decision out\", so a policy record bound to an external engine legitimately declares its facts and carries no body. When the body is absent the engine still MUST be named, because a peer's refuse-or-evaluate decision depends on it and not on whether the body happens to travel.",
+          "description": "The engine-native rule body, OPAQUE to UDLM (never parsed, validated or interpreted), like a provider's internals (T9). Carried so a policy record stays a complete governed artifact (§6 lifecycle, provenance, audit) readable by a peer without this engine. OPTIONAL BY CONTRACT: in §7.2a's delegated mode the implementation 'does not see or store the external engine's policies', so such a record may declare facts and carry no body. The engine MUST be named regardless: a peer's refuse-or-evaluate decision depends on it.",
           "properties": {
             "engine": {
               "type": "string",
-              "description": "Which engine dialect the body is written in — a canonical term from the `policy-engine` taxonomy (registry/taxonomies/policy-engine.yaml), enforced by tests/check_policy_boundary.py (PBND-004). A peer reads this to decide whether it can evaluate the rule at all, and refuses rather than guessing when it cannot — a decision a free string cannot support, since `rego`/`Rego`/`opa` would be three answers to one question. The vocabulary is OPEN (a new engine is a curation-ladder contribution, ADR-039) but each term is canonical. `builtin` names the evaluating implementation's own engine: not portable, and knowably so."
+              "description": "Which engine dialect the body is written in: a canonical term from the `policy-engine` taxonomy (registry/taxonomies/policy-engine.yaml), enforced by tests/check_policy_boundary.py (PBND-004). A peer reads this to decide whether it can evaluate the rule at all, refusing rather than guessing; a free string could not, since `rego`/`Rego`/`opa` would be three answers to one question. The vocabulary is OPEN (a new engine is a curation-ladder contribution, ADR-039) but each term is canonical. `builtin` names the evaluating implementation's own engine: not portable, knowably."
             },
             "body": {
               "type": "string",
@@ -190,7 +190,7 @@
     "reconciliation": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Participation in the reserve-phase reconciliation loop (ADR-011 §1; ADR-006 re-entrant evaluation; policy-contract §7.6). During reserve, holds land incrementally and each yields new reserved facts (a reserved segment, a placement). A PARTICIPATING policy is re-evaluated as those facts arrive, so placement / cycle / quota / governance-matrix rules act on the enriched reserved graph as it converges — not just once at the end. A non-participating policy is evaluated once, at the commit barrier (default). Default barrier-only keeps cheap static checks from re-running every iteration. Re-evaluation MUST be idempotent (ADR-006 soundness).",
+      "description": "Participation in the reserve-phase reconciliation loop (ADR-011 §1; ADR-006 re-entrant evaluation; policy-contract §7.6). During reserve, holds land incrementally and each yields new reserved facts (a reserved segment, a placement). A PARTICIPATING policy is re-evaluated as those facts arrive, so placement, cycle, quota and governance-matrix rules act on the enriched reserved graph as it converges. A non-participating policy is evaluated once, at the commit barrier (default), which keeps cheap static checks from re-running every iteration. Re-evaluation MUST be idempotent (ADR-006 soundness).",
       "properties": {
         "participates": {
           "type": "boolean",
@@ -362,7 +362,7 @@
           }
         }
       },
-      "description": "Temporal clauses on a `validation` or `orchestration_flow` policy — added to the existing clause structure rather than made a new `policy_type` (ADR-053 Decision 1), because when a change may run is a property of the gate, not a different kind of gate.\n\nTYPED ADOPTION DEBT IS DERIVED FROM THESE, never stored: `pin_behind` (ordinary lag, nothing holding it), `windowed` (held by a `window`), `frozen` (held by a `freeze`). The verdict names the clause and the next transition, so an estate that is behind can show it is PROVABLY ON-POLICY behind rather than merely late. Storing the verdict would let it disagree with the clauses that produce it (DRV-001)."
+      "description": "Temporal clauses on a `validation` or `orchestration_flow` policy. Part of the clause structure, not a new `policy_type` (ADR-053 Decision 1): when a change may run is a property of the gate. TYPED ADOPTION DEBT IS DERIVED FROM THESE, never stored: `pin_behind` (ordinary lag), `windowed` (held by a `window`), `frozen` (held by a `freeze`). The verdict names the clause and next transition: a behind estate is PROVABLY ON-POLICY behind, not merely late. A stored verdict could disagree with its clauses (DRV-001)."
     }
   },
   "allOf": [

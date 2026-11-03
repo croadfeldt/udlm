@@ -58,7 +58,7 @@
     },
     "entity_type": {
       "type": "string",
-      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow | Grouping. Constrained by `family` (see allOf). The specific type (e.g. Machine.VM, Automation.Workflow) is `resource_type`, not `entity_type`. (docs/spec/foundations/entity-types.md, docs/spec/foundations/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list); it is a required discriminator only for Knowledge (Capability/…) and Access (Identity)."
+      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (declares constituents[]). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow | Grouping. Constrained by `family` (see allOf). The specific type (Machine.VM, Automation.Workflow) is `resource_type`, not `entity_type` (docs/spec/foundations/entity-types.md, docs/spec/foundations/knowledge-family.md). For the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list; ADR-027 addendum); a required discriminator only for Knowledge and Access."
     },
     "lifecycle_archetype": {
       "enum": [
@@ -81,7 +81,7 @@
         "allocation",
         "shareable"
       ],
-      "description": "Which of the three ownership patterns instances of this type follow (docs/spec/foundations/ownership-sharing-allocation.md §2) — the declaration that decides who ends up owning a realized entity, and therefore decommission safety, cost attribution, cross-tenant visibility, and drift accountability. `whole_allocation` = each request produces an entity owned entirely by the requesting Tenant (a VM, a Container). `allocation` = each instance is a distinct entity carved from a pool owned by someone else; the consumer owns the carve, the pool owner keeps the pool (an IPAddress from an IPAddressPool) — requires `allocated_from_pool_type`. `shareable` = one entity exists and consumers hold a STAKE rather than ownership; the owner keeps it (a VLAN, a DNS Zone). The pattern was normative prose with worked YAML from 0.1 and declarable in no schema, so nothing could check that a composite realizing a shareable resource took a stake rather than ownership; that is what this field makes gateable."
+      "description": "Which ownership pattern instances of this type follow (docs/spec/foundations/ownership-sharing-allocation.md §2). `whole_allocation` = an entity owned entirely by the requesting Tenant (a VM, a Container). `allocation` = a distinct entity carved from someone else's pool; consumer owns the carve, owner keeps the pool (an IPAddress from an IPAddressPool); requires `allocated_from_pool_type`. `shareable` = one entity; consumers hold a STAKE, the owner keeps it (a VLAN, a DNS Zone). It gates that a composite realizing a shareable resource takes a stake, not ownership."
     },
     "allocated_from_pool_type": {
       "type": "string",
@@ -95,7 +95,7 @@
     },
     "publicly_stakeable": {
       "type": "boolean",
-      "description": "A STANDING declaration that any Tenant may take a stake in instances of this type without a per-grant cross-tenant authorization — one of the two alternatives CTX-001 already names. This is how shared platform infrastructure (a cluster fabric, a house VLAN) stops requiring a grant dance per consumer. Only meaningful with `ownership_model: shareable`. It waives the GRANT, never the boundary: the resource stays owned by its Tenant, a stake is still a stake, and revocation and decommission behave exactly as they do for a granted stake."
+      "description": "A STANDING declaration that any Tenant may take a stake in instances of this type without a per-grant cross-tenant authorization, one of the two alternatives CTX-001 names. This is how shared platform infrastructure (a cluster fabric, a house VLAN) stops requiring a grant per consumer. Only meaningful with `ownership_model: shareable`. It waives the GRANT, never the boundary: the resource stays owned by its Tenant, a stake is still a stake, and revocation and decommission behave exactly as for a granted stake."
     },
     "publicly_allocatable": {
       "type": "boolean",
@@ -197,7 +197,7 @@
     },
     "outputs": {
       "type": "object",
-      "description": "Typed Realized-state outputs (E2): named values this type publishes when it reaches Realized. Other entities bind to these via dependency references; the binding is contract-checked against these types rather than string-spliced. Output NAMES are snake_case (propertyNames pattern) — they are the referenceable, typed binding surface: a catalog-item binding names a producer output by this key, and the validator resolves it against this list (data-model-core §2 [D8.3] typed outputs). An output whose value differs between two realizations of the same intent declares `volatile: true` — the promotion diff excludes it by that declaration, never ad hoc (ADR-046).",
+      "description": "Typed Realized-state outputs (E2): named values published on reaching Realized. Other entities bind to them via dependency references, contract-checked against these types rather than string-spliced. Output NAMES are snake_case (propertyNames pattern), the typed binding surface: a catalog-item binding names a producer output by this key, resolved by the validator against this list (data-model-core §2 [D8.3] typed outputs). An output whose value differs between realizations of one intent declares `volatile: true`; the promotion diff excludes it by declaration, never ad hoc (ADR-046).",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
@@ -692,7 +692,7 @@
             "compatible_vendor",
             "reference_only"
           ],
-          "description": "Recorded verdict of the license check against UDLM's Apache-2.0 (SPEC-DESIGN-REQUIREMENTS §23): `compatible_reference` = we only reference the vocabulary (field names = facts), license-clean regardless of source license (the default); `compatible_vendor` = source is Apache-2.0-compatible, so its text MAY be absorbed/vendored; `reference_only` = copyleft/file-scoped source (GPL/LGPL/MPL) whose names MAY be referenced but whose text/files MUST NOT be vendored."
+          "description": "Recorded verdict of the license check against UDLM's Apache-2.0 (SPEC-DESIGN-REQUIREMENTS §23). `compatible_reference` = we only reference the vocabulary (field names = facts), license-clean regardless of source license (the default). `compatible_vendor` = source is Apache-2.0-compatible, so its text MAY be absorbed/vendored. `reference_only` = copyleft/file-scoped source (GPL/LGPL/MPL) whose names MAY be referenced but whose text/files MUST NOT be vendored."
         },
         "disposition": {
           "type": "string",
