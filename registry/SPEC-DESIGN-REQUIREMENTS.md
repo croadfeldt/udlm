@@ -1,8 +1,9 @@
 # UDLM Spec Design Requirements
 
 The rubric every UDLM **Resource Type Specification** is designed to. **Hard constraints** are
-normative (MUST); those marked **[enforced]** are checked by `tools/validate.py` /
-`tools/compat-check.py` and should run in CI. **Design principles** are review discipline (SHOULD).
+normative (MUST); those marked **[enforced]** are checked by `tools/validate.py`,
+`tools/compat-check.py` or the named gate in `tests/`, all of which run in CI
+(`.github/workflows/validate.yml`). **Design principles** are review discipline (SHOULD).
 Each hard constraint cites the UDLM contract it derives from.
 
 ## Hard constraints (MUST)
@@ -43,8 +44,8 @@ Each hard constraint cites the UDLM contract it derives from.
 15. **Implementation is two-phase — validate-and-reserve, then commit** (`docs/spec/foundations/four-states.md` §2.3a;
     ADR-011). The Requested → Realized transition MUST **reserve** every target (validate + hold, **no
     side effects**, returning computed realize-time facts) and reconcile the reserved graph to a fixed
-    point, MUST NOT **commit** (build) any target until the **whole reserved graph is held-and-valid and
-    all applicable policy is green** (the commit barrier), and MUST **release** any uncommitted hold on
+    point. It MUST NOT **commit** (build) any target until the **whole reserved graph is held-and-valid and
+    all applicable policy is green** (the commit barrier). It MUST **release** any uncommitted hold on
     failure/cancellation/TTL-expiry. Providers expose `reserve` / `commit` / `release`, all idempotent
     (`docs/spec/contracts/provider-contract.md` §6a). This is what makes `fulfillment: provider` (DCM ADR-009)
     side-effect-free: cross-dependency criteria are computed against **reserved** facts before anything
@@ -85,8 +86,8 @@ Each hard constraint cites the UDLM contract it derives from.
     references plus the append-only audit/provenance chain (`registry/audit-record.schema.json`; ADR-005) —
     which is the **preferred mechanism to rebuild or quasi-confirm** a relationship when an edge is lost or in
     doubt. Redundant both-sides storage is explicitly **not** the resilience mechanism; it only adds drift.
-    Reconstruction reads the chain **LIFO** (most-recent-first) for relationship data: the **latest** mutation
-    event for an edge is its authoritative current state (last-write-wins), older events are provenance — so a
+    Reconstruction reads the chain **LIFO** (most-recent-first) for relationship data. The **latest** mutation
+    event for an edge is its authoritative current state (last-write-wins); older events are provenance. So a
     rebuild pops the newest event per edge and stops, rather than replaying the whole history forward.
 18d. **To rely on audit, the relationship MUST be audited explicitly.** Every relationship mutation
     (create / change / remove) is recorded as a first-class **audit event** —
@@ -96,9 +97,8 @@ Each hard constraint cites the UDLM contract it derives from.
     which requires `audit-record.schema.json` to carry a relationship-mutation event shape. **[enforced: validate.py + audit schema]**
 18e. **Undo/revert is permitted, but it resolves to an explicit forward action — never a differential.** A
     consumer may request an undo or revert; **the implementation resolves it into a new, explicit forward
-    action**, and the
-    audit chain records the **resulting** relationship explicitly (a forward create/change/remove to that
-    state) — never an "undo the last event" reference. This keeps the chain append-only and self-describing and
+    action**. The audit chain records the **resulting** relationship explicitly (a forward
+    create/change/remove to that state), never an "undo the last event" reference. This keeps the chain append-only and self-describing and
     keeps LIFO (18c) valid: the newest event always states the full current state, so no replay or
     interpretation is needed. A revert is admissible only when the **target resource's lifecycle contract and
     its resource provider can actually realize that state** — you cannot declare a relationship the provider
@@ -118,29 +118,29 @@ Each hard constraint cites the UDLM contract it derives from.
     **Computation is relocated, not banned.** When a computed binding *is* needed (e.g. a CEL
     expression combining declared outputs), it is a **Transformation Policy evaluated by the
     implementation's policy
-    engine** — never embedded in the portable data. It is safe *iff*: (a) the evaluator is
+    engine** — never embedded in the portable data. It is safe *iff* three things hold. (a) The evaluator is
     **pure/deterministic** (sandboxed CEL — no I/O, clock, or randomness), so it is reproducible from
-    the immutable record; (b) its inputs are **declared typed bindings** (governable edges); and (c) the
+    the immutable record. (b) Its inputs are **declared typed bindings** (governable edges). (c) The
     **policy engine records the evaluation** (`expression@version` + resolved inputs + output), so the
     computed field's provenance points to the policy and every input edge. The policy-evaluation seam is
-    already the audit/provenance capture point (control-plane decisions, non-normative: DCM ADR-006/010) —
-    computation stays expressive while the
-    portable data stays declarative and the result stays auditable + provenanced.
+    already the audit/provenance capture point (control-plane decisions, non-normative: DCM ADR-006/010).
+    Computation stays expressive while the portable data stays declarative and the result stays
+    auditable + provenanced.
     Two further controls bound it: **(d) per-field opt-in** — a field is a valid CEL target only if its
     definition declares **`cel_permitted: true`** (default **false**; a declarative field marker alongside
     `createOnly`/`immutable`/`sensitive`). Producers of types/layers/catalog items decide which fields
     accept computed bindings — computation is opt-in (the *simple-common-case* principle); the policy
-    engine rejects a CEL op targeting a non-permitted field. **(e) Uncovered-computed-field notification**
-    — if a CEL op sets a field that **no policy reads or constrains**, the result is *ungoverned*
-    ("unbounded"): the engine emits an **`uncovered_computed_field`** observation (recorded, pairs with
-    provenance) and the **operational profile** sets the action (notify → warn → block; sovereign/
+    engine rejects a CEL op targeting a non-permitted field. **(e) Uncovered-computed-field notification.**
+    If a CEL op sets a field that **no policy reads or constrains**, the result is *ungoverned*
+    ("unbounded"). The engine emits an **`uncovered_computed_field`** observation (recorded, pairs with
+    provenance), and the **operational profile** sets the action (notify → warn → block; sovereign/
     critical → block). Together: producers gate *which* fields may be computed; the platform flags *when*
     a computed field is ungoverned.
     **Field markers are contract data — policy governs and gates them, but never rewrites them.** A
     field's markers (`cel_permitted`, `immutable`, `sensitive`, …) are part of the contract: their
     *effective* value is the base definition **narrowed** by declarative layers (constraint profiles / org
     layers — E1 *narrow-never-widen*, recorded with provenance), so it is reproducible (T1/T3). A policy
-    MUST NOT flip a flag in place; it MAY (i) **authorize/govern** who narrows it, and (ii) add a runtime
+    MUST NOT flip a flag in place. It MAY (i) **authorize/govern** who narrows it, and (ii) add a runtime
     **gate on the operation** (e.g. incident-mode → deny all CEL; a tenant → no computed fields), recorded
     as a decision. **Direction:** *tightening* (e.g. `cel_permitted` true→false) is allowed via a narrowing
     layer or a runtime gate; *loosening* (false→true — permitting what a producer disallowed) requires a
@@ -149,7 +149,7 @@ Each hard constraint cites the UDLM contract it derives from.
 ### Adopted standards — provenance & licensing
 22. **Source provenance** — every type or field whose vocabulary is **adopted** from an external
     standard (the *adopt* disposition, `docs/spec/principles/adopted-standards.md`) MUST record the
-    source: the standard's name, version/edition, and canonical URL, in the type's `adopts[]` reference
+    source. That is the standard's name, version/edition, and canonical URL, in the type's `adopts[]` reference
     (the `adopted_standard_ref` in `registry/resource-type-spec.schema.json`) or a field-level
     `x-standard` pointer. (A provider separately declares which standard *versions* it can emit/consume
     via `registry/provider-adopted-standards.schema.json` — a different concern.) A definition that
@@ -158,8 +158,8 @@ Each hard constraint cites the UDLM contract it derives from.
     UDLM project license (Apache-2.0) and the verdict recorded with the source. **Referencing** a
     standard's *vocabulary* (field/element names — facts, not copyrightable) is always permitted,
     whatever the source license. **Copying** a source's schema text, enum bodies, or normative prose
-    into the UDLM tree (an *absorb*) is permitted ONLY from an Apache-2.0-compatible license;
-    copyleft / file-scoped sources (GPL, LGPL, MPL) MAY be **referenced by name** but their text or
+    into the UDLM tree (an *absorb*) is permitted ONLY from an Apache-2.0-compatible license.
+    Copyleft / file-scoped sources (GPL, LGPL, MPL) MAY be **referenced by name**, but their text or
     files MUST NOT be vendored into UDLM (`docs/spec/governance/registry-governance.md`, IP hygiene). This is
     why the disposition default is *adopt-by-reference*: it is both schema-rev-decoupled **and**
     license-clean.
@@ -176,10 +176,10 @@ Each hard constraint cites the UDLM contract it derives from.
     both §25 and this rule.
 
 ### Cross-type consistency
-24. **Shared concepts use shared shapes** — a concept that recurs across types (compute resources
-    cpu/memory, storage capacity, network CIDR / IP family, identity references, quantities,
-    timestamps, status conditions) MUST reuse the registry's **canonical common-element definitions**
-    (`registry/common-elements.md`), not be re-expressed per type. New or revised types are checked
+24. **Shared concepts use shared shapes** — a concept that recurs across types MUST reuse the
+    registry's **canonical common-element definitions** (`registry/common-elements.md`), not be
+    re-expressed per type. Those concepts are compute resources (cpu/memory), storage capacity, network
+    CIDR / IP family, identity references, quantities, timestamps and status conditions. New or revised types are checked
     against the common-element catalog; an unjustified divergence is a review finding.
 25. **Consistent naming & units** — field names are `snake_case` (`registry/naming-conventions.md` §4:
     canonical-data-model + AEP-conformance forces one casing; lowercased initialisms, e.g. `pod_cidr`);
@@ -191,8 +191,8 @@ Each hard constraint cites the UDLM contract it derives from.
 26. **A physical component (DIMM, disk, NIC, GPU, CPU) is representable BOTH ways, and the parent
     always carries the rollup.** The containing resource (e.g. `Machine.BareMetalHost`) MUST carry
     the **aggregate as a data element** (`memory.size`, `cpu.count`) — the base contract never depends
-    on components being modeled. A component MAY *also* be a **first-class entity** (`Hardware.*`,
-    `contained_by` the parent) for independent tracking (serial, slot, firmware, RMA, lifecycle),
+    on components being modeled. A component MAY *also* be a **first-class entity** (a component Base such as
+    `Processor`, `GPU` or `StorageDevice`, `contained_by` the parent) for independent tracking (serial, slot, firmware, RMA, lifecycle),
     governed by **`composition_visibility`** (`opaque|transparent|selective`,
     `docs/spec/foundations/service-dependencies.md` §11d): `opaque` → rollup only; `transparent`/`selective` →
     components are entities too. When components are modeled, the parent rollup is the **reconciled
@@ -216,8 +216,8 @@ Each hard constraint cites the UDLM contract it derives from.
 
 ### Lifecycle entry — raw & unallocated resources
 28. **A type MUST support a "raw" existence: Discovered state populated, no Intent.** A resource that
-    physically exists but has not been allocated — a freshly racked server, a brownfield import, a spare
-    drive on the shelf — MUST be representable for **inventory and tracking** with only its Discovered
+    physically exists but has not been allocated (a freshly racked server, a brownfield import, a spare
+    drive on the shelf) MUST be representable for **inventory and tracking**. It then has only its Discovered
     state populated and **no Intent/allocation** (`docs/spec/foundations/four-states.md` §2.4). Such a resource
     is **available**: it has Discovered records and no Intent, which is how the state records say
     unallocated (Metal3 `provisioning.state: available` lands there). It is later **adopted** — an Intent is attached (allocation / brownfield ingestion),
@@ -249,7 +249,7 @@ Each hard constraint cites the UDLM contract it derives from.
 31. **Every standards decision is registered — what, why, where, when, who**
     (`registry/standards-adoption-register.md`, normative). Any standard a spec adopts, absorbs
     a pattern from, retires, or deliberately REJECTS gets a DecisionRecord-shaped register
-    entry: the exact `adopts[].standard` strings it covers, the rationale *including
+    entry. The entry carries the exact `adopts[].standard` strings it covers, the rationale *including
     alternatives considered*, the git-derived adoption instant (common-elements §8 — no
     fabricated precision), the decider, where it is used, and the license verdict. An
     `adopts[]` entry whose standard string has no register entry fails CI (`ADOPT-001`,
@@ -266,18 +266,14 @@ Each hard constraint cites the UDLM contract it derives from.
 33. **One rule, one home, one ID — single-source.** Every normative rule, vocabulary, or
     wire-shape is *defined* in exactly one file and carries a stable ID (`INF-001`, `ENT-006`,
     `DPO-003`, …). Other documents **reference the ID; they never restate the rule** — a restated
-    rule is a second definition that drifts. (The 2026-07 sweep found the same rule defined up to
-    four ways, and ID families reused for unrelated meanings across files.) A rule-ID *defined* in
-    more than one file fails CI (`tests/check_single_source.py`); existing debt is grandfathered in
-    that check's baseline and burned down as the dedup PRs land, and a family split across files is
+    rule is a second definition that drifts. A rule-ID *defined* in
+    more than one file fails CI (`tests/check_single_source.py`), and a family split across files is
     warned. **The same holds for a closed VOCABULARY** — an enum declared literally in more than one
     authored file fails (`VOC-001`). Declare it once and `$ref` it
-    (`common-elements.schema.json#/$defs/<name>`); where its home is a YAML taxonomy, which an enum
+    (`common-elements.schema.json#/$defs/<name>`). Where its home is a YAML taxonomy, which an enum
     cannot `$ref`, each projection carries `x-generated-from: <path>` and the gate proves it still
-    equals its source (`VOC-002`). Until 2026-08-11 this rule said "rule, vocabulary, or wire-shape"
-    while the check read only the rule half — the action vocabulary had forked into five literal
-    copies and six other lists into two or three each, all passing CI. When a rule must appear elsewhere, cite it by ID with a one-line gist
-    — the reference carries its own gist (e.g. `ADR-008 — the UDLM/DCM boundary test`), never a bare number. **[enforced]**
+    equals its source (`VOC-002`). When a rule must appear elsewhere, cite it by ID with a one-line gist:
+    the reference carries its own gist (e.g. `ADR-008 — the UDLM/control-plane boundary test`), never a bare number. **[enforced]**
     (`tests/check_single_source.py`) To find the home before you write, use the file
     index (`docs/file-index.md`) — it names what each document owns.
 
@@ -286,11 +282,11 @@ Each hard constraint cites the UDLM contract it derives from.
     fields every provider of the type accepts (a container's `image`/`resources`/`command`/`args`/`ports`/
     `mounts`) — plus its **graph-bearing** (`data_reference` / relationship / service-graph),
     **audit/provenance/identity**, and **docs/spec/contracts/drift** elements. The line is **portable vs
-    provider_specific**, not config-vs-not: portable config that defines the resource is base;
-    **provider_specific** config is declared by the provider, projected as a config interface the
-    implementation offers
-    (`docs/spec/contracts/provider-contract.md` §1a.3), and its **values stored** as Provider-Class
-    `SharedDataElement`s (ADR-038; schema implementation #199) across Requested/Realized, portability-flagged. **The implementation stores the config
+    provider_specific**, not config-vs-not. Portable config that defines the resource is base.
+    **provider_specific** config is declared by the provider and projected as a config interface the
+    implementation offers (`docs/spec/contracts/provider-contract.md` §1a.3); its **values are stored** as
+    Provider-Class `SharedDataElement`s (ADR-038; schema implementation #199) across Requested/Realized,
+    portability-flagged. **The implementation stores the config
     *state* — base and extra — because it is the state system-of-record and drift is a diff; there is no
     "store a pointer instead of the values".** The provider owns the *schema*; the *mechanism* stays out of
     the substrate (control-plane decision, non-normative: DCM ADR-023); the *state* is always recorded.
@@ -298,16 +294,16 @@ Each hard constraint cites the UDLM contract it derives from.
 
 35. **Provider-neutral framing — model the fact, never dictate the mechanism.** A type models *what* a
     fact is, never *how* or *by what* it is realized, and MUST NOT imply a particular mechanism or provider
-    is *the* or *preferred* way. (An IP address's origin is a field — `static`/`dhcp`/`link_layer`/`random`;
-    UDLM neither prescribes DHCP as the way to serve it nor names Kea/dnsmasq/BIND as the way to run it.)
+    is *the* or *preferred* way. An IP address's origin is a field (`static`/`dhcp`/`link_layer`/`random`).
+    UDLM neither prescribes DHCP as the way to serve it nor names a DHCP server product as the way to run it.
     Concrete providers appear only as **examples** ("e.g. …") or reference implementations — never as the type's
-    grounding, its normative text, or an adopted "the model." And **no estate/deployment-specific references
-    in the portable spec** (host names, a site's tool choice, `group_vars`, generator scripts) — those live
+    grounding, its normative text, or an adopted "the model". And **no estate/deployment-specific references
+    in the portable spec**: host names, a site's tool choice, `group_vars` and generator scripts live
     in the estate's own repo. Extends §17 (no provider_specific data in the universal spec).
-    **Product-name neutrality (the diplomatic tightening):** a product or vendor name appears ONLY
-    (a) in `adopts[]` / `aliases[]` entries and the standards-adoption register — attribution of an
+    **Product-name neutrality (the diplomatic tightening):** a product or vendor name appears in only two
+    places. (a) In `adopts[]` / `aliases[]` entries and the standards-adoption register: attribution of an
     adopted standard or vocabulary cross-walk is not endorsement, and an adoption stripped of its
-    name is meaningless — and (b) in a spec description only when attributing that adopted
+    name is meaningless. (b) In a spec description, only when attributing that adopted
     standard's own vocabulary (e.g. "Metal3 `rootDeviceHints`", where Metal3 is in the type's
     `adopts[]`). Products as **actors, examples, or illustrations** are replaced with generic
     archetypes everywhere — normative text, `context` blocks, worked examples, flows ("a
@@ -321,11 +317,11 @@ Each hard constraint cites the UDLM contract it derives from.
 
 36. **The resource-type base standard — expectations every type meets.** A new or revised
     resource type is not done when its schema validates; it is done when it meets the base
-    standard. **(a) Standards cross-walk:** the domain's industry standards are surveyed;
-    `adopts[]` records what is adopted with disposition + provenance/license (§22–23); concerns
+    standard. **(a) Standards cross-walk:** the domain's industry standards are surveyed, and
+    `adopts[]` records what is adopted with disposition + provenance/license (§22–23). Concerns
     the industry treats as portable are either modeled or listed as **documented deliberate
-    exclusions** (with the ADR-038 scope: provider-variable concerns are Provider-Class
-    `SharedDataElement`s, named as such — never silently absent). **(b) Typed outputs (E2):**
+    exclusions**. With the ADR-038 scope, provider-variable concerns are Provider-Class
+    `SharedDataElement`s, named as such, never silently absent. **(b) Typed outputs (E2):**
     every realizable type declares its Realized output surface — the named, typed values a
     downstream binder consumes — or is explicitly exempt-by-family (Knowledge/reference types);
     a binding names a declared output, never a string-spliced guess. **(c) Minimal required
@@ -347,15 +343,15 @@ Each hard constraint cites the UDLM contract it derives from.
     not-for, works-with — rendered into `registry/TYPE-CATALOG.md` (generated; a `--check` gate
     keeps it current). A type an engineer cannot place without reading its schema is not done.
     **(k) Corpus use cases:** the type ships model-validation
-    use cases in `use-cases/` covering its capability axes — **usage (provision through day-2
-    update), migration, rehydration, portability, sovereignty, and tenancy** — so an assessment tool's gap
-    analysis can detect regressions per type, not just per model. **[enforced: review; (b), (j),
+    use cases in `use-cases/` covering its capability axes: **usage (provision through day-2
+    update), migration, rehydration, portability, sovereignty, and tenancy**. An assessment tool's gap
+    analysis can then detect regressions per type, not just per model. **[enforced: review; (b), (j),
     and (k) are CI-gate candidates — outputs-nonempty, example-currency, and UC-coverage checks]**
 
 37. **Derivability — a type does not store what the model already computes.** A value the model
-    can compute from records it already holds — the count of the things an edge points at, the
-    arithmetic over a declared range, the last run of a job — is computed on read, not stored as
-    an independent field. A stored copy is drift waiting to happen: the moment the underlying
+    can compute from records it already holds is computed on read, not stored as an independent
+    field. Examples: the count of the things an edge points at, the arithmetic over a declared
+    range, the last run of a job. A stored copy is drift waiting to happen: the moment the underlying
     records change, the copy is a second answer to a question that must have one. This is the
     same compute-never-store discipline the model already applies to derived shape
     (`has_constituents`, ADR-027 addendum), derived nature (`edge_type`, entity-relationships §4),
@@ -366,14 +362,14 @@ Each hard constraint cites the UDLM contract it derives from.
 
 | Rule | Statement |
 |---|---|
-| `DRV-001` | A resource type MUST NOT declare a field whose value is derivable from other model records (relationships, instance records, declared ranges, provenance) as an independently stored fact. A field whose **name** is shaped like a history/recency fact (`last_*`, `latest_*`, `previous_*`, `runs_*`, `history_*`, `*_history`, `*_completed`) or, in `outputs`, like an aggregation (`total_*`, `num_*`, `count_*`, `sum_*`, `avg_*`, `current_*`, `*_count`, `*_total`, `*_sum`, `*_average`) MUST either declare its classification in its description — **DERIVED** (naming the source it is computed from) or **OBSERVED** (a provider-watched fact not derivable from model records) — or not exist on the type, its facts living on the instance records that own them. The gate reads names, not semantics: aggregation names are checked on `outputs` only, because in a `spec` an aggregate name can be legitimate intent; a derivable value under a neutral name is the reviewer's derivability question, not the gate's. |
+| `DRV-001` | A resource type MUST NOT declare a field whose value is derivable from other model records (relationships, instance records, declared ranges, provenance) as an independently stored fact. Two name shapes are checked. A history/recency name (`last_*`, `latest_*`, `previous_*`, `runs_*`, `history_*`, `*_history`, `*_completed`), and, in `outputs`, an aggregation name (`total_*`, `num_*`, `count_*`, `sum_*`, `avg_*`, `current_*`, `*_count`, `*_total`, `*_sum`, `*_average`). Such a field MUST declare its classification in its description: **DERIVED** (naming the source it is computed from) or **OBSERVED** (a provider-watched fact not derivable from model records). Otherwise it MUST NOT exist on the type; its facts live on the instance records that own them. The gate reads names, not semantics. Aggregation names are checked on `outputs` only, because in a `spec` an aggregate name can be legitimate intent; a derivable value under a neutral name is the reviewer's derivability question, not the gate's. |
 
 38. **The managed surface is a control plane, not a DCIM — and observed inventory is opt-in,
     never authored.** The model is the system-of-record **only for the resources whose lifecycle
     it owns**; it is not a hardware-component inventory authority. Component-level observation
-    enters solely through `classification: substrate | ancillary` (default `substrate`): an
-    **ancillary** type is **observe-only** (valid solely as Discovered/Realized records — never
-    on the Intent/catalog authoring surface), **structurally subordinate** (every instance
+    enters solely through `classification: substrate | ancillary` (default `substrate`). An
+    **ancillary** type is **observe-only**: valid solely as Discovered/Realized records, never
+    on the Intent/catalog authoring surface. It is **structurally subordinate** (every instance
     `contained_by` a substrate resource — a checkable invariant), observed-provenance-bearing,
     and **policy-readable, never authored**. Optionality reuses existing mechanisms: a profile
     includes or omits the ancillary set, a provider declares inventory as a capability,
@@ -392,9 +388,9 @@ Each hard constraint cites the UDLM contract it derives from.
 
 40. **A provider states its offer on its Provider Class — and that offer IS the consumer's option
     list.** §39 says the actual requirement is the provider's to state; this says where and how.
-    Two declarations on the same element set: **what it REQUIRES** is an element it adds marked
-    `optional: false`; **what it SUPPORTS** is `supports` on the element — a list of clauses whose
-    union is the offer, each carrying discrete `values`, a `min`/`max` range (optionally with
+    Two declarations on the same element set. **What it REQUIRES** is an element it adds marked
+    `optional: false`. **What it SUPPORTS** is `supports` on the element: a list of clauses whose
+    union is the offer. Each clause carries discrete `values`, a `min`/`max` range (optionally with
     `step`), or both, and optionally a `when` scoping the clause to other selections (that is how a
     support *matrix* is expressed).
 
@@ -439,7 +435,7 @@ Each hard constraint cites the UDLM contract it derives from.
     - A **provider** states what it requires to realize a request, and the range of values it
       supports, on its Provider Class (§40). Depth it does not need, it does not declare.
     - An **organization** states how much it wants to manage through **layers, policies, and
-      profiles** — the same mechanism that supplies defaults (§41), and for the same reason: the
+      profiles**: the same mechanism that supplies defaults (§41), and for the same reason. The
       value records which layer set it, so the decision is attributable and policy can override it
       traceably.
     - **UDLM** provides the shapes and the transport. A portable type carries what a resource IS,
@@ -510,6 +506,6 @@ Design principles; don't denormalize derivable facts).
 | `stability` (`experimental` \| `stable`) | resource type spec | **Deferred** (2026-06-27) | An explicit per-type maturity marker, separate from lifecycle `status` (`active`/`deprecated`/`retired`). Deferred because **maturity is already carried by the version** (`0.x` pre-stable → `1.0` stable, K8s-style — see VERSIONING.md "Lifecycle vs. maturity"), so a per-type field is redundant while the whole spec is `0.x`. **Add when** per-type maturity must differ from the global `0.x/1.0` (e.g. one type is battle-tested while the spec is still pre-1.0). The review stage (`developing`/`proposed`) is a governance-workflow concern, never a `status`/`stability` value. |
 
 ---
-_E1–E5 reference the enhancement opportunities surfaced from dcm-project/enhancements#55
-(constraint profiles, typed outputs, conditional constraints, layered-overlay provenance,
-instance↔version pinning). This rubric will tighten as the standards survey + OSAC research land._
+_E1–E5 name the five enhancement opportunities this rubric builds on: constraint profiles, typed
+outputs, conditional constraints, layered-overlay provenance, and instance↔version pinning (raised
+as dcm-project/enhancements#55)._

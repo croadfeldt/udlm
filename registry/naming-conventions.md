@@ -2,7 +2,7 @@
 
 How we name resource types, fields, outputs, files, and instances, so the registry stays consistent and
 predictable. These conventions are normative for new definitions; existing entries are brought into line
-as they are revised. Referenced by `SPEC-DESIGN-REQUIREMENTS.md` §18 (Identity & naming) and enforced in
+as they are revised. Referenced by `SPEC-DESIGN-REQUIREMENTS.md` §5–6 (Identity & naming) and enforced in
 part by the meta-schema patterns (`resource-type-spec.schema.json`).
 
 Guiding rule: **name to an existing standard before inventing.** Where an industry standard already
@@ -60,7 +60,7 @@ Three terms here are easy to collide; keep them distinct.
 - **Capability category** — a **(verb × §2-Category)** term in the provider-capability taxonomy (e.g.
   `realize_resources/Storage` = *storage-provisioning*). Its domain axis **is** a §2 Category — a capability
   category composes on the resource-type Category, it does not replace or shadow it. **Non-exclusive**: a
-  provider occupies every capability category its declared capabilities place it in (an InfoBlox IPAM sits in
+  provider occupies every capability category its declared capabilities place it in (an IPAM appliance sits in
   both `realize_resources/Network` and `serve_data/Network`). Always write **"capability category"** — never bare
   "category," which means the §2 resource-type Category. Policy targets a capability category, a capability verb,
   or the data itself (`data_classification`/`data_role`) — replacing the old `provider type` match axis.
@@ -70,9 +70,9 @@ Three terms here are easy to collide; keep them distinct.
 ## 3. Suite products = composites, not monolithic types
 
 A product that bundles several capabilities is modeled as **realizing multiple types**, not one bespoke
-type. Example: FreeIPA → `DirectoryService` (LDAP+Kerberos, RFC 4511/4512/4120) **+**
-`DNSZone` **+** (future) `CertificateAuthority`. This keeps each type portable and
-reusable and avoids a `FreeIPA.Everything` corner.
+type. Example: a directory product that bundles LDAP, Kerberos and DNS realizes `DirectoryService`
+(RFC 4511/4512/4120) **+** `DNSZone` **+** a future `CertificateAuthority`. This keeps each type portable
+and reusable and avoids a `<Product>.Everything` corner.
 
 ## 3a. Asset vs. allocation vs. instance — don't mint redundant types
 
@@ -105,15 +105,16 @@ To translate to/from other ecosystems, a type carries its alternative names with
 ## 4. Field, output, and enum names — casing (data model)
 
 This section governs the **casing of the data model itself** (the keys in a resource definition). The
-*runtime* concerns — how the API / event bus serialize it, Go/Python mapping, CloudEvents envelope,
-broker routing — are a **the control plane** concern: see the control plane **DCM ADR-018 (Wire serialization & event conventions)**.
-The control plane follows the same casing for the reason below, so there is no translation seam.
+*runtime* concerns (how the API / event bus serialize it, Go/Python mapping, CloudEvents envelope,
+broker routing) are the **control plane's**; the example implementation records them in **DCM ADR-018
+(wire serialization and event conventions)**. The control plane follows the same casing for the reason
+below, so there is no translation seam.
 
 **Decision: `snake_case` keys.** UDLM is a **canonical data model meant to be consumed natively** by
 every component (the "consume UDLM natively or it isn't universal" rule). Native consumption means the
 model **is** the wire form — there is no separate "API casing" to translate to. The control plane's API is the consumer
-with a hard external constraint: it conforms to **AEP** (`aep.dev`, the dcm-project engineering team's
-adopted API-design standard, enforced by the `aep-dev/aep-openapi-linter`), and AEP's prescribed fields
+with a hard external constraint: it conforms to **AEP** (`aep.dev`, the API-design standard this project
+adopts in DR-AEP-001, enforced by the `aep-dev/aep-openapi-linter`), and AEP's prescribed fields
 are snake_case (`page_size`, `*_time`). Native-universal consumption **+** AEP-bound API therefore jointly
 force one casing — **snake_case** — across UDLM and the control plane. (camelCase would re-introduce the very
 translation layer native consumption exists to eliminate.) snake_case is also native to UDLM's actual stack: Python (providers, tooling), SQL stores,
@@ -165,12 +166,14 @@ routing mechanics live in the control plane (DCM ADR-018).
 
 ## 5. File names
 
-Registry type files are `category.type.<json|yaml>` — lowercase, dot-joined, with the PascalCase Type
-segment rendered **kebab-case**: word boundaries hyphenate (`machine.bare-metal-host.json`), and an
-acronym run merges with the word it abuts (`network.ipaddress.json`, `automation.ospatch.json` —
-never `ip-address` / `os-patch`). The transform is `_standard_filename()` in
-`registry/tools/generate_class_specs.py` (self-tested). JSON is the canonical interchange form;
-YAML is allowed for authoring (VERSIONING.md §Serialization).
+A served spec under `registry/generated/` is named after its class: the class name, lowercased and
+dot-joined, with each PascalCase segment rendered **kebab-case**. Word boundaries hyphenate
+(`machine.bare-metal-host.json`), and an acronym run merges with the word it abuts (`ipaddress.json`,
+`automation.ospatch.json`, never `ip-address` / `os-patch`). The transform is `_standard_filename()` in
+`registry/tools/generate_class_specs.py` (self-tested). Authored classes live under
+`classes/<family>/…` by ADR-061's hierarchy (a Base is a directory with `_base.yaml`; a Type or Provider
+Class is a leaf file until it gains children). JSON is the canonical interchange form; YAML is the
+authoring form (VERSIONING.md §Serialization).
 
 ## 6. Instance handles & IDs
 
@@ -180,43 +183,44 @@ and name segments — this formalizes the existing charset; no current handle us
 
 - Instance / graph node ids: lowercase **kebab-case**, short and stable (`ocp-control01`, `ups-rack`).
 - Type UUIDs are UUIDv4, immutable for the type's life; handles are mutable/rebindable
-  (SPEC-DESIGN §18, `docs/spec/contracts/identifier-scheme.md`).
+  (SPEC-DESIGN §5, `docs/spec/contracts/identifier-scheme.md`).
 
-## 7. Standards-grounded type plan (this initiative)
+## 7. The standards each infrastructure type adopts
 
-The new types, their category/tier, and the standard each adopts by reference. All Tier-1 Core.
+The infrastructure types, the usage group each is filed under, and the standard each adopts by reference.
 
-| Type | Category (new?) | Adopts (by reference) | Notes |
+| Type | Usage group | Adopts (by reference) | Notes |
 |---|---|---|---|
-| `NetworkInterface` | Hardware ✚ | Redfish `NetworkAdapter`/`NetworkPort` | NIC: mac, speed |
-| `Machine.BareMetalHost` | Machine | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | the physical **asset** (raw resource, §28); rollup of the hardware components (§26). An *allocation* to a consumer is the ownership model, not a separate type (§3a); a running *instance* is a realized entity. |
-| `StorageCluster` | Storage | SNIA Swordfish `StorageSystem` + Rook `CephCluster` (provider) | vendor-neutral; provider on instance; protocol outputs |
-| `NetworkGateway` | Network | K8s Gateway API (concept) / general L3 routing | routing/NAT/firewall edge |
-| `DNSZone` | Network | RFC 1035 / 1034 | authoritative zone; external-dns `DNSEndpoint` as k8s-native ref |
-| `DHCPScope` | Network | RFC 2131 (+ 8415) / ISC Kea subnet | address scope/range + reservations |
-| `DirectoryService` | Security | RFC 4511/4512 (LDAP) + RFC 4120 (Kerberos) | the directory server; FreeIPA realizes this + DNSZone |
-| `PowerFeed` | Facility ✚ | Redfish DCIM `Circuit`/`PowerDistribution` + NUT (UPS) | power source; graph root for the homelab |
+| `NetworkInterface` | hardware, network | Redfish `NetworkAdapter`/`NetworkPort` | NIC: mac, speed |
+| `Machine.BareMetalHost` | compute | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | the physical **asset** (raw resource, §28); rollup of the hardware components (§26). An *allocation* to a consumer is the ownership model, not a separate type (§3a); a running *instance* is a realized entity. |
+| `StorageCluster` | storage | SNIA Swordfish `StorageSystem` + Rook `CephCluster` (provider) | vendor-neutral; provider on instance; protocol outputs |
+| `NetworkGateway` | network | K8s Gateway API (concept) / general L3 routing | routing/NAT/firewall edge |
+| `DNSZone` | network | RFC 1035 / 1034 | authoritative zone; external-dns `DNSEndpoint` as k8s-native ref |
+| `DHCPScope` | network | RFC 2131 (+ 8415) / ISC Kea subnet | address scope/range + reservations |
+| `DirectoryService` | identity, services | RFC 4511/4512 (LDAP) + RFC 4120 (Kerberos) | the directory server; FreeIPA realizes this + DNSZone |
+| `PowerFeed` | power, facility | Redfish DCIM `Circuit`/`PowerDistribution` + NUT (UPS) | power source; the graph root of a site |
 
-✚ = introduces a new category (Hardware, Facility), anchored to Redfish per §2.
+The binding adoption verdicts are each type's `adopts[]` and `standards-adoption-register.md`; the design
+input behind this table is `resource-type-data-sources.md`.
 
 Authoring follows the registry process (`docs/spec/governance/registry-governance.md` §3, `CONTRIBUTING.md`):
 each type validates against the meta-schema (`tools/validate.py`), ships ≥1 worked example, records
 `adopts[]` provenance + license, and starts at `status: developing` until promoted.
 
-## Extension model — augment, don't fork (seed for #198)
+## Extension model — augment, don't fork
 
 Grounded in RFC 8345's augmentation discipline and its documented failure mode (≥92 modules
 augmenting the base with inconsistent patterns — the inconsistency itself broke multi-layer
 composability). Normative rules:
 
-1. **Never add vendor/org fields to a Tier-1 spec.** Vendor and organization specifics live at
-   the extension surface only: a Tier-2 `Vendor.Type` / Tier-3 `Org.Type` in its own namespace,
-   or `provider_hints` on the instance (SPEC-DESIGN §17/§24).
-2. **Extensions are additive against the base** — a Tier-2/3 type layers new properties and
-   non-topological references onto a Tier-1 concept; it does not redefine or remove base
+1. **Never add vendor/org fields to a Core Base.** Vendor and organization specifics live at
+   the extension surface only: a Type or Provider Class beneath the Core Base (§1 — never a parallel
+   `Vendor.Type` namespace), or `provider_hints` on the instance (SPEC-DESIGN §17/§24).
+2. **Extensions are additive against the base** — a Type or Provider Class layers new properties and
+   non-topological references onto its parent; it does not redefine or remove the parent's
    semantics (the RFC 8345 "augmentations in a new module" pattern).
 3. **A recurring need is a base revision, not N vendor forks.** When the same extension appears
-   across ≥2 independent vendors/orgs, the remedy is a backward-compatible Tier-1 MINOR (the
+   across ≥2 independent vendors/orgs, the remedy is a backward-compatible MINOR on the Base (the
    IETF response to augmentation fragmentation), promoted through registry governance §3.
 4. **The formal `extends` mechanism** is **RESOLVED** — Provider-Class `SharedDataElement`s
    (ADR-038). A provider extends an instance **additively** at its Provider Class,
@@ -224,6 +228,6 @@ composability). Normative rules:
    `additionalProperties: false`, and an element may not shadow a base field. Any provider_specific
    data **computes a portability degradation** (`portability_breaking: true`, classification
    narrowed, the elements + bound provider recorded) that **MUST be surfaced to the consumer** —
-   silent non-portability is prohibited. A Tier-2 `Vendor.Type` fork remains the path
-   for a genuinely *new* type; a recurrence across ≥2 providers promotes to a base MINOR (rule 3). See
-   docs/research/minimal-custom-surface-and-graph-resilience.md.
+   silent non-portability is prohibited. A new Type Class beneath the Base remains the path
+   for a genuinely *new* kind of thing; a recurrence across ≥2 providers promotes to a base MINOR (rule 3). See
+   `docs/research/minimal-custom-surface-and-graph-resilience.md` (why a minimal custom surface keeps the graph resilient).

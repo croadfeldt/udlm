@@ -30,16 +30,16 @@ current work as *expansion of the v0.x surface*, not refinement of a released sp
 
 **What `1.0` will mean (the earned milestone, not the starting line):** UDLM cuts `1.0` when the
 surface is complete, the conformance suite (`CONFORMANCE.md`) passes, and the project is ready to
-**commit to backward compatibility** — i.e. when a breaking change would genuinely warrant a `2.0`.
+**commit to backward compatibility**. That is the point where a breaking change would genuinely warrant a `2.0`.
 Until then, the SPEC `MAJOR` is `0`, and the "same-MAJOR = wire-compatible" guarantee below is a
 *post-1.0* promise; pre-1.0, minor (`0.1 → 0.2`) bumps may carry breaking changes as the surface
 settles. This mirrors how FOCUS, OpenTelemetry, and most CNCF specs incubate at `0.x` and earn `1.0`.
 
 **Who confers `1.0` (maintainer ruling 2026-10-28, amending 2026-07-27):** the maintainer cuts it,
 on the lockdown plan in [`UDLM-1.0-LOCKDOWN.md`](UDLM-1.0-LOCKDOWN.md). The July ruling made 1.0
-something engineering acceptance confers (#217); since then the decisions were ratified row by row
-in the register (47 of 49 ADRs Accepted) and the estate consumed the model end to end as its proving
-ground, which is the acceptance the July ruling asked for. #217 closes with the cut.
+something engineering acceptance confers (#217). Since then the decisions were ratified row by row
+in the register (47 of 49 ADRs Accepted), and the estate consumed the model end to end as its proving
+ground. That is the acceptance the July ruling asked for. #217 closes with the cut.
 
 **The pre-1.0 bump floor (one rule, gate-enforced):** a MAJOR-classified (breaking) change is
 accepted under a **MINOR** bump until 1.0 — never under a REVISION. This is exactly what
@@ -141,9 +141,9 @@ downstream registries, external tooling — reference registry entities. **Insid
 none of this applies to class references** (ADR-045): a Type or Provider Class references its
 parent by handle only and compiles against the release's current version; the registry ref
 (commit) is the sole intra-registry pin. The revision store behind consumer pins is the
-registry's git history — a `thing@version` or `thing@sha256:<hex>` pin (ADR-051) resolves within
-the registry ref (or ref range) the consumer declares it consumes, which is how a pin can be
-legally *behind* the current ref while a pin resolving in no declared ref is refused as unknown.
+registry's git history. A `thing@version` or `thing@sha256:<hex>` pin (ADR-051) resolves within
+the registry ref (or ref range) the consumer declares it consumes. That is how a pin can be
+legally *behind* the current ref, while a pin resolving in no declared ref is refused as unknown.
 
 - Reference a type by `resource_type` + a version constraint: exact (`1.2.0`), minor-floating
   (`~1.2`), or major-floating (`^1`). Default resolution returns the latest **active** version
@@ -157,7 +157,7 @@ Three fields, three jobs — never one field doing two (the Kubernetes
 
 - **UUID = identity.** The uuid names the thing, is frozen at creation, and is never reused.
   No edit ever changes one; nothing about content is inferable from one.
-- **Version = the compat contract, under the publish law.** The bump table below is
+- **Version = the compat contract, under the publish law.** The bump table above is
   unchanged; in addition, **(identity, version) is immutable once published** — any content
   change ships a version bump (≥ REVISION), and republishing an already-published
   (identity, version) with different bytes is refused (the npm publish law).
@@ -209,6 +209,5 @@ Adding an enum value looks additive but breaks consumers that exhaustively handl
 backward-incompatible unless the field is documented as extensible). A type spec opts a field
 into open-world semantics by annotating it `x-extensible-enum: true` next to the `enum` —
 consumers of such fields MUST tolerate unknown values. Unmarked enums are closed: additions are
-MAJOR. *Grandfather note:* `NetworkInterface.device_class` gained values at 0.2.0/0.3.0
-under the previous rule; it is now marked extensible (0.4.0) rather than retroactively re-versioned.
+MAJOR.
 
