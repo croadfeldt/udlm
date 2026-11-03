@@ -242,9 +242,9 @@ This is the critical integration point. When a provider has updates to deliver u
 Subscriptions do not introduce a new flow — they create a **context** in which the standard
 provider-originated-update flow ([provider-contract.md](../contracts/provider-contract.md)) fires more
 often and with pre-negotiated terms. The contract: a provider pushes an update through the standard callback
-(never directly to a managed entity); if the entity is under an active subscription and the update's channel
-is `auto_apply` within its declared bounds (§5.2), the update is applied without consumer intervention,
-otherwise it requires consumer approval; either way it is policy-evaluated and audited
+(never directly to a managed entity). If the entity is under an active subscription and the update's channel
+is `auto_apply` within its declared bounds (§5.2), the update is applied without consumer intervention.
+Otherwise it requires consumer approval. Either way it is policy-evaluated and audited
 (`source_type: subscription_update`) and emits the subscription update events (§7). The concrete routing —
 the callback endpoint and the evaluation/dispatch steps — is implementation runtime (the control plane).
 
@@ -293,9 +293,10 @@ These obligations are enforced by the existing Provider Contract mechanisms — 
 A subscription request is an ordinary request whose fields carry the subscription intent
 (`consumption_model: subscription`, `subscription_tier`, `auto_renew` — §2, §3), submitted through the
 standard request channel. An implementation then assembles layers (profile → tier defaults → consumer overrides
-→ subscription terms), evaluates the subscription Validation/Transformation policies (§8), places a provider
-if needed, writes the subscription artifact, and dispatches the provider to create the initial managed
-entities — each linked back by the `subscription_binding` relationship (§2.2). That **pipeline is
+→ subscription terms), evaluates the subscription Validation/Transformation policies (§8), and places a
+provider if needed. It then writes the subscription artifact and dispatches the provider to create the
+initial managed entities — each linked back by the `subscription_binding` relationship (§2.2). That
+**pipeline is
 implementation architecture**: the intent-store layout, the assembly/evaluation/placement/dispatch steps, and
 the request API are specified in control-plane architecture docs, not here.
 

@@ -22,9 +22,10 @@ A peer implementation that consumes data emitted by another peer must be able to
   emitting system's internals.
 
 *Worked example.* Peer A emits a VM entity that references a `VirtualNetwork` by handle. Peer B,
-receiving it, must recognize the reference *kind* (a network), determine its *scope* (a global, portable
-handle — not A's implementation-local uuid), resolve it to B's own copy of that network, and reject it if the
-scope doesn't match — all without knowing A's internals. The rules below make that mechanical.
+receiving it, must recognize the reference *kind* (a network) and determine its *scope* (a global,
+portable handle — not A's implementation-local uuid). It must then resolve it to B's own copy of that
+network, and reject it if the scope doesn't match — all without knowing A's internals. The rules below
+make that mechanical.
 
 This document defines the rules every conformant implementation MUST follow when
 generating, formatting, scoping, and referencing identifiers.
@@ -228,8 +229,8 @@ block form §9.4, JSON embedding, English renderings) — never a second parse s
 
 - **A reference is a filter constrained to cardinality 1.** A URF used where one thing is
   required must resolve uniquely; more than one match refuses `ambiguous` with
-  `candidate_targets` — the diagnosis names `ambiguous` from the closed dependency-diagnostic
-  vocabulary (`registry/taxonomies/dependency-diagnostic.yaml`, ADR-010), and the candidates
+  `candidate_targets`. The diagnosis names `ambiguous` from the closed dependency-diagnostic
+  vocabulary (`registry/taxonomies/dependency-diagnostic.yaml`, ADR-010). The candidates
   accompany it because "ambiguous" without them cannot be acted on.
 - **Authored by handle, resolved to uuid — both ends one grammar** (AEP-124 unchanged):
   `estate/jobs/nightly-backup` resolves to `uuid/4c1f8e2a-…@sha256:…`; a sealed citation is
@@ -335,9 +336,9 @@ name alone:
   navigational coordinate — `self.located-in.network.fabric_id` — and it reaches exactly as far: one
   hop, then a field path, no chaining either way. The difference is what the syntax SHOWS. In the
   coordinate form `located-in`, `network` and `fabric_id` are spelled identically, so a reader cannot
-  tell which dot leaves the record without the type definition in hand — and the dot that leaves is
-  the one that is governed, firewalled, and refusable, while a dot inside the record is free and
-  unfailing. A syntax that hides the crossing hides the only part these six rules are about.
+  tell which dot leaves the record without the type definition in hand. The dot that leaves is the
+  one that is governed, firewalled, and refusable; a dot inside the record is free and unfailing. A
+  syntax that hides the crossing hides the only part these six rules are about.
 
 Examples:
 
@@ -379,11 +380,11 @@ criterion:                                                          # SAME value
 ### 9.5 Canonical form
 
 Identity, comparison, and digests are computed **only over the assembled canonical
-string**. Canonicalization: RFC 3986 syntax normalization · `&` → `;` · operands of the
-same operator sorted bytewise, recursively (`b;a` ≡ `a;b`) · operational terms stripped ·
-minimal percent-encoding, uppercase hex (an `=match=` pattern encodes the same way, `{` `}`
-included) · single-quote quoting · `{self}` literal outside patterns ·
-dotted-name path input rewritten to slash form. The characters `@ ? #` are **reserved** —
+string**. Canonicalization applies RFC 3986 syntax normalization, then `&` → `;`. Operands of
+the same operator are sorted bytewise, recursively (`b;a` ≡ `a;b`). Operational terms are
+stripped. Percent-encoding is minimal, with uppercase hex (an `=match=` pattern encodes the same
+way, `{` `}` included). Quoting uses single quotes. `{self}` is a literal outside patterns.
+Dotted-name path input is rewritten to slash form. The characters `@ ? #` are **reserved** —
 illegal in handles and name segments (naming-conventions §6).
 
 Two transport rules: a URF longer than a practical URL limit is carried as the block form

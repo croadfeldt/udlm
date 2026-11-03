@@ -23,9 +23,9 @@ The litmus for "adopt vs absorb": **if the external standard releasing a new ver
 change to a UDLM schema, you absorbed it.** True adoption means UDLM changes nothing when the standard
 revs — because it never held the standard's columns.
 
-Absorbing adjacent-domain data duplicates an external system's record and its lifecycle — a breach of
-**T1** (the data model is a custodian, not the owner of every domain's data) and of the
-Information-Provider contract's explicit warning against "copy the data in"
+Absorbing adjacent-domain data duplicates an external system's record and its lifecycle. That
+breaches **T1** (the data model is a custodian, not the owner of every domain's data). It also
+breaches the Information-Provider contract's explicit warning against "copy the data in"
 (`../contracts/information-providers.md` §2).
 
 ## 1a. Two tiers of adopted standard — route by kind
@@ -129,10 +129,10 @@ provenance (name + version + canonical URL) and a recorded license-compatibility
 UDLM license (Apache-2.0 — declared once in [`README.md` § License](../../../README.md#license) /
 the repository `LICENSE` file). `license_compatibility` ∈ `{compatible_reference, compatible_vendor,
 reference_only}` — `reference_only` flags a copyleft/file-scoped source (GPL/LGPL/MPL) whose **names may
-be referenced but whose text/files MUST NOT be vendored** into UDLM. Because adoption only references
-the standard's vocabulary (field names = facts) and never restates its columns, the default verdict is
-`compatible_reference` regardless of the source license — adopt-by-reference is license-clean by
-construction; the check exists to catch the cases where someone is tempted to *copy* (absorb) instead.
+be referenced but whose text/files MUST NOT be vendored** into UDLM. Adoption only references the
+standard's vocabulary (field names = facts) and never restates its columns, so the default verdict is
+`compatible_reference` regardless of the source license. Adopt-by-reference is license-clean by
+construction. The check exists to catch the cases where someone is tempted to *copy* (absorb) instead.
 
 ### 3.2 Provider support matrix (a provider capability declaration)
 ```json

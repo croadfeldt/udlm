@@ -90,7 +90,7 @@ orders as follows:
    ([`universal-audit.md`](universal-audit.md)) is hash-linked:
    each entry references the hash of its predecessor. Ties (entries appended in
    the same millisecond) break on `sequence_uuid`, a **UUIDv7** generated at
-   append time and **carried by the audit record itself** — a required field on
+   append time and **carried by the audit record itself**. It is a required field on
    `registry/audit-record.schema.json`, so the order lives in the record rather
    than only in this sentence. A UUIDv7 carries a **millisecond**-resolution Unix timestamp (not
    sub-millisecond); the same-millisecond tie-break is **structural, not
@@ -215,21 +215,21 @@ Provider callbacks include timestamps. A conformant peer:
 **Audit order is not at risk during a leap second**, because ordering is **structural** (§4): the
 append-only Merkle log (RFC 9162) and the `sequence_uuid` monotonic counter are unaffected by any
 wall-clock adjustment. So this
-section is about **clock accuracy**, not order — and it deliberately does **not** require a specific
-leap-handling strategy, because there is no interoperable standard for one (smearing schemes differ across
-public-cloud providers) and a peer's choice is not observable on the wire (timestamps are millisecond UTC
-either way, §2).
+section is about **clock accuracy**, not order. It deliberately does **not** require a specific
+leap-handling strategy, for two reasons. There is no interoperable standard for one (smearing schemes
+differ across public-cloud providers). A peer's choice is also not observable on the wire (timestamps
+are millisecond UTC either way, §2).
 
 A conformant implementation MUST:
 - Keep its clock **UTC-traceable** across a leap-second event — it stays within its profile's
   `max_divergence` bound (§6); the leap does not push it out of tolerance.
 - **Declare its leap-handling strategy** in its conformance declaration.
 
-It **MAY** use any strategy that preserves that traceability — smearing (a gradual adjustment over a window,
-the common public-cloud approach, forward-compatible with the CGPM's decision to retire leap seconds by
-2035) or a leap-aware representation (a repeated or `:60` second). Note that "monotonic" applies to **audit
-ordering** (guaranteed structurally, §4), **not** to the wall-clock timestamp — a smeared or repeated second
-is fine precisely because order never comes from the clock.
+It **MAY** use any strategy that preserves that traceability. Two common ones: smearing (a gradual
+adjustment over a window, the common public-cloud approach, forward-compatible with the CGPM's decision to
+retire leap seconds by 2035), and a leap-aware representation (a repeated or `:60` second). Note that
+"monotonic" applies to **audit ordering** (guaranteed structurally, §4), **not** to the wall-clock
+timestamp — a smeared or repeated second is fine precisely because order never comes from the clock.
 
 ---
 

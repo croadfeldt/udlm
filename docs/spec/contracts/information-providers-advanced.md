@@ -14,7 +14,7 @@
 
 ## 1. Purpose
 
-This document extends the base Information Provider model with the substrate concepts required for enterprise-grade information governance: confidence scoring for all provider-supplied data, authority and priority declarations as layer-defined organizational knowledge, the schema versioning contract for extended Information Provider schemas, and the well-known Information Provider Registry contract.
+This document extends the base Information Provider model with the substrate concepts required for enterprise-grade information governance. Those concepts are: confidence scoring for all provider-supplied data, authority and priority declarations as layer-defined organizational knowledge, the schema versioning contract for extended Information Provider schemas, and the well-known Information Provider Registry contract.
 
 Implementation-specific enforcement (ingestion-time conflict detection mechanics, write-back execution, air-gapped verification orchestration, provider priority and fallback logic) lives in the consuming implementation's documentation.
 
@@ -28,7 +28,9 @@ Every field value supplied by an Information Provider carries a confidence descr
 
 Three goals drive the design:
 - **Accuracy** — each dimension of confidence is independently meaningful and auditable
+
 - **Reliability** — a derived numeric score enables mathematical composition for placement decisions and conflict resolution
+
 - **Ease of use** — a derived band (very_high through very_low) is what humans and policies work with day to day
 
 ### 2.2 The Primary Data Model — Confidence Descriptor

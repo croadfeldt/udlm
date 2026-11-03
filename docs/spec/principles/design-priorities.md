@@ -38,7 +38,7 @@ Every one of these security properties is present in `homelab`; only its enforce
 
 **When security and convenience conflict, security wins** — but the design must find a way to make the secure option easy. A security model that is routinely bypassed because it is too burdensome has failed at both security and usability. The profile system is the mechanism: the right profile makes secure behavior automatic, not effortful.
 
-**Security properties that are non-negotiable in all profiles** — this table is the single normative list; the `homelab`-profile narrative above illustrates it, the Profile Scaling Table shows each property's per-profile posture, and the `DPO-*` policies enforce it — none re-defines it:
+**Security properties that are non-negotiable in all profiles** — this table is the single normative list. The `homelab`-profile narrative above illustrates it, the Profile Scaling Table shows each property's per-profile posture, and the `DPO-*` policies enforce it — none re-defines it:
 
 | Property | Rule | Reference |
 |----------|------|-----------|
@@ -65,7 +65,7 @@ The secure path must also be the easy path. Profile defaults should work for mos
 
 **The design principle:** When implementing a security requirement, simultaneously design the ease-of-use mechanism that makes it effortless to comply with. A scoring model's auto-approval threshold (not making every request require human review) is ease of use in service of security.
 
-**Human-in-the-loop is never the platform's default — and always the organization's option.** This priority governs what the **platform builds as its defaults**: a *platform* design that constructs a mandatory human gate where a declared policy could decide has failed this priority (`DPO-007`) — the goal is automated, policy-driven governance where a *policy* decides, and `route-to-review` exists so a governed **exception** has an auditable path. What an **organization declares** is a different matter entirely: an approval ceremony an estate writes into its own change policy is a legitimate, priced, visible disposition the platform enables and never judges (the operational response matrix, `docs/design/operational-response-matrix.md` — *approved* is a first-class response).
+**Human-in-the-loop is never the platform's default — and always the organization's option.** This priority governs what the **platform builds as its defaults**: a *platform* design that constructs a mandatory human gate where a declared policy could decide has failed this priority (`DPO-007`). The goal is automated, policy-driven governance where a *policy* decides. And `route-to-review` exists so a governed **exception** has an auditable path. What an **organization declares** is a different matter entirely. An approval ceremony an estate writes into its own change policy is a legitimate, priced, visible disposition the platform enables and never judges (the operational response matrix, `docs/design/operational-response-matrix.md` — *approved* is a first-class response).
 
 **Things that should be easy in all profiles:**
 - Requesting a standard resource (auto-approve for clean requests)

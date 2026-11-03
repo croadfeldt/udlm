@@ -105,7 +105,7 @@ These land together, then the freeze applies:
 
 - **Composite Service → Template**, Composite Entity → System, `CMP-*` → `TPL-*` — ADR-034.
   Template because *composite* describes the structure while the tier IS a definition authored once
-  and ordered many times, and reusability is what distinguishes it from a one-off request; the word
+  and ordered many times, and reusability is what distinguishes it from a one-off request. The word
   also already means this in ARM, CloudFormation, Heat and TOSCA Service Template. Composite Service
   was considered and rejected as a second name for one function. Aligns with
   [#405](https://github.com/croadfeldt/udlm/issues/405), which settles what `catalog_item` becomes.
@@ -124,7 +124,7 @@ Real-world usage of these words varies by group — the charter should map onto 
   (`resource_type` / `entity_type` / `edge_type`, ADR-026's `<noun>_type` convention); bare `type` is ambiguous
   (*type of what?*) and overloads those fields. `family` names a **different tier** — the coarse
   `Resource / Process / Knowledge / Access` grouping. **Resolution:** the reviewer's instinct is right that
-  `family` earns scrutiny — but the answer is not `kind` or `type`, it is **collapse `family` into `nature`** (the
+  `family` earns scrutiny — but the answer is not `kind` or `type`. It is **collapse `family` into `nature`** (the
   one classification axis, §"The classification axes"), with `family` surviving only as a derived view/alias.
 - **"Blueprint."** *This group* uses "blueprint" ≈ a **reusable design** — i.e. our **Pattern**. vRealize /
   Aria and Azure use "blueprint" ≈ a **deployable definition** — i.e. our **Template**. The word spans *both*
@@ -135,11 +135,11 @@ Real-world usage of these words varies by group — the charter should map onto 
   vRA/Azure sense.
 - **"Validated Pattern"** (Red Hat) — a *deployable, tested* composite ≈ our **Template**, **not** our
   (abstract) Pattern. When citing it, map it to Template.
-- **"Consumer" — three roles under one word.** The term is used for (1) the **requester** — the party that
-  submits a Request and owns the resulting entity in its Tenant (the "consumer side of the transaction", anchored
-  on the formal **Tenant** + **Identity**; a role, not a type — may be a person, an agent, or a peer control
-  plane); (2) the **dependent** — a resource that requires/references another in the dependency graph (a VM
-  "consuming" a Volume; a project "consuming" a library); (3) the **data-consumer** — a downstream tool ingesting
+- **"Consumer" — three roles under one word.** The term is used for three things. (1) The **requester** — the party
+  that submits a Request and owns the resulting entity in its Tenant (the "consumer side of the transaction",
+  anchored on the formal **Tenant** + **Identity**). It is a role, not a type — it may be a person, an agent, or a
+  peer control plane. (2) The **dependent** — a resource that requires/references another in the dependency graph (a
+  VM "consuming" a Volume; a project "consuming" a library). (3) The **data-consumer** — a downstream tool ingesting
   *emitted* data at a boundary (a FinOps tool consuming FOCUS). Plus unrelated technical uses (`information-consumer`
   in the IP contract, `consumer_profile` in an implementation). **Open question for eng:** disambiguate into distinct terms —
   e.g. **requester** (submits intent, owns the entity), **dependent** (graph edge), **data-consumer** (boundary) —

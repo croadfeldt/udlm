@@ -90,9 +90,9 @@ match:
       }
 ```
 
-The declaration is what makes the policy analyzable **without evaluating it**: impact analysis
-knows this policy is affected when `operation.changed_fields` changes shape, and a policy binding
-to a fact the model does not carry is refused rather than silently never firing.
+The declaration is what makes the policy analyzable **without evaluating it**. Impact analysis
+knows this policy is affected when `operation.changed_fields` changes shape. A policy binding to
+a fact the model does not carry is refused rather than silently never firing.
 
 ### 2.3 Policy Lifecycle Scope
 
@@ -182,17 +182,17 @@ does not carry.
 ### 2.5 What UDLM does not specify
 
 **The comparison language is the engine's.** UDLM declares which facts a policy reads (§2.1) and
-which decision shape it produces (§5); how a policy compares a fact to a value — the operators, the
+which decision shape it produces (§5). How a policy compares a fact to a value — the operators, the
 boolean composition, the evaluation strategy — is the engine's, expressed in the engine's own
 language inside `match.rule`.
 
-This is §7.2a's rule applied to the record rather than only to the deployment: an external engine is
-a **Provider of policy decisions**, and UDLM no more specifies its predicate grammar than it
-specifies a provider's internal implementation (T9 — the substrate never translates into a
-provider's native spec). `match.rule` is carried, never parsed.
+This is §7.2a's rule applied to the record rather than only to the deployment. An external engine is
+a **Provider of policy decisions**. UDLM no more specifies its predicate grammar than it specifies a
+provider's internal implementation (T9 — the substrate never translates into a provider's native
+spec). `match.rule` is carried, never parsed.
 
 What that buys: a policy record stays a complete governed artifact under §6 — identity, lifecycle,
-provenance, audit — and a peer that does not run this engine can still read its facts, its decision
+provenance, audit. A peer that does not run this engine can still read its facts, its decision
 shape, and its audit obligations without being able to evaluate it. The engine is swappable; the
 record is not.
 
@@ -392,16 +392,16 @@ Two invariants bind any conforming implementation: a `hard` constraint cannot be
 re-evaluating unchanged state must not double-apply). Given the same context, two implementations must reach
 the same resolved constraint set.
 
-*How* an engine reaches convergence — the multi-pass loop, its pass bound, the concrete
-collection→resolution→application scheduling, and the worked convergence/escalation traces — is a
-**implementation concern**, specified in control-plane architecture docs, not fixed here (§7.2a: built-in or
-delegated, the contract is identical).
+*How* an engine reaches convergence is an **implementation concern**, specified in control-plane
+architecture docs, not fixed here (§7.2a: built-in or delegated, the contract is identical). That
+covers the multi-pass loop, its pass bound, the concrete collection→resolution→application
+scheduling, and the worked convergence/escalation traces.
 
 ### 7.2a Policy engine — built-in vs. delegated (external)
 
 This document is the policy **contract**. *Where* policies live and *who* evaluates them is an implementation choice, in one of two modes — the contract is identical either way:
 
-- **Built-in engine (default).** An implementation evaluates with its own engine, and its policies are **first-class, implementation-controlled Data** — under the same lifecycle, provenance, audit, and security governance as every other artifact (§6). For the control plane specifically, **policies are control-plane-controlled**: the policy engine is a core control-plane component and its policy store sits under the control plane's governance. Whether that store is *physically* the same database as other the control plane Data or a separate one is an **implementation detail** — the contract requires the governance, lifecycle, security, and capability constraints to hold, not any particular physical colocation.
+- **Built-in engine (default).** An implementation evaluates with its own engine, and its policies are **first-class, implementation-controlled Data** — under the same lifecycle, provenance, audit, and security governance as every other artifact (§6). For the control plane specifically, **policies are control-plane-controlled**: the policy engine is a core control-plane component and its policy store sits under the control plane's governance. Whether that store is *physically* the same database as the other control plane Data or a separate one is an **implementation detail**. The contract requires the governance, lifecycle, security, and capability constraints to hold, not any particular physical colocation.
 - **Delegated to an external engine.** An implementation MAY delegate evaluation to an external engine (e.g. OPA or a third-party decision service). An external engine is a **black box governed by this contract**: the implementation sends the **evaluation context** (§7.1) and receives a **decision / constraint set** (§7.2 outputs). It does **not** see or store the external engine's policies — only the data in and the decision out. An external engine is, in effect, a *Provider of policy decisions*, bound by the contract, not by shared storage.
 
 Wire-compatibility holds regardless: a peer cannot tell — and need not care — whether a decision came from a built-in or a delegated engine, only that it conforms to §2–§5 and the re-entrant, convergent evaluation contract (§7.2; ADR-006).
@@ -745,8 +745,8 @@ validation_output:
 
 **Egress guard on the consumer-error path** (`docs/spec/contracts/error-model.md` §8a — a refusal is
 itself a boundary crossing): `field_results` names only fields the submitting actor named or
-is entitled to read — a field outside the actor's read scope is reported through the
-scope-violation refusal (`GMX-012`/`GMX-013`), never enumerated here; and `suggested_value`
+is entitled to read. A field outside the actor's read scope is reported through the
+scope-violation refusal (`GMX-012`/`GMX-013`), never enumerated here. `suggested_value`
 MUST NOT carry a value derived from data the actor cannot read. The validation output an
 internal evaluator sees and the one a consumer receives may therefore lawfully differ; the
 filter runs before serialization.
@@ -916,7 +916,7 @@ itsm_action_output:
 
 ## 18. Policy Override Model
 
-Overrides and `route-to-review` are a **last-resort path**, not a common one — a human-in-the-loop point is a necessary anti-pattern to minimize (`design-priorities.md` `DPO-007`): the goal is that a policy decides automatically, and a request routes to a human only for a genuine authorized exception. When a block genuinely needs override, five override mechanisms are available, organized by severity. Every override — regardless of mechanism — produces a Merkle tree audit leaf capturing the override justification, authorizer identity, and the policy that was overridden.
+Overrides and `route-to-review` are a **last-resort path**, not a common one. A human-in-the-loop point is a necessary anti-pattern to minimize (`design-priorities.md` `DPO-007`). The goal is that a policy decides automatically, and a request routes to a human only for a genuine authorized exception. When a block genuinely needs override, five override mechanisms are available, organized by severity. Every override — regardless of mechanism — produces a Merkle tree audit leaf capturing the override justification, authorizer identity, and the policy that was overridden.
 
 ### 18.1 Override Policy (Planned Exceptions)
 
@@ -1126,9 +1126,9 @@ policy_block_resolution:
 The `compliant_values` guidance is derived from the blocking policy's constraint output: a sovereignty policy with `allowed_zones: [eu-west-1, eu-central-1]` yields those as the suggestion; a Validation Policy with `max_cpu: 32` against a request for 64 yields values ≤ 32. For complex multi-policy interactions the guidance provides what can be determined and flags when manual review is needed. (Producing it is an implementation function; the shape above is the contract.)
 
 The consumer-facing resolution API (`GET …/resolution`, `POST …:resolve` with a `modify` / `request_override`
-/ `cancel` / `escalate` action) and the `request.policy_blocked` / `request.resolution_chosen` / `override.*`
-lifecycle events are the implementation's control-plane surface — specified in control-plane architecture docs and the
-[event catalog](event-catalog.md), not fixed by this contract.
+/ `cancel` / `escalate` action) is the implementation's control-plane surface. So are the
+`request.policy_blocked` / `request.resolution_chosen` / `override.*` lifecycle events. Both are specified
+in control-plane architecture docs and the [event catalog](event-catalog.md), not fixed by this contract.
 
 ### 18.9 Override Approval Flow
 
@@ -1171,10 +1171,10 @@ Three facts the contract *does* fix:
   before auto-cancel, and a `PENDING_OVERRIDE` request a bounded window for approver action; stricter
   profiles cut both (see [ADR-007 — Profile model](../../adr/ADR-007-profile-model.md)). The concrete
   per-profile durations are an implementation/profile setting.
-- **Resume is deterministic.** On approval the pipeline resumes **from the stage where it was blocked** —
-  the assembled payload, earlier policy evaluations, and the Evaluation Context are preserved — with the
-  approved override injected into the Evaluation Context as a constraint modification before the blocked
-  policy re-evaluates. On modify, the request re-enters from assembly and all policies re-evaluate.
+- **Resume is deterministic.** On approval the pipeline resumes **from the stage where it was blocked**;
+  the assembled payload, earlier policy evaluations, and the Evaluation Context are preserved. The
+  approved override is injected into the Evaluation Context as a constraint modification before the
+  blocked policy re-evaluates. On modify, the request re-enters from assembly and all policies re-evaluate.
 - **Every path is audited.** Modify → a modification leaf + re-evaluation leaves; override → an
   override-approval leaf (§18.7) + a re-evaluation leaf. All are Merkle audit leaves.
 

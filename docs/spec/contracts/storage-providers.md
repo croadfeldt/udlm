@@ -19,7 +19,7 @@
 ## 1. Purpose
 
 In the unified provider model ([provider-contract.md](provider-contract.md) §8; ADR-PROV-002), a
-**Storage Provider** is *not* a provider type — it is a provider that declares the **`realize_resources`
+**Storage Provider** is *not* a provider type. It is a provider that declares the **`realize_resources`
 capability over the `Storage` domain** (the `realize_resources/Storage`, *storage-provisioning*, capability
 category), and typically **`serve_data`** over what it stores as well. It is the interface through which a
 implementation persists, retrieves, and streams state data. The contract defines *what* each store must
@@ -151,7 +151,7 @@ implementation enforces them is the control plane.
 | ID | Policy |
 |----|--------|
 | `STO-001` | Storage Providers must declare replication capabilities. The active profile determines the minimum replication requirement; a provider below the profile minimum cannot be activated for that profile's stores. |
-| `STO-002` | Storage Provider failure behavior is declared per store sub-profile and governed by the active profile: writes are queued, never silently dropped; a quorum loss on a strongly-consistent store aborts the triggering operation; audit unavailability accumulates rather than loses; a search-index outage degrades queries without impacting writes. The concrete per-store handling is implementation architecture (the control plane). |
+| `STO-002` | Storage Provider failure behavior is declared per store sub-profile and governed by the active profile. Writes are queued, never silently dropped; a quorum loss on a strongly-consistent store aborts the triggering operation; audit unavailability accumulates rather than loses; a search-index outage degrades queries without impacting writes. The concrete per-store handling is implementation architecture (the control plane). |
 | `STO-003` | The Search Index is a distinct store sub-profile — non-authoritative and rebuildable. A query may request `freshness: authoritative` to bypass the index. |
 
 ---
@@ -162,10 +162,13 @@ To keep one home per concern, the following are **not** in this contract:
 
 - **Portable store invariants** (write-once realized store, append-only audit, store-by-contract,
   audit-record-vs-object-history) → [data-store-contracts.md](data-store-contracts.md).
+
 - **Concrete store mechanisms** — GitOps repo layout and APIs, event-stream naming/envelope/retention,
   snapshot-store APIs, search-index fields/queries, multi-region replication and failure-handling topology,
-  auto-migration flow → the **control-plane architecture docs** (implementation architecture; a peer implements them
-  differently and still conforms).
+  auto-migration flow → the **control-plane architecture docs**. These are implementation architecture; a
+  peer implements them differently and still conforms.
+
 - **Sovereignty declaration structure + change response** → [provider-contract.md](provider-contract.md).
+
 - **Storage-architecture system policies** (`STO-*`, `SOV-*`) → the policy store; this document does not
   restate them.

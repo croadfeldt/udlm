@@ -79,7 +79,7 @@ def findings():
         text = re.sub(r"```.*?```", "", text, flags=re.S)
         para = []
         def flush():
-            for s in sentences(" ".join(para)):
+            for s in sentences("\n".join(para)):   # keep the newlines: a list marker is a sentence boundary
                 if words(s) > SENTENCE_MAX:
                     out.append(("RDB-001", key(rel, shash(s)), f"{rel}: {words(s)}-word sentence: {s[:70]}…"))
             para.clear()
@@ -92,7 +92,7 @@ def findings():
                     if words(s) > SENTENCE_MAX:
                         out.append(("RDB-001", key(rel, m.group(1), shash(s)), f"{rel} {m.group(1)}: {words(s)}-word sentence: {s[:70]}…"))
                 continue
-            if not line.strip() or line.startswith("|") or line.startswith("#") or line.startswith(">"):
+            if not line.strip() or line.lstrip().startswith(("|", "#", ">")):   # a table inside a list item is still a table
                 flush()
                 continue
             para.append(line.strip())

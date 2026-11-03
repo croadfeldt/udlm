@@ -43,10 +43,14 @@ Retried operations MUST be idempotent across attempts. The contract:
 1. The retried request MUST reuse the **original `Idempotency-Key`** (or
    equivalent idempotency identifier per [`event-catalog.md`](event-catalog.md)).
 2. The receiving peer MUST recognize the repeated key and:
+
    - Return the **same result** as the previous attempt if the previous attempt
      reached a terminal state.
+
    - Resume in-flight if the previous attempt is still pending.
+
    - Process freshly if no prior attempt is on record (within the deduplication window).
+
 3. The deduplication window is at least **24 hours** (PT24H) from the first
    submission. Implementations MAY extend; MUST NOT shorten.
 4. Idempotency-Key reuse with a **different payload** MUST be rejected with
@@ -100,8 +104,11 @@ A request being retried stays in its current lifecycle state until terminal:
 
 - A `REQUESTED` request that hits a transient failure stays `REQUESTED` between
   retry attempts (not regressed to `INTENT`).
+
 - The retry counter is incremented in the audit record.
+
 - The `Idempotency-Key` is preserved.
+
 - The `entity_uuid` (if assigned) MUST be preserved across retries.
 
 Once retries exhaust:
@@ -154,11 +161,17 @@ Cross-peer federation requests follow the same contract:
 A conformant implementation MUST:
 
 - Honor `retryable: false` (never retry permanent errors).
+
 - Honor `retry_after_seconds`.
+
 - Preserve `Idempotency-Key` across retries.
+
 - Reject mismatched-payload reuse with `validation.idempotency_key_mismatch`.
+
 - Stop retrying after the per-operation budget.
+
 - Use exponential backoff + jitter within the prescribed bounds.
+
 - Audit every retry attempt.
 
 ---
@@ -166,8 +179,13 @@ A conformant implementation MUST:
 ## 11. Related contracts
 
 - [`error-model.md`](error-model.md) — the `retryable` flag and `retry_after_seconds`
+
 - [`rate-limit-and-backpressure.md`](rate-limit-and-backpressure.md) — rate-limit-driven retries
+
 - [`event-catalog.md`](event-catalog.md) — Idempotency-Key in event envelopes
+
 - [`operational-models.md`](../lifecycle/operational-models.md) — recovery policies after exhaustion
+
 - [`provider-contract.md`](provider-contract.md) — provider-side retry expectations
+
 - [`universal-audit.md`](universal-audit.md) — retry attempts in audit chain
