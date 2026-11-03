@@ -56,7 +56,7 @@ declaration cites. Pin the UDLM commit you validate against; move the pin on pur
 
 ## How decisions are made
 
-By the maintainers listed in [`MAINTAINERS.md`](../../MAINTAINERS.md), in the open, as register
+By the maintainers listed in the maintainers file at the repository root, in the open, as register
 rows. A ruling you disagree with gets an issue, not a silent edit. Becoming a maintainer is a row
 too, after three months of reviewed contributions.
 
