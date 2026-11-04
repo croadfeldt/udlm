@@ -27,8 +27,8 @@ ACCOUNTED_DOCS = [
 # Spec directories whose prose citations are in scope.
 SCOPE = ["docs/spec", "registry"]
 
-# Match RFC/AEP citations, but NOT when they are the tail of an ADR id (DR-AEP-001 is an ADR, not a standard).
-CITE_RE = re.compile(r"(?<!ADR-)\b(RFC\s?\d{3,5}|AEP-\d+)\b")
+# Match RFC/AEP citations, but NOT when they are the tail of a decision-record id (DR-AEP-001 and ADR-AEP-001 are records, not standards).
+CITE_RE = re.compile(r"(?<!DR-)\b(RFC\s?\d{3,5}|AEP-\d+)\b")
 
 # Citations known to be informative-only (no adoption) — curate as false positives appear.
 INFORMATIVE_OK = set()

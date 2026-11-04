@@ -122,7 +122,7 @@ eleven rows moved to §4.2 because their part is experimental.
 | #469 | StorageVolume is listed under two ownership models | the contradiction behind #415 | WP2 |
 | #406 | cross-tenant grants have no use limit and default to never expiring | changing a default is breaking | WP2 |
 | #189 | `reference_data` is still a `layer_type`; `applies_on` and `from_layers` are not built (ADR-038) | removing an enum value is breaking | WP2 |
-| #634 | provider registration has no schema (115 of 173 keys in the contract) | the provider contract is experimental at 1.0 (`registry/stability.yaml`); WP3 continues, but the tag does not wait for it | WP3 |
+| #634 | provider registration has no schema | the provider contract is experimental at 1.0 (`registry/stability.yaml`); WP3 continues, but the tag does not wait for it | WP3 |
 | #632 | entity-relationships describes fields no schema has; four rules depend on them | the document is experimental at 1.0; the rows become control-plane obligations in WP3; the tag does not wait for it | WP3 |
 | #614 | every network class declares zone and tier, even where they do not apply | removing fields is breaking | WP4 |
 | #612 | ADR-082 follow-ups | the udlm side is done; what remains is estate work; close here | WP4 |
@@ -130,7 +130,7 @@ eleven rows moved to §4.2 because their part is experimental.
 | #488 | the six profiles are not UDLM's | 1.0 cannot ship one implementation's profiles; move them to `udlm-profiles` | WP5 |
 | #489 | per-profile values are spread over 10 documents and 55 rows | the same move | WP5 |
 | #490 | two picked numbers (request groups capped at 50, auto-approve score capped at 50) | a local decision shipped as a rule would have to be kept | WP5 |
-| #503 | the spec names an implementation (57 lines in 21 files left, from 482) | "independent of any implementation" has to be true at the tag | WP6 |
+| #503 | the spec names an implementation | "independent of any implementation" has to be true at the tag | WP6 |
 | #491 | a dot means three things and the spec says two | a grammar statement; it already caused one wrong design | WP6 |
 | #428 | ADR-059's record test has no written reason | the rule exists; a reader needs the why | WP6 |
 | #382 | reference aliases: the rule for resolving an unpinned name was never written | a resolution rule added later changes behaviour | WP6 |

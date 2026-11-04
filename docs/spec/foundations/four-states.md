@@ -224,7 +224,7 @@ translation, QinQ or a deliberate duplicate, so UDLM never infers that two obser
 same VLAN (row 119). A VLAN record's identity is its owning provider's own identifier, `provider_id`
 (a fabric controller's network id); the record lists the observer keys that resolve to it. A fabric
 with no provider reporting its VLANs has no authoritative VLAN identity, and an observed edge stays
-key-only (REF-003) until a provider-backed record claims its key, which is a valid state, not a
+key-only until a provider-backed record claims its key, which is a valid state, not a
 failure. A bridge or overlay a host owns is keyed at the host, because there the host is the
 provider. A subnet is `subnet_prefix: <segment>#<cidr>`, with `gateway_mac`, the MAC that answers
 the gateway address, as a second key that separates a masqueraded test copy from the original. A
@@ -414,7 +414,7 @@ Everything genuinely data-model about rehydration reduces to two rules:
 | `RHY-006` | **One record per state — never a folded record.** An entity's four states are stored as four separate records (`registry/state-record.schema.json`), each written once by one party and superseded, never edited. A document carrying a `states` block is the **entity view** — a read model assembled on demand (`registry/entity-view.schema.json`) — and MUST NOT be authored, stored, or validated as a record; the only authored view is the worked example `registry/examples/orders-db.json`. `drift` and `ownership` are never stored on any record. Gate: `tests/check_state_records_only.py` (SRO-001/002/003). |
 | `RHY-007` | **An observed edge is a discovered fact and rides the discovered record.** A `discovered_record` MAY carry `dependencies` for edges a sweep saw. Each names its target by the key the probe read (`target_key`: a `correlation_ids` scheme + value; a compound key uses a scheme that names it). The control plane resolves the key: `target_uuid` is present once resolved and absent until then; an unresolved edge is written and reported by the estate gate, never refused. `target_uuid` is written only where the record's tenant may see the target (same tenant, or a grant the edge names, `CTX-010`); otherwise the edge stays key-only and the resolution is a finding (ADR-060). A provider never supplies a UUID for an observed edge; it knows only UUIDs the control plane issued to it (its dispatch slice, a composition expanded for it — `template-composition-model.md` §5.1 — or a request of its own, `PRV-012`/`DEP-018`). `strength`, `relation`, `bound_field` and `target_field` are refused on a discovered record; `target_key` is refused on intent, requested and realized records. Drift compares the requested/realized list with the observed one (§6). An edge no probe can key-match is intent, entered by claiming. Schema: `registry/state-record.schema.json` (discovered `allOf`); view: `entity_view.py` folds `dependencies` realized → requested → discovered. |
 
-*The rest is implementation/policy, not data model, and lives in control-plane operational model. The placement × policy-version **"modes"** (Faithful / Provider-Portable / Historical) are operational request flags; **`min_auth_level`** rehydration constraints are an authorization policy. The pipeline, leases, TTL, concurrency, and PENDING_REVIEW pause are runtime (`RHY-002/003/004/008/010/011/012`).*
+*The rest is implementation/policy, not data model, and lives in control-plane operational model. The placement × policy-version **"modes"** (Faithful / Provider-Portable / Historical) are operational request flags; **`min_auth_level`** rehydration constraints are an authorization policy. The pipeline, leases, TTL, concurrency, and PENDING_REVIEW pause are runtime.*
 
 ---
 
@@ -457,7 +457,7 @@ An **unsanctioned change** is a change made directly to a resource without a cor
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
 | 1 | Should the entity UUID be preserved or regenerated on rehydration? | Entity identity | ✅ Resolved — by scenario: a **restore in place** preserves the UUID (provider-side ID changes, recorded in `provider_entity_id_history` + the REHYDRATE audit trail); a **rebuild** (original gone) is a new entity with a new UUID, kept traceable by lineage; transactional either way (RHY-005, §5.2) |
-| 2 | Should the Discovered stream retain full history or only a configurable window? | Retention | ✅ Resolved — snapshot-stream retention is profile-governed (operational); the durable per-UUID inventory record is exempt and persists until claim/retirement (RHY-008) |
+| 2 | Should the Discovered stream retain full history or only a configurable window? | Retention | ✅ Resolved — snapshot-stream retention is profile-governed (operational); the durable per-UUID inventory record is exempt and persists until claim/retirement |
 
 ---
 

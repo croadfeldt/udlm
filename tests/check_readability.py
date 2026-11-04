@@ -43,7 +43,7 @@ def sentences(text):
     text = re.sub(r"`[^`]*`", lambda m: m.group(0).replace(". ", "·"), text)
     text = re.sub(r"\n\s*(?:[-*+]|\d+\.)\s+", "\n\u2063", text)          # list marker -> boundary mark
     text = text.replace("\n", " ")
-    parts = re.split(r"(?<=[.!?:])\s+(?=[A-Z`*(\"'\[])|(?<=[.!?]\*\*)\s+|\s*\u2063", text)
+    parts = re.split(r"(?<=[.!?:])\s+(?=[A-Z0-9`*(\"'\[])|(?<=[.!?]\*\*)\s+|\s*\u2063", text)
     return [p.strip() for p in parts if p.strip()]
 
 
