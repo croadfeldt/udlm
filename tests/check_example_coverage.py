@@ -22,7 +22,7 @@ about the *artifact*, not the *record*; it belongs beside the record, not in it.
            reader uses; a bare ID restates the filename.
 
 **Two families of ID, both real.** Normative rules are registered (`registry/rule-id-registry.yaml`);
-gate-local IDs (`OFR-001`, `GRD-001`, `MRJ-001`) are defined by the check that raises them and are
+gate-local IDs (`OFR-001`, `MRJ-001`) are defined by the check that raises them and are
 not, because the registry governs the normative surface. Both are accepted here, and a prefix
 belonging to neither is a typo.
 

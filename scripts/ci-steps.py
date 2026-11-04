@@ -55,7 +55,7 @@ NAMES = {
     "python3 tests/check_offer_collapse.py": "Offer collapse (selection inside the offer)",
     "python3 tests/check_no_shipped_defaults.py": "No UDLM-shipped defaults (NDF-001)",
     "python3 tests/check_cited_schema_files.py": "Cited schema files exist (CSF-001)",
-    "python3 tests/check_grant_derivation.py": "Required-grant set derives (GRD-001)",
+    "python3 tests/check_grant_derivation.py": "Cross-tenant edges name a verified grant (CTX-010)",
     "python3 tests/check_group_invariants.py": "Structural invariants (GRP-INV-001/002/005/006)",
     "python3 tests/check_composition_promotion.py": "Promotion is a round trip (ING-017/018/019)",
     "python3 tests/check_fulfillment_conditions.py": "Blocked members are actionable (FUL-001/002/003)",

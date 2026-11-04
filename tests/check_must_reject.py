@@ -45,7 +45,7 @@ def _load(path, name):
 
 
 def _grant_derivation(record):
-    """GRD-001. The record is the holder; its edges are resolved against the shipped estate, so a
+    """CTX-010. The record is the holder; its edges are resolved against the shipped estate, so a
     case only has to supply the offending record rather than restate the whole worked set."""
     m = _load("tests/check_grant_derivation.py", "_grd")
     instances = m.load_instances()

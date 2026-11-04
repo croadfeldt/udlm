@@ -1,6 +1,6 @@
 # The executable half of a scenario written long before anything enforced it.
 must_reject:
-  rule: GRD-001
+  rule: CTX-010
   gate: check_grant_derivation
   because: A VM in a THIRD tenant binds to a VLAN the platform tenant owns. The shipped estate grants that VLAN
     to the payments tenant and to nobody else, so this crossing has no grant behind it — and the case is deliberately
@@ -31,4 +31,5 @@ record:
   dependencies:
   - edge_type: binds_to
     target_uuid: b448b93d-49b8-4c4a-bae5-56bef93edd22
+    target_tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
     resolved_at: '2026-08-08T00:00:00Z'
