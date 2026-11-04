@@ -12,6 +12,7 @@ generated dir (it would double-count identities); this generator is the authorit
 
   generate_class_specs.py            regenerate + write, print a summary
   generate_class_specs.py --check    regenerate in-memory, diff against committed; nonzero on drift
+                                     or on an orphaned spec no class produces (GEN-003)
 """
 import glob
 import json
@@ -220,6 +221,17 @@ def main():
             open(out, "w", encoding="utf-8").write(text)
             print(f"wrote  {name} → {os.path.relpath(out, ROOT)} ({len(spec['spec']['properties'])} props)")
     drift += group_views(by_name, has_children, check)
+    # GEN-003: a served spec that no class produces is an orphan (a renamed class left its old file
+    # behind, and the estate read it as a served version at the old spec). Refused, never silently kept.
+    produced = {_standard_filename(name) for name in types}
+    for f in sorted(os.listdir(OUT)):
+        if f.endswith(".json") and f not in produced:
+            if check:
+                print(f"FAIL [GEN-003] registry/generated/{f}: no class produces this spec — delete it")
+                drift.append(f)
+            else:
+                os.remove(os.path.join(OUT, f))
+                print(f"removed registry/generated/{f} (no class produces it)")
     print(f"{n} class(es) compiled (types + orderable bases), {len(drift)} issue(s)")
     return 1 if drift else 0
 

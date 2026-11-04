@@ -1,24 +1,20 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 68,
+    "types": 67,
     "by_family": {
-      "Access": 9,
+      "Access": 8,
       "Knowledge": 9,
       "Process": 3,
       "Resource": 47
     }
   },
   "discrimination": {
-    "mutations_attempted": 6047,
-    "mutations_rejected": 6047,
+    "mutations_attempted": 5990,
+    "mutations_rejected": 5990,
     "density": 1.0,
     "findings": 0,
     "per_type": {
-      "Access.Grouping": {
-        "attempted": 57,
-        "rejected": 57
-      },
       "AddressService": {
         "attempted": 32,
         "rejected": 32
@@ -290,12 +286,11 @@
     }
   },
   "strictness": {
-    "strict_specs": 68,
-    "total": 68
+    "strict_specs": 67,
+    "total": 67
   },
   "outputs": {
     "per_type": {
-      "Access.Grouping": 0,
       "AddressService": 1,
       "Automation": 0,
       "Automation.OSPatch": 0,
@@ -365,7 +360,6 @@
       "Workload": 1
     },
     "zero_output_types": [
-      "Access.Grouping",
       "Automation",
       "Automation.OSPatch",
       "BMC",
@@ -414,15 +408,14 @@
     ]
   },
   "context": {
-    "with_context": 68,
-    "total": 68,
+    "with_context": 67,
+    "total": 67,
     "missing": []
   },
   "relationships": {
     "with_relationships": 55,
-    "total": 68,
+    "total": 67,
     "missing": [
-      "Access.Grouping",
       "Automation",
       "Automation.OSPatch",
       "BucketClass",
@@ -483,7 +476,6 @@
       "Workload"
     ],
     "uncovered": [
-      "Access.Grouping",
       "Bucket",
       "BucketClass",
       "Grouping.Authorization",
@@ -538,7 +530,6 @@
       ]
     },
     "named_by_none": [
-      "Access.Grouping",
       "AddressService",
       "Automation",
       "Automation.OSPatch",
@@ -602,7 +593,7 @@
       "Vulnerability",
       "Workload"
     ],
-    "consumed_by_at_least_one": 68
+    "consumed_by_at_least_one": 67
   },
   "expressibility_coverage": {
     "value": null,
