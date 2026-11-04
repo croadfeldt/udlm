@@ -662,7 +662,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 
 **Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
 
-A physical place, at whatever granularity is useful: a site contains rooms, a room contains racks, a rack has positions. Resources declare where they physically sit by referencing a location; location-scoped concerns like cooling or a shared uplink attach at the right level of the hierarchy. Power is not carried here — each host declares its own power-feed edges, because two hosts in one rack can draw from different feeds.
+A physical place, at whatever granularity is useful: a site contains rooms, a room contains racks, a rack has positions. Equipment declares where it sits by a located_in edge to one location, at whatever precision is known; everything contained in that equipment is where it is, derived up the containment chain and never stored. A thing with no such edge up its chain has no place, which is a finding, not a default. Location-scoped concerns like cooling or a shared uplink attach at the right level of the hierarchy. Power is not carried here — each host declares its own power-feed edges, because two hosts in one rack can draw from different feeds.
 
 **Use when:**
 - You need to record where equipment physically is, down to a rack position.
