@@ -12,9 +12,9 @@ record:
   entity_uuid: c2ec2fda-654b-4bb6-8dae-5bdf0c108da7
   record_uuid: 01a09385-cafa-7584-bd21-f0f43ca1fa9f
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-  conforms_to: udlm/0.1
+  conforms_to: udlm/1.0
   resource_type: Database
-  type_version: 0.1.1
+  type_version: 0.10.2
   handle: Payments_DB
   at: '2026-08-08T00:00:00Z'
   time_source: authored case — no clock claim

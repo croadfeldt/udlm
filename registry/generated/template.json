@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Template/0.2.2",
-  "conforms_to": "udlm/0.1",
+  "$id": "https://udlm.dev/registry/udlm/1.0/Template/0.2.3",
+  "conforms_to": "udlm/1.0",
   "uuid": "39584b58-b513-4b3f-9780-b427865c58b7",
   "resource_type": "Template",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Template",
-          "version": "0.2.2",
+          "version": "0.2.3",
           "uuid": "39584b58-b513-4b3f-9780-b427865c58b7"
         }
       ]

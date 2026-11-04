@@ -23,7 +23,7 @@
 # validation -> decision, placement -> constraints, override -> scope + expires_at). The two halves
 # together are UDLM's side of the engine contract.
 
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 term_type: TaxonomyTerm
 root: policy-fact
 

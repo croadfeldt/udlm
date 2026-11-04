@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/regeneration-manifest.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/regeneration-manifest.schema.json",
   "title": "UDLM Regeneration Manifest (the durable change record of a class change)",
   "description": "The durable record a registry class change emits. The ripple is computed from the class graph, never hand-listed (ADR-045 Decision 2), and lands here. Contents: the changed artifact; the classifier's ruling and rule; the affected set; consumers accruing debt (ADR-044 manifests, registry/consumers/); the gate suite that re-proved it; the registry ref it landed under. That ref is the only pin an estate can take (ADR-045 Decision 3). SURFACE half of the class-change row (docs/design/operational-response-matrix.md): platform states blast radius, organization decides.",
   "type": "object",

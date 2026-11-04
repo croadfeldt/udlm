@@ -46,7 +46,7 @@ SKIP = ("registry/generated/", "registry/pin-manifest.json", "docs/adr/", "docs/
         "registry/VERSIONING.md", "registry/UDLM-0.1-SCOPE.md", "registry/UDLM-1.0-LOCKDOWN.md")
 REISSUE_BY_VERSION = {"decision_record", "vocabulary_term", "regeneration_manifest", "finding_routing_record"}  # new uuid, supersedes, REVISION
 APPEND_VERSION = {"layer"}            # immutable and pinned by version: the new version is appended, the old one stays
-BUMP_IN_PLACE = {"policy", "profile", "class"}  # versioned, same identity: REVISION bump
+BUMP_IN_PLACE = {"policy", "profile", "class", "provider_registration"}  # versioned, same identity: REVISION bump
 NEW_IDENTITY = {"accreditation"}  # append-only: new identity (+ REVISION where versioned)
 MUTABLE = {"composition", "conformance_declaration", "log_checkpoint", "promotion_evidence", "registration_verdict"}  # the uuid is frozen identity; re-stamped in place
 SUPERSEDES_IS_STRING = {"finding_routing_record", "regeneration_manifest"}

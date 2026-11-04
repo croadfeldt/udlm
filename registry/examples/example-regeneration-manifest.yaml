@@ -1,8 +1,8 @@
 record_type: regeneration_manifest
-uuid: e5660e73-9a89-4bc5-a151-c9661f3c87fc
-supersedes: a31e6621-d3ed-4505-92f3-76df925db58c   # the record that named the class by its former name (Compute -> Machine, ADR-068)
+uuid: 0f217184-6c60-4b3a-84e8-46763f2f42b6
+supersedes: e5660e73-9a89-4bc5-a151-c9661f3c87fc
 handle: regeneration/example/compute-base-scope-narrowing
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 title: Machine Base Class 1.2.0 → 2.0.0 — `firmware` moved Base → Type scope (breaking, no shape change)
 registry_ref:
   commit: 0a1b2c3d4e5f60718293a4b5c6d7e8f900112233

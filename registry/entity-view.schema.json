@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/entity-view.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/entity-view.schema.json",
   "title": "UDLM entity view — the merged read model, assembled from per-state records",
   "description": "One entity across its four states: the latest record of each, folded (registry/tools/entity_view.py; ruling 071, four-states.md §2.7). A READ MODEL for dashboards, people and gates. Never written: storage is one record per state (state-record.schema.json), one author each; every block here $refs that schema's $defs, so view and records cannot disagree. No `ownership` (one author, nothing to referee) and no `drift` (latest discovered versus latest realized; computed, never stored). Snapshot field values are typed by the entity's class, not re-validated.",
   "type": "object",
@@ -53,7 +53,7 @@
     "type_ref": {
       "type": "string",
       "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/(class/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}|[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?)/[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "description": "The `$id` of the pinned spec this instance was realized against. TWO forms are legal, telling how far the request got: a served Resource Type Spec (`.../udlm/0.1/Machine.VM/1.0.0`) before placement resolves a provider, or a PROVIDER CLASS (`.../udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0`) once it has. After placement the Provider Class governs (its narrowed ranges bind the selection), so no separate field records placement. `resource_type` stays the PORTABLE two-segment name either way; a Machine.VM is one wherever it landed. Consumers parsing this MUST handle both forms."
+      "description": "The `$id` of the pinned spec this instance was realized against. TWO forms are legal, telling how far the request got: a served Resource Type Spec (`.../udlm/1.0/Machine.VM/1.0.0`) before placement resolves a provider, or a PROVIDER CLASS (`.../udlm/1.0/class/Machine.VM.CExampleCloud/1.0.0`) once it has. After placement the Provider Class governs (its narrowed ranges bind the selection), so no separate field records placement. `resource_type` stays the PORTABLE two-segment name either way; a Machine.VM is one wherever it landed. Consumers parsing this MUST handle both forms."
     },
     "lifecycle_state": {
       "$ref": "common-elements.schema.json#/$defs/lifecycle_state",
@@ -780,10 +780,10 @@
       },
       "handle": "lab/vm/app-01",
       "tenant_uuid": "75ccf4ff-3e8d-4963-bc51-459ae1014cb7",
-      "conforms_to": "udlm/0.1",
+      "conforms_to": "udlm/1.0",
       "resource_type": "Machine.VM",
       "type_version": "2.0.0",
-      "type_ref": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0",
+      "type_ref": "https://udlm.dev/registry/udlm/1.0/Machine.VM/2.0.0",
       "generation": 1,
       "lifecycle_state": "Realized",
       "status": {

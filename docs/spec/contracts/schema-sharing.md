@@ -74,7 +74,7 @@ that catalogs all its declared types and extensions.
   "implementation": {
     "name": "the control plane",
     "vendor": "example-org",
-    "udlm_version": "udlm/0.1"
+    "udlm_version": "udlm/1.0"
   },
   "published_at": "2026-05-26T14:32:18Z",
   "manifest": {
@@ -241,7 +241,7 @@ bundle implicitly depends on. These are **not hypothetical** — they are the
 record schemas in `registry/*.schema.json` and the served resource-type specs
 in `registry/generated/`, each already carrying a canonical `$id` of the form
 `https://udlm.dev/registry/udlm/<MAJOR.MINOR>/<name>` (e.g.
-`https://udlm.dev/registry/udlm/0.1/policy.schema.json`). That `$id` **is** the
+`https://udlm.dev/registry/udlm/1.0/policy.schema.json`). That `$id` **is** the
 canonical URL a bundle references; `validate_registry.py` enforces that a spec's
 `$id` spec-segment matches its `conforms_to`, so the core-schema URLs move with
 the spec version at the 0.1→1.0 cutover (`registry/VERSIONING.md`). The baseline includes:

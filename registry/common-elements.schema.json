@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/common-elements.schema.json",
   "title": "UDLM Common Elements — canonical shared $defs",
   "description": "Machine-referenceable canonical shapes for concepts reused across resource types (the $defs source for `common-elements.md` §2). A type references a shared shape via `$ref: common-elements.schema.json#/$defs/<Name>` rather than reinventing it — this is what makes the single-source rule enforceable for value shapes (SPEC-DESIGN §33). Prose definitions + the normalization plan live in `registry/common-elements.md`; this file is the normative machine mirror.",
   "$defs": {

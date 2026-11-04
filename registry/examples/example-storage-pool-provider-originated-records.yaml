@@ -8,13 +8,13 @@
 ---
 record_type: intent_record
 state: Intent
-record_uuid: 01a178b9-b980-7000-8000-000000000000
+record_uuid: 01a1a8c2-7a98-7022-8022-000000000022
 entity_uuid: 6c27ea00-65ee-4045-b31b-ae08ad34c80d
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: StoragePool
 type_version: 0.5.0
-type_ref: https://udlm.dev/registry/udlm/0.1/StoragePool/0.5.0
+type_ref: https://udlm.dev/registry/udlm/1.0/StoragePool/0.5.0
 handle: platform/storage/pool/app-tier-02
 generation: 1
 origin: declared
@@ -42,25 +42,25 @@ provenance:
       sequence: 1
       timestamp: '2026-09-28T10:15:00Z'
 supersedes:
-  - 01a163b2-7068-7001-8001-000000000001
+  - 01a178b9-b980-7000-8000-000000000000
 integrity:
-  head: sha256:ddc6ee1441767cc37a0a3d66ca838fda283e7765c0040cdbc717672d279afe0a
-  previous: sha256:78b274018f776fa2ed1da48eda810f1001d31f8104290b0173425ef0c197e09b
+  head: sha256:79d6bea741dc72af2b782eee5c3bde70dacc1941c6a4387e55939994331511f5
+  previous: sha256:ddc6ee1441767cc37a0a3d66ca838fda283e7765c0040cdbc717672d279afe0a
   algorithm: sha256_jcs
 ---
 record_type: requested_record
 state: Requested
-record_uuid: 01a178b9-c920-7004-8004-000000000004
-intent_ref: 01a178b9-b980-7000-8000-000000000000
-intent_ref_head: sha256:ddc6ee1441767cc37a0a3d66ca838fda283e7765c0040cdbc717672d279afe0a
-root_request_uuid: 01a178b9-c920-7004-8004-000000000004
+record_uuid: 01a1a8c2-7a9c-7023-8023-000000000023
+intent_ref: 01a1a8c2-7a98-7022-8022-000000000022
+intent_ref_head: sha256:79d6bea741dc72af2b782eee5c3bde70dacc1941c6a4387e55939994331511f5
+root_request_uuid: 01a1a8c2-7a9c-7023-8023-000000000023
 caused_by_request: 01a0eb4f-c492-70e3-a61a-c7a8b1822dbf
 entity_uuid: 6c27ea00-65ee-4045-b31b-ae08ad34c80d
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: StoragePool
 type_version: 0.5.0
-type_ref: https://udlm.dev/registry/udlm/0.1/StoragePool/0.5.0
+type_ref: https://udlm.dev/registry/udlm/1.0/StoragePool/0.5.0
 handle: platform/storage/pool/app-tier-02
 generation: 1
 origin: declared
@@ -93,8 +93,8 @@ metadata:
         provider receives, which is this record''s execution slice and placement requirements. The triggering request
         waits blocked_transient on this one (DEP-017).'
 supersedes:
-  - 01a163b2-8008-7005-8005-000000000005
+  - 01a178b9-c920-7004-8004-000000000004
 integrity:
-  head: sha256:9715b0f54a0f8e4c8f87ec930310586ff30af8da0e1fc2f242d0fd02900f88c9
-  previous: sha256:8a88fb59f6bb86ce37902cca0cf7ca0aedb60c821e92c74f24a827dc596280ed
+  head: sha256:5934a4fc13ca2674c4540dab3815c8eeb33f2afcb3f986f9d0d92687e38f555e
+  previous: sha256:9715b0f54a0f8e4c8f87ec930310586ff30af8da0e1fc2f242d0fd02900f88c9
   algorithm: sha256_jcs

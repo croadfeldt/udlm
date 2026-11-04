@@ -4,8 +4,8 @@ resource_type: Grouping
 class: base
 family: Access
 entity_type: Grouping
-version: 0.3.3
-conforms_to: udlm/0.1
+version: 0.3.4
+conforms_to: udlm/1.0
 status: active
 filed_under:
   - authorization
@@ -76,7 +76,7 @@ metadata:
     A grouping earns a record only when it is referenced by identity or carries bindings or obligations (row 063).'
   maintainer: UDLM project
   origination_timestamp: '2026-08-05T00:00:00Z'
-$id: https://udlm.dev/registry/udlm/0.1/class/Grouping/0.3.3
+$id: https://udlm.dev/registry/udlm/1.0/class/Grouping/0.3.4
 context:
   purpose: 'Declares a grouping — the native anchor other things bind to: a membership criterion, the obligations
     members inherit, and the opaque subject bindings an authorization engine evaluates.'

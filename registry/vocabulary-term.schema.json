@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/vocabulary-term.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/vocabulary-term.schema.json",
   "title": "Vocabulary term",
   "description": "One canonical term of a governed vocabulary (`high-throughput` of `network_tier`, `gold` of `storage_tier`), keyed to (`vocabulary_kind`, `scope`). `scope` is a Class position, the portability contract (ADR-038 §3). `curation_state` puts it on the vocabulary-intake ladder (ADR-039). A FLOOR, NOT A LABEL (ADR-036): `requirements` carries the promise; matching is against it, never the string. NOT A TAXONOMY TERM: `Knowledge.TaxonomyTerm` carries a CATEGORY (what a thing IS), this a FLOOR (what it must MEET). `network_zone` is a taxonomy, `network_tier` a vocabulary term.",
   "type": "object",
@@ -142,7 +142,7 @@
       "record_type": "vocabulary_term",
       "uuid": "3f5c81d0-6b74-4a29-9e13-5c2087ab41de",
       "handle": "platform/network-tiers/high-throughput",
-      "conforms_to": "udlm/0.1",
+      "conforms_to": "udlm/1.0",
       "name": "Network tier — high throughput",
       "description": "Governed definition of the 'high-throughput' network tier.",
       "version": "2.0.0",

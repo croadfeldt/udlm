@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Grouping.Authorization/0.3.0",
-  "conforms_to": "udlm/0.1",
+  "$id": "https://udlm.dev/registry/udlm/1.0/Grouping.Authorization/0.3.1",
+  "conforms_to": "udlm/1.0",
   "uuid": "9d41c8e2-05b7-4a36-b8f9-1c7e3a604b52",
   "resource_type": "Grouping.Authorization",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Grouping",
-          "version": "0.3.3",
+          "version": "0.3.4",
           "uuid": "2c8b6270-2eae-4ac4-8faa-3375dde3da3e"
         },
         {
           "class": "Grouping.Authorization",
-          "version": "0.3.0",
+          "version": "0.3.1",
           "uuid": "9d41c8e2-05b7-4a36-b8f9-1c7e3a604b52"
         }
       ]

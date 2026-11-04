@@ -1,8 +1,8 @@
 record_type: finding_routing_record
-uuid: ce4cb916-3b7b-41f3-b0b6-8c8afb956fa1
-supersedes: ee9f21a7-fea4-462b-bb70-6d02d5a4bd51   # the record that named the class by its former name (Compute -> Machine, ADR-068)
+uuid: 1abfa458-75a9-4bda-b622-f8e9b79da77b
+supersedes: ce4cb916-3b7b-41f3-b0b6-8c8afb956fa1
 handle: findings/example/compute-vm-boot-mode-output
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 title: Machine Base 1.1.0 → 1.2.0 was classified additive, but the candidate compilation changes two
   declared Machine.VirtualMachine outputs
 contradicted_claim:

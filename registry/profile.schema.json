@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/profile.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/profile.schema.json",
   "title": "UDLM Profile",
   "description": "A DEPLOYMENT PROFILE, the posture a deployment engages: one activatable unit. Activation turns on (or off) the capabilities, policies, settings and mechanisms it names ('engage the fsi profile'). An INERT, reusable definition; which profile a deployment runs is deployment state, never a field here. It REFERENCES governed artifacts, never defines them (URF, identifier-scheme §9). ADR-007 supplies the composed-set and floor semantics preserved in `contains[].state`; ADR-015 (settings and configuration bundles) decides; its 'bundle' IS this record, one term for one concept.",
   "type": "object",
@@ -141,7 +141,7 @@
       "record_type": "profile",
       "uuid": "f9985d7f-c298-408d-a9da-6da0dd820570",
       "handle": "udlm/profile/homelab",
-      "conforms_to": "udlm/0.1",
+      "conforms_to": "udlm/1.0",
       "name": "Homelab",
       "description": "Single-operator posture: the smallest required floor, stronger controls available and one toggle away.",
       "version": "1.0.0",

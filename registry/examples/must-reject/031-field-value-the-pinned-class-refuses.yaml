@@ -9,10 +9,10 @@ record:
   record_uuid: 01a2e7d0-0000-7000-8000-000000000031
   entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-  conforms_to: udlm/0.1
+  conforms_to: udlm/1.0
   resource_type: Machine.VM
-  type_version: 2.4.1
-  type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.4.1
+  type_version: 2.4.2
+  type_ref: https://udlm.dev/registry/udlm/1.0/Machine.VM/2.4.2
   handle: lab/vm/app-01
   generation: 1
   origin: declared

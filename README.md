@@ -75,12 +75,12 @@ See [`CONFORMANCE.md`](CONFORMANCE.md) for full details.
 
 ## Versioning
 
-**UDLM is currently `udlm/0.1` — a pre-1.0 (`0.x`) release.** The surface is still being
-defined, so per semver anything may change and the contract is **not yet stable**; current
-work *expands* the v0.x surface rather than refining a released spec. `1.0` is the earned
-milestone — cut when the surface is complete, the conformance suite passes, and the project
-commits to backward compatibility. See [`registry/VERSIONING.md`](registry/VERSIONING.md) for
-the two version axes (SPEC vs ENTITY) and the full positioning.
+**UDLM is `udlm/1.0`, at release candidate `udlm/1.0-rc1`.** 1.0 fixes the framework: the
+version law, the four records and the class tiers, the conformance suite and the graduation
+ladder. It declares no part stable: every part is experimental until a running implementation
+has used it and the suite has judged its records ([`registry/stability.yaml`](registry/stability.yaml)).
+The wire-compatibility promise applies to a part once it is stable. See
+[`registry/VERSIONING.md`](registry/VERSIONING.md) for the two version axes (SPEC vs ENTITY).
 
 The path to the tag is [`registry/UDLM-1.0-LOCKDOWN.md`](registry/UDLM-1.0-LOCKDOWN.md): the
 surface is frozen, the open issues are binned into blockers and 1.x, and the cut follows the

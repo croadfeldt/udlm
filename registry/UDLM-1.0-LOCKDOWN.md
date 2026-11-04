@@ -220,15 +220,17 @@ The tag is cut when all of these hold **and the maintainer says go**. Meeting th
 means ready, not tagged (maintainer, 2026-10-29). `tests/check_status_claims.py` checks this
 document against them.
 
-0. Every class, record schema and spec document has a row in `registry/stability.yaml` (gate STB-001),
-   and the parts the tag will promise are marked stable because they were used and validated
-   (ruling 7).
+0. Every class, record schema and spec document has a row in `registry/stability.yaml` (gate STB-001).
+   The tag promises the framework, not any part's shape: a part is stable only once used and
+   validated (ruling 7), and the maintainer decides when that set is enough (GRD-006). At rc1 every
+   part is experimental (row 163).
 1. Every issue in §4.1 is closed, or moved to another bin by a register row.
 2. `check_adr_realization` finds no accepted ADR with nothing built behind it.
 3. The suite runner passes against the estate's records, and `CONFORMANCE.md` §8 names suite
    `1.0.0` without "under construction".
-4. The profiles are out of the repo, and `conforms_to: udlm/1.0` is the only spec version in
-   `registry/`.
+4. The profiles are out of the repo, and the current version of every record in `registry/`
+   says `conforms_to: udlm/1.0`. A layer's earlier versions stay in their file, pinned by the
+   references that name them (row 163).
 5. Every validate.yml step passes on the tagged commit.
 
 When all six hold, the repo is tagged `udlm/1.0-rc1` (ruling 6). `udlm/1.0` follows after 30 days

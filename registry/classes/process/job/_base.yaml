@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.11
-conforms_to: udlm/0.1
+$id: https://udlm.dev/registry/udlm/1.0/class/Job/1.2.12
+conforms_to: udlm/1.0
 uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
 record_type: class
 class: base
 resource_type: Job
-version: 1.2.11
+version: 1.2.12
 family: Process
 status: active
 metadata:

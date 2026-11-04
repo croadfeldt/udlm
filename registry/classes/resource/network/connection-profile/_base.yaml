@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/ConnectionProfile/0.6.1
-conforms_to: udlm/0.1
+$id: https://udlm.dev/registry/udlm/1.0/class/ConnectionProfile/0.6.2
+conforms_to: udlm/1.0
 uuid: 7c322a52-3d41-4067-b9e2-967280517aa8
 record_type: class
 class: base
 resource_type: ConnectionProfile
-version: 0.6.1
+version: 0.6.2
 family: Resource
 status: active
 filed_under:

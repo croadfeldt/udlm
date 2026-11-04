@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Volume.ZFS/0.9.0
-conforms_to: udlm/0.1
+$id: https://udlm.dev/registry/udlm/1.0/class/Volume.ZFS/0.9.1
+conforms_to: udlm/1.0
 uuid: 90eb6692-1b70-4dc1-b43b-bfedf44c317f
 record_type: class
 class: type
 resource_type: Volume.ZFS
 parent: Volume
-version: 0.9.0
+version: 0.9.1
 family: Resource
 status: active
 metadata:

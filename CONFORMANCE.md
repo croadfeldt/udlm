@@ -1,6 +1,6 @@
 # UDLM — Conformance Specification
 
-**Draft** — pre-ratification (#217); the wire-compat promise binds at 1.0.
+**Release candidate** — `udlm/1.0-rc1` (register row 163); the wire-compat promise binds to a part once it is stable (`registry/stability.yaml`), and binds at `udlm/1.0` for the framework.
 **Established:** 2026-05-26
 **Maps to:** DATA (umbrella)
 

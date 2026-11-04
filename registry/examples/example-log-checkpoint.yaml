@@ -7,7 +7,7 @@
 # rewritten log also proves. A checkpoint is the statement someone else can hold.
 record_type: log_checkpoint
 uuid: e2c7a940-6b18-4f3d-8a52-0d19c46b7e83
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 
 # WHOSE tree. A root hash carries no indication of which log produced it, so two logs at the same
 # size are otherwise indistinguishable to a witness holding checkpoints from several peers.

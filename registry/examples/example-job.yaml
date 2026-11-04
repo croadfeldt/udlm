@@ -1,12 +1,14 @@
 record_type: intent_record
 state: Intent
 entity_uuid: 4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44
-record_uuid: 01a09385-cac2-758c-a3b9-a8388d5e5cb9
+record_uuid: 01a1a8c2-7a1d-700f-800f-00000000000f
+supersedes:
+  - 01a09385-cac2-758c-a3b9-a8388d5e5cb9
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Job
 type_version: 1.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Job/1.0.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Job/1.0.0
 handle: cexample/jobs/nightly-backup
 at: '2026-07-07T01:55:00Z'
 time_source: example clock, NTP-synced
@@ -25,12 +27,12 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44
-record_uuid: 01a0f335-6813-7708-9a75-57e6d9a7eb05
+record_uuid: 01a1a8c2-7a21-7010-8010-000000000010
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Job
 type_version: 1.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Job/1.0.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Job/1.0.0
 handle: cexample/jobs/nightly-backup
 at: '2026-07-07T01:55:00Z'
 time_source: example clock, NTP-synced
@@ -56,20 +58,20 @@ dispatch:
     - trigger
   granted: []
   stripped: []
-intent_ref: 01a09385-cac2-758c-a3b9-a8388d5e5cb9
-root_request_uuid: 01a0f335-6813-7708-9a75-57e6d9a7eb05
+intent_ref: 01a1a8c2-7a1d-700f-800f-00000000000f
+root_request_uuid: 01a1a8c2-7a21-7010-8010-000000000010
 supersedes:
-  - 01a0eb4f-c375-7492-b86f-ade758ff18f4
+  - 01a0f335-6813-7708-9a75-57e6d9a7eb05
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44
-record_uuid: 01a19cfd-2c00-7000-8000-000000000000
+record_uuid: 01a1a8c2-7a26-7011-8011-000000000011
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Job
 type_version: 1.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Job/1.0.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Job/1.0.0
 handle: cexample/jobs/nightly-backup
 at: '2026-07-07T02:12:05Z'
 time_source: example clock, NTP-synced
@@ -87,7 +89,7 @@ outputs:
   results:
     status: COMPLETED
     snapshots_taken: 1
-requested_ref: 01a0f335-6813-7708-9a75-57e6d9a7eb05
+requested_ref: 01a1a8c2-7a21-7010-8010-000000000010
 provider: estate/control-plane
 process:
   execution_state: completed
@@ -96,7 +98,7 @@ process:
       effect_type: read
       effect_description: snapshotted the database
 supersedes:
-  - 01a0f335-6813-7708-9a75-57e7635cadb4
+  - 01a19cfd-2c00-7000-8000-000000000000
 provenance:
   targets:
     - source:

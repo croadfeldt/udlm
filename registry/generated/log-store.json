@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/LogStore/0.3.2",
-  "conforms_to": "udlm/0.1",
+  "$id": "https://udlm.dev/registry/udlm/1.0/LogStore/0.3.3",
+  "conforms_to": "udlm/1.0",
   "uuid": "89fb33fa-ebf2-4b38-bf74-2e163ea8033b",
   "resource_type": "LogStore",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "LogStore",
-          "version": "0.3.2",
+          "version": "0.3.3",
           "uuid": "89fb33fa-ebf2-4b38-bf74-2e163ea8033b"
         }
       ]

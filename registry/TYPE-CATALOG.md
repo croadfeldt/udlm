@@ -30,7 +30,7 @@ A named handle for 'a suite of things treated as a unit' — a tenant, a team's 
 
 ## AddressService
 
-### AddressService (0.8.2)
+### AddressService (0.8.3)
 
 **Purpose:** Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.
 
@@ -52,7 +52,7 @@ The thing that hands out addresses and answers name lookups, as a single, thin s
 
 ## Automation
 
-### Automation (1.3.1)
+### Automation (1.3.2)
 
 **Purpose:** Declares an automation — what a run is, portable across engines — so any engine that exposes run, status and cancel can execute it.
 
@@ -70,7 +70,7 @@ The definition of something that can be run: what it takes in, what it gives bac
 - Job — the receipt of running it.
 - Automation.OSPatch — a Type that narrows it.
 
-### Automation.OSPatch (1.4.1)
+### Automation.OSPatch (1.4.2)
 
 **Purpose:** The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.
 
@@ -91,7 +91,7 @@ Declares that hosts get patched: which package sets, within which maintenance wi
 
 ## BMC
 
-### BMC (0.9.2)
+### BMC (0.9.3)
 
 **Purpose:** Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.
 
@@ -112,7 +112,7 @@ The always-on management controller inside a server that answers even when the h
 
 ## Bucket
 
-### Bucket (0.1.0)
+### Bucket (0.1.1)
 
 **Purpose:** Declares an object-storage bucket a workload reaches over an object protocol.
 
@@ -133,7 +133,7 @@ A bucket: which class provisions it, which object protocols it must speak, and w
 
 ## BucketClass
 
-### BucketClass (0.1.2)
+### BucketClass (0.1.3)
 
 **Purpose:** Declares how object-storage buckets of a kind are provisioned.
 
@@ -152,7 +152,7 @@ The object-storage counterpart of StorageClass: the driver that creates buckets 
 
 ## Capability
 
-### Capability (0.5.1)
+### Capability (0.5.2)
 
 **Purpose:** Names one discrete platform capability so architecture analysis can track, normalize, and gap-score it.
 
@@ -172,7 +172,7 @@ A single named thing a platform can do — e.g. workload placement, or secret ro
 
 ## ConnectionProfile
 
-### ConnectionProfile (0.6.1)
+### ConnectionProfile (0.6.2)
 
 **Purpose:** Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN membership — as declarative state a provider applies.
 
@@ -192,7 +192,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 
 ## Container
 
-### Container (1.3.1)
+### Container (1.3.2)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -215,7 +215,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 
 ## CredentialRef
 
-### CredentialRef (0.8.3)
+### CredentialRef (0.8.4)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -236,7 +236,7 @@ A reference to a secret, never the secret. It names the kind of credential (the 
 
 ## DHCPScope
 
-### DHCPScope (0.10.1)
+### DHCPScope (0.10.2)
 
 **Purpose:** Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.
 
@@ -257,7 +257,7 @@ One subnet's DHCP setup: the required `subnet` CIDR, the dynamic ranges leased f
 
 ## DNSZone
 
-### DNSZone (0.7.1)
+### DNSZone (0.7.2)
 
 **Purpose:** Declares an authoritative DNS zone — its name, role, and records — independent of the software serving it.
 
@@ -277,7 +277,7 @@ One DNS zone — its required `zone_name`, e.g. example.com — with its authori
 
 ## Database
 
-### Database (0.10.1)
+### Database (0.10.2)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -298,7 +298,7 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 
 ## DirectoryService
 
-### DirectoryService (0.8.5)
+### DirectoryService (0.8.6)
 
 **Purpose:** Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.
 
@@ -321,7 +321,7 @@ The identity directory as a running server: which `protocols` it serves — requ
 
 ## FileShare
 
-### FileShare (0.7.4)
+### FileShare (0.7.5)
 
 **Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
 
@@ -344,7 +344,7 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 
 ## GPU
 
-### GPU (0.8.4)
+### GPU (0.8.5)
 
 **Purpose:** Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.
 
@@ -365,7 +365,7 @@ One GPU as a component record. The same type covers three shapes, distinguished 
 
 ## Grouping
 
-### Grouping (0.3.3)
+### Grouping (0.3.4)
 
 **Purpose:** Declares a grouping — the native anchor other things bind to: a membership criterion, the obligations members inherit, and the opaque subject bindings an authorization engine evaluates.
 
@@ -382,7 +382,7 @@ A named set of things with a rule for what belongs in it. A tenant is a grouping
 - Grouping.Tenant and Grouping.Authorization — the Types that narrow it.
 - Any resource — a member by criterion.
 
-### Grouping.Authorization (0.3.0)
+### Grouping.Authorization (0.3.1)
 
 **Purpose:** One grouping permitting another to use something it holds. The grant is a record with its own identity and lifecycle, so it can be found, audited, time-bounded, and withdrawn.
 
@@ -403,7 +403,7 @@ Permission for the members of one grouping to use resources held by another — 
 - Grouping.Tenant — the usual pair of boundaries a grant spans
 - The required-grant set (CTX-005) — derived from a request's edges and diffed against these
 
-### Grouping.Tenant (0.2.0)
+### Grouping.Tenant (0.2.1)
 
 **Purpose:** The ownership and isolation border. Every record in the model carries a tenant_uuid pointing at one of these, and it is the referent that ownership, cost attribution, audit scope, drift accountability, and policy scope all resolve against.
 
@@ -426,7 +426,7 @@ A tenant. A thing belongs to exactly one at a time, and that is a structural loc
 
 ## IPAddress
 
-### IPAddress (0.14.1)
+### IPAddress (0.14.2)
 
 **Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
 
@@ -448,7 +448,7 @@ One IP address, bound to the interface it is configured on, with how it came to 
 
 ## IPAddressPool
 
-### IPAddressPool (0.10.2)
+### IPAddressPool (0.10.3)
 
 **Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
 
@@ -469,7 +469,7 @@ A range of addresses that individual address records are carved from: the requir
 
 ## Identity
 
-### Identity (1.3.2)
+### Identity (1.3.3)
 
 **Purpose:** Declares a subject the control plane authenticates and authorizes — a person or a service account — with the login, authentication source and credential reference every identity provider serves.
 
@@ -490,7 +490,7 @@ Who can act. An identity has a `login`, where it is `authenticated_by`, an optio
 - CredentialRef — the credential that authenticates it.
 - DirectoryService — the directory that authenticates it.
 
-### Identity.Person (0.7.0)
+### Identity.Person (0.7.1)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
@@ -510,7 +510,7 @@ One human's identity: its `login`, plus email, status, and how they authenticate
 - CredentialRef — the person's credentials, by reference.
 - DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.7.0)
+### Identity.ServiceAccount (0.7.1)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
@@ -531,7 +531,7 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 ## IdentityEscrow
 
-### IdentityEscrow (0.5.1)
+### IdentityEscrow (0.5.2)
 
 **Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
 
@@ -555,7 +555,7 @@ Some machines are routinely wiped and rebuilt, but parts of their identity must 
 
 ## IdentityGroup
 
-### IdentityGroup (0.6.1)
+### IdentityGroup (0.6.2)
 
 **Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
 
@@ -575,7 +575,7 @@ A named set of person and service-account identities, keyed by its required `han
 
 ## Job
 
-### Job (1.2.11)
+### Job (1.2.12)
 
 **Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
 
@@ -596,7 +596,7 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 
 ## KubernetesCluster
 
-### KubernetesCluster (2.0.8)
+### KubernetesCluster (2.0.9)
 
 **Purpose:** Declares a managed Kubernetes cluster — release and network ranges — as one provisionable intent; its node pools are KubernetesNodePool records contained by it.
 
@@ -619,7 +619,7 @@ The request for a control plane: which release and what internal network ranges 
 
 ## KubernetesNamespace
 
-### KubernetesNamespace (1.2.1)
+### KubernetesNamespace (1.2.2)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
@@ -638,7 +638,7 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 
 ## KubernetesNodePool
 
-### KubernetesNodePool (1.2.1)
+### KubernetesNodePool (1.2.2)
 
 **Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
 
@@ -658,7 +658,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 
 ## Location
 
-### Location (0.6.3)
+### Location (0.6.4)
 
 **Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
 
@@ -679,7 +679,7 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 
 ## LogShipper
 
-### LogShipper (0.10.2)
+### LogShipper (0.10.3)
 
 **Purpose:** Declares the outcome that a resource's logs reach a log store, without saying anything about how.
 
@@ -697,7 +697,7 @@ A statement of outcome: logs from one resource (a machine, a BMC, a switch, a ga
 - Machine / BMC / NetworkSwitch / NetworkGateway / KubernetesCluster — the resource whose logs are shipped.
 - LogStore — where the logs go; its published intake is what the shipper binds.
 
-### LogShipper.OTLP (0.1.3)
+### LogShipper.OTLP (0.1.4)
 
 **Purpose:** Ships a resource's logs over OTLP.
 
@@ -712,7 +712,7 @@ A LogShipper that speaks OTLP: which encoding and whether to compress. The endpo
 **Works with:**
 - LogStore — whose `intake` must offer `otlp`.
 
-### LogShipper.Syslog (0.2.1)
+### LogShipper.Syslog (0.2.2)
 
 **Purpose:** Ships a resource's logs over syslog.
 
@@ -729,7 +729,7 @@ A LogShipper that speaks syslog: which transport (TLS preferred) and which messa
 
 ## LogStore
 
-### LogStore (0.3.2)
+### LogStore (0.3.3)
 
 **Purpose:** Declares a log store by what it accepts, how long it keeps it, and who may read it.
 
@@ -749,7 +749,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.6.2)
+### Machine (2.6.3)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -769,7 +769,7 @@ The most portable way to ask for a machine: how big, what image, which disks, wh
 - FileShare — the network shares its guest mounts (`mounts`).
 - Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
 
-### Machine.BareMetalHost (0.18.0)
+### Machine.BareMetalHost (0.18.1)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -792,7 +792,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - NetworkInterface, StorageDevice, GPU, BMC — the host's components, as contained records.
 - Machine.VM — the guests the host runs.
 
-### Machine.LPAR (0.2.2)
+### Machine.LPAR (0.2.3)
 
 **Purpose:** Declares a logical partition on a partitioned system as one provisionable Machine.
 
@@ -811,7 +811,7 @@ The request for a slice of a big partitioned server: how much processor capacity
 - Volume — the disks served through virtual I/O.
 - VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.4.1)
+### Machine.VM (2.4.2)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -835,7 +835,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 ## NetworkGateway
 
-### NetworkGateway (0.9.1)
+### NetworkGateway (0.9.2)
 
 **Purpose:** Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.
 
@@ -857,7 +857,7 @@ The router/firewall at the edge of a network: which functions it provides (routi
 
 ## NetworkInterface
 
-### NetworkInterface (0.17.2)
+### NetworkInterface (0.17.3)
 
 **Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
 
@@ -881,7 +881,7 @@ One network interface, of any kind: device_class says whether it is a physical N
 
 ## NetworkSwitch
 
-### NetworkSwitch (0.12.0)
+### NetworkSwitch (0.12.1)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
@@ -904,7 +904,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 
 ## PowerFeed
 
-### PowerFeed (0.10.0)
+### PowerFeed (0.10.1)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
@@ -925,7 +925,7 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 
 ## Processor
 
-### Processor (0.7.4)
+### Processor (0.7.5)
 
 **Purpose:** Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when the host rollup is not enough.
 
@@ -945,7 +945,7 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 
 ## SoftwareImage
 
-### SoftwareImage (0.3.2)
+### SoftwareImage (0.3.3)
 
 **Purpose:** Records a container image as a digest-identified fact — the anchor a container's software bill of materials hangs from.
 
@@ -965,7 +965,7 @@ One container image, identified by its content digest (one observed `tag` is rec
 
 ## SoftwarePackage
 
-### SoftwarePackage (0.4.1)
+### SoftwarePackage (0.4.2)
 
 **Purpose:** Records a software package or library as one shared fact per package URL, so every image containing it points at the same record.
 
@@ -985,7 +985,7 @@ One package at one version — identified by its purl (Package URL), the portabl
 
 ## SovereigntyZone
 
-### SovereigntyZone (0.2.0)
+### SovereigntyZone (0.2.1)
 
 **Purpose:** Give a coined zone name a declared meaning, so that "is this entity's placement covered by that accreditation?" is a question the model can answer.
 
@@ -1007,7 +1007,7 @@ What a zone name actually means. `eu-west` is Germany and the Netherlands, under
 
 ## StorageClass
 
-### StorageClass (0.10.3)
+### StorageClass (0.10.4)
 
 **Purpose:** Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.
 
@@ -1029,7 +1029,7 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 
 ## StorageCluster
 
-### StorageCluster (0.9.1)
+### StorageCluster (0.9.2)
 
 **Purpose:** Models a distributed storage system serving block, file, and/or object storage — the platform volumes are provisioned from.
 
@@ -1051,7 +1051,7 @@ A multi-node storage system — Ceph is the reference implementation, but the te
 
 ## StorageDevice
 
-### StorageDevice (0.8.3)
+### StorageDevice (0.8.4)
 
 **Purpose:** Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.
 
@@ -1072,7 +1072,7 @@ One storage device as a record: its required `capacity` — a whole-number quant
 
 ## StoragePool
 
-### StoragePool (0.8.0)
+### StoragePool (0.8.1)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
@@ -1096,7 +1096,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 
 ## Subnet
 
-### Subnet (0.4.1)
+### Subnet (0.4.2)
 
 **Purpose:** Give the layer 3 network a first-class identity, so a consumer can require an IP network without naming a segment, and an allocation pool has something to sit inside.
 
@@ -1119,7 +1119,7 @@ The IP side of a network — the address range, the way out of it, and how hosts
 
 ## TaxonomyTerm
 
-### TaxonomyTerm (0.5.1)
+### TaxonomyTerm (0.5.2)
 
 **Purpose:** Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.
 
@@ -1139,7 +1139,7 @@ A term with an authoritative definition, living in a named vocabulary tree (its 
 
 ## Template
 
-### Template (0.2.2)
+### Template (0.2.3)
 
 **Purpose:** Declares a consumable composition — the mechanism by which an orderable unit is assembled from other classes and references, declared once and realized many times.
 
@@ -1156,7 +1156,7 @@ The thing on a menu that is made of other things. The Base carries only the comp
 - Template.Application — the Type that says what is composed.
 - SovereigntyZone — what the floor names.
 
-### Template.Application (0.2.2)
+### Template.Application (0.2.3)
 
 **Purpose:** Let a consumer order an application as ONE thing — the whole shape, wired, placed and reconciled together — instead of ordering the parts and re-deriving how they connect every time.
 
@@ -1178,7 +1178,7 @@ A ready-made application shape. Somebody who knows how the pieces fit wrote it d
 
 ## TestEvidence
 
-### TestEvidence (0.5.2)
+### TestEvidence (0.5.3)
 
 **Purpose:** Records the evidence a test provides about a subject — any test, from any suite, in the result format the suite already emits.
 
@@ -1197,7 +1197,7 @@ One test, what it was about, and how it went: the subject it exercised, the kind
 - TestEvidence.VulnerabilityCheck — the Type for CVE checks.
 - VexStatement — cites evidence records.
 
-### TestEvidence.VulnerabilityCheck (0.2.1)
+### TestEvidence.VulnerabilityCheck (0.2.2)
 
 **Purpose:** Records one test that checks one known vulnerability in one package version, so a claim that a vulnerability is fixed or reachable can be traced to a test that ran.
 
@@ -1210,7 +1210,7 @@ The vulnerability-check dialect of test evidence: the subject is a package versi
 
 ## Topology
 
-### Topology (0.6.1)
+### Topology (0.6.2)
 
 **Purpose:** Declares the failure and locality domains — region, zone, rack, power, network — that placement, residency, and maintenance gating resolve against.
 
@@ -1232,7 +1232,7 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 
 ## UPS
 
-### UPS (0.2.2)
+### UPS (0.2.3)
 
 **Purpose:** Models the battery-backed unit itself — what it is rated for, what wears, when it must signal low battery, and what it reports — so the feed it protects can be supplied_by a real entity instead of a feed_type string.
 
@@ -1253,7 +1253,7 @@ A UPS as a thing you own, separate from the circuit it protects. You declare its
 
 ## VLAN
 
-### VLAN (0.7.2)
+### VLAN (0.7.3)
 
 **Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
 
@@ -1275,7 +1275,7 @@ The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `v
 
 ## VexStatement
 
-### VexStatement (0.1.2)
+### VexStatement (0.1.3)
 
 **Purpose:** Records one exploitability claim about one vulnerability in one package version, with the evidence it rests on, as a fact Product Security can confirm.
 
@@ -1288,7 +1288,7 @@ One statement per (vulnerability, package version). It carries the OpenVEX statu
 
 ## VirtualNetwork
 
-### VirtualNetwork (0.9.4)
+### VirtualNetwork (0.9.5)
 
 **Purpose:** Models the attachment point workloads plug into — the host- or cluster-scoped network a guest names when it says attach me here.
 
@@ -1311,7 +1311,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Volume
 
-### Volume (0.19.0)
+### Volume (0.19.1)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1335,7 +1335,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - Volume — the volume it replicates (`replica_of`), or the replicas that follow it.
 - Database — databases whose data directory it backs.
 
-### Volume.ZFS (0.9.0)
+### Volume.ZFS (0.9.1)
 
 **Purpose:** Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host workloads use.
 
@@ -1357,7 +1357,7 @@ A volume realized by ZFS on one host: its `volume_mode` says whether it is a mou
 
 ## VolumeSnapshot
 
-### VolumeSnapshot (0.1.1)
+### VolumeSnapshot (0.1.2)
 
 **Purpose:** Declares a point-in-time copy of a volume's data that a new volume can be restored from.
 
@@ -1377,7 +1377,7 @@ A snapshot of one volume, taken at one moment. It names the volume it copies (`s
 
 ## Vulnerability
 
-### Vulnerability (0.3.2)
+### Vulnerability (0.3.3)
 
 **Purpose:** Records a known vulnerability — CVE, GHSA, or OSV advisory — once, as the shared fact every affected package points at.
 
@@ -1397,7 +1397,7 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 
 ## Workload
 
-### Workload (0.11.2)
+### Workload (0.11.3)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 

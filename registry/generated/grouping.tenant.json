@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.2.0",
-  "conforms_to": "udlm/0.1",
+  "$id": "https://udlm.dev/registry/udlm/1.0/Grouping.Tenant/0.2.1",
+  "conforms_to": "udlm/1.0",
   "uuid": "6b2f0a71-7d3e-4c58-9a14-2e8b5c03f4d7",
   "resource_type": "Grouping.Tenant",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Grouping",
-          "version": "0.3.3",
+          "version": "0.3.4",
           "uuid": "2c8b6270-2eae-4ac4-8faa-3375dde3da3e"
         },
         {
           "class": "Grouping.Tenant",
-          "version": "0.2.0",
+          "version": "0.2.1",
           "uuid": "6b2f0a71-7d3e-4c58-9a14-2e8b5c03f4d7"
         }
       ]

@@ -1,17 +1,17 @@
 record_type: intent_record
 state: Intent
 entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
-record_uuid: 01a1637b-7e00-7a01-8b02-0c03d04e05f6
+record_uuid: 01a1a8c2-7aa8-7027-8027-000000000027
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: TestEvidence.VulnerabilityCheck.AiTestHarness
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/class/TestEvidence.VulnerabilityCheck.AiTestHarness/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/class/TestEvidence.VulnerabilityCheck.AiTestHarness/0.1.0
 handle: cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
 at: '2026-10-22T12:00:00Z'
 time_source: example clock, NTP-synced
 supersedes:
-  - 01a09a05-1239-7005-a005-0e5f3a2b1c52
+  - 01a1637b-7e00-7a01-8b02-0c03d04e05f6
 origin: declared
 fields:
   test_id: python-jose::test_ghsa_cjwg_qfpm_7377_fix_pinning::5645aafeb0e8
@@ -52,12 +52,12 @@ provenance:
 record_type: requested_record
 state: Requested
 entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
-record_uuid: 01a1637b-81e8-7b11-9c12-1d13e14f1506
+record_uuid: 01a1a8c2-7aad-7028-8028-000000000028
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: TestEvidence.VulnerabilityCheck.AiTestHarness
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/class/TestEvidence.VulnerabilityCheck.AiTestHarness/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/class/TestEvidence.VulnerabilityCheck.AiTestHarness/0.1.0
 handle: cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
 at: '2026-10-22T12:00:00Z'
 time_source: example clock, NTP-synced
@@ -116,20 +116,20 @@ dispatch:
     - validation.differential
   granted: []
   stripped: []
-intent_ref: 01a1637b-7e00-7a01-8b02-0c03d04e05f6
-root_request_uuid: 01a1637b-81e8-7b11-9c12-1d13e14f1506
+intent_ref: 01a1a8c2-7aa8-7027-8027-000000000027
+root_request_uuid: 01a1a8c2-7aad-7028-8028-000000000028
 supersedes:
-  - 01a0f335-684e-7382-a17b-e6053083d82d
+  - 01a1637b-81e8-7b11-9c12-1d13e14f1506
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 5e8a3c1b-7d2f-4b6a-9e0c-3f4d5a6b7c8e
-record_uuid: 01a178b9-d4d8-7007-8007-000000000007
+record_uuid: 01a1a8c2-7ab3-7029-8029-000000000029
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: TestEvidence.VulnerabilityCheck.AiTestHarness
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/class/TestEvidence.VulnerabilityCheck.AiTestHarness/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/class/TestEvidence.VulnerabilityCheck.AiTestHarness/0.1.0
 handle: cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
 at: '2026-10-22T12:00:00Z'
 time_source: example clock, NTP-synced
@@ -162,7 +162,7 @@ fields:
     flake_runs: 2
     differential: changed
   scope: overlay
-requested_ref: 01a1637b-81e8-7b11-9c12-1d13e14f1506
+requested_ref: 01a1a8c2-7aad-7028-8028-000000000028
 provider: cexample/providers/ai-test-harness
 provenance:
   fields.scope:
@@ -204,8 +204,8 @@ outputs:
   bumps_survived: 0
   regressions_caught: 0
 supersedes:
-  - 01a1637b-85d0-7c21-ad22-2e23f2401526
+  - 01a178b9-d4d8-7007-8007-000000000007
 integrity:
-  head: sha256:4c36b4f5b6e4b8643b365f5c9e66510937306363bf5fa0624f69f49493c5eb75
-  previous: sha256:cd1ef7d95ef7db25bf1f18c0b40650aeb6ef79c566ac6f469096c44cda3524af
+  head: sha256:9d58d40a07f24c2074b0d2057a8eb61fa717cfb4e38210242cd671c8c64f5777
+  previous: sha256:4c36b4f5b6e4b8643b365f5c9e66510937306363bf5fa0624f69f49493c5eb75
   algorithm: sha256_jcs

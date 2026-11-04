@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Workload/0.11.2",
-  "conforms_to": "udlm/0.1",
+  "$id": "https://udlm.dev/registry/udlm/1.0/Workload/0.11.3",
+  "conforms_to": "udlm/1.0",
   "uuid": "905fef1c-3384-4a49-9c44-71420d07eedd",
   "resource_type": "Workload",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Workload",
-          "version": "0.11.2",
+          "version": "0.11.3",
           "uuid": "905fef1c-3384-4a49-9c44-71420d07eedd"
         }
       ]

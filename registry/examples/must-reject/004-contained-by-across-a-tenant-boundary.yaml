@@ -10,7 +10,7 @@ must_reject:
 record:
   uuid: c7d2e8a1-4f36-4b90-a5c8-19e07b4d6f23
   handle: payments/greedy-01
-  conforms_to: udlm/0.1
+  conforms_to: udlm/1.0
   resource_type: Machine.VM
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
   dependencies:

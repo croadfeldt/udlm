@@ -1,12 +1,14 @@
 record_type: intent_record
 state: Intent
 entity_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-record_uuid: 01a09385-caae-72fa-9c62-73757c48054e
+record_uuid: 01a1a8c2-7a9e-7024-8024-000000000024
+supersedes:
+  - 01a09385-caae-72fa-9c62-73757c48054e
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Grouping.Tenant
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Grouping.Tenant/0.1.0
 handle: org/tenant/example-payments
 at: '2026-08-06T00:00:00Z'
 time_source: authored example — no clock claim
@@ -23,12 +25,12 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-record_uuid: 01a0f335-68d1-7632-b3a7-c26824c656e6
+record_uuid: 01a1a8c2-7aa1-7025-8025-000000000025
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Grouping.Tenant
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Grouping.Tenant/0.1.0
 handle: org/tenant/example-payments
 at: '2026-08-06T00:00:00Z'
 time_source: authored example — no clock claim
@@ -47,20 +49,20 @@ dispatch:
     - obligations.isolation
   granted: []
   stripped: []
-intent_ref: 01a09385-caae-72fa-9c62-73757c48054e
-root_request_uuid: 01a0f335-68d1-7632-b3a7-c26824c656e6
+intent_ref: 01a1a8c2-7a9e-7024-8024-000000000024
+root_request_uuid: 01a1a8c2-7aa1-7025-8025-000000000025
 supersedes:
-  - 01a0eb4f-c434-7066-a737-8674b5ad4933
+  - 01a0f335-68d1-7632-b3a7-c26824c656e6
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-record_uuid: 01a0f335-68d1-7632-b3a7-c2691646eb4c
+record_uuid: 01a1a8c2-7aa4-7026-8026-000000000026
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Grouping.Tenant
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Grouping.Tenant/0.1.0
 handle: org/tenant/example-payments
 at: '2026-08-06T00:00:00Z'
 time_source: authored example — no clock claim
@@ -73,7 +75,7 @@ fields:
   obligations:
     isolation: logical
 outputs: {}
-requested_ref: 01a0f335-68d1-7632-b3a7-c26824c656e6
+requested_ref: 01a1a8c2-7aa1-7025-8025-000000000025
 provider: estate/control-plane
 supersedes:
-  - 01a0eb4f-c434-7066-a737-8675b4e8c706
+  - 01a0f335-68d1-7632-b3a7-c2691646eb4c

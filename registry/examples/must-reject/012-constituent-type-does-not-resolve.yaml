@@ -10,7 +10,7 @@ record:
   record_type: class
   uuid: 7f4a2c19-6e83-4d05-b72f-3c918ae5d604
   handle: acme/ghost-constituent
-  conforms_to: udlm/0.1
+  conforms_to: udlm/1.0
   resource_type: Template.Application.AcmeGhost
   class: provider
   parent: Template.Application

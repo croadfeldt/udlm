@@ -1,12 +1,14 @@
 record_type: intent_record
 state: Intent
 entity_uuid: 9452b93b-5525-43e9-94ed-0eca2bfa38ca
-record_uuid: 01a09385-caa8-73ef-8584-1a69d195f6ab
+record_uuid: 01a1a8c2-7ae4-7032-8032-000000000032
+supersedes:
+  - 01a09385-caa8-73ef-8584-1a69d195f6ab
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Machine.VM
 type_version: 0.12.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/0.12.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Machine.VM/0.12.0
 handle: payments/app-01
 at: '2026-08-08T00:00:00Z'
 time_source: authored example — no clock claim
@@ -22,12 +24,12 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 9452b93b-5525-43e9-94ed-0eca2bfa38ca
-record_uuid: 01a0f335-68da-755c-9c8b-96caa27797e2
+record_uuid: 01a1a8c2-7ae8-7033-8033-000000000033
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Machine.VM
 type_version: 0.12.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/0.12.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Machine.VM/0.12.0
 handle: payments/app-01
 at: '2026-08-08T00:00:00Z'
 time_source: authored example — no clock claim
@@ -45,25 +47,25 @@ dispatch:
     - memory.size
   granted: []
   stripped: []
-intent_ref: 01a09385-caa8-73ef-8584-1a69d195f6ab
-root_request_uuid: 01a0f335-68da-755c-9c8b-96caa27797e2
+intent_ref: 01a1a8c2-7ae4-7032-8032-000000000032
+root_request_uuid: 01a1a8c2-7ae8-7033-8033-000000000033
 provider_preference:
   provider: estate/providers/osac-primary
   strength: soft
   reason: Co-located with the payments storage estate; avoids a cross-fabric hop.
   set_by: platform-admin/alice
 supersedes:
-  - 01a0eb4f-c4b8-75c4-92a8-2cabc893bcca
+  - 01a0f335-68da-755c-9c8b-96caa27797e2
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 9452b93b-5525-43e9-94ed-0eca2bfa38ca
-record_uuid: 01a178b9-dca8-7009-8009-000000000009
+record_uuid: 01a1a8c2-7aeb-7034-8034-000000000034
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Machine.VM
 type_version: 0.12.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/0.12.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Machine.VM/0.12.0
 handle: payments/app-01
 at: '2026-08-08T00:00:00Z'
 time_source: authored example — no clock claim
@@ -75,7 +77,7 @@ fields:
   memory:
     size: 16Gi
 outputs: {}
-requested_ref: 01a0f335-68da-755c-9c8b-96caa27797e2
+requested_ref: 01a1a8c2-7ae8-7033-8033-000000000033
 provider: estate/control-plane
 dependencies:
   - edge_type: binds_to
@@ -84,10 +86,10 @@ dependencies:
     bound_field: network_attachment
     resolved_at: '2026-08-08T00:00:00Z'
 supersedes:
-  - 01a0f335-68da-755c-9c8b-96cb83e446c6
+  - 01a178b9-dca8-7009-8009-000000000009
 integrity:
-  head: sha256:7cd9b1ab913f04415f55208f4dd8a32c6e91e71d3737f567a48211c3c8845ffa
-  previous: sha256:2599c51d06e8aa7782f0c9890acb1a6595cc01e596577a77e84a30761574b3d5
+  head: sha256:8e4926d4811e7dab740ed763b52e005a6f4eb8a724da7efe0d45bad3b63ed55d
+  previous: sha256:7cd9b1ab913f04415f55208f4dd8a32c6e91e71d3737f567a48211c3c8845ffa
   algorithm: sha256_jcs
 
 ---
@@ -96,12 +98,12 @@ integrity:
 record_type: realized_record
 state: Realized
 entity_uuid: 9452b93b-5525-43e9-94ed-0eca2bfa38ca
-record_uuid: 01a178b9-dca8-7009-8009-00000000000a
+record_uuid: 01a1a8c2-7aef-7035-8035-000000000035
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Machine.VM
 type_version: 0.12.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/0.12.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Machine.VM/0.12.0
 handle: payments/app-01
 at: '2026-11-04T00:00:00Z'
 time_source: authored example — no clock claim
@@ -118,7 +120,7 @@ fields:
   memory:
     size: 16Gi
 outputs: {}
-requested_ref: 01a0f335-68da-755c-9c8b-96caa27797e2
+requested_ref: 01a1a8c2-7ae8-7033-8033-000000000033
 provider: estate/control-plane
 dependencies:
 - edge_type: binds_to
@@ -129,9 +131,9 @@ dependencies:
   target_tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
   authorization_ref: 18750c2a-b057-453b-80b2-95e251b1cd49
 supersedes:
-- 01a178b9-dca8-7009-8009-000000000009
+  - 01a178b9-dca8-7009-8009-00000000000a
 generation: 2
 integrity:
-  head: sha256:8d9cef3136d477e3e76432ce38f0762cdced2be750f25005408e897c0c678b60
-  previous: sha256:7cd9b1ab913f04415f55208f4dd8a32c6e91e71d3737f567a48211c3c8845ffa
+  head: sha256:f84e0d7f485aa107bc7a5190e6261696e452952496bd5c39415dda3ec0040b1e
+  previous: sha256:8d9cef3136d477e3e76432ce38f0762cdced2be750f25005408e897c0c678b60
   algorithm: sha256_jcs

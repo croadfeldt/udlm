@@ -7,15 +7,15 @@ must_reject:
 record:
   record_type: realized_record
   state: Realized
-  record_uuid: 01a178b9-d8c0-7008-8008-000000000008
-  requested_ref: 01a178b9-cd08-7005-8005-000000000005
+  record_uuid: 01a1a8c2-7acd-702d-802d-00000000002d
+  requested_ref: 01a1a8c2-7ad8-702e-802e-00000000002e
   requested_ref_head: sha256:53d6fe5884e96c6514ef8a574a9cfcac4ba89948414108346ef3bdaec1803437
   entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-  conforms_to: udlm/0.1
+  conforms_to: udlm/1.0
   resource_type: Machine.VM
-  type_version: 2.0.0
-  type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
+  type_version: 2.4.2
+  type_ref: https://udlm.dev/registry/udlm/1.0/Machine.VM/2.4.2
   handle: lab/vm/app-01
   generation: 1
   origin: declared

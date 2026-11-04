@@ -21,19 +21,20 @@ ships at least a REVISION bump; publishing different bytes under an already-publ
 refused (`tests/check_identity_integrity.py` R2, via the pin manifest). The bump *size* is
 classified by the entity-semver table below; the bump *existence* is this law.
 
-## Spec status — pre-1.0 (`udlm/0.1`)
+## Spec status — `udlm/1.0`, release candidate
 
-**The UDLM spec is currently `0.1` — a `0.x`, pre-stable release.** The surface is still being
-*defined* (registry meta-schema, state-record, entity-view, adopted-standards, the entity-type families), so
-per semver §4 anything MAY change and the contract is **not yet considered stable**. Treat the
-current work as *expansion of the v0.x surface*, not refinement of a released spec.
+**The UDLM spec is `1.0`, tagged `udlm/1.0-rc1` on 2026-11-04** (lockdown plan rulings 1 and 6;
+register row 163). `udlm/1.0` follows after 30 days with no breaking change to a stable part and
+the conformance suite green, on the maintainer's go.
 
-**What `1.0` will mean (the earned milestone, not the starting line):** UDLM cuts `1.0` when the
-surface is complete, the conformance suite (`CONFORMANCE.md`) passes, and the project is ready to
-**commit to backward compatibility**. That is the point where a breaking change would genuinely warrant a `2.0`.
-Until then, the SPEC `MAJOR` is `0`, and the "same-MAJOR = wire-compatible" guarantee below is a
-*post-1.0* promise; pre-1.0, minor (`0.1 → 0.2`) bumps may carry breaking changes as the surface
-settles. This mirrors how FOCUS, OpenTelemetry, and most CNCF specs incubate at `0.x` and earn `1.0`.
+**What 1.0 promises, and what it does not.** 1.0 fixes the framework: the two version axes and
+the publish law in this document, the four records and the class tiers, the conformance suite
+(`CONFORMANCE.md`), and the graduation ladder (`docs/spec/governance/graduation.md`). It does not
+declare any part stable. Every part is `experimental` in `registry/stability.yaml`, by ruling:
+stability is earned by use and validation (row 144), never declared. The same-MAJOR
+wire-compatibility promise below applies to a part once it is `stable`; an experimental part may
+change in a MINOR without a deprecation window, and the manifest says which is which. A breaking
+change to a stable part warrants `2.0`; there are no stable parts yet.
 
 **Who confers `1.0` (maintainer ruling 2026-10-28, amending 2026-07-27):** the maintainer cuts it,
 on the lockdown plan in [`UDLM-1.0-LOCKDOWN.md`](UDLM-1.0-LOCKDOWN.md). The July ruling made 1.0

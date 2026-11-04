@@ -766,7 +766,7 @@ changing the search domain:
 record_type: layer
 uuid: 3b6f0c2e-8a41-4d7e-9b25-6c1e0f4a7d93
 handle: platform/core/default-dns-config
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 name: Default DNS configuration
 description: Platform DNS resolvers and search domain for VMs and containers.
 version: 1.2.0

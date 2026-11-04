@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.4.1",
-  "conforms_to": "udlm/0.1",
+  "$id": "https://udlm.dev/registry/udlm/1.0/SoftwarePackage/0.4.2",
+  "conforms_to": "udlm/1.0",
   "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366",
   "resource_type": "SoftwarePackage",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SoftwarePackage",
-          "version": "0.4.1",
+          "version": "0.4.2",
           "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366"
         }
       ]

@@ -1,14 +1,14 @@
 record_type: intent_record
 state: Intent
 entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
-record_uuid: 01a17280-b500-7000-8000-00050e000000
+record_uuid: 01a1a8c2-7a87-701c-801c-00000000001c
 supersedes:
-  - 01a09385-cae6-7482-8808-5dca49315792
+  - 01a17280-b500-7000-8000-00050e000000
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: SovereigntyZone
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/SovereigntyZone/0.1.0
 handle: eu-west
 at: '2026-10-25T10:00:00Z'
 time_source: authored example — no clock claim
@@ -26,12 +26,12 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
-record_uuid: 01a17280-b8e8-7001-8001-00050e000001
+record_uuid: 01a1a8c2-7a8a-701d-801d-00000000001d
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: SovereigntyZone
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/SovereigntyZone/0.1.0
 handle: eu-west
 at: '2026-10-25T10:00:00Z'
 time_source: authored example — no clock claim
@@ -51,21 +51,21 @@ dispatch:
     - regimes
   granted: []
   stripped: []
-intent_ref: 01a17280-b500-7000-8000-00050e000000
-root_request_uuid: 01a17280-b8e8-7001-8001-00050e000001
+intent_ref: 01a1a8c2-7a87-701c-801c-00000000001c
+root_request_uuid: 01a1a8c2-7a8a-701d-801d-00000000001d
 supersedes:
-  - 01a0f335-68ae-7665-8ebf-d0ba463ab890
+  - 01a17280-b8e8-7001-8001-00050e000001
 
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
-record_uuid: 01a17280-bcd0-7002-8002-00050e000002
+record_uuid: 01a1a8c2-7a8d-701e-801e-00000000001e
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: SovereigntyZone
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/SovereigntyZone/0.1.0
 handle: eu-west
 at: '2026-10-25T10:00:00Z'
 time_source: authored example — no clock claim
@@ -79,7 +79,7 @@ fields:
   regimes:
     - EU
 outputs: {}
-requested_ref: 01a17280-b8e8-7001-8001-00050e000001
+requested_ref: 01a1a8c2-7a8a-701d-801d-00000000001d
 provider: estate/control-plane
 supersedes:
-  - 01a0f335-68ae-7665-8ebf-d0bbd2d85e30
+  - 01a17280-bcd0-7002-8002-00050e000002

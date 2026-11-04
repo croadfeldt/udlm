@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/provider-adopted-standards.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/provider-adopted-standards.schema.json",
   "title": "UDLM Provider — Capability Declaration (adopted standards + docs/spec/foundations/mobility/operational/sovereignty)",
   "description": "The provider-authored capability declaration (adopted-standards.md §3.2; ADS-001; ADR-PROV-002). (a) `adopted_standard_support`: versions of each adopted standard it can emit/consume; (b) `capabilities`: declared, VERSIONED, accreditable capabilities. A capability is the accreditation/version unit, bound by `capability_uuid` + `version` (docs/spec/governance/accreditation-and-authorization-matrix.md §3.3.1). One may realize MORE THAN ONE `(verb × domain)` category, with docs/spec/foundations/mobility/operational/sovereignty varying per category (ADR-PROV-002). Per-category blocks OVERRIDE `provider_defaults` (finest-granularity-wins, DCM ADR-004 §0/§4). DATA; matching/negotiation and 1-1 claim↔accreditation reconciliation are Policy (control plane).",
   "type": "object",
