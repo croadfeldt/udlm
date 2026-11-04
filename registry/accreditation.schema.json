@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/accreditation.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/accreditation.schema.json",
   "title": "UDLM Accreditation record",
   "description": "Machine-validatable Accreditation record (docs/spec/governance/accreditation-and-authorization-matrix.md §3.3). A formal, versioned, time-bounded attestation that a subject (a provider, policy evaluator, credential provider, or peer implementation) satisfies a compliance framework — EXPLICITLY scoped to provider + capability + jurisdiction so the sovereignty 1-1 match (accreditation-and-authorization-matrix.md §3.3.1; §3.3.1) is machine-checkable. UDLM carries the record; the control plane's Governance Matrix consumes it. The `scope.capability_scope` binding grain (provider-wide | category | exact capability version) is org/platform-admin policy.",
   "type": "object",

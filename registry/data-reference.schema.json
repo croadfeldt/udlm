@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/data-reference.schema.json",
   "title": "Data reference (URF pointer at a Reference Data Layer)",
   "description": "The canonical in-field reference to shared, governed data (UDLM ADR-012): a pointer at a Reference Data Layer, never an inlined copy. A URF reference string (identifier-scheme §9), not an object: `uuid/<v4>[@version][?reference_data_type==<kind>]`. It MUST resolve to an ACTIVE `layer` record with layer_type: reference_data and the declared reference_data_type (docs/spec/foundations/layering-and-versioning.md §3.7). registry/tools/validate.py (check_data_references) fails hard on a dangling uuid, kind mismatch, or pin disagreeing with the resolved version. A field allowing reference or inline value $refs $defs/data_reference on one oneOf branch.",
   "type": "object",

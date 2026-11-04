@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/VirtualNetwork/0.9.4
-conforms_to: udlm/0.1
+$id: https://udlm.dev/registry/udlm/1.0/class/VirtualNetwork/0.9.5
+conforms_to: udlm/1.0
 uuid: fddc45aa-8643-4a8d-8a6b-72ecf9315c1e
 record_type: class
 class: base
 resource_type: VirtualNetwork
-version: 0.9.4
+version: 0.9.5
 family: Resource
 status: active
 filed_under:

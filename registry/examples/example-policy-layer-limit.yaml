@@ -23,13 +23,13 @@
 record_type: policy
 uuid: 7c3ba51e-84d6-4f92-b107-2e5a90d4c368
 handle: layer-limit-gate
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 name: Refuse a value that falls outside an ancestor layer's envelope
 description: >-
   Validation policy — a request whose value falls outside any applicable ancestor envelope is
   refused, and the refusal names the binding layer, its owner and the clause. Worked example
   (cexample content).
-version: 1.0.0
+version: 1.0.1
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 status: {state: active}
 policy_type: validation

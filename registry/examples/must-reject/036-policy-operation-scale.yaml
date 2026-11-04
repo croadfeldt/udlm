@@ -11,7 +11,7 @@ record:
   record_type: policy
   uuid: 5a1f3c86-2d49-4b7e-8c13-9f0e6d2a4b57
   handle: research/scale-scoped-policy
-  conforms_to: udlm/0.1
+  conforms_to: udlm/1.0
   name: A policy scoped to an operation the model does not name
   description: Deliberately wrong (must-reject). Copies the EU residency policy, scoped to initial_provisioning and scale.
   version: 1.0.0

@@ -3,15 +3,15 @@
 # Supersedes the prior record of this state (named in `supersedes`): re-bound to the requested record that carries the dispatch receipt.
 record_type: realized_record
 state: Realized
-record_uuid: 01a178b9-d8c0-7008-8008-000000000008
-requested_ref: 01a178b9-cd08-7005-8005-000000000005
-requested_ref_head: sha256:53d6fe5884e96c6514ef8a574a9cfcac4ba89948414108346ef3bdaec1803437
+record_uuid: 01a1a8c2-7acd-702d-802d-00000000002d
+requested_ref: 01a1a8c2-7ad8-702e-802e-00000000002e
+requested_ref_head: sha256:7232bf9fa156c3daffb3ff5456049e1084c6e9cbe90d4720a92b318aec66deff
 entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Machine.VM
 type_version: 2.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Machine.VM/2.0.0
 handle: lab/vm/app-01
 generation: 1
 origin: declared
@@ -148,8 +148,8 @@ provenance:
       sequence: 1
       timestamp: '2026-09-03T14:03:40Z'
 supersedes:
-  - 01a17249-ce50-7002-8002-00d15c000002
+  - 01a178b9-d8c0-7008-8008-000000000008
 integrity:
-  head: sha256:23e6cf3ce315f6f81058589eb090ade72d7ac1a1640e0bcfd8e37ac3b2be888a
-  previous: sha256:141e4a6dc2bfcfa0e178818e0cf00962711084597b8ac9cf90247c61276bc544
+  head: sha256:246ffb1c83950ec309eb96d66687f9b27184e70e12c22532870ecf9b0ada1f3f
+  previous: sha256:23e6cf3ce315f6f81058589eb090ade72d7ac1a1640e0bcfd8e37ac3b2be888a
   algorithm: sha256_jcs

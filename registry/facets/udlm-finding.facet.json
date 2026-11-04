@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/facets/udlm-finding.facet.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/facets/udlm-finding.facet.json",
   "title": "udlm_finding — a detected condition, as a sealed interpretation",
   "description": "Drift, tamper, staleness, a missed cadence — represented as a SEALED LEDGER INTERPRETATION with a lifecycle, never as a field on the working record (ADR-060).\n\nWHY NOT A FIELD ON THE RECORD. A finding is an INTERPRETATION: someone compared two things and concluded something. Storing `drift: true` on the record mixes a fact with a judgment about the fact, and then cannot answer who concluded it, when, or on what evidence. It would also be a stored derivable and a lineage claim in the state store — both of which the claims discipline forbids (ADR-059).\n\nCURRENT STATUS IS DERIVED ON READ, ALWAYS. A finding says 'was detected'; it never says 'is drifted'. Asking a finding for current status is asking a historical record a present-tense question, and it will answer confidently and wrongly the moment the condition clears.\n\nTHE LEDGER HOLDS THE WHOLE STORY AS ONE CITATION WALK: divergence version -> finding -> disposition -> resolution version.",
   "type": "object",
@@ -21,7 +21,7 @@
     "_schemaURL": {
       "type": "string",
       "format": "uri",
-      "const": "https://udlm.dev/registry/udlm/0.1/facets/udlm-finding.facet.json",
+      "const": "https://udlm.dev/registry/udlm/1.0/facets/udlm-finding.facet.json",
       "description": "OpenLineage: the schema defining this facet. Pinned to this file."
     },
     "finding_class": {

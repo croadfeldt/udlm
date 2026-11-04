@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/finding-routing-record.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/finding-routing-record.schema.json",
   "title": "UDLM Finding-Routing Record (a contradicted compatibility claim, routed upstream)",
   "description": "Carries a contradicted compatibility claim from an organization's estate back to the registry. The registry classified a change compatible; the organization's typed-output diff (its intent corpus compiled against pinned and candidate revisions) came back dirty. Promotion is refused (ADR-046 Decision 4), but the defect is upstream, in the classifier. It names output NAMES and change kinds, never realized values, and identifies the estate by an opaque self-minted reference (ADR-041's information firewall). The ESCALATE disposition's carrier (surface/decide/enable; docs/design/operational-response-matrix.md).",
   "type": "object",

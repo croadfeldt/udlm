@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Automation/1.3.1
-conforms_to: udlm/0.1
+$id: https://udlm.dev/registry/udlm/1.0/class/Automation/1.3.2
+conforms_to: udlm/1.0
 uuid: 90de377f-8c9f-4a03-8f11-8f72eabb90a4
 record_type: class
 class: base
 resource_type: Automation
-version: 1.3.1
+version: 1.3.2
 family: Process
 status: active
 outputs_exempt: 'an Automation is a definition; the run is a Job record and the Job carries the outputs'

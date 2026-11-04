@@ -11,7 +11,7 @@ record:
   record_type: composition
   uuid: 4b7d2c19-5e83-4a6f-9c10-2d8f4e6a7b31
   handle: cexample/compositions/phantom-promotion
-  conforms_to: udlm/0.1
+  conforms_to: udlm/1.0
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
   state: canonical
   promoted_to: udlm://class/Template.Application.NeverMinted

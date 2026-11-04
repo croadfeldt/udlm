@@ -1,0 +1,26 @@
+# OVERLAY — specializes the base for one data center + rack. It sets ONLY what deviates; every other
+# field is inherited from the base at assembly. Higher precedence_class (intermediate > base) wins
+# field-by-field, so network_mtu here overrides the base's 1500.
+record_type: layer
+uuid: d1a59602-2415-4121-89e5-79a115ec5b09
+supersedes:
+  - a1b2c3d4-2222-4a22-9b33-c4d5e6f70022
+handle: intermediate/dc-alpha/rack-a12
+conforms_to: udlm/1.0
+name: DC-Alpha rack A12 overlay
+description: Data-center / rack deviations over the standard rack base — jumbo frames + a rack-local segment.
+version: 1.0.1
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: intermediate
+precedence_class: intermediate
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: per_profile
+narrow_only: false
+fields:
+  network_mtu: 9000                    # jumbo frames in this DC — overrides the base 1500
+  management_segment: 192.0.2.128/25   # rack-local segment
+  rack_id: dc-alpha/rack-a12

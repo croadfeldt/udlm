@@ -1,12 +1,12 @@
 record_type: intent_record
 state: Intent
 entity_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
-record_uuid: 01a0ee2f-364d-75a5-9861-1ec47ea0b689
+record_uuid: 01a1a8c2-79ce-7000-8000-000000000000
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Volume
 type_version: 0.12.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Volume/0.12.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Volume/0.12.0
 handle: cexample/storage/orders-data
 at: '2026-08-10T09:00:00Z'
 time_source: authored example — no clock claim
@@ -17,17 +17,17 @@ fields:
   capacity: 500Gi
   access_mode: read_write_once
 supersedes:
-  - 01a09385-cad9-72da-a308-da5b40f056be
+  - 01a0ee2f-364d-75a5-9861-1ec47ea0b689
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
-record_uuid: 01a112d4-3de9-7588-9e9e-ee579f1d60d0
+record_uuid: 01a1a8c2-79d1-7001-8001-000000000001
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Volume
 type_version: 0.12.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Volume/0.12.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Volume/0.12.0
 handle: cexample/storage/orders-data
 at: '2026-08-10T09:00:00Z'
 time_source: authored example — no clock claim
@@ -41,8 +41,8 @@ dispatch:
   admitted: []
   granted: []
   stripped: []
-intent_ref: 01a0ee2f-364d-75a5-9861-1ec47ea0b689
-root_request_uuid: 01a112d4-3de9-7588-9e9e-ee579f1d60d0
+intent_ref: 01a1a8c2-79ce-7000-8000-000000000000
+root_request_uuid: 01a1a8c2-79d1-7001-8001-000000000001
 status:
   state: pending
   conditions:
@@ -51,17 +51,19 @@ status:
       reason: no pool in this zone can satisfy 500Gi, and none is planned
       last_transition_time: '2026-08-10T09:00:05Z'
 supersedes:
-  - 01a0ee2f-364d-75a5-9861-1ec5cb61cd53
+  - 01a112d4-3de9-7588-9e9e-ee579f1d60d0
 ---
 record_type: intent_record
 state: Intent
 entity_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
-record_uuid: 01a09385-cad9-72da-a308-da5dba42d6c4
+record_uuid: 01a1a8c2-79d3-7002-8002-000000000002
+supersedes:
+  - 01a09385-cad9-72da-a308-da5dba42d6c4
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Container
 type_version: 0.7.3
-type_ref: https://udlm.dev/registry/udlm/0.1/Container/0.7.3
+type_ref: https://udlm.dev/registry/udlm/1.0/Container/0.7.3
 handle: cexample/app/orders-api
 at: '2026-08-10T09:00:00Z'
 time_source: authored example — no clock claim
@@ -74,12 +76,12 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
-record_uuid: 01a178b9-c150-7002-8002-000000000002
+record_uuid: 01a1a8c2-79d7-7003-8003-000000000003
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Container
 type_version: 0.7.3
-type_ref: https://udlm.dev/registry/udlm/0.1/Container/0.7.3
+type_ref: https://udlm.dev/registry/udlm/1.0/Container/0.7.3
 handle: cexample/app/orders-api
 at: '2026-08-10T09:00:00Z'
 time_source: authored example — no clock claim
@@ -92,8 +94,8 @@ dispatch:
   admitted: []
   granted: []
   stripped: []
-intent_ref: 01a09385-cad9-72da-a308-da5dba42d6c4
-root_request_uuid: 01a178b9-c150-7002-8002-000000000002
+intent_ref: 01a1a8c2-79d3-7002-8002-000000000002
+root_request_uuid: 01a1a8c2-79d7-7003-8003-000000000003
 dependencies:
   - edge_type: depends_on
     strength: hard
@@ -109,18 +111,18 @@ status:
       blocked_on: udlm://estate/cexample/storage/orders-data
       last_transition_time: '2026-08-10T09:00:06Z'
 supersedes:
-  - 01a112d4-3de9-7588-9e9e-ee58b3272517
+  - 01a178b9-c150-7002-8002-000000000002
 
 ---
 record_type: intent_record
 state: Intent
 entity_uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
-record_uuid: 01a0ee84-c436-7483-a79e-c50fdae7e8a7
+record_uuid: 01a1a8c2-79d9-7004-8004-000000000004
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Workload
 type_version: 0.9.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Workload/0.9.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Workload/0.9.0
 handle: cexample/app/orders
 at: '2026-08-10T09:00:00Z'
 time_source: authored example — no clock claim
@@ -129,17 +131,17 @@ metadata:
 origin: backfilled
 fields: {}
 supersedes:
-  - 01a09385-cad9-72da-a308-da5f4335b1e4
+  - 01a0ee84-c436-7483-a79e-c50fdae7e8a7
 ---
 record_type: requested_record
 state: Requested
 entity_uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
-record_uuid: 01a178b9-c538-7003-8003-000000000003
+record_uuid: 01a1a8c2-79dc-7005-8005-000000000005
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Workload
 type_version: 0.9.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Workload/0.9.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Workload/0.9.0
 handle: cexample/app/orders
 at: '2026-08-10T09:00:00Z'
 time_source: authored example — no clock claim
@@ -151,8 +153,8 @@ dispatch:
   admitted: []
   granted: []
   stripped: []
-intent_ref: 01a0ee84-c436-7483-a79e-c50fdae7e8a7
-root_request_uuid: 01a178b9-c538-7003-8003-000000000003
+intent_ref: 01a1a8c2-79d9-7004-8004-000000000004
+root_request_uuid: 01a1a8c2-79dc-7005-8005-000000000005
 dependencies:
   - edge_type: depends_on
     strength: hard
@@ -168,4 +170,4 @@ status:
       blocked_on: udlm://estate/cexample/app/orders-api
       last_transition_time: '2026-08-10T09:00:07Z'
 supersedes:
-  - 01a112d4-3de9-7588-9e9e-ee59704b732c
+  - 01a178b9-c538-7003-8003-000000000003

@@ -1,0 +1,27 @@
+# A consuming layer that BINDS the governed network zone BY REFERENCE, not by copying its fields.
+# The `network_zone` field is a data reference (UDLM ADR-012), written as a URF string (identifier-scheme
+# §9): the uuid path resolves the target, the @pin names the immutable version, and the
+# `reference_data_type` query term declares the kind the target must be. registry/tools/validate.py
+# (check_data_references) fails this record if the uuid does not resolve to an ACTIVE reference_data layer,
+# if the resolved kind differs, or if the pin names a version other than the resolved one.
+record_type: layer
+uuid: 8474f146-e677-49db-8c63-dc9b326f3d36
+handle: intermediate/app-tier/network-binding
+conforms_to: udlm/1.0
+name: App-tier network binding
+description: Intermediate overlay that binds the app tier to a governed network zone by reference, so
+  the zone's definition lives in exactly one place.
+version: 2.0.1
+supersedes:
+  - 10e5d911-2ce6-49e4-aca2-e0d65593d7fd
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: intermediate
+precedence_class: intermediate
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: per_profile
+fields:
+  network_zone: uuid/b7a3f0c1-1010-4d20-8a40-0f1e2d3c4b50@1.0.0?reference_data_type==network_zone

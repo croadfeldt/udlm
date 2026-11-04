@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/facets/udlm-working-copy.facet.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/facets/udlm-working-copy.facet.json",
   "title": "udlm_workingCopy — the sealed copy of the record",
   "description": "The working record as it stood at the change, plus its resource-chain head. This is what makes a seal self-contained evidence rather than a pointer to state that may since have moved.\n\nTHE BRIDGE IS ONE-WAY, AND THE DIRECTION IS THE DESIGN. The seal embeds the record; the record never references the seal. So an operation never has to reach the ledger to proceed — records are unbounded in lifetime and compliance storage is not, and a dependency the other way would make every write contingent on a store that may be unreachable or aged out (ADR-059).\n\nEMBEDDED, NOT REFERENCED, for the reason a receipt shows the amount rather than a link to the till: verification must be possible from the seal alone, by someone with no access to the live estate.",
   "type": "object",
@@ -19,7 +19,7 @@
     "_schemaURL": {
       "type": "string",
       "format": "uri",
-      "const": "https://udlm.dev/registry/udlm/0.1/facets/udlm-working-copy.facet.json",
+      "const": "https://udlm.dev/registry/udlm/1.0/facets/udlm-working-copy.facet.json",
       "description": "OpenLineage: the schema defining this facet. Pinned to this file — a facet whose schema URL points elsewhere is a different facet wearing the same name, and the name is all a consumer has to go on."
     },
     "record": {

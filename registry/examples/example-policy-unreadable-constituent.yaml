@@ -22,12 +22,12 @@
 record_type: policy
 uuid: d9557af3-b2ef-4d21-b26d-fd2f14c68d6f
 handle: unreadable-constituent-gate
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 name: Refuse an order whose parts the consumer could not see
 description: >-
   Validation policy — a composition with any constituent the requesting actor could not read is
   refused before it is ordered, and the refusal names the parts. Worked example (cexample content).
-version: 1.0.0
+version: 1.0.1
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 status: {state: active}
 policy_type: validation

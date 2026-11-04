@@ -20,9 +20,9 @@ Each schema is registered under all three forms a `$ref` can arrive as:
   - its **file URI** — what a relative `../../common-elements.schema.json` ref resolves to;
   - its declared **`$id`** — what the absolute form resolves to, and the one that actually hits when
     the referring schema has an `$id` of its own (the base is the referrer's `$id`, not its path);
-  - the **versioned** `https://udlm.dev/registry/udlm/0.1/<name>` form, because `catalog-item`'s
-    `$id` carries a `/udlm/0.1/` segment its siblings do not, so a relative ref *from* it lands in
-    that directory.
+  - the **versioned** `https://udlm.dev/registry/udlm/<spec>/<name>` forms (`1.0` today; `0.1`
+    kept for records that still carry it), because a schema `$id` can carry a spec segment its
+    siblings do not, so a relative ref *from* it lands in that directory.
 """
 import json
 import pathlib
@@ -42,7 +42,8 @@ def build_store():
         if isinstance(doc.get("$id"), str):
             store[doc["$id"]] = doc
         store[f"https://udlm.dev/registry/{p.name}"] = doc
-        store[f"https://udlm.dev/registry/udlm/0.1/{p.name}"] = doc
+        for spec in ("1.0", "0.1"):
+            store[f"https://udlm.dev/registry/udlm/{spec}/{p.name}"] = doc
     return store
 
 

@@ -12,9 +12,9 @@ record:
   record_uuid: 01a0c3d4-e5f6-7a1b-8c2d-3e4f5a6b7c8d
   intent_ref: 01a0c3d4-e5f6-7a1b-8c2d-3e4f5a6b7c8c
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-  conforms_to: udlm/0.1
+  conforms_to: udlm/1.0
   resource_type: Machine.VM
-  type_version: 2.0.0
+  type_version: 2.4.2
   at: '2026-09-28T11:00:00Z'
   time_source: authored example — no clock claim
   fields:

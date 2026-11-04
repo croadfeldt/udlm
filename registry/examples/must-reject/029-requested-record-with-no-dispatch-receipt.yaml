@@ -8,15 +8,15 @@ record:
   record_type: requested_record
   state: Requested
   record_uuid: 01a2e7d0-0000-7000-8000-000000000029
-  intent_ref: 01a178b9-bd68-7001-8001-000000000001
+  intent_ref: 01a1a8c2-7ac2-702c-802c-00000000002c
   intent_ref_head: sha256:b693a7748df16fcac9ca0b90e4e578d942e49ca5453b34ab7c078280e8d018c5
-  root_request_uuid: 01a178b9-cd08-7005-8005-000000000005
+  root_request_uuid: 01a1a8c2-7ad8-702e-802e-00000000002e
   entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-  conforms_to: udlm/0.1
+  conforms_to: udlm/1.0
   resource_type: Machine.VM
-  type_version: 2.0.0
-  type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0
+  type_version: 2.4.2
+  type_ref: https://udlm.dev/registry/udlm/1.0/Machine.VM/2.4.2
   handle: lab/vm/app-01
   generation: 1
   origin: declared

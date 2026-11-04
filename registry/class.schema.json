@@ -5,8 +5,8 @@
   "description": "Meta-schema for a Class artifact (registry/classes/*.yaml), the authoring layer of the scoped Class hierarchy (ADR-038). It carries the FULL definition surface — elements, outputs, relationships (consumer-declared), immutable, adopts, and (type tier) context — so the compiled flat spec is complete (#323). It composes SharedDataElements (`$defs.shared_data_element`) at one tier, Base (`Machine`), Type (`Machine.VM`) or Provider (`Machine.VM.OCPVirt`), and `extends` its parent under the Liskov invariant: add or refine, never contradict. Scope position IS portability (ADR-038 §3): `portability` is derived, not asserted.",
   "examples": [
     {
-      "$id": "https://udlm.dev/registry/udlm/0.1/class/Machine.VM.OCPVirt/1.0.0",
-      "conforms_to": "udlm/0.1",
+      "$id": "https://udlm.dev/registry/udlm/1.0/class/Machine.VM.OCPVirt/1.0.0",
+      "conforms_to": "udlm/1.0",
       "uuid": "2677e25f-bce5-4ec6-9302-f6346edfc4a7",
       "record_type": "class",
       "class": "provider",
@@ -187,8 +187,8 @@
       ]
     },
     {
-      "$id": "https://udlm.dev/registry/udlm/0.1/class/Machine.WebStack/1.0.0",
-      "conforms_to": "udlm/0.1",
+      "$id": "https://udlm.dev/registry/udlm/1.0/class/Machine.WebStack/1.0.0",
+      "conforms_to": "udlm/1.0",
       "uuid": "3f8be9a1-6c02-4d17-9e44-8a10b5c7d200",
       "record_type": "class",
       "class": "type",

@@ -1,12 +1,14 @@
 record_type: intent_record
 state: Intent
 entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
-record_uuid: 01a09385-cabc-718b-a328-0cd96a00da64
+record_uuid: 01a1a8c2-7a75-7015-8015-000000000015
+supersedes:
+  - 01a09385-cabc-718b-a328-0cd96a00da64
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Grouping
 type_version: 0.2.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Grouping/0.2.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Grouping/0.2.0
 handle: org/resource-group/example-orders-deployment
 at: '2026-08-06T00:00:00Z'
 time_source: authored example — no clock claim
@@ -20,12 +22,12 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
-record_uuid: 01a0f335-68a6-761a-bf1c-62de9826e9cd
+record_uuid: 01a1a8c2-7a77-7016-8016-000000000016
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Grouping
 type_version: 0.2.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Grouping/0.2.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Grouping/0.2.0
 handle: org/resource-group/example-orders-deployment
 at: '2026-08-06T00:00:00Z'
 time_source: authored example — no clock claim
@@ -40,20 +42,20 @@ dispatch:
     - membership_criterion
   granted: []
   stripped: []
-intent_ref: 01a09385-cabc-718b-a328-0cd96a00da64
-root_request_uuid: 01a0f335-68a6-761a-bf1c-62de9826e9cd
+intent_ref: 01a1a8c2-7a75-7015-8015-000000000015
+root_request_uuid: 01a1a8c2-7a77-7016-8016-000000000016
 supersedes:
-  - 01a0eb4f-c3f8-7098-9d8d-5f262c54457c
+  - 01a0f335-68a6-761a-bf1c-62de9826e9cd
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
-record_uuid: 01a0f335-68a6-761a-bf1c-62dffd6458b6
+record_uuid: 01a1a8c2-7a7a-7017-8017-000000000017
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Grouping
 type_version: 0.2.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Grouping/0.2.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Grouping/0.2.0
 handle: org/resource-group/example-orders-deployment
 at: '2026-08-06T00:00:00Z'
 time_source: authored example — no clock claim
@@ -63,7 +65,7 @@ metadata:
 fields:
   membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
 outputs: {}
-requested_ref: 01a0f335-68a6-761a-bf1c-62de9826e9cd
+requested_ref: 01a1a8c2-7a77-7016-8016-000000000016
 provider: estate/control-plane
 supersedes:
-  - 01a0eb4f-c3f8-7098-9d8d-5f273b8bd7db
+  - 01a0f335-68a6-761a-bf1c-62dffd6458b6

@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNodePool/1.2.1
-conforms_to: udlm/0.1
+$id: https://udlm.dev/registry/udlm/1.0/class/KubernetesNodePool/1.2.2
+conforms_to: udlm/1.0
 uuid: ff7f0b01-d451-4aed-89da-83117923820f
 record_type: class
 class: base
 resource_type: KubernetesNodePool
 short_name: K8sNodePool
-version: 1.2.1
+version: 1.2.2
 family: Resource
 status: active
 filed_under:

@@ -10,7 +10,7 @@ record:
   record_type: class
   uuid: 2ad4f168-9b73-4c05-8e21-6f37b9a0d4c5
   handle: acme/ouroboros-stack
-  conforms_to: udlm/0.1
+  conforms_to: udlm/1.0
   resource_type: Template.Application.AcmeOuroboros
   class: provider
   parent: Template.Application

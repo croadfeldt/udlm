@@ -1,11 +1,11 @@
 record_type: decision_record
-uuid: 1bd1f415-eb6f-4d04-8a9f-c39ef2df1377
+uuid: eacf5fbd-524d-4b3f-83e5-5fa8fd7d85e8
 supersedes:
-- 7d3e180f-dec2-4e0a-9f2d-809c49256431
+  - 1bd1f415-eb6f-4d04-8a9f-c39ef2df1377
 handle: adr-example-001
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 title: Adopt RFC 9562 UUIDv4 as the universal identity primitive
-version: 1.0.1
+version: 1.0.2
 scope: architecture
 rationale: Every entity, record, and reference needs one stable, collision-free identity. RFC 9562 v4
   (CSPRNG) carries no correlatable structure and needs no coordination to mint. Worked example (example.com

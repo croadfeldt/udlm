@@ -1,12 +1,14 @@
 record_type: intent_record
 state: Intent
 entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
-record_uuid: 01a09385-caa0-7144-936d-bc6ca95177a2
+record_uuid: 01a1a8c2-7ada-702f-802f-00000000002f
+supersedes:
+  - 01a09385-caa0-7144-936d-bc6ca95177a2
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Machine.VM
 type_version: 1.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0
+type_ref: https://udlm.dev/registry/udlm/1.0/class/Machine.VM.CExampleCloud/1.0.0
 handle: cexample/web01
 at: '2026-08-07T09:14:02Z'
 time_source: dcm-api
@@ -21,12 +23,12 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
-record_uuid: 01a0f335-686f-75fb-adad-2138db1277a4
+record_uuid: 01a1a8c2-7ade-7030-8030-000000000030
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Machine.VM
 type_version: 1.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0
+type_ref: https://udlm.dev/registry/udlm/1.0/class/Machine.VM.CExampleCloud/1.0.0
 handle: cexample/web01
 at: '2026-08-07T09:14:06Z'
 time_source: dcm-api
@@ -47,10 +49,10 @@ dispatch:
     - memory.size
   granted: []
   stripped: []
-intent_ref: 01a09385-caa0-7144-936d-bc6ca95177a2
-root_request_uuid: 01a0f335-686f-75fb-adad-2138db1277a4
+intent_ref: 01a1a8c2-7ada-702f-802f-00000000002f
+root_request_uuid: 01a1a8c2-7ade-7030-8030-000000000030
 supersedes:
-  - 01a0eb4f-c4a8-747d-8345-24a5269b31bd
+  - 01a0f335-686f-75fb-adad-2138db1277a4
 provenance:
   instance_family:
     - source:
@@ -77,12 +79,12 @@ provenance:
 record_type: realized_record
 state: Realized
 entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
-record_uuid: 01a0f335-686f-75fb-adad-2139abbbc2d9
+record_uuid: 01a1a8c2-7ae2-7031-8031-000000000031
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Machine.VM
 type_version: 1.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0
+type_ref: https://udlm.dev/registry/udlm/1.0/class/Machine.VM.CExampleCloud/1.0.0
 handle: cexample/web01
 at: '2026-08-07T09:15:31Z'
 time_source: provider-callback
@@ -99,13 +101,13 @@ fields:
 outputs:
   instance_id: cexample-i-0a1b2c3d
   power_state: running
-requested_ref: 01a0f335-686f-75fb-adad-2138db1277a4
+requested_ref: 01a1a8c2-7ade-7030-8030-000000000030
 provider: cexample-cloud
 sovereignty:
   zone: eu-west
   classification: restricted
 supersedes:
-  - 01a0eb4f-c4a8-747d-8345-24a628733a68
+  - 01a0f335-686f-75fb-adad-2139abbbc2d9
 provenance:
   outputs.instance_id:
     - source:

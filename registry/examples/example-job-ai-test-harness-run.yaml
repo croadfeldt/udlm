@@ -1,12 +1,12 @@
 record_type: requested_record
 state: Requested
 entity_uuid: 9c4e2b7a-1d3f-4a5b-8c6d-0e1f2a3b4c5d
-record_uuid: 01a163b2-7c20-7004-8004-000000000004
+record_uuid: 01a1a8c2-7a08-700c-800c-00000000000c
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Job
 type_version: 1.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Job/1.0.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Job/1.0.0
 handle: cexample/jobs/ai-test-harness-run-76a3fa863e76
 at: '2026-09-13T12:00:00Z'
 time_source: example clock, NTP-synced
@@ -44,21 +44,21 @@ dispatch:
     - trigger
   granted: []
   stripped: []
-intent_ref: 01a163b2-6c80-7000-8000-000000000000
-root_request_uuid: 01a163b2-7c20-7004-8004-000000000004
+intent_ref: 01a1a8c2-7a1b-700e-800e-00000000000e
+root_request_uuid: 01a1a8c2-7a08-700c-800c-00000000000c
 supersedes:
-  - 01a0f335-67f3-76a5-ad67-db6540dab08b
+  - 01a163b2-7c20-7004-8004-000000000004
 
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 9c4e2b7a-1d3f-4a5b-8c6d-0e1f2a3b4c5d
-record_uuid: 01a19cfd-2fe8-7001-8001-000000000001
+record_uuid: 01a1a8c2-7a18-700d-800d-00000000000d
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Job
 type_version: 1.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Job/1.0.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Job/1.0.0
 handle: cexample/jobs/ai-test-harness-run-76a3fa863e76
 at: '2026-09-13T13:17:27Z'
 time_source: example clock, NTP-synced
@@ -82,7 +82,7 @@ fields:
   max_execution_time: PT3H
   on_max_exceeded: terminate
   trigger: manual
-requested_ref: 01a163b2-7c20-7004-8004-000000000004
+requested_ref: 01a1a8c2-7a08-700c-800c-00000000000c
 provider: cexample/providers/ai-test-harness
 outputs:
   started_at: '2026-09-13T12:00:04Z'
@@ -114,7 +114,7 @@ process:
       effect_type: read
       effect_description: downloaded and ran the package in a sealed sandbox on two versions
 supersedes:
-  - 01a178b9-d0f0-7006-8006-000000000006
+  - 01a19cfd-2fe8-7001-8001-000000000001
 provenance:
   outputs.started_at:
     - source:
@@ -250,21 +250,21 @@ provenance:
       sequence: 1
       timestamp: '2026-09-13T13:17:27Z'
 integrity:
-  head: sha256:fbe1c3057813e6167604e464b3e04b29a1bb7c817803114062668187e394c366
-  previous: sha256:ea016cfeba215db0daefaa827ade0718306e4f6d17f23c14c347b20fa1611525
+  head: sha256:1e56214a996fe3265c4a1fecfde43e6aba145f980771405b1e8670dbfb0cc779
+  previous: sha256:fbe1c3057813e6167604e464b3e04b29a1bb7c817803114062668187e394c366
   algorithm: sha256_jcs
 ---
 record_type: intent_record
 state: Intent
-record_uuid: 01a163b2-6c80-7000-8000-000000000000
+record_uuid: 01a1a8c2-7a1b-700e-800e-00000000000e
 supersedes:
-  - 01a09a0a-123e-700a-a00a-0e5f3a2b1c57
+  - 01a163b2-6c80-7000-8000-000000000000
 entity_uuid: 9c4e2b7a-1d3f-4a5b-8c6d-0e1f2a3b4c5d
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: Job
 type_version: 1.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Job/1.0.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Job/1.0.0
 handle: cexample/jobs/ai-test-harness-run-76a3fa863e76
 at: '2026-09-13T12:00:00Z'
 time_source: example clock, NTP-synced

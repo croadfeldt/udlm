@@ -22,18 +22,17 @@ record_type: vocabulary_term
 # published record is never edited (ADR-051) — and this is the model's own mechanism, the
 # one the reference-data corpus already demonstrates: the resolver follows `supersedes`,
 # so a consumer pinned to the old record still resolves and is marked impacted (DCM ADR-012 #2 — impact cascades up the reference graph).
-uuid: 35ee3c49-5103-4f2c-abae-93f4416f22eb
+uuid: 5c9a677a-760e-44c8-a66e-77f8a21b122d
 supersedes:
-  - 7d21e6b8-0c93-4f57-8a6d-b41e39c05a72   # the 2.0.0 record, whose `scope` named the class by its former name (Compute -> Machine, ADR-068)
-  - bae49d04-7924-4cf5-8f22-24d01091c609   # the retired `layer_type: reference_data` record
+  - 35ee3c49-5103-4f2c-abae-93f4416f22eb
 handle: platform/storage-tiers/performance
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 name: Storage tier — performance
 description: Governed definition of the 'performance' storage tier — the shared source of truth for its SLA floor.
 # MAJOR: the shape changed. The FLOOR did not — a consumer reading `min_iops`
 # gets the same promise — but the record a resolver receives is a different shape, and the
 # publish law is about what a consumer receives, not about what the author intended.
-version: 2.0.1
+version: 2.0.2
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 status:
   state: active

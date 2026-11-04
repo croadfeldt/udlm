@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/conformance-declaration.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/1.0/conformance-declaration.schema.json",
   "title": "UDLM Conformance Declaration",
   "description": "The declaration an implementation publishes at /.well-known/udlm/conformance (CONFORMANCE.md §4). WIR-035 requires a declaration to match this schema. Transcribed from §4.1's example and §4.2's field-semantics table, which agree on all thirteen top-level fields. Where the two documents state nothing — the shape of the nested objects, and which interop surfaces exist — this schema deliberately does NOT invent a constraint. Those are recorded as open in the issue that produced it, because a schema that guesses becomes the requirement.",
   "type": "object",

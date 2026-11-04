@@ -1,14 +1,14 @@
 record_type: intent_record
 state: Intent
 entity_uuid: 52e4eb99-c7c2-4d52-a062-fff06a125b24
-record_uuid: 01a17280-c0b8-7003-8003-00050e000003
+record_uuid: 01a1a8c2-7a8f-701f-801f-00000000001f
 supersedes:
-  - 01a09385-caeb-71ab-ba43-94f9cfa401a8
+  - 01a17280-c0b8-7003-8003-00050e000003
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: SovereigntyZone
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/SovereigntyZone/0.1.0
 handle: us-mn-sovereign
 at: '2026-10-25T10:00:00Z'
 time_source: authored example — no clock claim
@@ -23,12 +23,12 @@ fields:
 record_type: requested_record
 state: Requested
 entity_uuid: 52e4eb99-c7c2-4d52-a062-fff06a125b24
-record_uuid: 01a17280-c4a0-7004-8004-00050e000004
+record_uuid: 01a1a8c2-7a92-7020-8020-000000000020
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: SovereigntyZone
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/SovereigntyZone/0.1.0
 handle: us-mn-sovereign
 at: '2026-10-25T10:00:00Z'
 time_source: authored example — no clock claim
@@ -44,21 +44,21 @@ dispatch:
     - jurisdictions
   granted: []
   stripped: []
-intent_ref: 01a17280-c0b8-7003-8003-00050e000003
-root_request_uuid: 01a17280-c4a0-7004-8004-00050e000004
+intent_ref: 01a1a8c2-7a8f-701f-801f-00000000001f
+root_request_uuid: 01a1a8c2-7a92-7020-8020-000000000020
 supersedes:
-  - 01a0f335-68c9-7792-b99d-6d3c58b02d06
+  - 01a17280-c4a0-7004-8004-00050e000004
 
 ---
 record_type: realized_record
 state: Realized
 entity_uuid: 52e4eb99-c7c2-4d52-a062-fff06a125b24
-record_uuid: 01a17280-c888-7005-8005-00050e000005
+record_uuid: 01a1a8c2-7a94-7021-8021-000000000021
 tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 resource_type: SovereigntyZone
 type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/SovereigntyZone/0.1.0
 handle: us-mn-sovereign
 at: '2026-10-25T10:00:00Z'
 time_source: authored example — no clock claim
@@ -69,7 +69,7 @@ fields:
   jurisdictions:
     - US-MN
 outputs: {}
-requested_ref: 01a17280-c4a0-7004-8004-00050e000004
+requested_ref: 01a1a8c2-7a92-7020-8020-000000000020
 provider: estate/control-plane
 supersedes:
-  - 01a0f335-68c9-7792-b99d-6d3da296e21a
+  - 01a17280-c888-7005-8005-00050e000005

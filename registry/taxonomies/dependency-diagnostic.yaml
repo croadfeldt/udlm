@@ -20,7 +20,7 @@
 # moment they are asked for. A stored diagnostic is a claim about a graph that has since changed —
 # which is why there is no `UnmetDependency` record type here, only the vocabulary a computation
 # emits and a policy matches on.
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 term_type: TaxonomyTerm
 root: dependency_diagnostic
 

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/PowerFeed/0.10.0
-conforms_to: udlm/0.1
+$id: https://udlm.dev/registry/udlm/1.0/class/PowerFeed/0.10.1
+conforms_to: udlm/1.0
 uuid: e1cdf697-ec3d-4208-8e62-ef1c88ba7a31
 record_type: class
 class: base
 resource_type: PowerFeed
-version: 0.10.0
+version: 0.10.1
 family: Resource
 status: active
 outputs_exempt: 'a feed publishes nothing of its own; a UPS feed''s status, charge and runtime are the UPS''s outputs, read through `supplied_by` (row 116)'

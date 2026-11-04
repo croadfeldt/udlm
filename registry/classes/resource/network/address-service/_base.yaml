@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/AddressService/0.8.2
-conforms_to: udlm/0.1
+$id: https://udlm.dev/registry/udlm/1.0/class/AddressService/0.8.3
+conforms_to: udlm/1.0
 uuid: 2d2100a1-3813-4f01-8b55-12389cec51cc
 record_type: class
 class: base
 resource_type: AddressService
-version: 0.8.2
+version: 0.8.3
 family: Resource
 status: active
 filed_under:

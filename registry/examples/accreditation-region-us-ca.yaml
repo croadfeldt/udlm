@@ -3,10 +3,10 @@
 # whole capability, any version); the cluster capability is deliberately absent, so it has no region
 # attestation. governance/accreditation-and-authorization-matrix.md §3.3/§3.3.1.
 record_type: accreditation
-uuid: 953201dd-571d-4434-a345-56f0078d2860
+uuid: 20631f0e-0aad-41ba-8acf-89badc6dc089
 handle: accreditations/providers/full-stack-sp/region-us-ca
-conforms_to: udlm/0.1
-version: 1.0.0
+conforms_to: udlm/1.0
+version: 1.0.1
 subject_uuid: ee72f521-a06d-41ec-82c7-dfac5cd1bb09    # full-stack-sp — match axis 1 (provider)
 subject_type: service_provider
 accreditation_type: sovereign_authorization

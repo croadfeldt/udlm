@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/IdentityEscrow/0.5.1",
-  "conforms_to": "udlm/0.1",
+  "$id": "https://udlm.dev/registry/udlm/1.0/IdentityEscrow/0.5.2",
+  "conforms_to": "udlm/1.0",
   "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b",
   "resource_type": "IdentityEscrow",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "IdentityEscrow",
-          "version": "0.5.1",
+          "version": "0.5.2",
           "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b"
         }
       ]

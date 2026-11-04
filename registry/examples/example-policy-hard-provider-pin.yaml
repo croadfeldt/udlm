@@ -19,12 +19,12 @@
 record_type: policy
 uuid: 5e91c73a-2f48-4b60-8d15-7a03c9e26418
 handle: hard-provider-pin-gate
-conforms_to: udlm/0.1
+conforms_to: udlm/1.0
 name: A hard provider pin is reviewed, not assumed
 description: >-
   Validation policy — a request carrying a hard `provider_preference` is refused unless the consumer
   has acknowledged what it costs. Worked example (cexample content).
-version: 1.0.0
+version: 1.0.1
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 status: {state: active}
 policy_type: validation

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.9.0",
-  "conforms_to": "udlm/0.1",
+  "$id": "https://udlm.dev/registry/udlm/1.0/Volume.ZFS/0.9.1",
+  "conforms_to": "udlm/1.0",
   "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f",
   "resource_type": "Volume.ZFS",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Volume",
-          "version": "0.19.0",
+          "version": "0.19.1",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         },
         {
           "class": "Volume.ZFS",
-          "version": "0.9.0",
+          "version": "0.9.1",
           "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f"
         }
       ]
