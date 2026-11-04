@@ -6,7 +6,7 @@
 #
 # Rejected: marking it with a boolean or an enum on the base class. Either would be a second answer to
 # a question the type name already settles, and two answers can disagree.
-$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Tenant/0.1.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Tenant/0.2.0
 uuid: 6b2f0a71-7d3e-4c58-9a14-2e8b5c03f4d7
 record_type: class
 resource_type: Grouping.Tenant
@@ -14,7 +14,7 @@ class: type
 parent: Grouping
 family: Access
 entity_type: Grouping
-version: 0.1.2
+version: 0.2.0
 conforms_to: udlm/0.1
 status: active
 context:
@@ -39,6 +39,16 @@ context:
     - Every estate record — tenant_uuid resolves here (TEN-001/003, [D3])
     - The governance matrix — isolation obligations are enforced over the derived member set
 elements:
+  - element: membership_criterion
+    scope: Grouping.Tenant
+    state: proposed
+    description: 'Always `estate?tenant_uuid=={self}`. A tenant''s members are the records that state its uuid as their
+      `tenant_uuid`, so tenancy is read from each record, never derived from other fields (#723, explicit tenancy).'
+    schema:
+      type: string
+      const: estate?tenant_uuid=={self}
+      description: 'Always `estate?tenant_uuid=={self}`. A tenant''s members are the records that state its uuid as their
+        `tenant_uuid`, so tenancy is read from each record, never derived from other fields (#723, explicit tenancy).'
   - element: parent_group_uuid
     scope: Grouping.Tenant
     optional: true
