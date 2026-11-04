@@ -9,7 +9,7 @@
 ## What this adds over request-realization
 - **A reference in the payload.** The request binds to an existing capacity source. Placement and reserve must resolve and honor that reference, not just stand up an isolated resource.
 - **Declared properties are the build instruction.** `capacity`, `access_mode` and `reclaim_policy` (`Retain` or `Delete`) are typed elements of `Volume`; the provider builds to them.
-- **One capacity source.** In the class, the source is the `provisioned_by` edge (a `depends_on`) to the `StorageCluster` that provisions the volume; a volume cannot outlive it. The use case names a `StoragePool` as the bound source.
+- **One capacity source.** In the class, the source is the `pool` edge (a `contained_by`) to the `StoragePool` the volume is carved from; it cannot outlive the pool, and its cluster derives from the pool's own `cluster` edge. A volume with no pool names its cluster directly (`provisioned_by`).
 - **Read from the record, not the client.** The bound source and provisioned size are readable from the realized record and its outputs (`volume_handle`, `attached`, `accessible_from`), not inferred client-side.
 
 ## The flow — only what's different
@@ -24,7 +24,7 @@ flowchart TD
 Everything else (assemble, place, enrich, reserve, commit, converge) is request-realization.
 
 ## Success criteria (from the UC)
-- The volume declares a member reference to the pool it binds to; the pool is its single capacity source.
+- The volume declares a `contained_by` edge to the pool it is carved from; the pool is its single capacity source.
 - The provider carves the requested size from the bound pool and the volume reaches Realized.
 - The declared access mode and retain policy are the realized properties, published on the volume's outputs.
 - The bound-pool identity and provisioned size are readable from the volume's declared outputs, not inferred client-side.

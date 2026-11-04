@@ -1072,7 +1072,7 @@ One storage device as a record: its required `capacity` — a whole-number quant
 
 ## StoragePool
 
-### StoragePool (0.7.2)
+### StoragePool (0.8.0)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
@@ -1311,7 +1311,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Volume
 
-### Volume (0.18.1)
+### Volume (0.19.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1335,7 +1335,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - Volume — the volume it replicates (`replica_of`), or the replicas that follow it.
 - Database — databases whose data directory it backs.
 
-### Volume.ZFS (0.8.3)
+### Volume.ZFS (0.9.0)
 
 **Purpose:** Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host workloads use.
 

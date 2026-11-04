@@ -4,7 +4,7 @@ version: 1.0.0
 scenario:
   description: 'A platform engineer requests a persistent Volume — the PVC-like unit an
     application consumes — declaring its size, access mode, and retain policy. The volume binds to
-    capacity from an existing StoragePool via a member reference to that pool; the pool is the
+    capacity from an existing StoragePool by a contained_by edge to that pool (relation pool); the pool is the
     single capacity source the volume draws from. The storage provider carves the requested size
     from the pool, honors the declared access mode and retain policy, and the volume reaches
     Realized with those properties published on its outputs (bound pool, provisioned size, access
@@ -21,7 +21,7 @@ scenario:
   intent: Request a persistent Volume bound to a Pool's capacity and have it realize with its
     declared size, access mode, and retain policy
   success_criteria:
-  - The volume declares a member reference to the pool it binds to; the pool is its single capacity
+  - The volume declares a contained_by edge to the pool it is carved from; the pool is its single capacity
     source
   - The provider carves the requested size from the bound pool and the volume reaches Realized
   - The declared access mode and retain policy are the realized properties, published on the volume's
@@ -39,7 +39,7 @@ scenario:
   profile: standard
   expected_domain_interactions:
   - domain: data
-    interaction: the volume's member reference to the pool is the single home of the binding intent
+    interaction: the volume's contained_by edge to the pool is the single home of the binding intent
   - domain: policy
     interaction: validation confirms the pool has capacity for the requested size before dispatch
   - domain: provider

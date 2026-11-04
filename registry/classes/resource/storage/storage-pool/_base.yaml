@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/StoragePool/0.7.2
+$id: https://udlm.dev/registry/udlm/0.1/class/StoragePool/0.8.0
 conforms_to: udlm/0.1
 uuid: 643156a0-5c7b-4fa7-bcfb-089c0a06d520
 record_type: class
 class: base
 resource_type: StoragePool
-version: 0.7.2
+version: 0.8.0
 family: Resource
 status: active
 filed_under:
@@ -195,7 +195,13 @@ relationships:
     target: Machine.BareMetalHost
     cardinality: 0..1
     name: host
-    description: The host whose drives make up this pool (a pool is host-local).
+    description: The host whose drives make up this pool, when the pool is host-local.
+  - edge_type: contained_by
+    target: StorageCluster
+    cardinality: 0..1
+    name: cluster
+    description: The cluster this pool belongs to, when the pool is clustered. A pool names its host or its cluster;
+      the volumes carved from it derive their cluster from this edge (entity-relationships §5).
 adopts:
   - standard: OpenZFS
     version: 2.x

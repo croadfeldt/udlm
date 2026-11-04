@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.8.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Volume.ZFS/0.9.0",
   "conforms_to": "udlm/0.1",
   "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f",
   "resource_type": "Volume.ZFS",
-  "version": "0.8.3",
+  "version": "0.9.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Volume",
-          "version": "0.18.1",
+          "version": "0.19.0",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         },
         {
           "class": "Volume.ZFS",
-          "version": "0.8.3",
+          "version": "0.9.0",
           "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f"
         }
       ]
@@ -130,12 +130,19 @@
   },
   "relationships": [
     {
+      "edge_type": "contained_by",
+      "target": "StoragePool",
+      "cardinality": "1..1",
+      "name": "pool",
+      "description": "The pool this dataset is carved from; the dataset cannot outlive its pool. Containment, not a dependency: the pool encapsulates the dataset (Volume's pool edge, tightened to exactly one)."
+    },
+    {
       "edge_type": "depends_on",
       "name": "provisioned_by",
       "adopted_from": "SNIA Swordfish (StoragePool/StorageService)",
       "target": "StorageCluster",
       "cardinality": "0..1",
-      "description": "The StorageCluster that provisions this volume (binds its block_storage_class / file_storage_class output). A volume cannot outlive its provisioning cluster."
+      "description": "The StorageCluster that provisions this volume (binds its block_storage_class / file_storage_class output) when no pool is named. A volume that names a pool derives its cluster from it instead; naming both, and disagreeing, is a finding. A volume cannot outlive its provisioning cluster."
     },
     {
       "edge_type": "references",
@@ -164,13 +171,6 @@
       "name": "cloned_from",
       "cardinality": "0..1",
       "description": "The volume this one was cloned from (spec.data_source names it). Lineage, read at provisioning."
-    },
-    {
-      "edge_type": "depends_on",
-      "target": "StoragePool",
-      "cardinality": "1..1",
-      "name": "pool",
-      "description": "The pool this dataset is carved from; the dataset cannot outlive its pool."
     },
     {
       "edge_type": "references",
