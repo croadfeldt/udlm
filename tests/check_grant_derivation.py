@@ -161,14 +161,19 @@ def derive(instances, flags):
                        f"{str(af.get('granted_to'))[:8]}, not by the target's tenant to this holder.")
                 continue
             covered, evaluable = scopes(af, tgt_uuid)
-            if evaluable and not covered:
+            if not evaluable:
+                refuse(rec, dep, target, "REFUSED: grant scope is not an explicit set",
+                       f"authorization {ref[:8]} scopes by a filter, not an explicit uuid set. A grant names "
+                       f"what it covers (#723).")
+                continue
+            if not covered:
                 refuse(rec, dep, target, "REFUSED: named grant does not cover the target",
                        f"authorization {ref[:8]} does not scope this target.")
                 continue
             entries.append((rec, dep, target, "satisfied by the named grant",
                             f"{ref[:8]} ops={af.get('authorized_operations')} "
                             f"until={af.get('expires_at') or 'unbounded'}"
-                            + ("" if evaluable else " scope=resolver")))
+))
     return entries, fails
 
 
@@ -213,6 +218,8 @@ def self_test(flags):
         out.append("CTX-SELF: an edge naming a grant that does not exist was accepted")
     if not refused(ok, criterion="estate?uuid=in=(OTHER)"):
         out.append("CTX-SELF: a named grant scoping a DIFFERENT resource was accepted")
+    if not refused(ok, criterion="estate?labels.concern==payments"):
+        out.append("CTX-SELF: a named grant scoped by a label filter, not an explicit set, was accepted")
     if refused({"target_tenant_uuid": "T2"}, {"Probe.Shareable": {"publicly_stakeable": True}}):
         out.append("CTX-SELF: a standing declaration did not satisfy the crossing (CTX-008)")
     return out

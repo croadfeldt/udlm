@@ -26,6 +26,7 @@ Tiers do **not** prescribe organizational mechanisms — who satisfies a tier, h
 Authority tiers are defined as a **named, ordered list**. Position in the list determines numeric weight. Names are stable references used throughout the system. New tiers can be inserted anywhere without changing existing names or breaking existing references.
 
 ```yaml
+# illustrative: the substrate authority tiers; no registry schema governs them
 authority_tier_registry:
   version: "1.0.0"
   tiers:
@@ -36,9 +37,9 @@ authority_tier_registry:
         No human judgment required. System confidence — scoring, validation,
         governance matrix checks — is sufficient to proceed. The implementation
         activates automatically on pass.
-      dcm_gate: All structural and governance validation checks pass
+      approval_gate: All structural and governance validation checks pass
       organization_provides: Nothing — fully automated
-      dcmgroup_required: false
+      group_required: false
 
     - name: reviewed
       position: 2
@@ -47,11 +48,11 @@ authority_tier_registry:
         Standard authority. A qualified reviewer in the relevant domain
         must evaluate and record a decision. Routine operational decisions
         that benefit from human oversight but do not require elevated authority.
-      dcm_gate: One actor with reviewer role records a decision via Admin API
+      approval_gate: One actor with reviewer role records a decision via Admin API
       organization_provides: >
         Who constitutes a qualified reviewer for this action type;
         the review process; recording via Admin API or external system
-      dcmgroup_required: false
+      group_required: false
       typical_use: Standard request approval; routine policy contributions; dev/standard provider registration
 
     - name: verified
@@ -62,11 +63,11 @@ authority_tier_registry:
         evaluate and record a decision. Enforces separation of duties —
         the same actor cannot satisfy both requirements. Used for decisions
         with operational or security significance requiring independent confirmation.
-      dcm_gate: Two distinct actors with reviewer role each record a decision via Admin API
+      approval_gate: Two distinct actors with reviewer role each record a decision via Admin API
       organization_provides: >
         Who constitutes qualified reviewers; both review processes;
         may use external workflow tools that call the Admin API
-      dcmgroup_required: false
+      group_required: false
       typical_use: High-risk provider registration; elevated-score requests; significant policy changes
 
     - name: authorized
@@ -81,12 +82,12 @@ authority_tier_registry:
         authority. The substrate enforces that the declared authority group
         engaged and recorded their decision; it does not prescribe the group
         structure or deliberation process.
-      dcm_gate: N members of a declared group record decisions via Admin API (quorum threshold)
+      approval_gate: N members of a declared group record decisions via Admin API (quorum threshold)
       organization_provides: >
         Authority group composition (declared as a Group);
         quorum threshold (N of M); deliberation process; external tools
         (ServiceNow, Jira, Slack bots may call Admin API on behalf of members)
-      dcmgroup_required: true
+      group_required: true
       typical_use: Governance matrix changes; sovereign-profile actions; credential provider registration; federation policy
 ```
 
@@ -132,6 +133,7 @@ Organizations creating custom tiers MUST assign one of these four gravity values
 Organizations can extend the authority tier list by contributing custom tier definitions through the standard contribution pipeline. Custom tiers are contributed at the organization or tenant domain scope.
 
 ```yaml
+# illustrative: a custom tier contribution; no registry schema governs it
 custom_tier_contribution:
   name: compliance_reviewed          # unique within the deployment
   insert_after: verified             # position declaration — inserts after this tier
@@ -141,11 +143,11 @@ custom_tier_contribution:
     Required for actions affecting regulated data domains (PII, PCI, HIPAA).
     The compliance officer may be one person or a designated compliance team;
     the organization defines who satisfies this role.
-  dcm_gate: One actor with compliance_officer role records a decision via Admin API
+  approval_gate: One actor with compliance_officer role records a decision via Admin API
   organization_provides: >
     Who holds the compliance_officer role; compliance review process;
     may be satisfied by external GRC system calling Admin API
-  dcmgroup_required: false           # single reviewer sufficient at this gravity
+  group_required: false           # single reviewer sufficient at this gravity
   applicable_profiles: [standard, prod, fsi, sovereign]
   contribution_requires: verified    # adding a custom tier requires verified-tier approval
 ```
@@ -157,8 +159,8 @@ Custom tier contributions MUST require `verified` tier approval (two independent
 **Substrate constraints on custom tiers:**
 - `decision_gravity` must be consistent with position (a tier inserted before `reviewed` cannot have `critical` gravity)
 - Custom tiers cannot be inserted before `auto` or after the highest `critical` gravity tier
-- A custom tier with `dcmgroup_required: true` must declare a valid Group at contribution time
-- Custom tiers cannot change the `dcm_gate` semantics of existing UDLM substrate tiers
+- A custom tier with `group_required: true` must declare a valid Group at contribution time
+- Custom tiers cannot change the `approval_gate` semantics of existing UDLM substrate tiers
 
 ### 2.3 External Tier Registries
 
@@ -366,8 +368,8 @@ Historical approval records MUST retain their `stored_tier_weight` from time of 
 | `ATM-002` | A profile sets the `auto` tier's `max_score` ceiling; UDLM sets none (#490). How much risk an estate auto-approves is its posture, not the model's. |
 | `ATM-003` | Custom tiers must declare `decision_gravity` consistent with their position in the ordered list. A tier with lower gravity may not be inserted after a tier with higher gravity. |
 | `ATM-004` | Custom tier contributions require `verified` tier approval. Organizations cannot add tiers unilaterally. |
-| `ATM-005` | Custom tiers cannot alter the `dcm_gate` semantics of existing UDLM substrate tiers (`auto`, `reviewed`, `verified`, `authorized`). |
-| `ATM-006` | For tiers with `dcmgroup_required: true`, the Group and quorum threshold must be declared in the profile configuration before the tier can be used as a routing target. |
+| `ATM-005` | Custom tiers cannot alter the `approval_gate` semantics of existing UDLM substrate tiers (`auto`, `reviewed`, `verified`, `authorized`). |
+| `ATM-006` | For tiers with `group_required: true`, the Group and quorum threshold must be declared in the profile configuration before the tier can be used as a routing target. |
 | `ATM-007` | The four default `decision_gravity` values (`none`, `routine`, `elevated`, `critical`) are UDLM substrate vocabulary. New gravity values require a UDLM-level change, not an organization-level contribution. |
 | `ATM-008` | Approval records store the tier name and the resolved weight at creation time. If the tier list changes after an approval record is created, the stored weight reflects the state at creation (point-in-time audit). |
 | `ATM-009` | A tier registry change that produces one or more `SECURITY_DEGRADATION` items must not activate until each degradation is explicitly accepted by a reviewer at `verified` tier or above. |

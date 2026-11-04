@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 6044,
-    "mutations_rejected": 6044,
+    "mutations_attempted": 6047,
+    "mutations_rejected": 6047,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -88,12 +88,12 @@
         "rejected": 56
       },
       "Grouping.Authorization": {
-        "attempted": 289,
-        "rejected": 289
+        "attempted": 290,
+        "rejected": 290
       },
       "Grouping.Tenant": {
-        "attempted": 66,
-        "rejected": 66
+        "attempted": 68,
+        "rejected": 68
       },
       "IPAddress": {
         "attempted": 29,

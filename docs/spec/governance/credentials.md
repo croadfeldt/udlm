@@ -79,7 +79,7 @@ The implementation **selects** among providers declaring the needed `credential_
 
 | Credential Type | Resource Type | Use Case | Typical Lifetime | Rotation Trigger |
 |----------------|--------------|----------|-----------------|-----------------|
-| `dcm_interaction` | — | Component-to-provider auth for internal interactions | PT15M–PT1H (profile-governed) | Automatic; pre-expiry |
+| `control_plane_interaction` | — | Component-to-provider auth for internal interactions | PT15M–PT1H (profile-governed) | Automatic; pre-expiry |
 | `api_key` | `CredentialRef` (`api_key`) | Programmatic consumer access | PT24H–P30D (configurable) | Scheduled or event-triggered |
 | `jwt` | `CredentialRef` (`jwt`) | JSON Web Token with claims, issued by auth_provider | Short-lived | Per claim policy |
 | `x509_certificate` | `CredentialRef` (`x509_certificate`) | mTLS identity for providers and components | P30D–P365D | P14D before expiry |
@@ -107,7 +107,7 @@ A credential is a UDLM Data artifact. Credential metadata is stored by the imple
 credential_record:
   credential_uuid: <uuid>
   credential_type: api_key | x509_certificate | ssh_key | service_account_token |
-                   database_password | kubeconfig | hsm_backed_key | dcm_interaction |
+                   database_password | kubeconfig | hsm_backed_key | control_plane_interaction |
                    jwt | secret | signing_key | encryption_key
 
   # Lifecycle
@@ -270,7 +270,7 @@ Interaction credentials carry the **same zero-standing-trust rationale** as ever
 The implementation prepares to dispatch to a provider
   │
   ▼ Request interaction credential from Credential Provider:
-  │   credential_type: dcm_interaction
+  │   credential_type: control_plane_interaction
   │   issued_to.component_uuid: <gateway_uuid>
   │   issued_to.provider_uuid: <target_provider_uuid>
   │   scope.operations: [dispatch]
@@ -317,7 +317,7 @@ Rotation is the primary mechanism for maintaining credential hygiene. The substr
 | Trigger | Description | Default behavior |
 |---------|-------------|-----------------|
 | `scheduled` | Regular rotation on a declared schedule | Most credential types; interval is credential-type specific |
-| `pre_expiry` | Rotation initiated before the current credential expires | x509: P14D before expiry; ssh_key: P7D; dcm_interaction: PT5M |
+| `pre_expiry` | Rotation initiated before the current credential expires | x509: P14D before expiry; ssh_key: P7D; control_plane_interaction: PT5M |
 | `provider_initiated` | Credential Provider notifies the implementation of a rotation requirement | Handled via provider update notification model |
 | `security_event` | Rotation triggered by a security signal (compromise, anomaly, policy change) | Immediate; see §5.4 |
 | `actor_request` | Consumer requests rotation of their own credential | Subject to rate limiting and policy |
@@ -342,7 +342,7 @@ Rotation initiated (by any trigger):
   │
   ▼ Transition window: both credentials valid
   │   Window duration: P1D for consumer credentials (default)
-  │                    PT5M for dcm_interaction credentials
+  │                    PT5M for control_plane_interaction credentials
   │                    P7D for x509_certificate credentials
   │   Configurable per credential type in Credential Provider registration
   │
@@ -676,7 +676,7 @@ credential_capability:        # declared on any provider that issues credentials
     - database_password
     - kubeconfig
     - hsm_backed_key
-    - dcm_interaction         # must declare if provider handles interaction creds
+    - control_plane_interaction         # must declare if provider handles interaction creds
 
   # Secret engine backing (for audit and accreditation)
   secret_engines:
@@ -751,7 +751,7 @@ HSM backing is required for `sovereign` profile signing keys.
 | `database_password` | Cryptographically random | 128-bit printable minimum |
 | `kubeconfig` | As per cluster's auth configuration | — |
 | `hsm_backed_key` | ECDSA P-384 or RSA-4096 | HSM-generated |
-| `dcm_interaction` | HS256 or ES256 | AES-256 or P-256 |
+| `control_plane_interaction` | HS256 or ES256 | AES-256 or P-256 |
 
 ### 10.4 Key Escrow
 
@@ -796,6 +796,7 @@ Every credential security dimension is controlled by the active profile. This is
 ### 12.1 Credential Profile Configuration Block
 
 ```yaml
+# illustrative: a credential profile; no registry schema governs it
 credential_profile:
 
   # --- Credential Type Restrictions ---
@@ -816,7 +817,7 @@ credential_profile:
     service_account_token: [PT24H, PT24H, PT24H, PT12H, PT4H,  PT1H]
     database_password: [P365D, P90D,  P90D,     P30D,   P30D,   —]
     kubeconfig:     [P365D,   P30D,   P30D,     P14D,   P7D,    —]
-    dcm_interaction:[PT1H,    PT30M,  PT1H,     PT30M,  PT15M,  PT15M]
+    control_plane_interaction:[PT1H,    PT30M,  PT1H,     PT30M,  PT15M,  PT15M]
     hsm_backed_key: [—,       —,      —,        P365D,  P180D,  P90D]
 
   # --- Rotation ---
@@ -838,8 +839,8 @@ credential_profile:
     dev:        PT1H
     standard:   P1D
     prod:       P1D
-    fsi:        P1D             # PT15M for dcm_interaction
-    sovereign:  P1D             # PT15M for dcm_interaction
+    fsi:        P1D             # PT15M for control_plane_interaction
+    sovereign:  P1D             # PT15M for control_plane_interaction
 
   # --- Value Retrieval Security ---
   value_retrieval_auth_required:
@@ -927,6 +928,7 @@ Profile credential requirements map to NIST 800-63B Authenticator Assurance Leve
 When a compliance domain is active, its credential requirements are **additive** to the profile base:
 
 ```yaml
+# illustrative: compliance overlays on a credential profile; no registry schema governs them
 compliance_credential_overlays:
   hipaa:
     min_key_size_bits: 256
@@ -958,7 +960,7 @@ compliance_credential_overlays:
     fips_140_level_required: 2
     ip_binding_required: true
     max_lifetime_override:
-      dcm_interaction: PT10M
+      control_plane_interaction: PT10M
       service_account_token: PT1H
 ```
 
@@ -1029,7 +1031,7 @@ credential_provider_registration:
 | Policy | Rule |
 |--------|------|
 | `CPX-001` | Credential values are never stored in the implementation's data model, artifact stores, Realized State Store, or Audit Store. Only credential metadata (UUID, type, scope, expiry, status) is stored. |
-| `CPX-002` | Every interaction with a provider must present a scoped, short-lived `dcm_interaction` credential. A provider that receives an interaction without a valid scoped credential MUST reject it with `403 Forbidden`. |
+| `CPX-002` | Every interaction with a provider must present a scoped, short-lived `control_plane_interaction` credential. A provider that receives an interaction without a valid scoped credential MUST reject it with `403 Forbidden`. |
 | `CPX-003` | Credential revocation must propagate within the declared `revocation_sla`, and a revoked credential must be detectable at each use. Components must refresh their revocation cache no less frequently than the profile-governed cache TTL (PT1M standard; PT30S fsi/sovereign). |
 | `CPX-004` | Emergency rotation (security_event trigger) has no transition window. The old credential is revoked immediately. The new credential is delivered via the fastest available notification channel. |
 | `CPX-005` | The first credential value retrieval is audited in ALL profiles (credential_uuid, actor_uuid, retrieved_at, retrieval_uuid). Subsequent retrievals are audited in standard+ profiles. Emergency retrievals (rotation, security event) are always audited regardless of profile. |

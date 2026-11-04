@@ -133,9 +133,10 @@ The Layer 1 identity factor by itself does NOT grant operation authorization. Kn
 The substrate defines the following properties of the Layer 2 callback credential. The cryptographic format (opaque bearer token, signed JWT, capability macaroon, etc.) is an implementation choice.
 
 ```yaml
+# illustrative: the callback credential a provider presents; no registry schema governs it
 callback_credential:
   credential_uuid: <uuid>
-  credential_type: <substrate-defined: dcm_interaction (or implementation-declared equivalent)>
+  credential_type: <substrate-defined: control_plane_interaction (or implementation-declared equivalent)>
   issued_to:
     provider_uuid: <uuid>      # the specific registered provider
     provider_handle: <string>  # for human-readable audit records
