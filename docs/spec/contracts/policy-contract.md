@@ -61,17 +61,18 @@ Every request into the control plane carries an `operation.type` that identifies
 | Operation Type | When it occurs | Description |
 |---------------|---------------|-------------|
 | `initial_provisioning` | Day 0 — first request for a new resource | Full pipeline: assembly, all policies, placement, dispatch |
-| `update` | Day 2 — modify an existing operational resource | Partial pipeline: assembly with existing entity as base, policies evaluate changed fields |
-| `scale` | Day 2 — change capacity (replicas, CPU, memory, storage) | Subset of update — only scaling-related fields change |
+| `update` | Day 2 — modify an existing operational resource, including a change of capacity | Partial pipeline: assembly with existing entity as base, policies evaluate changed fields |
 | `rehydration` | Rebuild from stored state (DR, migration, refresh) | Full pipeline: all current policies re-evaluate from intent or realized state |
 | `decommission` | Day N — request to remove a resource | Decommission pipeline: dependency checks, notification, revocation, provider teardown |
 | `ownership_transfer` | Transfer entity between tenants | Re-evaluates tenant-scoped policies under new tenant context |
 | `subscription_renewal` | Subscription approaching expiry or renewal | Subscription lifecycle policies fire; may trigger re-evaluation of placement |
+| `discovery` | A scan observes what is there | Read-only: writes discovered state, changes nothing; policies that classify observations fire |
 | `drift_remediation` | Discovered state diverges from realized state | Remediation policies fire; may re-provision or accept drift |
 | `provider_migration` | Move entity to a different provider | Full placement re-evaluation; sovereignty re-evaluation |
 | `compliance_rescan` | Policy change triggers re-evaluation of existing resources | All matching policies re-evaluate; no placement unless policy requires it |
+| `relationship_event` | A related entity changed state (entity-relationships §8) | Lifecycle policies decide what happens to the dependent entity |
 
-**`operation.changed_fields`** — For `update` and `scale` operations, this is an array of field paths that changed from the current realized state. This enables policies to fire only when relevant fields change:
+**`operation.changed_fields`** — For `update` operations, this is an array of field paths that changed from the current realized state. This enables policies to fire only when relevant fields change:
 
 ```yaml
 # A policy that fires on placement-affecting change declares WHICH facts it reads.
@@ -110,7 +111,7 @@ policy_artifact:
 policy_artifact:
   handle: "validation/vm-size-limits"
   lifecycle_scope:
-    operations: [initial_provisioning, update, scale]
+    operations: [initial_provisioning, update]
     changed_field_filter: ["cpu.count", "memory.size", "disks"]
     # Fires on new resources AND on updates that change sizing fields
     # Does NOT fire on: tag changes, owner changes, etc.
@@ -127,7 +128,7 @@ policy_artifact:
 | Policy Type | Default `lifecycle_scope.operations` | Rationale |
 |-------------|-------------------------------------|-----------|
 | Validation (compliance-class) | `all` | Compliance rules should always be checked |
-| Validation (structural-class) | `[initial_provisioning, update, scale, rehydration]` | Structural validation on any data change |
+| Validation (structural-class) | `[initial_provisioning, update, rehydration]` | Structural validation on any data change |
 | Transformation | `[initial_provisioning, rehydration]` | Inject/enrich on new builds and rebuilds; skip on minor updates |
 | Recovery | `all` | Recovery posture always applicable |
 | Orchestration Flow | `[initial_provisioning, rehydration, decommission]` | Pipeline orchestration on major lifecycle transitions |
@@ -255,6 +256,11 @@ system (most trusted — control-plane built-in)
 
 Within the same domain level, DENY wins over ALLOW. More-specific domain wins over less-specific.
 
+Two things are true at once, and the schema says both. The specific domain wins for a value: an
+`entity` policy's value beats a `tenant` policy's. A higher domain can lock a value by declaring
+`override: immutable`, and then nothing below it changes that value; that is how a `system` or
+sovereignty mandate holds. The same two rules order layers (layering-and-versioning §4.1).
+
 ---
 
 ## 5. Base Contract — Artifact Structure
@@ -304,11 +310,11 @@ policy_artifact:
 
 ## 6. Base Contract — Lifecycle
 
-All policies follow the five-status lifecycle:
+All policies follow the four-status lifecycle. An unpublished policy has no status; it is a
+draft in someone's working tree, not a record.
 
 | Status | Behavior |
 |--------|---------|
-| `developing` | Dev mode only. Not applied in any environment. |
 | `proposed` | Shadow mode: executes against real traffic; output captured but never applied. Used for safe validation. |
 | `active` | Applied to all matching requests. |
 | `deprecated` | Still active; replacement available; warning on evaluation. |
@@ -587,7 +593,7 @@ hint_type:
 
 ### 8.4 Validation at Policy Activation
 
-When a policy is promoted from `developing` to `proposed` (shadow mode), policy activation validates:
+When a policy enters `proposed` (shadow mode), policy activation validates:
 
 1. Every `emits_constraints[].constraint_type` is a registered constraint type
 2. The emitted value structure matches the registered schema
@@ -923,7 +929,7 @@ Overrides and `route-to-review` are a **last-resort path**, not a common one. A 
 
 ### 18.1 Override Policy (Planned Exceptions)
 
-A policy artifact that explicitly overrides another policy for a defined scope. Goes through the standard policy lifecycle (developing → proposed → active) with review and shadow testing.
+A policy artifact that explicitly overrides another policy for a defined scope. Goes through the standard policy lifecycle (proposed → active) with review and shadow testing.
 
 ```yaml
 # illustrative: an override policy artifact (policy_type: override); not schema-checked

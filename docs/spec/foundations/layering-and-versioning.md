@@ -692,19 +692,22 @@ declares ownership, storage location, and authorization scope.
 | `resource_type` | Layers scoped to one resource type (`resource_type` declared) | Type owner | entity |
 | `entity` | Layers scoped to one entity — the narrowest | Entity owner | Nothing above entity |
 
-A lower-domain layer cannot override a higher-domain layer. The service and request positions are
-not domains: they are the layer's `layer_type` and `precedence_class` (§3), and a consumer's request
-layer always has the lowest authority.
+Two rules order domains, and both hold at once. The specific domain wins for a value: an `entity`
+layer's value beats a `tenant` layer's. A higher domain locks a value by declaring it `immutable`
+(`LAY-005`), and then nothing below it changes that value; that is how a `system` or sovereignty
+mandate holds. The service and request positions are not domains: they are the layer's
+`layer_type` and `precedence_class` (§3), and a consumer's request layer always has the lowest
+authority.
 
 **Provider extension layers** are service layers (`layer_type: service`) contributed by Service
 Providers as part of their offering registration. They add provider_specific fields to the
 assembled payload for their offering only. They cannot override platform or tenant layers.
 They carry the same portability implications as a Provider Class element — any request using
 them is non-portable and must be explicitly marked. See [class-tiers.md §5.1](class-tiers.md) for
-the offer on the Provider Class. A `tenant` layer cannot override a `platform` layer. This is
-enforced at ingestion — the conflict detection pipeline checks domain authority before allowing a merge.
+the offer on the Provider Class. A `tenant` layer cannot change a value a `platform` layer locked.
+This is enforced at ingestion — the conflict detection pipeline checks domain authority before allowing a merge.
 
-**Domain mirrors policy authority:** Just as system-domain policies have highest authority in the Policy Engine, system-domain layers have highest authority in the assembly process. The same mental model applies to both.
+**Domain mirrors policy authority:** policies and layers use the same two rules (policy-contract §4): the specific domain wins for a value, and a higher domain can lock one. The same mental model applies to both.
 
 ### 4.2 Layer Groups — grouping with record kind: layer_grouping
 

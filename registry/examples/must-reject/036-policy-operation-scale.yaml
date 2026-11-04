@@ -1,0 +1,41 @@
+must_reject:
+  rule: POL-001
+  gate: schema
+  expect_path: $.lifecycle_scope.operations[1]
+  because: A policy scoped to the operation `scale`. The operation list is closed at twelve values; a change of
+    capacity is an `update`, and a policy that wants only sizing changes filters on `changed_fields`. A name
+    outside the list would never match an operation the control plane performs, so the policy would never
+    fire and nobody would know (#723).
+record:
+  __schema__: policy.schema.json
+  record_type: policy
+  uuid: 5a1f3c86-2d49-4b7e-8c13-9f0e6d2a4b57
+  handle: research/scale-scoped-policy
+  conforms_to: udlm/0.1
+  name: A policy scoped to an operation the model does not name
+  description: Deliberately wrong (must-reject). Copies the EU residency policy, scoped to initial_provisioning and scale.
+  version: 1.0.0
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  status: {state: active}
+  policy_type: validation
+  policy_class: compliance
+  concern_type: compliance
+  domain: tenant
+  match:
+    facts: [data_classification, sovereignty_zone]
+    rule:
+      engine: rego
+      body: |
+        package udlm.residency
+        deny if {
+          input.data_classification == "eu_personal"
+          not input.sovereignty_zone in {"eu-west", "eu-central", "eu-north"}
+        }
+  enforcement: hard
+  lifecycle_scope:
+    operations: [initial_provisioning, scale]
+  output:
+    decision: deny
+    reason: eu_personal data may only be realized in an EU sovereignty zone
+  audit_on: [DENY]
+  notification_on: [DENY]
