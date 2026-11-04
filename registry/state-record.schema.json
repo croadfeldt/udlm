@@ -941,6 +941,14 @@
           "target_key": {
             "$ref": "#/$defs/correlation_ids/items",
             "description": "Discovered only: the natural key the probe read for the target — a `correlation_ids` scheme and value — from which `target_uuid` is resolved (RHY-007). A target identified by a compound key (a switch port: chassis and port) uses a scheme that names the compound; the scheme list is extensible. Refused on intent, requested and realized records, whose targets are declared by identity."
+          },
+          "target_tenant_uuid": {
+            "$ref": "common-elements.schema.json#/$defs/uuid_v4",
+            "description": "The tenant that owns the target, stated on the edge. Required when it differs from this record's tenant: tenancy is recorded, never looked up (CTX-010)."
+          },
+          "authorization_ref": {
+            "$ref": "common-elements.schema.json#/$defs/uuid_v4",
+            "description": "The Grouping.Authorization that grants this cross-tenant edge. Required on a cross-tenant edge unless the target's type is publicly stakeable or allocatable (CTX-008). The gate verifies the named grant; it never searches for one (CTX-010)."
           }
         }
       }

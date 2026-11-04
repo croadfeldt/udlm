@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""CTX-005 — the required-grant set is DERIVED, and this proves it derives.
+"""CTX-010 — a cross-tenant edge states its target's tenant and names its grant; both are verified.
+
+CTX-005 — the required-grant set is listed as a PREVIEW, so a consumer learns what to ask for first.
 
 ADR-066 rules that a consumer must learn which cross-boundary permissions an order needs *before*
 admission rather than discovering them when dispatch fails. That claim rests on the set being
@@ -30,7 +32,9 @@ identical to revocation), which is control-plane, not a property of the authored
 counted and surfaced as *determined at placement*, never silently dropped: a grant set that quietly
 omits the unresolved half would read as "nothing needed".
 
-  GRD-001  a resolved cross-boundary edge has a grant, a standing declaration, or it is a finding.
+  CTX-010  a resolved cross-tenant edge states target_tenant_uuid and names an authorization_ref that
+           exists, is granted by the target's tenant to the holder and scopes the target, or its
+           target's type is a standing declaration (CTX-008). Anything else is a finding.
 
 Exit 0 = every cross-boundary edge is accounted for; 1 = at least one is not.
 """
@@ -99,9 +103,20 @@ def scopes(auth_fields, target_uuid):
 
 
 def derive(instances, flags):
-    """The required-grant set, plus the findings. One pass, no side effects."""
-    auths = [r for r in instances.values() if r.get("resource_type") == "Grouping.Authorization"]
+    """Verify every cross-tenant edge's stated tenancy and grant (CTX-010), and list the required-grant
+    set (CTX-005) as a preview. One pass, no side effects.
+
+    Nothing here is inferred. The edge states its target's tenant and names its grant; the gate checks
+    each statement against the records. A grant that merely fits is not a grant: an edge naming none is
+    refused even when one exists, because "who authorized this?" must be read, not searched for."""
     entries, fails = [], []
+
+    def refuse(rec, dep, target, verdict, why):
+        entries.append((rec, dep, target, verdict, None))
+        fails.append(f"CTX-010 {rec['_path']}: {rec.get('handle', rec['uuid'][:8])} "
+                     f"({rec.get('resource_type')}) holds a {dep.get('edge_type')} edge to "
+                     f"{target.get('handle', target['uuid'][:8])} owned by {target['tenant_uuid'][:8]}: {why}")
+
     for rec in instances.values():
         holder = rec["tenant_uuid"]
         for dep in rec.get("dependencies") or []:
@@ -110,35 +125,50 @@ def derive(instances, flags):
                 continue
             target = instances.get(tgt_uuid)
             if target is None:
-                continue                       # off-estate reference; nothing to resolve an owner from
+                continue                       # off-estate reference; nothing to verify against
             owner = target["tenant_uuid"]
             if owner == holder:
-                continue                       # same grouping — no boundary crossed
+                continue                       # same tenant: no boundary crossed
+            stated = dep.get("target_tenant_uuid")
+            if not stated:
+                refuse(rec, dep, target, "REFUSED: tenancy not stated",
+                       "the edge crosses a tenant boundary but states no target_tenant_uuid. "
+                       "Tenancy is recorded, never looked up.")
+                continue
+            if stated != owner:
+                refuse(rec, dep, target, "REFUSED: tenancy misstated",
+                       f"the edge states target_tenant_uuid {stated[:8]}, but the target belongs to {owner[:8]}.")
+                continue
             f = flags.get(target.get("resource_type")) or {}
             if f.get("publicly_stakeable") or f.get("publicly_allocatable"):
                 entries.append((rec, dep, target, "satisfied by standing declaration", None))
                 continue
-            hit = None
-            for a in auths:
-                af = _fields(a)
-                if af.get("granted_by") == owner and af.get("granted_to") == holder:
-                    covered, evaluable = scopes(af, tgt_uuid)
-                    if covered:
-                        hit = a
-                        break
-                    if not evaluable and hit is None:
-                        hit = a                # matched the pair; scope left to the resolver
-            if hit is not None:
-                af = _fields(hit)
-                entries.append((rec, dep, target, "satisfied by grant",
-                                f"{hit['uuid'][:8]} ops={af.get('authorized_operations')} "
-                                f"until={af.get('expires_at') or 'unbounded'}"))
-            else:
-                entries.append((rec, dep, target, "REQUIRED AND MISSING", None))
-                fails.append(f"GRD-001 {rec['_path']}: {rec.get('handle', rec['uuid'][:8])} "
-                             f"({rec.get('resource_type')}) holds a {dep.get('edge_type')} edge to "
-                             f"{target.get('handle', tgt_uuid[:8])} owned by {owner[:8]}, and no "
-                             f"authorization grants it. Refuse at admission, not at dispatch.")
+            ref = dep.get("authorization_ref")
+            if not ref:
+                refuse(rec, dep, target, "REFUSED: no grant named",
+                       "the edge names no authorization_ref. A cross-tenant edge names the grant that "
+                       "allows it; the gate never searches for one.")
+                continue
+            grant = instances.get(ref)
+            if grant is None or grant.get("resource_type") != "Grouping.Authorization":
+                refuse(rec, dep, target, "REFUSED: named grant not found",
+                       f"authorization_ref {ref[:8]} is not a Grouping.Authorization this estate holds.")
+                continue
+            af = _fields(grant)
+            if af.get("granted_by") != owner or af.get("granted_to") != holder:
+                refuse(rec, dep, target, "REFUSED: named grant does not match",
+                       f"authorization {ref[:8]} is granted by {str(af.get('granted_by'))[:8]} to "
+                       f"{str(af.get('granted_to'))[:8]}, not by the target's tenant to this holder.")
+                continue
+            covered, evaluable = scopes(af, tgt_uuid)
+            if evaluable and not covered:
+                refuse(rec, dep, target, "REFUSED: named grant does not cover the target",
+                       f"authorization {ref[:8]} does not scope this target.")
+                continue
+            entries.append((rec, dep, target, "satisfied by the named grant",
+                            f"{ref[:8]} ops={af.get('authorized_operations')} "
+                            f"until={af.get('expires_at') or 'unbounded'}"
+                            + ("" if evaluable else " scope=resolver")))
     return entries, fails
 
 
@@ -152,35 +182,39 @@ def unresolvable(instances):
 
 
 def self_test(flags):
-    """Arms with no shipped subject. `publicly_stakeable` is an ORG's declaration — rule 42, UDLM
-    facilitates and does not dictate — so no registry type may carry it and that arm can only ever
-    be probed here."""
+    """Arms with no shipped subject. `publicly_stakeable` is an ORG's declaration (rule 42: UDLM
+    facilitates, it does not dictate), so no registry type carries it and that arm is probed here."""
     out = []
-    inst = {
-        "A": {"uuid": "A", "tenant_uuid": "T1", "resource_type": "Machine.VM", "_path": "probe",
-              "dependencies": [{"edge_type": "binds_to", "target_uuid": "B"}]},
-        "B": {"uuid": "B", "tenant_uuid": "T2", "resource_type": "Probe.Shareable", "_path": "probe"},
-    }
-    _, fails = derive(inst, {})
-    if not fails:
-        out.append("GRD-SELF: an ungranted cross-boundary edge was not reported")
 
-    entries, fails = derive(inst, {"Probe.Shareable": {"publicly_stakeable": True}})
-    if fails or not any(e[3] == "satisfied by standing declaration" for e in entries):
-        out.append("GRD-SELF: a standing declaration did not satisfy the crossing (CTX-008)")
+    def probe(extra, criterion="estate?uuid=in=(B)"):
+        return {
+            "A": {"uuid": "A", "tenant_uuid": "T1", "resource_type": "Machine.VM", "_path": "probe",
+                  "dependencies": [dict({"edge_type": "binds_to", "target_uuid": "B"}, **extra)]},
+            "B": {"uuid": "B", "tenant_uuid": "T2", "resource_type": "Probe.Shareable", "_path": "probe"},
+            "G": {"uuid": "G", "tenant_uuid": "T2", "resource_type": "Grouping.Authorization", "_path": "probe",
+                  "states": {"realized": {"fields": {"granted_by": "T2", "granted_to": "T1",
+                                                     "authorized_operations": ["stake"],
+                                                     "membership_criterion": criterion}}}},
+        }
 
-    inst["G"] = {"uuid": "G", "tenant_uuid": "T2", "resource_type": "Grouping.Authorization",
-                 "_path": "probe", "states": {"realized": {"fields": {
-                     "granted_by": "T2", "granted_to": "T1", "authorized_operations": ["stake"],
-                     "membership_criterion": "estate?uuid=in=(B)"}}}}
-    _, fails = derive(inst, {})
-    if fails:
-        out.append("GRD-SELF: a matching grant did not satisfy the crossing")
+    def refused(extra, flg=None, **kw):
+        return bool(derive(probe(extra, **kw), flg or {})[1])
 
-    inst["G"]["states"]["realized"]["fields"]["membership_criterion"] = "estate?uuid=in=(SOMETHING_ELSE)"
-    _, fails = derive(inst, {})
-    if not fails:
-        out.append("GRD-SELF: a grant scoping a DIFFERENT resource was accepted")
+    ok = {"target_tenant_uuid": "T2", "authorization_ref": "G"}
+    if refused(ok):
+        out.append("CTX-SELF: an edge naming a matching grant was refused")
+    if not refused({"authorization_ref": "G"}):
+        out.append("CTX-SELF: an edge stating no target_tenant_uuid was accepted")
+    if not refused({"target_tenant_uuid": "T9", "authorization_ref": "G"}):
+        out.append("CTX-SELF: an edge misstating its target's tenant was accepted")
+    if not refused({"target_tenant_uuid": "T2"}):
+        out.append("CTX-SELF: an edge naming no grant was accepted because one exists (inferred)")
+    if not refused({"target_tenant_uuid": "T2", "authorization_ref": "NOPE"}):
+        out.append("CTX-SELF: an edge naming a grant that does not exist was accepted")
+    if not refused(ok, criterion="estate?uuid=in=(OTHER)"):
+        out.append("CTX-SELF: a named grant scoping a DIFFERENT resource was accepted")
+    if refused({"target_tenant_uuid": "T2"}, {"Probe.Shareable": {"publicly_stakeable": True}}):
+        out.append("CTX-SELF: a standing declaration did not satisfy the crossing (CTX-008)")
     return out
 
 

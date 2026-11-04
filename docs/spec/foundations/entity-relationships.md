@@ -217,138 +217,103 @@ The relationship type is `depends_on` + `operational` — the allocated entity d
 
 ### 7.2 Parent Resource — Available Allocations
 
-The owning Tenant pre-defines allocations on the parent resource:
-
-> **No schema surface yet.** The blocks in §7.2 and §7.3 illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
-
+The owning Tenant offers allocations through the provider's **resource advertisement** (provider-contract §8.1a,
+`registry/provider-registration.schema.json#/$defs/resource_advertisement`). Each offered slice is an
+`inventory` entry; `capacity` says how much is free. Who may claim a slice is not a list on the parent: it is a
+`Grouping.Authorization` the owning Tenant grants to each consuming Tenant (CTX-001). Active claims are not
+stored on the parent either. Each claim is a `binds_to` edge from the allocated entity, and listing a parent's
+claims is a query over those edges.
 
 ```yaml
-# illustrative: shape of the record, not schema-checked
-parent_resource_entity:
-  uuid: <uuid>
-  tenant_uuid: <Infrastructure Tenant uuid>
-
-  available_allocations:
-    - allocation_uuid: <uuid>
-      allocation_type: VLANRange
-      allocation_spec:
-        vlan_range: "100-199"
-        bandwidth: "10Gbps"
-      status: <available|claimed|reserved>
-      claimable_by:
-        - tenant_uuid: <Tenant A uuid>
-        - tenant_uuid: <Tenant B uuid>
-        # Empty list = any authorized Tenant may claim
-
-  active_allocations:
-    - allocation_uuid: <uuid — matches available_allocations entry>
-      claimed_by_tenant_uuid: <Tenant A uuid>
-      claimed_entity_uuid: <uuid of Tenant A's allocated entity>
-      claimed_at: <ISO 8601>
-      notification_endpoint: <Tenant A's contact — no schema field yet (#632)>
-      # Parent uses this to notify Tenant A of lifecycle changes
+# schema: provider-registration.schema.json#/$defs/resource_advertisement
+category: realize_resources/Network
+inventory:
+  - resource_ref: vlan-range-100-199       # the slice the owning Tenant offers
+    resource_type: VLAN
+    selectable: true
+capacity:
+  - resource_ref: vlan-range-100-199
+    dimensions: { bandwidth: { total: "10Gbps", free: "10Gbps" } }
 ```
 
 ### 7.3 Allocated Entity — In the Consuming Tenant
 
-When a consuming Tenant claims an available allocation, the control plane creates a first-class entity in the consuming Tenant's scope:
+When a consuming Tenant claims an allocation, the control plane creates a first-class entity in the consuming
+Tenant's scope. It is an ordinary record. Its fields are the slice it holds, and its edge to the parent states the
+parent's tenant and names the grant that allows the claim (CTX-010):
 
 ```yaml
-# illustrative: shape of the record, not schema-checked
-allocated_entity:
-  uuid: <uuid — consuming Tenant's own entity>
-  family: Resource  # ownership_model: allocation (ADR-027); shape derived — Atomic (no constituents)
-  resource_type: <the allocated class>
-  tenant_uuid: <Tenant A uuid>  # Belongs to the consuming Tenant
-
-  allocation_spec:
-    vlan_range: "100-199"
-    bandwidth: "10Gbps"
-    # The specific slice allocated to this Tenant
-
-  parent_allocation:
-    parent_entity_uuid: <parent resource uuid>
-    parent_tenant_uuid: <Infrastructure Tenant uuid>
-    allocation_uuid: <uuid — matches parent's available_allocations entry>
-
-  lifecycle_state: Realized        # operational status is a status.condition (data-model-core §3)
-
-  parent_lifecycle_policy:
-    on_parent_destroy: notify_then_detach
-    on_parent_suspend: suspend
-    on_parent_maintenance: notify
-    on_parent_degrade: notify
-    on_parent_capacity_change: notify
-
-  dependencies:
-    - target_uuid: <parent resource uuid>
-      related_entity_type: internal
-      related_entity_tenant_uuid: <Infrastructure Tenant uuid>
-      edge_type: depends_on
-      strength: soft                    # operational allocation (nature derived)
-      cross_tenant: true
-      allocation_uuid: <uuid — links to parent's allocation record>
-      authorized_by:
-        owning_tenant_policy_uuid: <policy permitting this allocation>
-        consuming_tenant_policy_uuid: <policy permitting this dependency>
-
-  tenant_uuid: <Tenant A>
+# schema: state-record.schema.json
+record_type: realized_record
+entity_uuid: <consuming Tenant's entity uuid>
+tenant_uuid: <Tenant A uuid>                 # belongs to the consuming Tenant
+resource_type: VLAN                          # the allocated class; ownership_model: allocation (ADR-027)
+fields:
+  vlan_range: "100-199"                      # the slice this Tenant holds
+dependencies:
+  - edge_type: binds_to
+    target_uuid: <parent resource uuid>
+    target_tenant_uuid: <Infrastructure Tenant uuid>     # stated, never looked up
+    authorization_ref: <Grouping.Authorization uuid>     # the grant that allows this claim
+    strength: soft
 ```
+
+What happens to the allocated entity when the parent changes state is a lifecycle policy (§8), not a field on
+the entity.
 
 ### 7.4 Lifecycle Event Propagation
 
-When the parent resource changes state, the control plane iterates all active allocations and propagates according to each allocation's `parent_lifecycle_policy`:
+When the parent resource changes state, the control plane finds every `binds_to` edge that names the parent, and
+applies the lifecycle policy (§8) that governs each:
 
 ```
 Parent resource enters MAINTENANCE
   │
   ▼
-The control plane iterates active_allocations
+The control plane lists the edges that bind to the parent
   │
-  For each active allocation:
-  │  Read parent_lifecycle_policy.on_parent_maintenance
-  │  → notify: dispatch lifecycle event to consuming Tenant
-  │  → suspend: transition allocated entity to SUSPENDED state
-  │  → detach: terminate relationship, allocated entity becomes independent
-  │
-  Policy Engine evaluates each propagation:
-  │  SLA commitments that gate maintenance?
-  │  Override policies in consuming Tenant?
+  For each allocated entity:
+  │  Evaluate the lifecycle policy for this event
+  │  → notify: send the lifecycle event to the consuming Tenant
+  │  → suspend: transition the allocated entity to SUSPENDED
+  │  → detach: end the relationship; the allocated entity becomes independent
   ▼
-Events dispatched via notification_endpoint on each active_allocation record
+Each act is audited to both Tenants (CTX-007)
 ```
+
+How the consuming Tenant is notified is the implementation's choice; that it is notified, and audited, is the
+contract.
 
 ### 7.5 Claiming Flow
 
 ```
-Parent Tenant pre-defines available_allocations on parent resource
+The owning Tenant's provider advertises the slice (§7.2), and the owning Tenant grants Tenant A a claim
   │
   ▼
-Consuming Tenant A submits claim request
-  │  Specifies: parent_entity_uuid, allocation_uuid
+Consuming Tenant A submits a claim request naming the parent and the grant
   ▼
 Policy Engine evaluates:
-  │  Is allocation_uuid still available?
-  │  Is Tenant A in claimable_by list (or list is open)?
-  │  Does Tenant A's cross_tenant policy permit this?
-  │  Does Infrastructure Tenant's cross_tenant policy permit this?
+  │  Does the named grant exist, come from the parent's Tenant to Tenant A, and cover the parent? (CTX-010)
+  │  Is the slice still free in the advertised capacity?
+  │  Does Tenant A's hard_tenancy setting permit the crossing? (REL-012)
   ▼
 The control plane creates:
-  │  Allocated Entity (owned by Tenant A) with UUID
-  │  depends_on edge on the allocated entity (the parent’s inbound reading is derived; cross_tenant: true)
-  │  Updates parent's available_allocation status: available → claimed
-  │  Adds record to parent's active_allocations
-  │  Provenance recorded on both entities
+  │  The allocated entity, owned by Tenant A
+  │  A binds_to edge on it that states the parent's Tenant and names the grant
+  │  Provenance on the allocated entity; the act audited to both Tenants (CTX-007)
   ▼
-Infrastructure Tenant owner notified of new claim
-  │  Via owned_by.notification_endpoint on the parent entity
+The owning Tenant is notified of the new claim
 ```
 
 ---
 
 ## 8. Lifecycle Policies
 
-> **No schema surface yet.** The `lifecycle_policy` fields in §8 and §13.2 illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
+**Lifecycle actions are policy, not entity fields.** No class, record or edge carries a `lifecycle_policy`. A
+policy (`registry/policy.schema.json`) decides the action for a relationship event. Its `domain` gives the
+authority tier of §8.4: `resource_type` for a class default, `entity` for a consumer's choice, `system` for a
+mandate. Policy does not yet name relationship events as a trigger; until it does, §13.2's example is illustrative
+(#723).
 
 Lifecycle policies declare what happens to an entity when its related entity changes state. They apply to `constituent` and `operational` relationships only — `informational` relationships have no lifecycle implications.
 
@@ -441,36 +406,25 @@ This is the same-tenant counterpart to the cross-tenant Allocated Resource model
 
 **Examples:** Shared NFS volume mounted by multiple VMs. Shared database cluster used by multiple application services. Shared VLAN used by multiple VMs. Shared TLS certificate used by multiple services.
 
-### 9.2 The `sharing_model` Declaration
+### 9.2 Declaring that a class is shareable
 
-A class declares whether its instances can be shared (`ownership_model: shareable`; `publicly_stakeable`
-for cross-tenant stakes without a per-grant authorization). Individual entities carry the runtime sharing state:
-
-> **No schema surface yet.** The `shareability` and `sharing_model` blocks below illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
-
+A class declares whether its instances can be shared, with `ownership_model`. An instance of an `exclusive` class
+takes one constituent or operational relationship; a `shareable` one takes many. Sharing across Tenants is never
+implied by `shareable`. It needs `publicly_stakeable` on the class (CTX-008) or a grant each edge names (CTX-010).
 
 ```yaml
-# On the class
-class: Volume
-  shareability:
-    allowed: true
-    default_sharing_scope: tenant    # tenant | cross_tenant
-    max_active_relationships: null   # null = unlimited; integer = cap (e.g., license seats)
-
-# On the entity instance
-entity:
-  uuid: <uuid>
-  sharing_model:
-    shareable: true
-    sharing_scope: tenant
-    minimum_relationship_count: 0    # at or below this, on_last_relationship_released fires
-    on_last_relationship_released: <destroy | retain | notify>
-    # destroy: entity destroyed when last relationship is released
-    # retain:  entity persists independently — becomes unowned
-    # notify:  notify owner, entity enters PENDING_DECISION
+# schema: class.schema.json
+ownership_model: shareable        # exclusive | shareable | allocation (ADR-027)
+publicly_stakeable: false         # true would let any Tenant stake it without a per-edge grant
 ```
 
-**`shareability.allowed: false`** on a class means the Policy Engine rejects any attempt to create a second active constituent or operational relationship to an instance. Boot disks, primary network interfaces, and similar exclusively-owned resources are non-shareable by type definition (REL-017).
+What happens when the last relationship to a shared instance is released (destroy, retain, or notify and wait
+for a decision) is a lifecycle policy (§8). The count of active relationships is the count of edges that name the
+instance; it is not stored.
+
+**A non-shareable class** means the Policy Engine rejects a second active constituent or operational relationship
+to an instance. Boot disks, primary network interfaces and similar exclusively-owned resources are `exclusive`
+by class (REL-017).
 
 ### 9.3 Reference Count Lifecycle
 
@@ -527,10 +481,10 @@ The same-tenant sharing model and the cross-tenant allocated resource model are 
 | Dimension | Same-Tenant Sharing | Cross-Tenant Allocation |
 |-----------|--------------------|-----------------------|
 | Scope | Within one Tenant | Across Tenant boundaries |
-| Pre-definition | Not required — relationships declared at request time | Parent pre-defines `available_allocations` |
-| Reference tracking | derived active-edge count | `active_allocations` list on parent |
+| Pre-definition | Not required: relationships declared at request time | Offered in the provider's resource advertisement; claimable under a grant |
+| Reference tracking | count of edges naming the instance | edges binding to the parent, each naming its grant |
 | Destruction deferral | Deferred until count reaches minimum | Deferred until last allocation released |
-| Lifecycle events | `on_last_relationship_released` | `parent_lifecycle_policy` per allocation |
+| Lifecycle events | lifecycle policy on last release (§8) | lifecycle policy on parent events (§8) |
 | Governed by | REL-015 through REL-019 | REL-011, REL-014 |
 
 ---
@@ -577,25 +531,22 @@ The consumer, or the control plane on its behalf, writes the actual edges into t
 `dependencies[]`, by handle, resolved to uuid at reserve (§2). Edges a class template implies are
 derived (§11); a consumer writes an edge only for the exception the class could not know about.
 
-> **No schema surface yet.** The `binding_type`, `lifecycle_policy` and `consumer_declarable` fields earlier drafts showed here illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
+What a consumer may declare is bounded by the class: a relationship template marked `enforcement: structural` is
+binding on every instance (REL-002), and anything else is the consumer's exception. Lifecycle behaviour is policy
+(§8), not a field on the edge.
 
 ### 10.4 External Data Relationships
 
-Relationships to external data entities follow the same structure with `related_entity_type: external`:
-
-> **No schema surface yet.** The external-edge fields below illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
-
+A relationship to external data is an ordinary `references` edge. Its target is the entity that stands for the
+external datum, written by the information provider that serves it (provider-contract §8.2). Which provider
+serves it is a fact on the target, not on the edge. How that provider looks the datum up is its implementation.
 
 ```yaml
-# On a VM Entity — relationship to external Business Unit
+# schema: state-record.schema.json
 dependencies:
-  - target_uuid: <uuid of external_entity_reference>
-    related_entity_type: external
-    information_provider_uuid: <uuid of HR Information Provider>
-    information_type: Business.BusinessUnit
-    edge_type: references
+  - edge_type: references
+    target_uuid: <uuid of the Business.BusinessUnit entity>
     relation: business_unit
-    lookup_method: primary_key
 ```
 
 ---
@@ -617,15 +568,12 @@ Request Payload Processor
   │       with its own UUID, Tenant membership, Resource Type
   │    2. Declares the dependency edge on the parent stub
   │       and the child stub
-  │    3. Applies lifecycle policy from:
-  │       consumer declaration → Provider Class default → class default
-  │       → System Policy override
+  │    3. Resolves the lifecycle policy for the new edge (§8)
   │    4. Adds the child entity stub to the relationship graph
   ▼
 Policy Engine validates:
-  │  Binding type is permitted by the class
-  │  Consumer has override_matrix permission to declare binding type
-  │  Lifecycle policy is not overridden by a System Policy
+  │  The edges satisfy the class's structural templates
+  │  No System Policy forbids the lifecycle the request implies
   ▼
 The provider receives:
   │  Parent entity request payload
@@ -642,26 +590,10 @@ The control plane updates:
 
 ### 11.2 Expansion Rules on the Class
 
-The expansion rule declares which fields expand into entities and how:
-
-> **No schema surface yet.** The `expansion` block below illustrate the obligation; no schema carries these fields today. Whether each is modelled or becomes a control-plane obligation is #632.
-
-
-```yaml
-field_definition:
-  field_name: storage
-  type: object
-  expansion:
-    expand_to_entity: true
-    entity_class: Volume
-    default_binding_type: owned
-    binding_types_permitted: [owned, referenced]
-    default_lifecycle_policy:
-      on_related_destroy: destroy
-      on_related_suspend: suspend
-    consumer_can_override_lifecycle: true
-    consumer_can_override_binding_type: true
-```
+Which child entities a request produces is declared by the class's relationship templates: a template with
+`enforcement: structural` names a child the instance always has. How a bundled request is expanded into those
+entities, and in what order, is the implementation's obligation, not a field of the class. The lifecycle of each
+child is policy (§8).
 
 ---
 
@@ -714,18 +646,18 @@ The relationship graph exists across all four states:
 | `ERL-001` | Every edge at rest identifies its target by uuid (`target_uuid`, resolved from `target_handle` at reserve — AEP-124) |
 | `ERL-002` | An edge is declared on exactly one entity; its inverse reading is derived, never stored (GRAPH-003) |
 | `ERL-003` | Cycles over the ordering edge_types (`depends_on`, `contained_by`) are invalid and must be rejected; non-ordering `references` cycles (including reflexive self-reference, e.g. the multi-cluster self-managed hub) are legal and outside the ordering sort |
-| `ERL-004` | A constituent or operational relationship must have a lifecycle policy declared somewhere in the authority chain before provider dispatch |
-| `REL-005` | External relationships must reference a registered Information Provider |
+| `ERL-004` | A constituent or operational relationship must be governed by a lifecycle policy (§8) somewhere in the authority chain before provider dispatch |
+| `REL-005` | An external relationship targets an entity served by a registered Information Provider (a provider declaring `serve_data`) |
 | `REL-006` | `edge_type` must be from the closed set (`depends_on`, `contained_by`, `binds_to`, `references`); a named `relation` must be declared by the pinned class (REL-001/003) |
-| `REL-007` | Consumer-declared binding types must be permitted by the class |
+| `REL-007` | A consumer-declared edge must satisfy the class's structural relationship templates (REL-002); lifecycle behaviour is policy, not an edge field |
 | `REL-008` | A constituent relationship lifecycle policy may not be set to `ignore` for `on_related_destroy` |
 | `REL-009` | Lifecycle policy conflicts between policies are resolved by the standard Policy Engine authority hierarchy — no special case |
-| `REL-011` | Cross-tenant operational relationships require explicit authorization from both the owning Tenant and the consuming Tenant |
+| `REL-011` | A cross-tenant operational relationship needs the owning Tenant's grant, named on the edge (CTX-010), and the consuming Tenant's policy must permit it |
 | `REL-012` | A Tenant with `hard_tenancy.cross_tenant_relationships: deny_all` may not participate in any cross-tenant relationship in any direction |
-| `REL-014` | An allocated resource claim requires a matching `available` allocation record on the parent entity |
-| `REL-015` | A destructive lifecycle action on a shared resource entity (`ownership_model: shareable` — [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)) is deferred until the derived active-edge count reaches the declared `minimum_relationship_count` |
+| `REL-014` | An allocated resource claim names a grant from the parent's Tenant (CTX-010) and binds to a slice the parent's provider advertises (§7.2) |
+| `REL-015` | A destructive lifecycle action on a shared resource entity (`ownership_model: shareable`, [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)) is deferred until the count of active edges naming it reaches the minimum its lifecycle policy (§8) sets; with no policy, until it reaches zero |
 | `REL-016` | Informational edges never contribute to the derived active-edge count on shared resource entities |
-| `REL-017` | A class with `shareability.allowed: false` must reject any attempt to create more than one active constituent or operational relationship to an instance of that type |
+| `REL-017` | A class whose `ownership_model` is `exclusive` must reject any attempt to create more than one active constituent or operational relationship to an instance of that class |
 | `REL-018` | When a lifecycle event produces multiple action recommendations on a shared resource, the most conservative action wins per the hierarchy: `retain > notify > suspend > detach > cascade > destroy` (save_overrides_destroy) |
 | `REL-019` | When lifecycle action recommendations conflict, a `lifecycle_conflict_record` is created. Conflicts at `warning` or `critical` severity trigger notifications to the entity owner and affected policy owners |
 
@@ -756,9 +688,10 @@ Class default
 
 **`immutable_ceiling: absolute` applies here.** A sovereign compliance mandate that storage must always be retained when a VM is destroyed — `on_related_destroy: retain` with `immutable_ceiling: absolute` — cannot be overridden by any future policy regardless of priority.
 
-**Example — compliant lifecycle policy field with override control:**
+**Example — a lifecycle decision locked by a compliance policy:**
 
 ```yaml
+# illustrative: a lifecycle decision a policy locks; policy does not yet name relationship events as a trigger (#723)
 lifecycle_policy:
   on_related_destroy:
     value: retain
@@ -781,8 +714,8 @@ lifecycle_policy:
 | Policy | Rule |
 |--------|------|
 | `ERL-D01` | Cross-tenant constituent dependencies are prohibited — a dependency that would produce a constituent cross-tenant relationship is rejected at dependency graph construction time |
-| `ERL-D02` | Cross-tenant operational dependencies require a valid available allocation record on the target resource — failure returns `CROSS_TENANT_DEPENDENCY_UNAVAILABLE` |
-| `ERL-D03` | A class may only declare cross-tenant dependencies if explicitly marked `cross_tenant: permitted` — default is `cross_tenant: not_permitted` |
+| `ERL-D02` | A cross-tenant operational dependency states its target's tenant and names the grant that allows it (CTX-010). A missing or mismatched grant returns `CROSS_TENANT_DEPENDENCY_UNAVAILABLE`. |
+| `ERL-D03` | A class allows cross-tenant use without a per-edge grant only by declaring `publicly_stakeable` or `publicly_allocatable` (CTX-008). Otherwise every crossing needs a grant the edge names (CTX-010). |
 
 ### 13.3 Relationship Versioning and Deprecation
 
