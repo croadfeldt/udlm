@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Location/0.6.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Location/0.6.3",
   "conforms_to": "udlm/0.1",
   "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b",
   "resource_type": "Location",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Location",
-          "version": "0.6.2",
+          "version": "0.6.3",
           "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b"
         }
       ]
@@ -99,7 +99,7 @@
     ],
     "works_with": [
       "Location — the parent place this one nests inside.",
-      "Machine.BareMetalHost — the equipment that declares its location.",
+      "Machine.BareMetalHost, NetworkSwitch, PowerFeed, UPS — the equipment that declares its location by a located_in edge; nothing is placed by inference from power or network.",
       "Topology — the failure-domain view of the same physical reality."
     ]
   }

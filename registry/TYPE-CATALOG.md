@@ -658,7 +658,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 
 ## Location
 
-### Location (0.6.2)
+### Location (0.6.3)
 
 **Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
 
@@ -674,7 +674,7 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 
 **Works with:**
 - Location — the parent place this one nests inside.
-- Machine.BareMetalHost — the equipment that declares its location.
+- Machine.BareMetalHost, NetworkSwitch, PowerFeed, UPS — the equipment that declares its location by a located_in edge; nothing is placed by inference from power or network.
 - Topology — the failure-domain view of the same physical reality.
 
 ## LogShipper
