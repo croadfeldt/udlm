@@ -17,7 +17,7 @@ scenario:
   success_criteria:
   - Discovered state is probed and compared against realized state
   - Divergences produce drift records with field-by-field comparison
-  - Drift records include severity classification (info, warning, critical)
+  - Drift records include severity classification (minor, significant, critical)
   - Recovery policy triggers appropriate remediation actions
   - Remediation results are recorded and verified
   - Drift detection cycle completes within the profile-governed reconciliation window
