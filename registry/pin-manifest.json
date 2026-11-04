@@ -1894,7 +1894,7 @@
   }
  },
  "type:StoragePool": {
-  "current": "0.7.2",
+  "current": "0.8.0",
   "path": "registry/classes/resource/storage/storage-pool/_base.yaml",
   "versions": {
    "0.5.0": "sha256:6bf5de09cfcba3a74e4df13fe0ccb5c199cb060e75530a18bab777392c5fb88c",
@@ -1905,7 +1905,8 @@
    "0.6.1": "sha256:d30c7c538da479b4bfa4d0ca4ab15c8df255952cf7b66519ea1d3c092c05afe7",
    "0.7.0": "sha256:2b01f83a02aa70121c47a5668f3319c16d5d24be3557ab94f720f22395decad0",
    "0.7.1": "sha256:564afcac7f5531edbcd0908f5aa0cddedd62249ac44895f8058fc6f8a00c2d29",
-   "0.7.2": "sha256:50654e2161a22c7546f3a9163bc2fa2710229922c43fa6643b6da72b8915a67a"
+   "0.7.2": "sha256:50654e2161a22c7546f3a9163bc2fa2710229922c43fa6643b6da72b8915a67a",
+   "0.8.0": "sha256:389e0bcfc886e614dc863f8b51c19adb8b342faa6dcaf5893d6993f8a594cc3d"
   }
  },
  "type:Subnet": {
@@ -2062,7 +2063,7 @@
   }
  },
  "type:Volume": {
-  "current": "0.18.1",
+  "current": "0.19.0",
   "path": "registry/classes/resource/storage/volume/_base.yaml",
   "versions": {
    "0.12.0": "sha256:3e5b1467f4a935805834d1d916acdabdd32886a4e411038ff3067fe2767971a5",
@@ -2076,11 +2077,12 @@
    "0.16.0": "sha256:1e630d4f169c3e293394943cd4edc8f26928f1e7469cc1ea08dc9776720cde55",
    "0.17.0": "sha256:40269c22ec5a52d67fd9ed1f42400caee02e2a83df364ada952b546a95079817",
    "0.18.0": "sha256:88925abe1df3b9a1d8e13f64fd0c18ed6fa09287be154683c155f4331ec2d34c",
-   "0.18.1": "sha256:6133184e6afabd81b5b1603b64bf1674fbddaf8f2077fefb1227f1e8bac86742"
+   "0.18.1": "sha256:6133184e6afabd81b5b1603b64bf1674fbddaf8f2077fefb1227f1e8bac86742",
+   "0.19.0": "sha256:0de38d5e756a94718c4808a8801b76baa93ce9c3cccef416f07eb83d8e53c3de"
   }
  },
  "type:Volume.ZFS": {
-  "current": "0.8.3",
+  "current": "0.9.0",
   "path": "registry/classes/resource/storage/volume/zfs.yaml",
   "versions": {
    "0.6.0": "sha256:57a6f528b74a7ae69b5757a16f6420270964d8aedbd5f7ea8cf488c542f33f03",
@@ -2089,7 +2091,8 @@
    "0.8.0": "sha256:53d46f7d57a95c034614e1e253b045c618c20b387d22991b83cad9f339bfb4f8",
    "0.8.1": "sha256:fedf7cd81caf72aa62717c191e07727679524dcdb2fdbef8bd118bbbf63952b5",
    "0.8.2": "sha256:9256ca86a2e5bbbec64b2c1c71f51a4e57671b73c1009d89a4ff86fc8275a6c9",
-   "0.8.3": "sha256:4fe77e0ec01fab62c38167f9a674978eb464b19e1bc3cb6832ff25b4f93e19be"
+   "0.8.3": "sha256:4fe77e0ec01fab62c38167f9a674978eb464b19e1bc3cb6832ff25b4f93e19be",
+   "0.9.0": "sha256:2b745f6c60812fe78bd044fce9e1bafa4c10cc000c174ddce31721833d44a0d5"
   }
  },
  "type:VolumeSnapshot": {

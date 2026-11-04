@@ -46,14 +46,14 @@
     },
     {
       "class": "StoragePool",
-      "version": "0.7.2",
+      "version": "0.8.0",
       "instantiable": true,
       "path": "registry/classes/resource/storage/storage-pool/_base.yaml",
       "types": []
     },
     {
       "class": "Volume",
-      "version": "0.18.1",
+      "version": "0.19.0",
       "instantiable": true,
       "path": "registry/classes/resource/storage/volume/_base.yaml",
       "types": [

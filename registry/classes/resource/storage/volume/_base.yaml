@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Volume/0.18.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Volume/0.19.0
 conforms_to: udlm/0.1
 uuid: aff9e319-cfb9-44da-8c35-fa47f3ea6270
 record_type: class
 class: base
 resource_type: Volume
-version: 0.18.1
+version: 0.19.0
 family: Resource
 status: active
 filed_under:
@@ -133,13 +133,22 @@ outputs:
       `data_source`). Each entry a Reference (common-elements §2.5). Absent means the provider did not say, never
       "anywhere".'
 relationships:
+  - edge_type: contained_by
+    name: pool
+    adopted_from: SNIA Swordfish (StoragePool)
+    target: StoragePool
+    cardinality: 0..1
+    description: The pool this volume is carved from; its capacity is the pool's and it cannot outlive the pool.
+      Optional at the base, since a cloud block volume shows no pool; a Type that always has one tightens this to 1..1.
+      The volume's cluster is then derived, the nearest StorageCluster up the containment chain (entity-relationships §5).
   - edge_type: depends_on
     name: provisioned_by
     adopted_from: SNIA Swordfish (StoragePool/StorageService)
     target: StorageCluster
     cardinality: 0..1
     description: The StorageCluster that provisions this volume (binds its block_storage_class / file_storage_class
-      output). A volume cannot outlive its provisioning cluster.
+      output) when no pool is named. A volume that names a pool derives its cluster from it instead; naming both,
+      and disagreeing, is a finding. A volume cannot outlive its provisioning cluster.
   - edge_type: references
     target: Machine
     name: realizes_disk

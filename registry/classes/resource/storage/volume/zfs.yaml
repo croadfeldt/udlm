@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Volume.ZFS/0.8.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Volume.ZFS/0.9.0
 conforms_to: udlm/0.1
 uuid: 90eb6692-1b70-4dc1-b43b-bfedf44c317f
 record_type: class
 class: type
 resource_type: Volume.ZFS
 parent: Volume
-version: 0.8.3
+version: 0.9.0
 family: Resource
 status: active
 metadata:
@@ -46,11 +46,13 @@ outputs:
     type: string
     description: The realized mountpoint (filesystem) or /dev/zvol path (block).
 relationships:
-  - edge_type: depends_on
+  - edge_type: contained_by
     target: StoragePool
     cardinality: 1..1
     name: pool
-    description: The pool this dataset is carved from; the dataset cannot outlive its pool.
+    description: >-
+      The pool this dataset is carved from; the dataset cannot outlive its pool. Containment, not a
+      dependency: the pool encapsulates the dataset (Volume's pool edge, tightened to exactly one).
   - edge_type: references
     target: Volume.ZFS
     cardinality: 0..1

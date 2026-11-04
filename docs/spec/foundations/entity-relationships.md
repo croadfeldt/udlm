@@ -112,6 +112,7 @@ combinations are not representable. The recurring patterns:
 | Cluster members / HA partners | mutual `edge_type: depends_on` (`strength: soft`), one edge per direction, with a declared `relation` (e.g. `peer_of`) | `operational` | per side |
 | Component management authority | a declared `relation` (e.g. `manages`) refining `depends_on` or `contained_by` | per edge_type | required |
 | Physical place (a host in a rack, a rack in a site) | `edge_type: contained_by` + `relation: located_in` to a `Location`; a Location nests in its parent the same way | `constituent` | none: a place does not destroy what stands in it |
+| Capacity carved from a pool (a volume in a pool, a pool in a cluster) | `edge_type: contained_by` + `relation: pool` on the volume; `relation: cluster` on the pool | `constituent` | required: the pool encapsulates the volume |
 
 **Behavioral rules:**
 
@@ -124,6 +125,8 @@ combinations are not representable. The recurring patterns:
 - `references` with derived `informational` nature is the **business context cell** — Business Unit, Cost Center, Person relationships live here
 
 - **Place is derived, never stored.** A thing's place is the nearest `located_in` edge up its `contained_by` chain: a VM is where its host is, and the host is where its edge says. Precision is the Location's own nesting (a slot within a rack within a site), so a finer place needs no spec change. A thing with no `located_in` edge anywhere up its chain has no place; that is a finding, not a default, and nothing infers a place from power or network.
+
+- **The same rule derives the cluster.** A volume's cluster is the nearest `StorageCluster` up its `contained_by` chain: the volume names its pool, the pool names its cluster. A volume with no pool names its cluster directly (`provisioned_by`). One that names both, and they disagree, is a finding. Containment is how the model encapsulates: what sits inside derives from what it sits in, and nothing is restated.
 
 ---
 
