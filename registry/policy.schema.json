@@ -52,8 +52,10 @@
       "additionalProperties": false,
       "properties": {
         "state": {
+          "description": "Where the policy is in its life. `proposed` is shadow mode: it runs on real traffic and its output is logged, never applied. `active` applies. `deprecated` still applies, with a replacement named and a warning on evaluation. `retired` is terminal. An unpublished policy has no status; there is no `developing` (#723).",
           "enum": [
             "active",
+            "proposed",
             "deprecated",
             "retired"
           ]
@@ -87,7 +89,7 @@
         "itsm_action",
         "override"
       ],
-      "description": "The policy's kind — determines the `output` schema (policy-contract.md §8-17). 'gating' is the renamed 'gatekeeper' (2026-07 rename). validation/transformation/recovery/orchestration_flow/governance_matrix_rule/lifecycle are the contract's core set; placement (DCM ADR-019) and itsm_action (§17) extend it."
+      "description": "The policy's kind — determines the `output` schema (policy-contract.md §8-17). validation/transformation/recovery/orchestration_flow/governance_matrix_rule/lifecycle are the contract's core set; placement (DCM ADR-019) and itsm_action (§17) extend it."
     },
     "policy_class": {
       "enum": [
@@ -176,10 +178,16 @@
           "items": {
             "enum": [
               "initial_provisioning",
-              "modification",
+              "update",
               "rehydration",
               "decommission",
               "discovery",
+              "drift_remediation",
+              "ownership_transfer",
+              "subscription_renewal",
+              "provider_migration",
+              "compliance_rescan",
+              "relationship_event",
               "all"
             ]
           }
@@ -403,33 +411,6 @@
             "required": [
               "mutations"
             ]
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "policy_type": {
-            "const": "gating"
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "output": {
-            "required": [
-              "decision"
-            ],
-            "properties": {
-              "decision": {
-                "enum": [
-                  "permit",
-                  "block",
-                  "dual_approval"
-                ]
-              }
-            }
           }
         }
       }

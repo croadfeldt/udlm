@@ -207,7 +207,7 @@
     },
     "policy_domain": {
       "title": "Precedence scope",
-      "description": "The precedence ladder a policy, layer or constraint is scoped to — resource_type overrides tenant overrides platform overrides system, with entity the narrowest. Declared ONCE here because policy.schema.json, layer.schema.json and evaluation-context.schema.json each held a literal copy: three files, one ladder, and nothing checking they agreed. A precedence order that differs between the policy and the layer that carries it is not a disagreement anyone would notice until a decision came out wrong.",
+      "description": "The precedence scope a policy, layer or constraint is scoped to: system, platform, tenant, resource_type, entity, widest to narrowest. The specific domain wins for a value. A higher domain can lock a value with `override: immutable`, and then nothing below it changes that value (#723). Declared once here; three schemas used to carry copies.",
       "type": "string",
       "enum": [
         "system",
