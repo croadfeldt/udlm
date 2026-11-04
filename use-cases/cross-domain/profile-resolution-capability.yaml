@@ -13,7 +13,7 @@ scenario:
   intent: Validate DCM resolves the instance profile from the approved list + default and onboards atomically
   success_criteria:
   - DCM resolves the instance profile from the platform approved list and default
-  - Tenant onboarding binds the tenant to the resolved profile via a policy_profile DCMGroup
+  - Tenant onboarding binds the tenant to the resolved profile by membership of a policy-profile Grouping
   - Onboarding is atomic — either all steps persist or none do
   - A compliance/sovereignty overlay is composed with the profile, not folded into it
   - Profiles are capability sets compared by content set-containment, not by rank

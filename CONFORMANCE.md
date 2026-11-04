@@ -167,7 +167,7 @@ following shape:
 |---|---|---|
 | `implementation` | yes | Self-identification |
 | `udlm_version` | yes | udlm semver this implementation conforms to |
-| `profile` | yes | The implementation's active **base profile** (from the [profile vocabulary](docs/spec/principles/design-priorities.md)). In v1 a profile is advertised **platform-wide** (one active base profile per deployment); the model is designed to become **group-scopable** later (bound to a tenant/service/domain) — see the profile-scope note in [foundations.md](docs/spec/foundations/foundations.md) and [ADR-007](docs/adr/ADR-007-profile-model.md). `fsi`/`sovereign` compose as overlays on the base profile. |
+| `profile` | yes | The handle of the implementation's active **base profile**, a profile record (`registry/profile.schema.json`). The standard postures are the UDLM Profile Set's (croadfeldt/udlm-profiles), not this repository's (register row 140); an estate may run its own. In v1 a profile is advertised **platform-wide** (one active base profile per deployment); the model is designed to become **group-scopable** later (bound to a tenant/service/domain) — see the profile-scope note in [foundations.md](docs/spec/foundations/foundations.md) and [ADR-007](docs/adr/ADR-007-profile-model.md). Overlays compose on the base profile. |
 | `level` | yes | `"full"` or `"partial"` |
 | `exclusions` | required if level=partial | List of contract names not implemented |
 | `extensions_published` | yes | Whether schema bundle includes extensions |
@@ -547,8 +547,8 @@ Before federating, a peer SHOULD:
 1. Fetch the remote implementation's conformance declaration.
 2. Verify `udlm_version` is compatible with the local implementation's version.
 3. Check `profile` compatibility — confirm the remote's advertised base profile
-   (and any overlays) satisfies local policy for federation (e.g. a `sovereign`
-   peer may refuse to federate with a `homelab` peer).
+   (and any overlays) satisfies local policy for federation (for example, a peer
+   whose profile requires sovereign placement may refuse a peer whose profile does not).
 4. Check `level` and `exclusions` against the features needed for the planned
    federation.
 5. For each interop surface the federation will use, confirm that surface's
