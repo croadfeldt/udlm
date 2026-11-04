@@ -1,83 +1,173 @@
-# UDLM 0.1 — Engineering Handoff
+# Engineering handoff
 
-**Status:** Handoff (orientation, non-normative) — points at the normative surface, does not restate it.
-**Audience:** the engineering team implementing UDLM 0.1.
-**What this settles:** where to start, the model you must hold in your head, where the authoritative truth lives, and how to check your work. Scope, use-case coverage, and exit criteria are settled separately in [`../../registry/UDLM-0.1-SCOPE.md`](../../registry/UDLM-0.1-SCOPE.md) — read that for *what's in*; read this for *how to get oriented*.
+For the team that will build on UDLM. One page: where to start, what the model is, where the
+truth lives, what is experimental, what is known to be open, and how to check your work. It points
+at the normative documents and does not restate them.
 
----
+## 1. Where to start
 
-## 1. What you're building
-
-UDLM is the **data / contract / type** layer — the wire-compatible substrate. It is **not** the orchestrator; the runtime that consumes it is DCM. The boundary is one test (ADR-008): *"could a peer implement this differently and still be valid? Yes → it's DCM (runtime/policy); No → it's UDLM (data/contract)."* Every ambiguity resolves with that question. UDLM 0.1 is the substrate that **enables the 21 release use cases** (`../../registry/UDLM-0.1-SCOPE.md` §3); DCM satisfies many success criteria at runtime over a UDLM shape — those are not 0.1 spec work.
-
-**Implement against the `dev` profile.** The architecture and wire contracts are identical across the six profiles; only the required *floor* differs (the UDLM Profile Set, croadfeldt/udlm-profiles). The 0.1 work builds and validates the 21 UCs against **dev**. The `sovereign`/`fsi` floors exist so the architecture is provably production-grade, not to be implemented first (`../../registry/UDLM-0.1-SCOPE.md` §2).
-
-**Valid-by-construction.** Everything is a typed record that validates against a JSON Schema. If it doesn't validate, it isn't UDLM. The validators are the definition of done (§5).
+| You are | Open |
+|---|---|
+| new to the model | [`docs/start-here/`](../start-here/README.md), eleven short steps, each ending with a command that proves it |
+| in a hurry | [`quickstart.md`](quickstart.md), one VM through its four records in ten minutes |
+| about to write something | the "copy this file" table in [`co-engineering.md`](co-engineering.md): a record, a Provider Class, a layer |
+| building a control plane, a provider or a tool | [`consuming.md`](consuming.md) |
+| joining from another organization | [`co-engineering.md`](co-engineering.md): how to check your records, change the spec, and how decisions are made |
 
 ## 2. The model in one page
 
-Hold these seven concepts and the rest follows:
+- **A thing has one identity for life** (`entity_uuid`), and four records about it: what was
+  intended, requested, realized and discovered. One record per state, written by a different
+  author each. A record is never edited; a change is a new record that supersedes the old one.
+  [`four-states.md`](../spec/foundations/four-states.md).
+- **A class says the shape**, in three tiers: a Base (`Machine`), a Type (`Machine.VM`), and a
+  Provider Class (`Machine.VM.CExampleCloud`) that narrows what the parent allows and adds what only
+  that provider needs. A child refines its parent and never contradicts it; a gate checks that. The
+  served spec under `registry/generated/` is what a record's `type_ref` points at.
+  [`class-tiers.md`](../spec/foundations/class-tiers.md).
+- **Edges are the graph.** Four edge types (`depends_on`, `contained_by`, `binds_to`,
+  `references`) on the record; no bundle or stack objects. A cross-tenant edge names the owning
+  tenant and the authorization it relies on.
+  [`entity-relationships.md`](../spec/foundations/entity-relationships.md).
+- **Layers fill and bound a request** before a provider sees it, lowest authority first, with
+  per-field provenance; a layer's bounds can only tighten down the chain. UDLM ships no defaults;
+  the values an estate wants live in the estate's own layers.
+  [`layering-and-versioning.md`](../spec/foundations/layering-and-versioning.md).
+- **Policy is separate from data.** Layers carry values; policies decide. The rule body is opaque
+  to the model; what the model fixes is the facts a policy may read and the outcomes it may return.
+  [`policy-contract.md`](../spec/contracts/policy-contract.md).
+- **A provider registers what it offers** and reports back what it built, in the record's
+  `outputs`. [`provider-contract.md`](../spec/contracts/provider-contract.md) (§7 below).
+- **Conformance is record level.** An implementation claims UDLM by the records it writes, judged
+  by the suite. [`CONFORMANCE.md`](../../CONFORMANCE.md).
 
-1. **Four lifecycle states** — Intent → Requested → Realized → Discovered, immutable, linked by `entity_uuid` (`docs/spec/foundations/four-states.md`). The spine everything hangs on.
-2. **Typed records + schemas** — each Resource Type is a spec validated by `resource-type-spec.schema.json`; each instance validates against its type. Identity is a UUID (RFC 9562 v4), advisory names are `handle`s (`docs/spec/contracts/identifier-scheme.md`).
-3. **Data layering** — a request payload is assembled by merging ordered layers lowest-authority-first (base → core → intermediate → service → request; policy over the result). It carries **field-level provenance**: every field records the layer uuid that set it (`docs/spec/foundations/layering-and-versioning.md`; `registry/layer.schema.json`). This is how a standard base is reused and specialized per data center / rack / segment.
-4. **Data references + immutable lineage** — a field points at shared governed data by URF reference — `uuid/<v4>[@version]?reference_data_type==<kind>` (identifier-scheme §9), the uuid resolving the target and the pin naming its immutable version — instead of inlining. Referenced entities are **immutable records**: a change is published as a new record with its own identity uuid and version, per the ADR-051 family rule. Lineage is a **single explicit `supersedes` DAG**. Change-impact is derived from that DAG and cascades transitively up the reference graph (`registry/data-reference.schema.json`; decision 012 in the [decisions register](../adr/README.md) — uuid-authoritative references, immutable + supersede). Acting on impact is a DCM policy, never automatic.
-5. **Provider capability declaration** — a provider declares, per capability, what it can fulfill: topology / mobility / operational primitives / sovereignty (`registry/provider-adopted-standards.schema.json`; `docs/adr/ADR-PROV-002-*`). Placement matches consumer requirements against this.
-6. **Sovereignty & accreditation** — a declared sovereignty stance is a **claim**; trust requires a **1-1 match** with an **accreditation** (a verifiable credential: `proof` + `trust_anchor`) on provider × capability × jurisdiction × data-classification × plane, decided by a **two-gate** check (verify, then appraise). No match → `self_asserted` → not honored for sovereign placement (`docs/spec/governance/accreditation-and-authorization-matrix.md`; `registry/accreditation.schema.json`).
-7. **Policy is separate from data** — layers and references carry *values*; policies *decide/transform* (`registry/policy.schema.json`; `docs/spec/contracts/policy-contract.md`). Keep them apart: a layer says "the zone is DMZ"; a policy says "DMZ workloads must use the DMZ egress."
+## 3. Where the truth lives
 
-## 3. The normative surface — where the truth lives
+The spec is the source of truth; every derived file is regenerated from it and gated for freshness.
 
-**Schemas (`registry/*.schema.json`) — the machine-checkable truth:**
+- **Record schemas** `registry/*.schema.json`: `state-record` (the four states), `entity-view` (the
+  read model, never written), `layer`, `policy`, `profile`, `composition`, `provider-registration`,
+  `provider-adopted-standards`, `accreditation`, `audit-record` with `audit-leaf` and
+  `commit-log-entry`, `decision-record`, `regeneration-manifest`, `finding-routing-record`,
+  `conformance-declaration`, `vocabulary-term`, `data-reference`, `evaluation-context`,
+  `function-capability-matrix`. `common-elements.schema.json` holds the shared definitions.
+- **Classes** `registry/classes/<family>/<group>/...`, one file each; the served specs under
+  `registry/generated/`; the catalog `registry/TYPE-CATALOG.md`.
+- **Contracts** `docs/spec/contracts/`, **foundations** `docs/spec/foundations/`, **governance**
+  `docs/spec/governance/`, **lifecycle** `docs/spec/lifecycle/`, **principles** `docs/spec/principles/`.
+- **Decisions** [`docs/adr/README.md`](../adr/README.md): every ruling is a dated row, newest on
+  top. When you wonder why, the answer is a row.
+- **Versions** [`registry/VERSIONING.md`](../../registry/VERSIONING.md): the spec and each class
+  have their own version, and a record pins both. Before 1.0 a breaking change is a minor bump.
 
-| Schema | What it defines |
-|---|---|
-| `resource-type-spec.schema.json` | the meta-schema every Resource Type definition validates against |
-| `state-record.schema.json` | one record per lifecycle state (intent, requested, realized, discovered), the stored form of an entity |
-| `entity-view.schema.json` | the entity view — the merged read model folded from the per-state records, never written |
-| `layer.schema.json` | a data layer — base/overlay/reference_data; `fields`, provenance, `supersedes` lineage |
-| `data-reference.schema.json` | the data-reference shape — a URF string `uuid/<v4>[@version]?reference_data_type==<kind>` |
-| `provider-adopted-standards.schema.json` | provider capability declaration (adopted standards + per-capability blocks) |
-| `accreditation.schema.json` | a verifiable accreditation (`proof`, `trust_anchor`, scope) |
-| `policy.schema.json` | a policy record (the nine policy types) |
-| `profile.schema.json` | deployment profiles |
-| `composition.schema.json` | the composition shape (constituents, bindings) a catalog item or template carries; a catalog item itself is a Provider Class |
-| `decision-record.schema.json` | a DecisionRecord (the substrate form of an ADR) |
-| `audit-record` / `audit-leaf` / `commit-log-entry` | audit + tamper-evidence (Merkle, RFC 9162) |
-| `regeneration-manifest.schema.json` | the durable change record of a class change — classification, machine-enumerated blast radius, consumer debt, the gate suite that re-proved it (ADR-045) |
-| `finding-routing-record.schema.json` | a contradicted compatibility claim routed upstream from an estate, with the typed-output diff as evidence (ADR-046) |
-| `function-capability-matrix.schema.json` | RBAC function matrix |
+## 4. What is experimental
 
-**Contracts (`contracts/`) — the wire behavior a peer must honor.** Load-bearing first: `provider-contract.md` (the provider interface + registration), `policy-contract.md` (policy evaluation), `identifier-scheme.md` (UUIDs/handles), `data-roles.md` (what data crosses the DCM→provider boundary), `event-catalog.md` + `time-and-clock.md` (events, clocks), `schema-sharing.md`, `error-model.md`, `provider-contract.md` §8–10. The rest (`retry-semantics`, `rate-limit-and-backpressure`, `provider-callback-auth`, `storage-providers`, `information-providers*`, `cost-metering-linkage`, `data-store-contracts`) are scoped contracts referenced from those.
+Everything. [`registry/stability.yaml`](../../registry/stability.yaml) has a row for every class,
+schema and document: 153 are `experimental`, 7 are `reference` (documents that state no rule), none
+is `candidate` or `stable`. That is by ruling, not neglect: a part earns a stage by being used and
+validated, and your implementation is how it gets there. The ladder is
+[`graduation.md`](../spec/governance/graduation.md). Candidate needs a worked record, a must-reject
+case per rule and readable text. Stable needs 90 days as a candidate and a conformance report from
+a running implementation that judged at least ten of its records.
 
-**Foundations (`docs/spec/foundations/`) — the concepts:** `four-states.md`, `data-model-core.md`, `layering-and-versioning.md`, `entity-type-families.md`. **Governance (`governance/`):** `accreditation-and-authorization-matrix.md`, `governance-matrix.md`, `authority-tier-model.md`, `credentials.md`. **Decisions (`docs/adr/`):** the *why* behind each of the above.
+What that means for you: pin the spec version and each class version you build against, and move
+the pins on purpose. Within 0.x a minor version may change a part you use. The 1.0 tag covers
+whatever is stable when the maintainer calls it; the road there is
+[`UDLM-1.0-LOCKDOWN.md`](../../registry/UDLM-1.0-LOCKDOWN.md).
 
-## 4. Scope, deferral, conformance
+## 5. Known open
 
-- **In scope / deferred / exit criteria:** [`../../registry/UDLM-0.1-SCOPE.md`](../../registry/UDLM-0.1-SCOPE.md) — the normative definition. Deferred to post-1.0 (its §6): operational rehydration, `topology_capability`-as-reference, JIT credentials (§ TODOs), and other explicitly-listed items.
-- **Ratification status:** issue #217 — the engineering ratification pass over the Proposed ADRs.
-- **Conformance bar:** [`CONFORMANCE.md`](../../CONFORMANCE.md) — what an implementation must pass to claim UDLM 0.1.
+Nothing here blocks building; each is a place where you may hit an edge and should know it is known.
 
-## 5. How to check your work (definition of done)
+- **Rulings in flight.** #723 settled eight places where a schema and the spec disagreed: policy
+  statuses and operations, layer precedence, group membership, the policy trigger for relationship
+  events. The PRs that apply them follow. #724: rule ids cited with no definition. #725: two
+  decision records point at a renamed schema file. #726: small leftovers from the documentation sweep.
+- **Coverage backlog.** 59 of 71 classes have no `coverage:` block yet; the gate was silent until
+  #722. The backlog is `registry/spec-coverage-backlog.yaml` and it only shrinks.
+- **Layers are designed, not exercised.** Seven layer types, precedence, bounds and lineage are
+  specified and gated, and no assembly run has used them. Yours would be the first.
+- **Profiles are mechanism only.** The six postures live in a separate repository; this one says
+  what a profile is, not which one you should run.
+- **Earlier items** are open issues on the repository; none is a defect in what ships.
 
-Three gates, all green before anything merges:
+## 6. How to check your work
 
+```bash
+python3 registry/tools/validate.py     # every record and class validates; what fails says why
+./scripts/signoff.sh                   # every CI gate, about three minutes; run before a PR
+./scripts/signoff.sh --only 'Liskov'   # a named subset while you work
+./scripts/regen.sh                     # after a class change: regenerate every derived file
 ```
-python3 registry/tools/validate.py        # every instance/provider/layer/accreditation validates;
-                                           #   semantic checks (reference integrity, lineage, composite
-                                           #   ordering) + the advisory change-impact map
-python3 tests/validate_registry.py         # every Resource Type spec validates; $id↔version agreement;
-                                           #   ADOPT-001 (every adopted standard is registered); UUID-v4
-python3 tests/check_estate_tokens.py       # no private/estate tokens leaked into the public repo
+
+The gates check this repository. The conformance suite checks you; the next section says how.
+
+## 7. The provider contract
+
+A provider registers once, saying what it is and what it can do. The control plane checks that
+and writes its own record of what it admitted. The contract is
+[`provider-contract.md`](../spec/contracts/provider-contract.md); every example in it is schema-checked.
+
+- **The registration** is [`provider-registration.schema.json`](../../registry/provider-registration.schema.json),
+  with a worked case in `registry/examples/example-provider-registration.yaml`. It carries identity,
+  declared capabilities, the sovereignty claim, accreditation references, the roles it accepts, the
+  data it requests, endpoints, its certificate and its telemetry descriptor.
+- **Capabilities are verb by domain**, such as `realize_resources/Storage`, from
+  `registry/taxonomies/provider-capability.yaml`. The detail behind each verb is a profile under
+  `capability_profiles`. A profile without its verb declared is refused.
+- **Declaring grants nothing.** Trust posture, admitted capabilities and lifecycle state are the
+  control plane's, in the registration verdict (`registration-verdict.schema.json`). The registration
+  has no field for them, so a provider cannot write them.
+- **Dispatch is zero trust.** A provider receives the elements of the class it binds and nothing else,
+  unless a policy grants more. The requested record is the receipt (DSP-002 to DSP-004).
+- **Cross-tenant work is explicit.** An edge into another tenant states that tenant and names the grant
+  that allows it (CTX-010). A grant names the resources it covers as an explicit set.
+- **It is experimental**, like everything else (§4). The capability profiles are the part most likely to
+  change as real providers register.
+
+## 8. The conformance suite and your evidence
+
+The suite judges the records an implementation writes. It is
+[`tests/conformance.py`](../../tests/conformance.py), suite 1.0.0, record level; [`CONFORMANCE.md`](../../CONFORMANCE.md)
+§8 is its contract. Run it against a directory of your records:
+
+```bash
+python3 tests/conformance.py path/to/your/records --report conformance-report.json
 ```
 
-`validate.py` loads JSON and YAML identically (same records, same schemas) and reads multi-document (`---`) files. A green run is the floor, not the ceiling — conformance (§4) is the release bar.
+- **What it checks**, 14 rules: the state-record schema on stream heads, integrity chains (INT),
+  transition provenance (TRN), fulfillment conditions (FUL), dispatch receipts (DSP), and each head's
+  fields and outputs against the class version it pins.
+- **What a pass means.** Exit 0 means every rule held on every record it read. Each rule has at least
+  one must-reject case, so a rule that stopped refusing would turn the suite's own CI red.
+- **What it does not check.** Wire behaviour, §6 of `CONFORMANCE.md`, is 1.x. And a payload is judged
+  only at the exact class version a record pins. If this repository no longer serves that version, the
+  payload is reported as `payload.unjudged`, not failed. Pin versions it serves to get the full check.
+- **Keep the report.** It records the suite version and the exact udlm commit. Your conformance
+  declaration cites it (`conformance_test_suite_version`), and so does a promotion to stable (§4).
 
-## 6. Reading order
+## 9. Estate evidence
 
-1. This document, then [`README.md`](../../README.md) and [`GLOSSARY.md`](../../GLOSSARY.md).
-2. `docs/spec/foundations/four-states.md` → `docs/spec/foundations/data-model-core.md` → `docs/spec/foundations/layering-and-versioning.md`.
-3. `../../registry/UDLM-0.1-SCOPE.md` (what 0.1 is) → `docs/adr/` for the *why* of whatever you're touching.
-4. The schema + contract for your area (§3), then write records and run the gates (§5).
+The authors' own homelab is the first implementation, and its estate is the evidence so far. It holds
+about 2,500 state records for real hosts, VMs, storage, network and power, written by a discovery
+pipeline and governed through the four states.
 
-The substrate is implementation-neutral: implement to the schemas and contracts, not to DCM. If a decision feels like runtime behavior, apply the ADR-008 test — it probably belongs to DCM, not here.
+- **Every run keeps a report.** A CI job in the estate repository, `conformance-report`, runs the suite
+  on every merge request and every commit to main. It keeps `conformance-report.json` as an artifact
+  that never expires.
+- **Where it stands.** On 2026-11-03 the estate passed all 14 rules with no failure: 2,540 records and
+  1,149 stream heads. 883 heads pin an older class revision, so their payloads were reported unjudged.
+  The estate re-pins to `udlm/1.0` after the tag, and then every payload is judged.
+- **How it is used.** A register row that promotes a part cites one report: the pipeline and how many of
+  that part's records were judged. Nothing is promoted on the estate's word alone.
+- **What it has already caught.** Running the model on a real estate found defects the examples could
+  not. A tenant was standing in for a physical site. A cross-tenant grant was being inferred rather than
+  named. Both are fixed in the model now (CTX-010, and the explicit rules in #723).
+
+## 10. Changing the spec, and where to ask
+
+Open an issue that says what breaks and which record shows it. A pull request changes `docs/spec`
+first and every derived file in the same change, carries a register row, and passes every gate.
+Plain English is a rule here: a reader who was not in the room understands a row or a description
+cold. Decisions are made in the open, as register rows, by the maintainers in `MAINTAINERS.md`.
+There is no private channel.

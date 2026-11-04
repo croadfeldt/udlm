@@ -19,6 +19,8 @@ data that any other conformant system can read, interpret, and exchange.
 6. **[`docs/guides/co-engineering.md`](docs/guides/co-engineering.md)** — joining from another
    organization: what to read, how to check your own records, how to change the spec, how decisions
    are made.
+7. **[`docs/guides/udlm-0.1-engineering-handoff.md`](docs/guides/udlm-0.1-engineering-handoff.md)** — the
+   engineering handoff: what is experimental, what is known open, how to check your work.
 
 ## Layers
 

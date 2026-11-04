@@ -7,7 +7,9 @@ freeze, every open issue sorted into blockers and 1.x, the work packages, and th
 ## Now
 
 - Close the remaining 1.0 blockers (the plan's §4.1).
-- Finish the readability sweep, area by area, under the gate (row 138).
+- Hand the spec to engineering: [`docs/guides/udlm-0.1-engineering-handoff.md`](docs/guides/udlm-0.1-engineering-handoff.md)
+  says where to start, what is experimental and what is known open. The documentation sweep is
+  done (row 151); every document a person reads is accurate and under the readability gate.
 - Promote parts from experimental to candidate to stable by the graduation ladder (register
   row 145), as a running implementation's conformance reports arrive.
 
