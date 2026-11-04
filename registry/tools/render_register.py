@@ -19,9 +19,11 @@ A row file is a front-matter block and one line of body, the table cell verbatim
   render_register.py --check    REG-001 every file is named by its id and has one body line;
                                 REG-002 ids are unique; REG-003 the README holds no row that
                                 has no file and no row whose text differs from its file; rows
-                                that exist as files but are not in the README yet are PENDING
-                                and pass, except on main (GITHUB_REF refs/heads/main), where
-                                the README must be fresh.
+                                that exist as files but are not in the README yet are PENDING:
+                                reported, never failed, so main stays green between a merge and
+                                the refresh pull request that renders them.
+  render_register.py --check --strict   also fails on pending rows: the refresh pull request's
+                                own proof that it rendered everything.
 """
 import glob
 import os
@@ -98,7 +100,7 @@ def main():
             elif want[rid] != line:
                 fails.append(f"REG-003 README row {rid} differs from its file; rerun render_register.py")
         pending = sorted((rid for rid in want if rid not in have), key=lambda i: sort_key({"id": i, "order": next(r["order"] for r in rows if r["id"] == i)}))
-        strict = os.environ.get("GITHUB_REF") == "refs/heads/main" or "--strict" in sys.argv
+        strict = "--strict" in sys.argv
         for f in fails:
             print(f"FAIL [{f}")
         if pending:

@@ -67,7 +67,7 @@ jobs:
       - run: python3 tests/check_implementation_neutrality.py
       # ADR-CITE-001 — a cited ADR resolves, or names whose it is (numbering spaces overlap).
       - run: python3 tests/check_adr_citations.py
-      # REG-001..003 — one file per ruling; the README table is rendered from them and must be fresh on main.
+      # REG-001..003 — one file per ruling; the README table is rendered from them (pending rows are reported, a refresh PR renders them).
       - run: python3 registry/tools/render_register.py --check
       # Rule-ID single-source: every normative rule-ID prefix must be registered in
       # registry/rule-id-registry.yaml and defined only in its home file (ADR-028,
