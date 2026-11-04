@@ -37,7 +37,7 @@ at the normative documents and does not restate them.
   to the model; what the model fixes is the facts a policy may read and the outcomes it may return.
   [`policy-contract.md`](../spec/contracts/policy-contract.md).
 - **A provider registers what it offers** and reports back what it built, in the record's
-  `outputs`. [`provider-contract.md`](../spec/contracts/provider-contract.md) (7f's section below).
+  `outputs`. [`provider-contract.md`](../spec/contracts/provider-contract.md) (§7 below).
 - **Conformance is record level.** An implementation claims UDLM by the records it writes, judged
   by the suite. [`CONFORMANCE.md`](../../CONFORMANCE.md).
 
@@ -104,15 +104,65 @@ The gates check this repository. The conformance suite checks you; the next sect
 
 ## 7. The provider contract
 
-<!-- 7f writes this: what a provider registers, what it must honor, where the schema-checked examples are -->
+A provider registers once, saying what it is and what it can do. The control plane checks that
+and writes its own record of what it admitted. The contract is
+[`provider-contract.md`](../spec/contracts/provider-contract.md); every example in it is schema-checked.
+
+- **The registration** is [`provider-registration.schema.json`](../../registry/provider-registration.schema.json),
+  with a worked case in `registry/examples/example-provider-registration.yaml`. It carries identity,
+  declared capabilities, the sovereignty claim, accreditation references, the roles it accepts, the
+  data it requests, endpoints, its certificate and its telemetry descriptor.
+- **Capabilities are verb by domain**, such as `realize_resources/Storage`, from
+  `registry/taxonomies/provider-capability.yaml`. The detail behind each verb is a profile under
+  `capability_profiles`. A profile without its verb declared is refused.
+- **Declaring grants nothing.** Trust posture, admitted capabilities and lifecycle state are the
+  control plane's, in the registration verdict (`registration-verdict.schema.json`). The registration
+  has no field for them, so a provider cannot write them.
+- **Dispatch is zero trust.** A provider receives the elements of the class it binds and nothing else,
+  unless a policy grants more. The requested record is the receipt (DSP-002 to DSP-004).
+- **Cross-tenant work is explicit.** An edge into another tenant states that tenant and names the grant
+  that allows it (CTX-010). A grant names the resources it covers as an explicit set.
+- **It is experimental**, like everything else (§4). The capability profiles are the part most likely to
+  change as real providers register.
 
 ## 8. The conformance suite and your evidence
 
-<!-- 7f writes this: running the suite on your records, keeping the report, what it proves and what it does not (pinned class versions) -->
+The suite judges the records an implementation writes. It is
+[`tests/conformance.py`](../../tests/conformance.py), suite 1.0.0, record level; [`CONFORMANCE.md`](../../CONFORMANCE.md)
+§8 is its contract. Run it against a directory of your records:
+
+```bash
+python3 tests/conformance.py path/to/your/records --report conformance-report.json
+```
+
+- **What it checks**, 14 rules: the state-record schema on stream heads, integrity chains (INT),
+  transition provenance (TRN), fulfillment conditions (FUL), dispatch receipts (DSP), and each head's
+  fields and outputs against the class version it pins.
+- **What a pass means.** Exit 0 means every rule held on every record it read. Each rule has at least
+  one must-reject case, so a rule that stopped refusing would turn the suite's own CI red.
+- **What it does not check.** Wire behaviour, §6 of `CONFORMANCE.md`, is 1.x. And a payload is judged
+  only at the exact class version a record pins. If this repository no longer serves that version, the
+  payload is reported as `payload.unjudged`, not failed. Pin versions it serves to get the full check.
+- **Keep the report.** It records the suite version and the exact udlm commit. Your conformance
+  declaration cites it (`conformance_test_suite_version`), and so does a promotion to stable (§4).
 
 ## 9. Estate evidence
 
-<!-- 7f writes this: the estate CI job that keeps a conformance report from every run, as the evidence promotions cite -->
+The authors' own homelab is the first implementation, and its estate is the evidence so far. It holds
+about 2,500 state records for real hosts, VMs, storage, network and power, written by a discovery
+pipeline and governed through the four states.
+
+- **Every run keeps a report.** A CI job in the estate repository, `conformance-report`, runs the suite
+  on every merge request and every commit to main. It keeps `conformance-report.json` as an artifact
+  that never expires.
+- **Where it stands.** On 2026-11-03 the estate passed all 14 rules with no failure: 2,540 records and
+  1,149 stream heads. 883 heads pin an older class revision, so their payloads were reported unjudged.
+  The estate re-pins to `udlm/1.0` after the tag, and then every payload is judged.
+- **How it is used.** A register row that promotes a part cites one report: the pipeline and how many of
+  that part's records were judged. Nothing is promoted on the estate's word alone.
+- **What it has already caught.** Running the model on a real estate found defects the examples could
+  not. A tenant was standing in for a physical site. A cross-tenant grant was being inferred rather than
+  named. Both are fixed in the model now (CTX-010, and the explicit rules in #723).
 
 ## 10. Changing the spec, and where to ask
 
