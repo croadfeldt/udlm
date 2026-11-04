@@ -1,5 +1,5 @@
 uuid: uc-2d6f0c41-8a7e-4b39-9e15-3c4a7b0d92f8
-handle: docs/spec/contracts/estate-logs-reach-one-store
+handle: observability/estate-logs-reach-one-store
 version: 1.0.0
 scenario:
   description: 'A platform engineer gathers the logs of a mixed estate into one store: a few machines whose agents

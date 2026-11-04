@@ -128,7 +128,7 @@ The control plane looks up external records using a stable primary key — alway
 ### 6.1 External Entity Reference Structure
 
 ```yaml
-# illustrative: the external entity reference shape; no registry schema governs it
+# illustrative: the record that stands for an external datum (entity-relationships §10.4); no registry schema governs it
 external_entity_reference:
   uuid: <control-plane-generated uuid — stable internal anchor>
   # the control plane UUID is what gets stored in relationship declarations
@@ -416,9 +416,9 @@ When an organization decides to manage business context data in the control plan
 
 - Can be grouped under Tenants and Resource Groups
 
-The relationship model is identical whether the related entity is internal or external — the `related_entity_type` field (`internal` vs `external`) is the only difference from the consuming entity's perspective.
+The relationship model is identical whether the related entity is internal or external: the consuming entity holds an ordinary `references` edge to it (entity-relationships §10.4). Which provider serves the target is a fact on the target record above, not on the edge.
 
-This means an organization can start with an external Information Provider reference and migrate to internally owned business data later — relationships remain structurally the same, only the `related_entity_type` changes.
+So an organization can start with an external Information Provider reference and later own the data internally. The edges stay exactly as they are; only the target record changes.
 
 ---
 

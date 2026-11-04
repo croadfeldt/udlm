@@ -817,32 +817,35 @@
   }
  },
  "type:Grouping": {
-  "current": "0.3.2",
+  "current": "0.3.3",
   "path": "registry/classes/access/authorization/grouping/_base.yaml",
   "versions": {
    "0.2.0": "sha256:00141d763206ad31a3c32eeffc8e2a5251a711115b958f115ae6766d93fba4a2",
    "0.3.0": "sha256:7845995aaba0dace2aff2da2ebde357a63fbf163bd510ebd9a5d8ce8d91a37d7",
    "0.3.1": "sha256:02ef2cdf9a1fd9afd6ff3439f52e4e9026c136de4966f51f154ada88de8004ce",
-   "0.3.2": "sha256:31f4ad120674095208777b1caeaf6dbfb5d7cbbee39c48d0863a534bc430e55e"
+   "0.3.2": "sha256:31f4ad120674095208777b1caeaf6dbfb5d7cbbee39c48d0863a534bc430e55e",
+   "0.3.3": "sha256:0110fa75be7c5ff9abddcd3388fedf82c0884826f00e9d1e786fa5385cf4f78c"
   }
  },
  "type:Grouping.Authorization": {
-  "current": "0.2.0",
+  "current": "0.3.0",
   "path": "registry/classes/access/authorization/grouping/authorization.yaml",
   "versions": {
    "0.1.0": "sha256:68c56ef5e605838b3da63f39eab0837216af70fbcf6d4d78f605abe12cc34b8e",
    "0.1.1": "sha256:1eb17dde5a055f1a67b2a17c47b7025b6723bb30772ddc63eecf1ae469ce483d",
    "0.1.2": "sha256:4680102635e3584067d8bd1ea5987c0d5ee9dda345c065c4bc0cd3e795359eaf",
-   "0.2.0": "sha256:cbe03a0045f156bf19fec5489c9e95fb920ee23f6448ac1ed94a5e0ccaef4278"
+   "0.2.0": "sha256:cbe03a0045f156bf19fec5489c9e95fb920ee23f6448ac1ed94a5e0ccaef4278",
+   "0.3.0": "sha256:6397c99a0516a8e998687b687fa8c5ced5f4795db96b50c87ae9acd7717b105c"
   }
  },
  "type:Grouping.Tenant": {
-  "current": "0.1.2",
+  "current": "0.2.0",
   "path": "registry/classes/access/authorization/grouping/tenant.yaml",
   "versions": {
    "0.1.0": "sha256:9c8bf48ff9123117f278ccc21e30d28379eabe66eae7392233ffd55fe3066509",
    "0.1.1": "sha256:df08d49ca065920eb4db0f22b965763df6618106a403cbb4b1d07655fc95f849",
-   "0.1.2": "sha256:a59784454fe8e07bdb96d6d8fbe0309f84f2d0f53f9f552432c5f45a40b28293"
+   "0.1.2": "sha256:a59784454fe8e07bdb96d6d8fbe0309f84f2d0f53f9f552432c5f45a40b28293",
+   "0.2.0": "sha256:e9f6151648a2df09065cfe081d0db2fe55706826dbc1fd67fe1a280f7d0567eb"
   }
  },
  "type:Hardware": {

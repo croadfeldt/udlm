@@ -365,11 +365,11 @@ One GPU as a component record. The same type covers three shapes, distinguished 
 
 ## Grouping
 
-### Grouping (0.3.2)
+### Grouping (0.3.3)
 
 **Purpose:** Declares a grouping — the native anchor other things bind to: a membership criterion, the obligations members inherit, and the opaque subject bindings an authorization engine evaluates.
 
-A named set of things with a rule for what belongs in it. A tenant is a grouping with an isolation obligation; an authorization is a grouping that grants a stake. A plain Grouping is an advisory set — a deployment, a team's resources — with a derivable membership rule preferred over an explicit list.
+A named set of things with a rule for what belongs in it. A tenant is a grouping with an isolation obligation; an authorization is a grouping that grants a stake. A plain Grouping is an advisory set — a deployment, a team's resources. Only an advisory grouping may select members by a rule over other fields.
 
 **Use when:**
 - You need to name a set of resources so policy, cost or drift can address them together.
@@ -382,7 +382,7 @@ A named set of things with a rule for what belongs in it. A tenant is a grouping
 - Grouping.Tenant and Grouping.Authorization — the Types that narrow it.
 - Any resource — a member by criterion.
 
-### Grouping.Authorization (0.2.0)
+### Grouping.Authorization (0.3.0)
 
 **Purpose:** One grouping permitting another to use something it holds. The grant is a record with its own identity and lifecycle, so it can be found, audited, time-bounded, and withdrawn.
 
@@ -403,7 +403,7 @@ Permission for the members of one grouping to use resources held by another — 
 - Grouping.Tenant — the usual pair of boundaries a grant spans
 - The required-grant set (CTX-005) — derived from a request's edges and diffed against these
 
-### Grouping.Tenant (0.1.2)
+### Grouping.Tenant (0.2.0)
 
 **Purpose:** The ownership and isolation border. Every record in the model carries a tenant_uuid pointing at one of these, and it is the referent that ownership, cost attribution, audit scope, drift accountability, and policy scope all resolve against.
 

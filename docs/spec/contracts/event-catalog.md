@@ -69,14 +69,14 @@ links:
 
 | Domain | Events | Description |
 |--------|--------|-------------|
-| `request.*` | 15 | Request pipeline lifecycle |
+| `request.*` | 17 | Request pipeline lifecycle |
 | `entity.*` | 13 | Resource entity lifecycle |
 | `reservation.*` | 3 | Reservation holds in two-phase realization (§4) |
 | `drift.*` | 4 | Drift detection and resolution |
 | `provider.*` | 5 | Provider registration and health |
 | `provider_update.*` | 5 | Provider-initiated update lifecycle |
 | `rehydration.*` | 5 | Entity rehydration lifecycle |
-| `policy.*` | 4 | Policy contribution lifecycle |
+| `policy.*` | 6 | Policy contribution lifecycle and governance refusals |
 | `credential.*` | 4 | Credential lifecycle |
 | `approval.*` | 4 | Approval pipeline |
 | `tier_registry.*` | 4 | Authority tier registry changes |
@@ -93,6 +93,7 @@ links:
 | `conformance.*` | 3 | UDLM conformance lifecycle (version deprecation, bundle updates, level changes) |
 | `schema.*` | 1 | Schema bundle updates |
 | `process.*` | 1 | Process Resource execution events (§17a) |
+| `subscription.*` | 15 | Subscription lifecycle (§17b; defined in subscription-lifecycle.md) |
 | `accreditation.*` | 7 | Accreditation verification lifecycle (§20) |
 | `itsm.*` | 3 | ITSM integration record lifecycle (§21) |
 | `group.*` | 4 | grouping lifecycle (appendix) |
@@ -120,6 +121,8 @@ links:
 | `request.gating_rejected` | high | Compliance-class Validation Policy denied the request |
 | `request.cancelled` | low | Consumer cancelled; pipeline terminated |
 | `request.progress_updated` | info | Provider sent interim progress update; constituent_status updated |
+| `request.pending_dependency` | info | A request waits for a request it depends on (request-dependency-graph); queryable and cancellable, no own timeout |
+| `request.schedule_deadline_missed` | high | A scheduled request's `not_after` deadline passed before dispatch; terminal (scheduled-requests) |
 
 ### 3.1 Payload Schemas
 
@@ -431,6 +434,8 @@ payload:
 | `policy.deactivated` | medium | Policy deactivated |
 | `policy.evaluated` | info | Policy evaluated against a request payload (shadow or active) |
 | `policy.shadow_result` | info | Shadow evaluation diverged from expected outcome |
+| `policy.sovereignty_egress_denied` | high | A crossing of a declared sovereignty boundary was refused; names the boundary and the refusing rule (GMX-011) |
+| `policy.field_scope_violation` | high | A write touched a field outside the actor's scope; names the field path and the excluding rule (GMX-013) |
 
 ### 9.1 Payload Schema
 
@@ -845,6 +850,13 @@ payload:
 
 ---
 
+## 17b. Subscription Events (`subscription.*`)
+
+The fifteen subscription events, from `subscription.created` to `subscription.decommissioned`, are defined
+once, with what fires each and its urgency, in [subscription-lifecycle.md](../lifecycle/subscription-lifecycle.md)
+under "Changes and policy triggers". They use the standard envelope above. This catalog lists them so the
+index is complete; it does not restate them.
+
 ## 18. System Policies
 
 | Policy | Rule |
@@ -867,6 +879,7 @@ request.policies_evaluated request.requires_approval    request.approved
 request.placement_complete request.dispatched           request.compound_assembled
 request.dependencies_resolved  request.realized          request.failed
 request.gating_rejected    request.cancelled            request.progress_updated
+request.pending_dependency request.schedule_deadline_missed
 
 entity.realized            entity.state_changed         entity.modified
 entity.ttl_warning         entity.ttl_expired           entity.suspended

@@ -17,7 +17,7 @@
 # selects WHICH resources are in scope and `authorized_operations` says WHAT may be done with them;
 # resources needing different operations are different grants. Simpler, and it costs nothing a second
 # grant does not buy.
-$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Authorization/0.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Authorization/0.3.0
 uuid: 9d41c8e2-05b7-4a36-b8f9-1c7e3a604b52
 record_type: class
 resource_type: Grouping.Authorization
@@ -25,7 +25,7 @@ class: type
 parent: Grouping
 family: Access
 entity_type: Grouping
-version: 0.2.0
+version: 0.3.0
 conforms_to: udlm/0.1
 status: active
 context:
@@ -49,6 +49,19 @@ context:
     - Grouping.Tenant — the usual pair of boundaries a grant spans
     - The required-grant set (CTX-005) — derived from a request's edges and diffed against these
 elements:
+  - element: membership_criterion
+    scope: Grouping.Authorization
+    state: proposed
+    description: 'Which resources the grant covers, as an explicit set of uuids, `estate?uuid=in=(a,b)`. A grant names
+      what it covers; a filter over labels or other fields would let the covered set change without anyone granting
+      anything (#723, explicit permissions). Resources added later need the grant amended.'
+    schema:
+      type: string
+      format: udlm-filter-url
+      pattern: '^estate\?uuid=in=\([0-9a-f-]+(,[0-9a-f-]+)*\)$'
+      description: 'Which resources the grant covers, as an explicit set of uuids, `estate?uuid=in=(a,b)`. A grant names
+        what it covers; a filter over labels or other fields would let the covered set change without anyone granting
+        anything (#723, explicit permissions). Resources added later need the grant amended.'
   - element: granted_by
     scope: Grouping.Authorization
     optional: false
