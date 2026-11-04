@@ -769,7 +769,7 @@ The most portable way to ask for a machine: how big, what image, which disks, wh
 - FileShare — the network shares its guest mounts (`mounts`).
 - Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
 
-### Machine.BareMetalHost (0.17.2)
+### Machine.BareMetalHost (0.18.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -881,7 +881,7 @@ One network interface, of any kind: device_class says whether it is a physical N
 
 ## NetworkSwitch
 
-### NetworkSwitch (0.11.2)
+### NetworkSwitch (0.12.0)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
@@ -904,7 +904,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 
 ## PowerFeed
 
-### PowerFeed (0.9.2)
+### PowerFeed (0.10.0)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 

@@ -60,7 +60,7 @@
     },
     {
       "class": "NetworkSwitch",
-      "version": "0.11.2",
+      "version": "0.12.0",
       "instantiable": true,
       "path": "registry/classes/resource/network/network-switch/_base.yaml",
       "types": []

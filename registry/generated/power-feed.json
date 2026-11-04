@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/PowerFeed/0.9.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/PowerFeed/0.10.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31",
   "resource_type": "PowerFeed",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "PowerFeed",
-          "version": "0.9.2",
+          "version": "0.10.0",
           "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31"
         }
       ]
@@ -94,6 +94,13 @@
       "target": "UPS",
       "cardinality": "0..1",
       "description": "supplied_by — the UPS that conditions this feed (feed_type ups). The feed's status/battery outputs are that unit's telemetry; a feed with no UPS (utility, pdu, generator) has no such edge."
+    },
+    {
+      "edge_type": "contained_by",
+      "name": "located_in",
+      "target": "Location",
+      "cardinality": "0..1",
+      "description": "located_in — the room, rack or site the feed serves. Stated on the record, never inferred from power or network; a thing is where its placement says it is, and residency reads this edge."
     }
   ],
   "adopts": [

@@ -84,5 +84,6 @@ context:
     - Power sources — PowerFeed, referenced per host, not per location.
   works_with:
     - Location — the parent place this one nests inside.
-    - Machine.BareMetalHost — the equipment that declares its location.
+    - Machine.BareMetalHost, NetworkSwitch, PowerFeed, UPS — the equipment that declares its location by a
+      located_in edge; nothing is placed by inference from power or network.
     - Topology — the failure-domain view of the same physical reality.

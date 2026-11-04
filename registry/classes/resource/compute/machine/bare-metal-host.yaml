@@ -1,4 +1,4 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.17.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.18.0
 conforms_to: udlm/0.1
 uuid: 7196d55a-d584-40e5-8b47-5247dad7d421
 record_type: class
@@ -6,7 +6,7 @@ class: type
 resource_type: Machine.BareMetalHost
 short_name: Machine.BMH
 parent: Machine
-version: 0.17.2
+version: 0.18.0
 family: Resource
 status: active
 metadata:
@@ -257,6 +257,12 @@ relationships:
     target: PowerFeed
     cardinality: 0..n
     description: Power source(s) the host draws from; the host stops before the feed in a reverse-topo shutdown.
+  - edge_type: contained_by
+    name: located_in
+    target: Location
+    cardinality: 0..1
+    description: located_in — the room, rack or site the host stands in. Stated on the record, never inferred from power or network; a thing is
+      where its placement says it is, and residency reads this edge.
 adopts:
   - standard: Redfish
     version: '2024.4'
