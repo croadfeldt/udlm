@@ -23,7 +23,7 @@ document is defect-fixed to defer here. Each section lists the detailed document
   name-keyed edges, for example) map name↔uuid at the Provider/catalog boundary;
   the external name is recorded as a `correlation_ids` entry (`scheme: provider_id`).
 
-*Governs:* `docs/spec/contracts/identifier-scheme.md`, reference fields in both schemas, REF-001/002.
+*Governs:* `docs/spec/contracts/identifier-scheme.md`, reference fields in both schemas.
 
 ## 2. Entities, types, instances
 
@@ -86,7 +86,7 @@ document is defect-fixed to defer here. Each section lists the detailed document
 
 - **Discovered has a dual role** (ephemeral drift-snapshot stream AND durable per-uuid
   inventory of what exists, including unclaimed). **The durable-inventory role is EXEMPT from
-  the RHY-008 retention ceiling** — retention windows apply to the snapshot stream only; the
+  the retention ceiling** — retention windows apply to the snapshot stream only; the
   reconciled inventory record persists until claim or retirement.
 
 *Governs:* `docs/spec/foundations/four-states.md`, `docs/spec/foundations/entity-types.md`,
@@ -162,7 +162,7 @@ document is defect-fixed to defer here. Each section lists the detailed document
   snapshots, point-in-time by uuid, per-dot-path provenance, retention, tenancy isolation,
   residency placement). **Audit Store** (append-only, RFC 9162 Merkle — an app-level
   construction that works above any store — AUD-008 query dimensions, WORM-capable retention for
-  fsi). **Discovered stream** (rolling snapshots, RHY-008 windows). A deployment BINDS each
+  fsi). **Discovered stream** (rolling snapshots, retention windows). A deployment BINDS each
   contract to a conforming store via profile + sovereignty/tenancy policy, and the binding is
   declared and auditable (storage-provider records,
   `docs/spec/contracts/data-store-contracts.md`). **PostgreSQL is the reference implementation**

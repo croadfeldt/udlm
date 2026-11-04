@@ -213,7 +213,7 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/gu
   rebuild mints a **new** UUID kept traceable by lineage). A claim that omits its governing rule, or restates
   it wrongly, is a finding. The *semantic* version of this, whether the corpus as a whole coheres with the
   model, is measured by an assessment tool's coherence analysis against this corpus. A per-rule-ID
-  citation-integrity CI gate is buildable once a complete rule-ID definition index exists; today about 3% of
+  citation-integrity CI gate is buildable once a complete rule-ID definition index exists; today some
   citations resolve only by heuristic, too noisy to hard-gate.
 - **Document the why:** the rationale lives in the repo (design note / tenet / ADR pointer), not just the
   diff.

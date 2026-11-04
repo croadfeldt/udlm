@@ -272,7 +272,7 @@ flagged as portability-degraded and the consumer is notified. So: **carry provid
 
 This document has no open questions. Each former question is settled where it is normative:
 the store-contract model in [data-model-core](data-model-core.md) §6 (ruling D1),
-`native_passthrough` (DATA-001, [data-roles.md](../contracts/data-roles.md)), and the
+`native_passthrough` ([data-roles.md](../contracts/data-roles.md)), and the
 provenance models (LAY-007/LAY-008) in [layering-and-versioning.md](layering-and-versioning.md).
 
 ---

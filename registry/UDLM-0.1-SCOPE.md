@@ -161,7 +161,7 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
 
 - The resource types in the registry: 71 classes (`registry/MODEL-HEALTH.md`, `registry/stability.yaml`, row 133).
 - 27 record schemas.
-- 17 contracts (11 complete/stable, 6 draft — see §5/§6).
+- The contracts listed in §5 and §6.
 - The prose ADRs in `docs/adr/` (see `docs/adr/README.md`) + JSON DecisionRecords.
 - The docs/spec foundations, lifecycle, governance and principles doc set.
 - The profile mechanism (`registry/profile.schema.json`); the named postures are the UDLM Profile Set's (row 140).
