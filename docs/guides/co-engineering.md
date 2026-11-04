@@ -63,7 +63,7 @@ declaration cites. Pin the UDLM commit you validate against; move the pin on pur
   with the `1.x` label, or a draft pull request that says it waits on the freeze
   ([lockdown plan §3](../../registry/UDLM-1.0-LOCKDOWN.md)). The maintainer rules on it.
 - **A pull request** changes `docs/spec` first and every derived file in the same change, carries
-  a register row, and passes every step in `.github/workflows/validate.yml`. Run them all before
+  a register file (`docs/adr/register/<number>.md`), and passes every step in `.github/workflows/validate.yml`. Run them all before
   you push; the readability gate will ask for short sentences, and the estate-token guard will
   refuse private hostnames and addresses — use RFC 5737 ranges in examples.
 - **Plain English** is a rule here, not a preference: a reader who was not in the room understands

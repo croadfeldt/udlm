@@ -53,7 +53,9 @@ def resolves(path, from_dir):
 
 
 def main() -> int:
-    files = subprocess.run(["git", "ls-files", "*.md"], capture_output=True, text=True,
+    # docs/adr/register/*.md are table cells rendered into docs/adr/README.md; their links are
+    # README-relative and are checked there, not in the cell files.
+    files = subprocess.run(["git", "ls-files", "*.md", ":!docs/adr/register/*.md"], capture_output=True, text=True,
                            cwd=REPO).stdout.split()
     baseline = yaml.safe_load(open(BASELINE, encoding="utf-8")) if os.path.exists(BASELINE) else {}
     known = {(v["file"], v["path"]) for v in (baseline or {}).get("known", [])}
