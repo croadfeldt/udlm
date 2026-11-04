@@ -4,14 +4,14 @@
   "classes": [
     {
       "class": "Location",
-      "version": "0.6.2",
+      "version": "0.6.3",
       "instantiable": true,
       "path": "registry/classes/resource/facility/location/_base.yaml",
       "types": []
     },
     {
       "class": "PowerFeed",
-      "version": "0.9.2",
+      "version": "0.10.0",
       "instantiable": true,
       "path": "registry/classes/resource/power/power-feed/_base.yaml",
       "types": []

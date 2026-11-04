@@ -111,6 +111,7 @@ combinations are not representable. The recurring patterns:
 | Business context (Business Unit, Cost Center, Owner) | `edge_type: references` | `informational` | none |
 | Cluster members / HA partners | mutual `edge_type: depends_on` (`strength: soft`), one edge per direction, with a declared `relation` (e.g. `peer_of`) | `operational` | per side |
 | Component management authority | a declared `relation` (e.g. `manages`) refining `depends_on` or `contained_by` | per edge_type | required |
+| Physical place (a host in a rack, a rack in a site) | `edge_type: contained_by` + `relation: located_in` to a `Location`; a Location nests in its parent the same way | `constituent` | none: a place does not destroy what stands in it |
 
 **Behavioral rules:**
 
@@ -121,6 +122,8 @@ combinations are not representable. The recurring patterns:
 - `depends_on` with derived `operational` nature is the **allocated resource cell** — where cross-tenant allocations are modeled (§7)
 
 - `references` with derived `informational` nature is the **business context cell** — Business Unit, Cost Center, Person relationships live here
+
+- **Place is derived, never stored.** A thing's place is the nearest `located_in` edge up its `contained_by` chain: a VM is where its host is, and the host is where its edge says. Precision is the Location's own nesting (a slot within a rack within a site), so a finer place needs no spec change. A thing with no `located_in` edge anywhere up its chain has no place; that is a finding, not a default, and nothing infers a place from power or network.
 
 ---
 
@@ -633,6 +636,7 @@ The relationship graph exists across all four states:
 | **Drift Detection** | Discovered State graph compared against Realized State graph — structural and data differences identified |
 | **Decommission** | Graph traversal determines decommission order — lifecycle policies applied at each edge |
 | **Placement** | Pre-realization graph used to understand full resource footprint for placement decisions |
+| **Place and residency** | The nearest `located_in` edge up the `contained_by` chain gives a thing its place; residency rules read that, at whatever precision the Location hierarchy carries (§5) |
 | **Impact Analysis** | Graph traversal from any node identifies all entities affected by a change |
 
 ---

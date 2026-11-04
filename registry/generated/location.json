@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Location/0.6.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Location/0.6.3",
   "conforms_to": "udlm/0.1",
   "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b",
   "resource_type": "Location",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Location",
-          "version": "0.6.2",
+          "version": "0.6.3",
           "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b"
         }
       ]
@@ -88,7 +88,7 @@
   ],
   "context": {
     "purpose": "Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.",
-    "plain_description": "A physical place, at whatever granularity is useful: a site contains rooms, a room contains racks, a rack has positions. Resources declare where they physically sit by referencing a location; location-scoped concerns like cooling or a shared uplink attach at the right level of the hierarchy. Power is not carried here — each host declares its own power-feed edges, because two hosts in one rack can draw from different feeds.",
+    "plain_description": "A physical place, at whatever granularity is useful: a site contains rooms, a room contains racks, a rack has positions. Equipment declares where it sits by a located_in edge to one location, at whatever precision is known; everything contained in that equipment is where it is, derived up the containment chain and never stored. A thing with no such edge up its chain has no place, which is a finding, not a default. Location-scoped concerns like cooling or a shared uplink attach at the right level of the hierarchy. Power is not carried here — each host declares its own power-feed edges, because two hosts in one rack can draw from different feeds.",
     "use_when": [
       "You need to record where equipment physically is, down to a rack position.",
       "You need placement intent for a VM or workload to select among existing places."
@@ -99,7 +99,7 @@
     ],
     "works_with": [
       "Location — the parent place this one nests inside.",
-      "Machine.BareMetalHost — the equipment that declares its location.",
+      "Machine.BareMetalHost, NetworkSwitch, PowerFeed, UPS — the equipment that declares its location by a located_in edge; nothing is placed by inference from power or network.",
       "Topology — the failure-domain view of the same physical reality."
     ]
   }

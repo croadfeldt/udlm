@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/NetworkSwitch/0.11.2
+$id: https://udlm.dev/registry/udlm/0.1/class/NetworkSwitch/0.12.0
 conforms_to: udlm/0.1
 uuid: beda9f11-d152-4fb3-87c6-0da2e7c185ac
 record_type: class
 class: base
 resource_type: NetworkSwitch
-version: 0.11.2
+version: 0.12.0
 family: Resource
 status: active
 filed_under:
@@ -107,6 +107,12 @@ relationships:
     cardinality: 0..n
     description: Power source(s) the switch draws from; a UPS-backed switch outlives the hosts in a reverse-topo
       shutdown (connectivity goes last).
+  - edge_type: contained_by
+    name: located_in
+    target: Location
+    cardinality: 0..1
+    description: located_in — the room, rack or site the switch stands in. Stated on the record, never inferred from power or network; a thing is
+      where its placement says it is, and residency reads this edge.
   - edge_type: references
     name: management_vlan
     target: VLAN
