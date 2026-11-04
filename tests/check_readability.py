@@ -11,7 +11,7 @@ splitting it, never by dropping a MUST, a rule id or an invariant.
   RDB-002  a register row over 150 words                                                -> FAIL
   RDB-003  a class, element or record-schema description over 80 words                 -> FAIL
 
-Scope: docs/adr/README.md rows; every Markdown document a person reads (docs/**, the root, and
+Scope: the register's rows (docs/adr/register/*.md); every Markdown document a person reads (docs/**, the root, and
 registry/*.md), except generated files and the agent-facing files (AGENTS.md, CLAUDE.md); plus
 registry/classes/**/*.yaml and registry/*.schema.json. Code blocks, tables other than rule rows, and
 YAML examples are not prose and are skipped.
@@ -87,12 +87,11 @@ def prose_files():
 def findings():
     out = []  # (rule, key, detail)
 
-    # register rows
-    for line in open(os.path.join(REPO, "docs", "adr", "README.md"), encoding="utf-8"):
-        m = REG_ROW.match(line)
-        if not m:
-            continue
-        n, body = m.group(1), m.group(2)
+    # register rows: one file per ruling under docs/adr/register/ (the README table is rendered from them)
+    for f in sorted(glob.glob(os.path.join(REPO, "docs", "adr", "register", "*.md"))):
+        n = os.path.basename(f)[:-3]
+        text = open(f, encoding="utf-8").read()
+        body = text.split("\n---\n", 1)[1].strip() if "\n---\n" in text else text
         if words(body) > ROW_MAX:
             out.append(("RDB-002", key("register", n), f"row {n}: {words(body)} words"))
         for s in sentences(body):

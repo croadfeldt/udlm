@@ -81,11 +81,14 @@ def adr_files():
 
 
 def register_rows():
-    """The ADR numbers with a row in the decisions register."""
+    """The ADR numbers with a row in the decisions register: one file per ruling under
+    docs/adr/register/, plus whatever the rendered README still holds."""
+    rows = {os.path.basename(p)[:-3] for p in glob.glob(os.path.join(ADR_DIR, "register", "[0-9][0-9][0-9].md"))}
     try:
-        return set(ROW.findall(open(REGISTER, encoding="utf-8").read()))
+        rows |= set(ROW.findall(open(REGISTER, encoding="utf-8").read()))
     except OSError:
-        return set()
+        pass
+    return rows
 
 
 def local_adrs():

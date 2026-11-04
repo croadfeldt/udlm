@@ -111,8 +111,9 @@ copy of the check; the term list belongs upstream, where the ruling was made.
 ## Document the why
 
 Every non-trivial change records its rationale, not just its diff. That is a design note under
-`docs/`, an update to a tenet/principle in `docs/spec/principles/`, or, for a decision, a row in the
-decisions register (`docs/adr/README.md`, dated, newest on top). Don't land a contract change
+`docs/`, an update to a tenet/principle in `docs/spec/principles/`, or, for a decision, a file in the
+decisions register (`docs/adr/register/<number>.md`; the table in `docs/adr/README.md` is rendered
+from those files, newest on top). Don't land a contract change
 without the why; a reviewer should be able to reconstruct *why* from the repo, not just *what*.
 
 ## Registry changes (valid-by-construction)

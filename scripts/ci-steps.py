@@ -49,6 +49,7 @@ NAMES = {
     "python3 tests/check_definition_single_source.py": "single-source (definitions)",
     "python3 tests/check_implementation_neutrality.py": "implementation-neutral normative tier (IMP-001)",
     "python3 tests/check_adr_citations.py": "cited ADRs resolve (ADR-CITE-001)",
+    "python3 registry/tools/render_register.py --check": "register rows are files; README rendered from them (REG-001..003)",
     "python3 tests/check_model_vocabulary.py": "model vocabulary",
     "python3 tests/check_session_narration.py": "session narration",
     "python3 tests/check_profile_tables.py": "profile tables",

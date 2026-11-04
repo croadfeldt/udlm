@@ -1,7 +1,7 @@
 # Authoring an ADR
 
 **A ruling gets a register row by default; it earns ADR prose only when the why needs a page.**
-Every decision lands as one row in [`../adr/README.md`](../adr/README.md) — the decisions
+Every decision lands as one file under [`../adr/register/`](../adr/register/), rendered into [`../adr/README.md`](../adr/README.md) — the decisions
 register: what it settled (the gist), where the content lives, what it supersedes. Write a full
 ADR only for a genuinely contested, architecture-shaping decision whose rationale engineering
 must be able to interrogate; a vocabulary call, naming ruling, or mechanism choice is a row,
@@ -57,8 +57,10 @@ the decision before you record a new one.
    is not fully scoped.
 7. **State the scope edge** — a "what this does not decide" boundary (the UDLM/DCM split, ADR-008)
    where it applies.
-8. **Add the index row** — one line in [`../adr/README.md`](../adr/README.md)'s table carrying the
-   ADR's gist.
+8. **Add the register file** — `docs/adr/register/<number>.md`: a front-matter block (`id`, and
+   `link` to the ADR file) and one line, the ruling's gist. The README's table is rendered from
+   these files (`python3 registry/tools/render_register.py`), in a refresh pull request after the
+   merge; do not edit the table by hand. Take the next free number; the gate refuses a duplicate.
 
 **Immutability (ADR-051).** Once Accepted, an ADR is **not edited in place** — a new ADR *supersedes*
 it, and the superseded one is marked, not rewritten. Amendments are new records. This is the same

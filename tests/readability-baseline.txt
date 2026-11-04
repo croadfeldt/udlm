@@ -1,1 +1,19 @@
 # Readability violations that predate the gate (tests/check_readability.py). Shrink only.
+RDB-001 register:008:f23de0bd8b
+RDB-001 register:033:25e4cd7de4
+RDB-001 register:034:7ff6080f3c
+RDB-001 register:038:5a6fa668d5
+RDB-001 register:045:678de6b67a
+RDB-001 register:046:6c21987642
+RDB-001 register:048:bb299a9bbd
+RDB-001 register:049:c68af0003f
+RDB-001 register:050:ead93708a8
+RDB-001 register:051:269f761043
+RDB-001 register:052:cd1652b151
+RDB-001 register:052:d36cc67fce
+RDB-001 register:053:fb16267f6a
+RDB-001 register:054:400aac07e0
+RDB-001 register:059:ab3d3e818e
+RDB-001 register:060:76fa6a2e71
+RDB-001 register:066:a889fa7224
+RDB-001 register:075:4857b1899c
