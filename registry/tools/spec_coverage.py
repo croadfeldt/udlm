@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Spec-completeness gate (rule-36 — CONTRIBUTING "a spec travels with its story"): every
-resource-type spec and Class ships with a Use Case, a worked example, and a flow.
+"""Spec-completeness gate (rule-36 — CONTRIBUTING "a spec travels with its story"): every Class
+ships with a Use Case and a flow (a Class is its own worked example).
 
 The link is STRUCTURAL: a spec carries a `coverage:` block naming its use_cases / examples / flows
 (maintainer ruling 2026-07-27, option (a) — the story stays attached to the spec). This tool is the
@@ -8,10 +8,11 @@ authority on that link:
 
   spec_coverage.py            human scoreboard — covered vs backlog, and any dangling referents (exit 0)
   spec_coverage.py --check    CI gate: (1) every declared coverage referent RESOLVES (UC handle / flow
-                              file / example instance exists), else fail; (2) the backfill backlog
-                              (registry/spec-coverage-backlog.yaml — specs with no coverage block yet)
-                              is regenerated and compared, so a new uncovered spec can't slip in
-                              silently — it either declares coverage or visibly grows the backlog.
+                              file / example record exists), else fail; (2) the backfill backlog
+                              (registry/spec-coverage-backlog.yaml — classes with no coverage block yet)
+                              is regenerated and compared, so a new uncovered class can't slip in
+                              silently — it either declares coverage or visibly grows the backlog;
+                              (3) a scan that finds no class at all fails (COV-003).
 
 A spec with a coverage block whose referents all resolve is COVERED. A spec with no block is in the
 BACKLOG (the shrinking backfill list). A block with a dangling referent is a hard failure — that is
@@ -33,24 +34,19 @@ def load(p):
 
 
 def specs():
-    """(kind, resource_type, path, coverage-dict-or-None) for every spec and Class."""
+    """(kind, resource_type, path, coverage-dict-or-None) for every Class.
+
+    Classes live under registry/classes/<family>/<group>/..., one file each, any depth. This used
+    to read registry/resource-types/** and registry/classes/*.yaml; both were empty after the
+    class-tier restructure, so the gate reported 0 of 0 and checked nothing (#722). A scan that
+    finds no class now fails closed rather than passing vacuously."""
     out = []
-    for p in glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*"), recursive=True):
-        if p.endswith((".json", ".yaml", ".yml")):
-            d = load(p)
-            if d.get("resource_type") and "record_type" not in d:
-                # A type's example leg is satisfied by in-spec spec.examples (ADR-055) — but only
-                # AUGMENT an existing coverage block, never synthesize one: a spec with examples but
-                # no coverage block stays in the backlog (its UCs/flows are still owed) rather than
-                # looking partially covered and demanding the other legs early.
-                cov = d.get("coverage")
-                if cov and (d.get("spec") or {}).get("examples"):
-                    cov = {**cov, "examples": (cov.get("examples") or []) + ["spec.examples"]}
-                out.append(("type", d["resource_type"], p, cov))
-    for p in glob.glob(os.path.join(ROOT, "registry", "classes", "*.yaml")):
+    for p in glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"), recursive=True):
         d = load(p)
         if d.get("record_type") == "class":
             out.append(("class", d["resource_type"], p, d.get("coverage")))
+    if not out:
+        sys.exit("FAIL [COV-003] no class found under registry/classes; the scan is pointed at the wrong tree")
     return sorted(set((k, rt, pa, __import__("json").dumps(c, sort_keys=True) if c else None) for k, rt, pa, c in out))
 
 
@@ -73,8 +69,9 @@ def _docs(p):
 
 
 def _instance_handles():
+    """Handles, $ids and uuids of the worked records under registry/examples (the `examples` leg)."""
     hs = set()
-    for p in glob.glob(os.path.join(ROOT, "registry", "instances", "**", "*"), recursive=True):
+    for p in glob.glob(os.path.join(ROOT, "registry", "examples", "**", "*"), recursive=True):
         if p.endswith((".yaml", ".yml", ".json")):
             for d in _docs(p):
                 for k in ("handle", "$id", "uuid"):
