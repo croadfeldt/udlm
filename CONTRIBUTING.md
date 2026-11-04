@@ -164,12 +164,12 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/gu
   (with its source) or **OBSERVED**, or does not exist on the type.
 - **Registered standards** — `check_standards_registered.py`: a standard cited in prose has a register row
   (`adopted-standards.md` §8).
-- **Spec completeness — UC + example + flow** — `registry/tools/spec_coverage.py --check`: every
-  resource-type spec and Class declares its story in a structural **`coverage:` block** — the **Use Case(s)**
-  (`use-cases/`), **worked example(s)**, and **flow(s)** (`docs/flows/`) that exercise it. Every declared
-  referent must resolve (`COV-001`), and the backfill backlog (`registry/spec-coverage-backlog.yaml`) must
-  match the tree (`COV-002`) so a new spec can't ship uncovered without either declaring coverage or visibly
-  joining the backlog in its diff.
+- **Spec completeness — UC + flow** — `registry/tools/spec_coverage.py --check`: every Class declares
+  its story in a structural **`coverage:` block** — the **Use Case(s)** (`use-cases/`) and **flow(s)**
+  (`docs/flows/`) that exercise it; a Class is its own worked example. Every declared referent must
+  resolve (`COV-001`). The backfill backlog (`registry/spec-coverage-backlog.yaml`) must match the tree
+  (`COV-002`), so a new Class can't ship uncovered without either declaring coverage or visibly joining
+  the backlog in its diff. A scan that finds no Class fails (`COV-003`).
 - **Spec examples — in the spec, CI-validated (ADR-055)** — `tests/check_spec_examples.py`: a type's worked
   example lives at **`spec.examples`** (the JSON Schema / OpenAPI keyword, co-located with the schema), never
   in a side file. Every in-spec example **validates against its own spec schema** (`EXG-001`, hard — a rotted
