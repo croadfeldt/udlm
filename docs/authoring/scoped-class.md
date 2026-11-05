@@ -74,6 +74,7 @@ Do **not** author a Class when:
 | Every redeclared element **refines** its ancestor (add-or-refine, never contradict) | `tests/check_class_liskov.py` — **LSK-001** (type change / enum widen / looser bound / dropped required) |
 | The Type Class compiles to a spec that validates against `resource-type-spec.schema.json` | `registry/tools/generate_class_specs.py --check` — **GEN-002** (compiled spec not conformant) |
 | The committed `registry/generated/<Type>.json` is a faithful recompilation (not stale) | `registry/tools/generate_class_specs.py --check` — **GEN-001** (stale — regenerate) |
+| Every `registry/generated/*.json` is produced by a class that exists | `registry/tools/generate_class_specs.py --check` — **GEN-003** (orphan: delete the file, or restore the class that produces it; a normal regenerate deletes it) |
 | A `coverage:` block whose UC handles and flow files resolve | `registry/tools/spec_coverage.py --check` — **COV-001** |
 
 Three ideas the gates encode, worth holding in mind as you author:
@@ -183,7 +184,7 @@ A pass looks like:
 
 - **check_class_liskov.py** — `N class(es) checked, 0 Liskov violation(s)` and exit 0 (no `FAIL [LSK-…`).
 - **generate_class_specs.py --check** — one `ok (fresh)  <Type> → generated/<type>.json (N props)`
-  line per compiled class, ending `N class(es) compiled (types + orderable bases), 0 issue(s)`, exit 0. A `FAIL [GEN-001]` means
+  line per compiled class, ending `N class(es) compiled (types + orderable bases), 0 issue(s)`, exit 0. A `FAIL [GEN-003]` names a served spec no class produces (a renamed class left its old file behind): delete it, or restore the class. A `FAIL [GEN-001]` means
   the committed generated file is stale — rerun **without** `--check` to rewrite it, then commit.
 - **spec_coverage.py --check** — your Class shows `✓ UC+example+flow`, `… 0 dangling`, exit 0.
 

@@ -30,7 +30,7 @@ import refstore
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLASSES = os.path.join(ROOT, "classes")
-OUT = os.path.join(ROOT, "generated")
+OUT = os.environ.get("UDLM_GENERATED_DIR") or os.path.join(ROOT, "generated")   # the self-test points this at a copy
 GENERATOR_VERSION = "class-spec-gen/1.1.0"
 # The ownership declaration (ownership-sharing-allocation §2) rides the compiled spec verbatim.
 # Type tier only — schema-enforced — so a Provider Class cannot restate or widen who owns the result.
@@ -188,7 +188,35 @@ def _standard_filename(resource_type):
     return ".".join(kebab(seg) for seg in resource_type.split(".")) + ".json"
 
 
+def self_test():
+    """GEN-003 regression: plant an orphan in a copy of registry/generated; --check must refuse it and a
+    normal run must remove it. A gate that stopped refusing turns CI red here."""
+    import shutil
+    import subprocess
+    import tempfile
+    global OUT
+    with tempfile.TemporaryDirectory() as tmp:
+        copy = os.path.join(tmp, "generated")
+        shutil.copytree(OUT, copy)
+        orphan = os.path.join(copy, "no-such-class.json")
+        open(orphan, "w", encoding="utf-8").write("{}\n")
+        env = dict(os.environ, UDLM_GENERATED_DIR=copy)
+        me = os.path.abspath(__file__)
+        r = subprocess.run([sys.executable, me, "--check"], capture_output=True, text=True, env=env)
+        if r.returncode == 0 or "FAIL [GEN-003]" not in r.stdout:
+            print("FAIL [GEN-SELF] --check accepted an orphaned spec (GEN-003 stopped refusing)")
+            return 1
+        r = subprocess.run([sys.executable, me], capture_output=True, text=True, env=env)
+        if r.returncode != 0 or os.path.exists(orphan):
+            print("FAIL [GEN-SELF] a normal run left the orphaned spec in place")
+            return 1
+    print("self-test OK: an orphaned spec is refused by --check and removed by a regenerate (GEN-003)")
+    return 0
+
+
 def main():
+    if "--self-test" in sys.argv:
+        return self_test()
     check = "--check" in sys.argv
     by_name = load_classes()
     has_children = {n: any(c.get("parent") == n for c in by_name.values()) for n in by_name}
@@ -230,6 +258,9 @@ def main():
                 print(f"FAIL [GEN-003] registry/generated/{f}: no class produces this spec — delete it")
                 drift.append(f)
             else:
+                # A normal regenerate DELETES any top-level .json here that no class produces. This
+                # directory holds served class specs and nothing else; another tool's output parked
+                # here goes with the next regenerate (registry/generated/README.md).
                 os.remove(os.path.join(OUT, f))
                 print(f"removed registry/generated/{f} (no class produces it)")
     print(f"{n} class(es) compiled (types + orderable bases), {len(drift)} issue(s)")

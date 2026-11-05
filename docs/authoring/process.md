@@ -88,7 +88,7 @@ conformant Job record:
 | Ships with it | Enforced by |
 |---|---|
 | Validates against `class.schema.json`; every redeclare refines its parent | `tests/check_class_liskov.py` — **LSK-001** |
-| Type Class compiles to a conformant flat spec, committed and fresh | `registry/tools/generate_class_specs.py --check` — **GEN-001/002** |
+| Type Class compiles to a conformant flat spec, committed and fresh | `registry/tools/generate_class_specs.py --check` — **GEN-001/002/003** |
 | `coverage:` block resolves | `registry/tools/spec_coverage.py --check` — **COV-001** |
 
 **Shape B (the `Job` class, served as `registry/generated/job.json`):**
