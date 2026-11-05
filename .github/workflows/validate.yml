@@ -158,6 +158,8 @@ jobs:
       # matrix that reports any rule arm whose refusals never fire.
       - run: python3 registry/tools/fuzz_urf.py
       - run: python3 registry/tools/generate_class_specs.py --check
+      # GEN-003 regression: an orphaned served spec is refused by --check and removed by a regenerate.
+      - run: python3 registry/tools/generate_class_specs.py --self-test
       - run: python3 tests/check_class_address_resolution.py
       # Spec-completeness gate (rule-36 — every spec ships with a UC + example + flow, declared in
       # its structural `coverage:` block): every declared referent must resolve (COV-001), and the

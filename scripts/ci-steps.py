@@ -78,6 +78,7 @@ NAMES = {
     "python3 tests/check_class_short_names.py": "class short names (unique, never stored) + instantiable on Base only",
     "python3 tests/check_class_paths.py": "class path <-> record (CLS-PATH-001)",
     "python3 registry/tools/generate_class_specs.py --check": "generated specs are fresh (GEN-001)",
+    "python3 registry/tools/generate_class_specs.py --self-test": "an orphaned served spec is refused (GEN-003 self-test)",
     "python3 registry/tools/generate_type_catalog.py --check": "TYPE-CATALOG is fresh",
     "python3 registry/tools/generate_pin_manifest.py --check": "pin manifest (current+append-only)",
     "python3 registry/tools/model_health.py --check": "model health is fresh",
