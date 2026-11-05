@@ -14,7 +14,7 @@ docs/udlm-native.md in that repository.
 
 | Layer | What it means | Where the evidence lives |
 |---|---|---|
-| **Model** | The UDLM shape exists: a class, a record schema, or a contract section, checked by the registry gates. | croadfeldt/udlm, this repository. The cell repeats the manifest's "UDLM basis" column. |
+| **Model** | The UDLM shape exists: a class, a record schema, or a contract section, checked by the registry gates. | dcm-project/udlm, this repository. The cell repeats the manifest's "UDLM basis" column. |
 | **Control plane** | Something evaluates, orders, places, records, or refuses. Two sub-cells: **design** (a DCM architecture decision whose title covers the row) and **code** (a code path in the control-plane monolith). | Design: croadfeldt/dcm, `architecture/adr/`. Code: croadfeldt/control-plane, a fork of the dcm-project monolith, synced with upstream at dd2caea (2026-09-23) on 2026-09-27; the `udlm-native` branch carries increments 1–5 of its UDLM plan. |
 | **Provider** | Something realizes the resource from intent, or reports what it found. | croadfeldt/dcm-provider-libvirt (Ansible VM reconciler, DCM wrap is design-only). The homelab discovery sweep, which writes records into the homelab estate repository (private). No OSAC provider exists. |
 

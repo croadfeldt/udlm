@@ -1,6 +1,6 @@
 # The convergence lifecycle — one loop under everything
 
-**What this settles:** the single lifecycle model beneath every entity: Resource, Process, Credential, Inventory, Knowledge. There is one **state** (Intent vs Realized), one **act** (Converge, which closes the gap between them), and two **trigger classes** (the intent moved, or the target moved). Everything else is that model *parameterized*: provisioning, drift, reconfigure, rehydrate, teardown, day-0/1/2, the familiar entity types. This is the **stage** telling (croadfeldt/udlm). The engine it runs on is [request-realization](request-realization.md) generalized, and the loop itself is **ADR-006 (convergence control), accepted**.
+**What this settles:** the single lifecycle model beneath every entity: Resource, Process, Credential, Inventory, Knowledge. There is one **state** (Intent vs Realized), one **act** (Converge, which closes the gap between them), and two **trigger classes** (the intent moved, or the target moved). Everything else is that model *parameterized*: provisioning, drift, reconfigure, rehydrate, teardown, day-0/1/2, the familiar entity types. This is the **stage** telling (dcm-project/udlm). The engine it runs on is [request-realization](request-realization.md) generalized, and the loop itself is **ADR-006 (convergence control), accepted**.
 
 The three primitives:
 

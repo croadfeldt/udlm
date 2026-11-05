@@ -202,8 +202,8 @@ method: a discovery avenue → Knowledge classes → references-context edges �
 > **reference / query the SOR on demand** rather than duplicate it here; a Knowledge record,
 > where kept, should *point at* its SOR, not *be* it. *Which* SOR, refresh cadence, and
 > precedence are an **operational detail each organization sets per its internal policy**.
-> Tracked: [udlm#197](https://github.com/croadfeldt/udlm/issues/197) (principle),
-> [udlm#188](https://github.com/croadfeldt/udlm/issues/188) (SBOM SoR),
+> Tracked: [udlm#197](https://github.com/dcm-project/udlm/issues/197) (principle),
+> [udlm#188](https://github.com/dcm-project/udlm/issues/188) (SBOM SoR),
 > [dcm#66](https://github.com/croadfeldt/dcm/issues/66) (OCP/gitops SOR, control-plane-at-home).
 
 - **`SoftwareImage`** — a container image (correlation id: **digest**). *Adopts:* OCI image-spec. `contains`
