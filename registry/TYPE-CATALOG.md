@@ -811,7 +811,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 ## NetworkGateway
 
-### NetworkGateway (0.9.2)
+### NetworkGateway (0.10.0)
 
 **Purpose:** Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.
 
@@ -1371,6 +1371,28 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwarePackage — the packages affected by this advisory.
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
+## WirelessAccessPoint
+
+### WirelessAccessPoint (0.1.0)
+
+**Purpose:** Models a physical wireless access point as a managed asset — the wireless edge of the fabric, with the switch it hangs off and the place it stands in.
+
+One physical access point: chassis identity keyed by its chassis MAC, its management VLAN by reference, the switch it uplinks to and the place it hangs in. It carries no radios, SSIDs or channels; those belong to the wireless controller, which is the provider. It enters the model as discovered, from the controller that adopted it or from LLDP on its switch, and is then claimed and placed like a switch.
+
+**Use when:**
+- You need the wireless edge in the dependency graph, so an access point goes down with its switch in a reverse-topology shutdown and comes back after it.
+- You need every network device inventoried with a stated place, the same way switches and hosts are.
+
+**Not for:**
+- The switch it hangs off — NetworkSwitch.
+- The wireless network it broadcasts (SSID, band, channel) — provider configuration, not a UDLM entity.
+- A client of the wireless network — those are not network devices.
+
+**Works with:**
+- NetworkSwitch — its uplink and, for PoE, its power.
+- Location — where it hangs.
+- VLAN — the referenced management VLAN.
+
 ## Workload
 
 ### Workload (0.11.3)
@@ -1396,4 +1418,4 @@ The application layer: the mail service, the registry, model serving — a named
 - CredentialRef — the service's secrets, by reference.
 
 ---
-*67 types; 67 with context, 0 pending.*
+*68 types; 68 with context, 0 pending.*

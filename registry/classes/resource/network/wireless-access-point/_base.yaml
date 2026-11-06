@@ -1,0 +1,132 @@
+$id: https://udlm.dev/registry/udlm/1.0/class/WirelessAccessPoint/0.1.0
+conforms_to: udlm/1.0
+uuid: cf800096-18a8-4c68-8900-b5c977a94f12
+record_type: class
+class: base
+resource_type: WirelessAccessPoint
+version: 0.1.0
+family: Resource
+status: active
+filed_under:
+  - network
+  - hardware
+metadata:
+  display_name: Wireless Access Point
+  description: 'A physical IEEE 802.11 access point as a managed asset: the wireless edge of the fabric, the peer of
+    NetworkSwitch for the air. A Base by the Base test (CLS-002): every access point has a chassis identity, draws
+    power, hangs off one switch port and is managed over a VLAN. What it broadcasts stays with the provider. It
+    enters as Discovered.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-11-06T18:00:00Z'
+elements:
+  - element: identity
+    scope: WirelessAccessPoint
+    optional: true
+    state: canonical
+    description: 'Chassis identity: vendor, model, serial.'
+    schema:
+      $ref: ../../../../common-elements.schema.json#/$defs/identity
+      description: 'Chassis identity: vendor, model, serial.'
+      properties:
+        chassis_id:
+          type: string
+          description: LLDP chassis identifier — normally the chassis MAC (IEEE 802.1AB Chassis ID TLV). Primary discovered-identity
+            key; stable across renames and re-IPs.
+        serial_number:
+          description: Vendor serial.
+        system_name:
+          type: string
+          description: Configured name (LLDP System Name TLV, or the controller's device name) — mutable, secondary to chassis_id.
+  - element: management_vlan_ref
+    scope: WirelessAccessPoint
+    optional: true
+    state: canonical
+    description: Reference to the VLAN the access point is managed over.
+    schema:
+      description: Reference to the VLAN the access point is managed over.
+      $ref: ../../../../common-elements.schema.json#/$defs/Reference
+spec_examples:
+  - identity:
+      chassis_id: 00:00:5e:00:53:21
+      serial_number: AP-OBS-0001
+      manufacturer: ExampleNet
+      model: EN-AP6
+      system_name: ap-lobby-01
+    management_vlan_ref: mgmt-vlan
+outputs:
+  management_address:
+    type: string
+    description: Reachable management endpoint (IP/hostname) once Realized.
+  firmware_version:
+    type: string
+    description: Observed firmware version — Discovered-state data; drift input for fleet-consistency checks.
+immutable:
+  - identity.chassis_id
+  - identity.serial_number
+relationships:
+  - edge_type: depends_on
+    target: PowerFeed
+    cardinality: 0..n
+    description: Power source(s) the access point draws from, when it is not powered over Ethernet by its switch.
+  - edge_type: depends_on
+    name: uplink
+    target: NetworkSwitch
+    cardinality: 0..1
+    description: uplink — the switch whose port carries the access point's traffic and, for a PoE device, its power.
+      The access point goes down with its switch, which is what a reverse-topology shutdown needs to know.
+  - edge_type: contained_by
+    name: located_in
+    target: Location
+    cardinality: 0..1
+    description: located_in — the room, building or site the access point hangs in. Stated on the record, never inferred
+      from its switch or its address; a thing is where its placement says it is, and residency reads this edge.
+  - edge_type: references
+    name: management_vlan
+    target: VLAN
+    cardinality: 0..1
+    description: management_vlan — the VLAN the access point's management interface lives on, referenced not inlined (R5).
+adopts:
+  - standard: IEEE 802.11
+    version: '2020'
+    standard_name: Wireless LAN
+    role: what an access point is — the medium access control and physical layer the device implements
+    source: https://standards.ieee.org/ieee/802.11/
+    license: IEEE
+    license_compatibility: reference_only
+    disposition: tier1_value
+  - standard: IEEE 802.1AB
+    version: '2016'
+    standard_name: LLDP
+    role: discovered chassis identity (Chassis ID / System Name TLVs) — how an access point enters as a Discovered resource
+      from the switch it hangs off
+    source: https://standards.ieee.org/ieee/802.1AB/
+    license: IEEE
+    license_compatibility: reference_only
+    disposition: tier1_value
+  - standard: RFC 8345
+    version: '8345'
+    standard_name: ietf-network (node)
+    role: topology vocabulary — an access point is a node whose uplink termination point anchors one link
+    source: https://www.rfc-editor.org/rfc/rfc8345
+    license: IETF-Trust-TLP
+    license_compatibility: compatible_reference
+    disposition: tier1_value
+context:
+  purpose: Models a physical wireless access point as a managed asset — the wireless edge of the fabric, with the
+    switch it hangs off and the place it stands in.
+  plain_description: 'One physical access point: chassis identity keyed by its chassis MAC, its management VLAN by
+    reference, the switch it uplinks to and the place it hangs in. It carries no radios, SSIDs or channels; those
+    belong to the wireless controller, which is the provider. It enters the model as discovered, from the
+    controller that adopted it or from LLDP on its switch, and is then claimed and placed like a switch.'
+  use_when:
+    - You need the wireless edge in the dependency graph, so an access point goes down with its switch in a
+      reverse-topology shutdown and comes back after it.
+    - You need every network device inventoried with a stated place, the same way switches and hosts are.
+  not_for:
+    - The switch it hangs off — NetworkSwitch.
+    - The wireless network it broadcasts (SSID, band, channel) — provider configuration, not a UDLM entity.
+    - A client of the wireless network — those are not network devices.
+  works_with:
+    - NetworkSwitch — its uplink and, for PoE, its power.
+    - Location — where it hangs.
+    - VLAN — the referenced management VLAN.

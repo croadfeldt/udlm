@@ -96,6 +96,10 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `IEEE 802.1AX` `IEEE 802.1Q` `IEEE 802.1AB` · **Body:** IEEE · **Since:** 2026-07-04T19:10:59Z (AX/Q), 2026-07-04T20:12:42Z (AB) · **Where:** NetworkInterface aggregation/bridge vocabulary; LLDP as the Discovered-entry mechanism for switches and `connects_to` adjacency.
 **Why:** the canonical definitions of link aggregation, bridging/VLANs, and neighbor discovery — the probes (`/proc/net/bonding`, `lldpcli`) are implementations of these documents. **License:** IEEE — reference_only (vocabulary referenced, text not reproduced).
 
+### IEEE 802.11 — CANONICAL
+**Covers:** `IEEE 802.11` · **Body:** IEEE · **Since:** 2026-11-06T18:00:00Z · **Where:** WirelessAccessPoint — what an access point is; the class carries the device as an asset and leaves what it broadcasts to the provider.
+**Why:** the one definition of a wireless LAN access point; every vendor's AP implements it, which is what makes the class a Base (CLS-002). *Alternatives:* none. **License:** IEEE — reference_only (vocabulary referenced, text not reproduced).
+
 ### IETF YANG models — RFC 8343, RFC 8345 — CANONICAL
 **Covers:** `RFC 8343` `RFC 8345` · **Body:** IETF · **Since:** 2026-07-04T19:10:59Z / 2026-07-04T20:12:42Z · **Where:** `lower_layer` + `parent_device` relation names (8343 `lower-layer-if`; parent_device is a declared 1→N refinement), `supporting_node` (8345), topology node/termination-point grounding for Switch, DEP-006's leafref degrade semantics.
 **Why:** interface stacking and overlay/underlay topology are *already standardized* by the IETF network-management models; adopting their names makes our records legible to anyone who knows YANG. *Alternatives:* invention (rejected). **License:** IETF Trust — compatible_reference.

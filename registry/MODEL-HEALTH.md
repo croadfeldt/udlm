@@ -4,20 +4,20 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **67 types** (Access 8, Knowledge 9, Process 3, Resource 47). Every spec is strict (`additionalProperties: false`, 67/67 (100%)) and the instance-fuzz harness rejected 5990 of 5990 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 41/67 (61%) of types appear in at least one use case; 26 appear in none. 5 types are named by a specific consumer manifest; the other 62 are carried only by the 4 envelope-level (all-types) consumers. 19 types declare no outputs and 24 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **68 types** (Access 8, Knowledge 9, Process 3, Resource 48). Every spec is strict (`additionalProperties: false`, 68/68 (100%)) and the instance-fuzz harness rejected 6086 of 6086 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 41/68 (60%) of types appear in at least one use case; 27 appear in none. 5 types are named by a specific consumer manifest; the other 63 are carried only by the 4 envelope-level (all-types) consumers. 19 types declare no outputs and 23 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
 | Metric | Value | Reading |
 |---|---|---|
-| Types (by family) | 67 (Access 8, Knowledge 9, Process 3, Resource 47) | — |
-| Discrimination density | 5990/5990 = 100.00% | mutations rejected / attempted; 0 finding(s) |
-| Strictness coverage | 67/67 (100%) | asserted — a non-strict spec fails this tool |
-| Outputs adequacy | 19 zero-output, 24 one-output | declared Realized binding surface |
-| Context coverage | 67/67 (100%) | plain-English `context` blocks |
-| Relationships coverage | 55/67 (82%) | types declaring `relationships[]` |
-| UC coverage | 41/67 (61%) | types appearing in >=1 use case (166 UC files scanned) |
-| Consumer coverage | 67/67 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
+| Types (by family) | 68 (Access 8, Knowledge 9, Process 3, Resource 48) | — |
+| Discrimination density | 6086/6086 = 100.00% | mutations rejected / attempted; 0 finding(s) |
+| Strictness coverage | 68/68 (100%) | asserted — a non-strict spec fails this tool |
+| Outputs adequacy | 19 zero-output, 23 one-output | declared Realized binding surface |
+| Context coverage | 68/68 (100%) | plain-English `context` blocks |
+| Relationships coverage | 56/68 (82%) | types declaring `relationships[]` |
+| UC coverage | 41/68 (60%) | types appearing in >=1 use case (166 UC files scanned) |
+| Consumer coverage | 68/68 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
 
 ## Outputs adequacy
 
@@ -26,11 +26,11 @@ downstream consumer can bind on.
 
 **Zero-output types (19):** `Automation`, `Automation.OSPatch`, `BMC`, `BucketClass`, `GPU`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Identity`, `PowerFeed`, `Processor`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
 
-**One-output types (24):** `AddressService`, `Capability`, `DHCPScope`, `DNSZone`, `FileShare`, `IPAddress`, `Identity.Person`, `Identity.ServiceAccount`, `IdentityGroup`, `Location`, `LogShipper`, `LogShipper.OTLP`, `LogShipper.Syslog`, `LogStore`, `NetworkGateway`, `NetworkInterface`, `StorageClass`, `StorageDevice`, `TaxonomyTerm`, `Template.Application`, `Topology`, `VLAN`, `VirtualNetwork`, `Workload`
+**One-output types (23):** `AddressService`, `Capability`, `DHCPScope`, `DNSZone`, `FileShare`, `IPAddress`, `Identity.Person`, `Identity.ServiceAccount`, `IdentityGroup`, `Location`, `LogShipper`, `LogShipper.OTLP`, `LogShipper.Syslog`, `LogStore`, `NetworkInterface`, `StorageClass`, `StorageDevice`, `TaxonomyTerm`, `Template.Application`, `Topology`, `VLAN`, `VirtualNetwork`, `Workload`
 
 ## UC coverage gaps
 
-Types appearing in no use case (26) — each is either ahead of its
+Types appearing in no use case (27) — each is either ahead of its
 scenarios or untested by any story (textual scan; a dotted handle is unambiguous,
 single-word handles could in principle match prose):
 
@@ -60,6 +60,7 @@ single-word handles could in principle match prose):
 - `UPS`
 - `VexStatement`
 - `VolumeSnapshot`
+- `WirelessAccessPoint`
 
 ## Consumer coverage
 

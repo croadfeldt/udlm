@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 67,
+    "types": 68,
     "by_family": {
       "Access": 8,
       "Knowledge": 9,
       "Process": 3,
-      "Resource": 47
+      "Resource": 48
     }
   },
   "discrimination": {
-    "mutations_attempted": 5990,
-    "mutations_rejected": 5990,
+    "mutations_attempted": 6086,
+    "mutations_rejected": 6086,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -172,8 +172,8 @@
         "rejected": 376
       },
       "NetworkGateway": {
-        "attempted": 109,
-        "rejected": 109
+        "attempted": 151,
+        "rejected": 151
       },
       "NetworkInterface": {
         "attempted": 134,
@@ -279,6 +279,10 @@
         "attempted": 67,
         "rejected": 67
       },
+      "WirelessAccessPoint": {
+        "attempted": 54,
+        "rejected": 54
+      },
       "Workload": {
         "attempted": 63,
         "rejected": 63
@@ -286,8 +290,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 67,
-    "total": 67
+    "strict_specs": 68,
+    "total": 68
   },
   "outputs": {
     "per_type": {
@@ -330,7 +334,7 @@
       "Machine.BareMetalHost": 8,
       "Machine.LPAR": 6,
       "Machine.VM": 8,
-      "NetworkGateway": 1,
+      "NetworkGateway": 3,
       "NetworkInterface": 1,
       "NetworkSwitch": 2,
       "PowerFeed": 0,
@@ -357,6 +361,7 @@
       "Volume.ZFS": 4,
       "VolumeSnapshot": 2,
       "Vulnerability": 0,
+      "WirelessAccessPoint": 2,
       "Workload": 1
     },
     "zero_output_types": [
@@ -395,7 +400,6 @@
       "LogShipper.OTLP",
       "LogShipper.Syslog",
       "LogStore",
-      "NetworkGateway",
       "NetworkInterface",
       "StorageClass",
       "StorageDevice",
@@ -408,13 +412,13 @@
     ]
   },
   "context": {
-    "with_context": 67,
-    "total": 67,
+    "with_context": 68,
+    "total": 68,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 55,
-    "total": 67,
+    "with_relationships": 56,
+    "total": 68,
     "missing": [
       "Automation",
       "Automation.OSPatch",
@@ -501,7 +505,8 @@
       "TestEvidence.VulnerabilityCheck",
       "UPS",
       "VexStatement",
-      "VolumeSnapshot"
+      "VolumeSnapshot",
+      "WirelessAccessPoint"
     ]
   },
   "consumer_coverage": {
@@ -591,9 +596,10 @@
       "Volume.ZFS",
       "VolumeSnapshot",
       "Vulnerability",
+      "WirelessAccessPoint",
       "Workload"
     ],
-    "consumed_by_at_least_one": 67
+    "consumed_by_at_least_one": 68
   },
   "expressibility_coverage": {
     "value": null,
