@@ -197,7 +197,7 @@
     },
     "outputs": {
       "type": "object",
-      "description": "Typed Realized-state outputs (E2): named values published on reaching Realized. Other entities bind to them via dependency references, contract-checked against these types rather than string-spliced. Output NAMES are snake_case (propertyNames pattern), the typed binding surface: a catalog-item binding names a producer output by this key, resolved by the validator against this list (data-model-core §2 [D8.3] typed outputs). An output whose value differs between realizations of one intent declares `volatile: true`; the promotion diff excludes it by declaration, never ad hoc (ADR-046).",
+      "description": "Typed Realized-state outputs (E2): named values published on reaching Realized. Other entities bind to them by dependency reference, checked against these types rather than string-spliced (data-model-core §2 [D8.3]). Names are snake_case. An output that differs between realizations of one intent declares `volatile: true` (ADR-046). An array or object output may carry the JSON-Schema fragment of its members (`items`, `properties`, `required`, `additionalProperties`), so the binding surface is typed to the member (row 166).",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
@@ -224,6 +224,25 @@
           },
           "volatile": {
             "$ref": "common-elements.schema.json#/$defs/volatile_output"
+          },
+          "items": {
+            "type": "object",
+            "description": "For `type: array`: the JSON-Schema fragment each item must satisfy, so a consumer binds to a typed entry (an endpoint's `url`, `port`, `via`), not to prose. Records are checked against it (tests/conformance.py payload.outputs)."
+          },
+          "properties": {
+            "type": "object",
+            "description": "For `type: object`: the item's named members, each a JSON-Schema fragment."
+          },
+          "required": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "For `type: object`: the members a realized value must carry."
+          },
+          "additionalProperties": {
+            "type": "boolean",
+            "description": "For `type: object`: whether members beyond `properties` are allowed."
           }
         }
       },
