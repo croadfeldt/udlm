@@ -153,27 +153,47 @@ elements:
     scope: Machine
     optional: true
     state: proposed
-    description: 'Network file shares the guest mounts: each a FileShare (`source_ref`), one of its exports
-      (`share`, a `shares[].name`), optionally a directory inside it (`subpath`), its mount point (`mount_path`),
-      read-only or not. The file counterpart of `disks`: a hypervisor attaches a disk (realized by a Volume), the
-      guest mounts a share; UDLM gives the shared (read-write-many) case to FileShare, not Volume. The provider
-      configuring the guest reads it. Names follow Container `mounts` and Kubernetes `volumeMounts`. Each entry is
-      a `mounts` edge.'
+    description: 'What the guest mounts, and where. A share entry names a FileShare (`source_ref`), one of its
+      exports (`share`) and optionally a directory inside it (`subpath`). A volume entry names a local Volume on the
+      machine (`volume_ref`), for a path kept local while others come from a share. Both give a `mount_path` and
+      may be read-only. The provider configuring the guest reads it. Names follow Kubernetes `volumeMounts`. Each
+      entry is a `mounts` or `mounts_volume` edge.'
     schema:
       type: array
-      description: 'Network file shares the guest mounts: a FileShare, one of its exports, optionally a directory
-        inside it, a mount path, read-only.'
+      description: 'What the guest mounts: a FileShare export (optionally a directory inside it) or a local Volume,
+        a mount path, read-only.'
       items:
         type: object
         additionalProperties: false
         required:
-          - source_ref
-          - share
           - mount_path
+        oneOf:
+          - title: share
+            required:
+              - source_ref
+              - share
+            not:
+              required:
+                - volume_ref
+          - title: volume
+            required:
+              - volume_ref
+            not:
+              anyOf:
+                - required:
+                    - source_ref
+                - required:
+                    - share
+                - required:
+                    - subpath
         properties:
           source_ref:
             $ref: ../../../../common-elements.schema.json#/$defs/Reference
-            description: Reference to the FileShare serving the export.
+            description: Reference to the FileShare serving the export. A share entry only.
+          volume_ref:
+            $ref: ../../../../common-elements.schema.json#/$defs/Reference
+            description: 'Reference to a Volume on this machine to mount at `mount_path`. A volume entry only: it
+              takes no `share` or `subpath`.'
           share:
             type: string
             description: The export to mount, a `shares[].name` on that FileShare.
@@ -182,10 +202,10 @@ elements:
             pattern: ^(?!/)(?!(.*/)?\.\.(/|$)).+$
             description: 'The directory inside the export to mount, relative to the export root: `ethan` mounts
               `<export>/ethan`. No leading `/` and no `..` segment, so a mount never reaches outside its export.
-              Absent means the export root. Kubernetes `volumeMounts[].subPath`.'
+              Absent means the export root. A share entry only. Kubernetes `volumeMounts[].subPath`.'
           mount_path:
             type: string
-            description: Absolute path in the guest where the share is mounted.
+            description: Absolute path in the guest where the share or volume is mounted.
           read_only:
             type: boolean
             description: Mount read-only even where the export allows writes.
@@ -317,6 +337,7 @@ context:
     - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
     - Volume and VirtualNetwork — what the realized machine attaches to.
     - FileShare — the network shares its guest mounts (`mounts`).
+    - Volume — a local volume its guest mounts in place of a share (`mounts`, `volume_ref`).
     - Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
 relationships:
   - edge_type: references
@@ -325,6 +346,12 @@ relationships:
     cardinality: 0..n
     description: 'Declared on the machine: its guest mounts an export of this FileShare (spec.mounts names which).
       The consumer declares the edge, so a share never lists the machines that mount it.'
+  - edge_type: references
+    target: Volume
+    name: mounts_volume
+    cardinality: 0..n
+    description: 'Declared on the machine: its guest mounts this local Volume (a spec.mounts entry with
+      `volume_ref`), so the path stays on the machine rather than coming from a share.'
   - edge_type: references
     target: Bucket
     name: buckets
@@ -357,6 +384,8 @@ spec_examples:
         share: homes
         subpath: ethan
         mount_path: /home/ethan
+      - volume_ref: volume/host-01-home-chris
+        mount_path: /home/chris
     buckets:
       - source_ref: bucket/app-assets
         credential_ref: credential/app-assets-s3

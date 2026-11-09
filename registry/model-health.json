@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 6049,
-    "mutations_rejected": 6049,
+    "mutations_attempted": 6072,
+    "mutations_rejected": 6072,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -156,8 +156,8 @@
         "rejected": 128
       },
       "Machine": {
-        "attempted": 277,
-        "rejected": 277
+        "attempted": 300,
+        "rejected": 300
       },
       "Machine.BareMetalHost": {
         "attempted": 318,

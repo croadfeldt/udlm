@@ -743,6 +743,7 @@ The most portable way to ask for a machine: how big, what image, which disks, wh
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 - FileShare — the network shares its guest mounts (`mounts`).
+- Volume — a local volume its guest mounts in place of a share (`mounts`, `volume_ref`).
 - Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
 
 ### Machine.BareMetalHost (0.18.1)
