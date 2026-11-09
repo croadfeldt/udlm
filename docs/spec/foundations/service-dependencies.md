@@ -273,6 +273,38 @@ The dependency graph is part of the request's data from the moment it is constru
 
 - **Discovered State** — dependency graph used to scope discovery — discover all nodes in the graph
 
+### 6.4 Walks over the graph — needs and dependents
+
+Every ordering question the graph answers is one of two walks, and both read only `edge_type` and
+`strength` (entity-relationships §3). The registry `registry/edge-types.yaml` is the single source
+for how each edge type is read; this table restates it (row 167):
+
+| `edge_type` | needs walk (A → B: what must exist for A) | dependents walk (B → A: what B's absence reaches) | cascades | terminates |
+|---|---|---|---|---|
+| `depends_on` | followed when `hard` | followed when `hard` | no | no |
+| `contained_by` | followed | **not followed** — containment propagates down, never up | yes: a container's teardown reaches its contents | no |
+| `binds_to` | followed | followed | no | no |
+| `references` | no | no | no | **yes**: pointing at something is not needing it |
+
+A `soft` `depends_on` orders but never blocks (§4, DEP-006), so no walk follows it; an absent
+`strength` reads as `hard`. The **needs walk** is what a build, a rehydration (§9) or a start runs:
+the closure of what the root needs, ordered topologically, foundations first. A node's step is one
+more than the highest step of anything it needs; step 0 needs nothing else in the closure; one step
+can be realized in parallel (§8.1). The **dependents walk** is what a stop, power-off or decommission
+runs: the same closure read backwards, leaves first. A cycle is DEP-002: its members get no step
+and are reported, never silently ordered.
+
+The dependents walk does not follow `contained_by` upward on purpose. A host contains its guests, so
+walking `contains` from one guest would drag every unrelated sibling into its blast radius; measured
+on a real estate that turned 76 affected resources into 151. Containment reaches *down* through
+`cascades` instead: the host's teardown reaches each guest without any guest declaring more.
+
+A resource's **location** is derived on the same graph, never stored (DRV-001). It is the nearest
+`Location` reached by following `contained_by` upward: a VM, its host, its site. A `Location` is
+its own location, and a resource no chain reaches has none. The layered topology contract
+(location-topology-layers.md §3.3) owns what a Location is; this rule only says how a resource finds
+its own.
+
 ---
 
 ## 7. Dependency Payload Passing
@@ -457,6 +489,8 @@ catalog_item:
 | `DEP-005` | Every node in a dependency graph must have a UUID | Enforced at graph construction |
 | `DEP-006` | **Dangling-reference semantics (degrade, don't break):** a reference whose target cannot be resolved renders the *referencing* entity nonoperational in the OPERATIONAL projection while remaining intact in the INTENDED projection. That holds until the target appears or the reference is repointed (adopts RFC 8345 leafref semantics). Never hard-fail at runtime; never silently tolerate. | The control plane runtime, at operational-state derivation. Authoring stores (git estates) instead validate-at-write and REJECT dangling references — the authoring gate is hard-fail by design. |
 | `DEP-007` | **Two-phase decommission (tombstone):** an entity with inbound edges MUST NOT be hard-deleted. Transition to `lifecycle_state: Decommissioned` first (its UUID remains resolvable and is never reused — identifier-scheme §5); referencing entities then repoint or retire; hard removal only once no inbound edges remain. Edges to a `Decommissioned` entity are valid-but-flagged (the tombstone window). | Authoring validation (retire-first suggestion on removal) + control-plane decommission workflow. |
+| `DEP-009` | **Walks read the registry:** any consumer that orders, scopes or tears down over the graph follows an edge only as `registry/edge-types.yaml` `walk` says (§6.4): `needs` and `dependents` per edge type, `soft` never followed, `references` terminates, `contained_by` cascades down and is not walked up. A consumer with its own table is a second model and drifts. | Authoring: the registry is the single source; consumers (control plane, estate tooling) cite it and read it. |
+| `DEP-010` | **Location is derived:** a resource's location is the nearest `Location` over `contained_by` (§6.4), never a stored field on the resource. | Consumers derive at read time; a stored copy is DRV-001 drift. |
 | `DEP-008` | **Constrained reference topology:** edge types carry structural constraints and violations are machine-reported with typed codes, never silently accepted (Kubernetes cross-namespace-ownerReference analog). Initial normative set: `connects_to` (common-elements §9) only between `device_class: physical` NetworkInterface instances; `lower_layer` and `parent_device` only between interfaces of the SAME containing device. Types may declare further constraints in `relationships[]`. | Authoring validation + control-plane graph construction. |
 
 > **Division of responsibility (DEP-006..008):** the model defines the states and edges;
