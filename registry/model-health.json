@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 6130,
-    "mutations_rejected": 6130,
+    "mutations_attempted": 6164,
+    "mutations_rejected": 6164,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -284,8 +284,8 @@
         "rejected": 54
       },
       "Workload": {
-        "attempted": 63,
-        "rejected": 63
+        "attempted": 97,
+        "rejected": 97
       }
     }
   },

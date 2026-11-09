@@ -27,7 +27,7 @@
     },
     {
       "class": "Workload",
-      "version": "0.11.3",
+      "version": "0.12.0",
       "instantiable": true,
       "path": "registry/classes/resource/services/workload/_base.yaml",
       "types": []
