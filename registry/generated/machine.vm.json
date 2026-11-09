@@ -20,7 +20,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.6.3",
+          "version": "2.7.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
@@ -131,7 +131,7 @@
       },
       "mounts": {
         "type": "array",
-        "description": "Network file shares the guest mounts: a FileShare, one of its exports, a mount path, read-only.",
+        "description": "Network file shares the guest mounts: a FileShare, one of its exports, optionally a directory inside it, a mount path, read-only.",
         "items": {
           "type": "object",
           "additionalProperties": false,
@@ -148,6 +148,11 @@
             "share": {
               "type": "string",
               "description": "The export to mount, a `shares[].name` on that FileShare."
+            },
+            "subpath": {
+              "type": "string",
+              "pattern": "^(?!/)(?!(.*/)?\\.\\.(/|$)).+$",
+              "description": "The directory inside the export to mount, relative to the export root: `ethan` mounts `<export>/ethan`. No leading `/` and no `..` segment, so a mount never reaches outside its export. Absent means the export root. Kubernetes `volumeMounts[].subPath`."
             },
             "mount_path": {
               "type": "string",
@@ -564,7 +569,7 @@
       "standard": "Kubernetes Container (core/v1)",
       "version": "core/v1",
       "standard_name": "volumeMounts",
-      "role": "mount field names for `mounts` (mountPath, readOnly), snake_case, shared with UDLM's Container `mounts`",
+      "role": "mount field names for `mounts` (mountPath, readOnly, subPath), snake_case, shared with UDLM's Container `mounts`",
       "source": "https://kubernetes.io/docs/concepts/storage/volumes/",
       "license": "Apache-2.0",
       "license_compatibility": "compatible_reference",

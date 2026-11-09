@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/1.0/class/Machine/2.6.3
+$id: https://udlm.dev/registry/udlm/1.0/class/Machine/2.7.0
 conforms_to: udlm/1.0
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Machine
-version: 2.6.3
+version: 2.7.0
 family: Resource
 status: active
 filed_under:
@@ -154,14 +154,15 @@ elements:
     optional: true
     state: proposed
     description: 'Network file shares the guest mounts: each a FileShare (`source_ref`), one of its exports
-      (`share`, a `shares[].name`), its mount point (`mount_path`), read-only or not. The file counterpart of
-      `disks`: a hypervisor attaches a disk (realized by a Volume), the guest mounts a share; UDLM gives the shared
-      (read-write-many) case to FileShare, not Volume. Read by the provider configuring the guest. Names follow
-      Container `mounts` and Kubernetes `volumeMounts` (`mount_path`, `read_only`). Each entry is a `mounts` edge to
-      the FileShare.'
+      (`share`, a `shares[].name`), optionally a directory inside it (`subpath`), its mount point (`mount_path`),
+      read-only or not. The file counterpart of `disks`: a hypervisor attaches a disk (realized by a Volume), the
+      guest mounts a share; UDLM gives the shared (read-write-many) case to FileShare, not Volume. The provider
+      configuring the guest reads it. Names follow Container `mounts` and Kubernetes `volumeMounts`. Each entry is
+      a `mounts` edge.'
     schema:
       type: array
-      description: 'Network file shares the guest mounts: a FileShare, one of its exports, a mount path, read-only.'
+      description: 'Network file shares the guest mounts: a FileShare, one of its exports, optionally a directory
+        inside it, a mount path, read-only.'
       items:
         type: object
         additionalProperties: false
@@ -176,6 +177,12 @@ elements:
           share:
             type: string
             description: The export to mount, a `shares[].name` on that FileShare.
+          subpath:
+            type: string
+            pattern: ^(?!/)(?!(.*/)?\.\.(/|$)).+$
+            description: 'The directory inside the export to mount, relative to the export root: `ethan` mounts
+              `<export>/ethan`. No leading `/` and no `..` segment, so a mount never reaches outside its export.
+              Absent means the export root. Kubernetes `volumeMounts[].subPath`.'
           mount_path:
             type: string
             description: Absolute path in the guest where the share is mounted.
@@ -346,6 +353,10 @@ spec_examples:
         share: projects
         mount_path: /srv/projects
         read_only: false
+      - source_ref: fileshare/example-nfs
+        share: homes
+        subpath: ethan
+        mount_path: /home/ethan
     buckets:
       - source_ref: bucket/app-assets
         credential_ref: credential/app-assets-s3
@@ -375,7 +386,8 @@ adopts:
   - standard: Kubernetes Container (core/v1)
     version: core/v1
     standard_name: volumeMounts
-    role: mount field names for `mounts` (mountPath, readOnly), snake_case, shared with UDLM's Container `mounts`
+    role: mount field names for `mounts` (mountPath, readOnly, subPath), snake_case, shared with UDLM's Container
+      `mounts`
     source: https://kubernetes.io/docs/concepts/storage/volumes/
     license: Apache-2.0
     license_compatibility: compatible_reference
