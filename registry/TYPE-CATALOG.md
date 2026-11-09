@@ -725,7 +725,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.6.3)
+### Machine (2.7.0)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
