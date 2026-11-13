@@ -39,7 +39,7 @@ parts:
     why: candidate — exercised by the use-case corpus and the estate; stable once used and validated (row 144)
   - part: class:SoftwareBillOfMaterials
     stability: experimental
-    why: no use case exercises it yet
+    why: candidate — stable once the estate records and validates it (rows 144, 170)
   - part: class:SoftwareImage
     stability: experimental
     why: candidate — stable once the estate records and validates it (rows 144, 170)

@@ -1,5 +1,5 @@
 # asserts: ENT-006, RHY-007
-# proves: a bill of materials is its own Knowledge record about one subject. A scanner observed it, so its edges name their targets by the natural key the document gives: the image by its digest, each package by its purl. The image record lists no packages and a rescan supersedes this record alone.
+# proves: a bill of materials is its own Knowledge record about one subject, captured from the store that keeps the document. Its fields point at the document by URL and digest. A scanner observed it, so its edges name their targets by the natural key the document gives: the image by its digest, each package by its purl.
 ---
 record_type: discovered_record
 state: Discovered
@@ -19,12 +19,10 @@ provider: cexample/providers/image-scanner
 fields:
   format: cyclonedx
   spec_version: '1.5'
-  document_id: urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79
   document_url: https://sbom.example.com/documents/storefront-web-1.4.2.cdx.json
   document_digest: sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b
+  document_id: urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79
   created_at: '2026-11-12T04:10:00Z'
-  creators:
-  - 'Tool: example-scanner-1.9.0'
 correlation_ids:
 - scheme: provider_id
   value: urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79
@@ -45,6 +43,6 @@ dependencies:
     value: pkg:pypi/python-jose@3.3.0
   resolved_at: '2026-11-12T04:12:00Z'
 integrity:
-  head: sha256:1a2116170693c219005d730532cf6658ce9db3c8e41248e03cd4895aad0ca924
+  head: sha256:448133ff44535b73850219faf686a7085d165b2296fa5c736df54c363c813976
   previous: null
   algorithm: sha256_jcs

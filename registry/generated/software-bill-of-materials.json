@@ -8,7 +8,7 @@
   "status": "active",
   "metadata": {
     "display_name": "Software Bill of Materials",
-    "description": "One software bill of materials as a fact: the document listing what one subject contains, where the subject is an image, a machine, a cluster or a device. A Knowledge class: produced by a scanner or a supplier, never provider-realized. SPDX and CycloneDX are adopted by reference; the document stays in its system of record and this record points at it by URL and digest. The record adds which estate record the document describes and one edge per package listed.",
+    "description": "One software bill of materials as a fact: the document listing what one subject contains. A Knowledge class: produced by a scanner or a supplier, never provider-realized. SPDX and CycloneDX are adopted by reference; the document stays in the store that is its system of record and this record points at it by URL and digest. The record adds which estate record the document describes and one captured edge per package listed.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-11-13T00:00:00Z",
     "generated": true,
@@ -39,30 +39,23 @@
         "type": "string",
         "description": "The version of the format the document is written in, as the document states it (SPDX `spdxVersion`, CycloneDX `specVersion`)."
       },
-      "document_id": {
-        "type": "string",
-        "description": "The document's own identifier in its format (SPDX `documentNamespace`, CycloneDX `serialNumber`). It is how a VEX document or another bill of materials names this one."
-      },
       "document_url": {
         "type": "string",
         "format": "uri",
-        "description": "Where the document is kept in its system of record. A location, not an entity reference. Absent when the scan result was not kept."
+        "description": "Where the document is kept in the store that is its system of record. A location, not an entity reference. The store is authoritative for the document; this record is checked against it."
       },
       "document_digest": {
         "type": "string",
         "pattern": "^sha256:[a-f0-9]{64}$",
-        "description": "The sha256 digest of the document's bytes, so a reader can tell the document it fetched is the one this record was built from."
+        "description": "The sha256 digest of the document's bytes when this record was built from it. A reader compares it with what the store serves now: a difference means the record is out of date."
+      },
+      "document_id": {
+        "type": "string",
+        "description": "The document's own identifier in its format (SPDX `documentNamespace`, CycloneDX `serialNumber`). It is how a VEX document or another bill of materials names this one."
       },
       "created_at": {
         "$ref": "../common-elements.schema.json#/$defs/Timestamp",
         "description": "When the document was produced, as the document states it (SPDX `creationInfo.created`, CycloneDX `metadata.timestamp`). A subject that changed after this instant is not described by this document."
-      },
-      "creators": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "description": "Who or what produced the document, as the document states it (SPDX `creationInfo.creators`, CycloneDX `metadata.tools` and `metadata.authors`), such as a scanner and its version or a supplier."
       },
       "attestation": {
         "type": "object",
@@ -96,6 +89,8 @@
       }
     },
     "required": [
+      "document_digest",
+      "document_url",
       "format"
     ],
     "examples": [
@@ -106,9 +101,6 @@
         "document_url": "https://sbom.example.com/documents/storefront-web-1.4.2.cdx.json",
         "document_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
         "created_at": "2026-11-12T04:10:00Z",
-        "creators": [
-          "Tool: example-scanner-1.9.0"
-        ],
         "attestation": {
           "predicate_type": "https://cyclonedx.org/bom",
           "url": "https://registry.example.com/v2/org/storefront-web/referrers/sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
@@ -125,7 +117,7 @@
       "name": "describes",
       "cardinality": "0..1",
       "adopted_from": "SPDX 2.3 DESCRIBES",
-      "description": "The image this document lists the contents of. A document describes exactly one subject, so a record carries one `describes` edge in all."
+      "description": "The image this document lists the contents of. A document describes exactly one subject, so a record carries one `describes` edge in all. Any resource that carries software can be a subject; the targets declared here are the usual ones and not a closed set."
     },
     {
       "edge_type": "references",
@@ -173,7 +165,7 @@
       "name": "contains",
       "cardinality": "0..n",
       "adopted_from": "SPDX 2.3 CONTAINS",
-      "description": "One edge per package the document lists. Declared here and nowhere else, so a subject never lists its own packages and a rescan rewrites this record alone. Non-ordering. An impact walk reads it in reverse, from a package to every subject that carries it."
+      "description": "One edge per package the document lists, captured from the document and stored. Declared here and nowhere else, so a subject never lists its own packages and a rescan rewrites this record alone. Non-ordering. An exposure walk reads it in reverse, from a package to every subject that carries it."
     }
   ],
   "adopts": [
@@ -211,10 +203,10 @@
   "entity_type": "SoftwareBillOfMaterials",
   "context": {
     "purpose": "Records one software bill of materials — which subject it describes, where the document is kept, and which packages it lists — so what a thing contains is a graph walk and the document stays where it is authoritative.",
-    "plain_description": "One bill of materials about one subject. The subject can be a container image, a machine whose packages are installed one by one, a cluster, or a device that runs firmware. The record names the document's `format`, where it is kept (`document_url`) and its `document_digest`, when and by what it was produced, and the signed form if there is one. It then carries one `contains` edge per package. The subject declares nothing: a host with fifteen hundred packages keeps a small record, and each rescan supersedes this record and leaves the host's history alone. A supplier's document and a scanner's document about the same subject are two records, and a reader can see where they disagree.",
+    "plain_description": "One bill of materials about one subject: a container image, a machine whose packages are installed one by one, a cluster, or a device that runs firmware. The record says where the document is kept (`document_url`) and its `document_digest`, when it was produced, and the signed form if there is one. It then carries one `contains` edge per package. It names the document's `format`. The subject declares nothing: a host with fifteen hundred packages keeps a small record, and each rescan supersedes this record and leaves the host's history alone. The four states read as they do for all curated knowledge: a supplier's published document is the canonical (Realized) record, a scan is the observed (Discovered) one, and a difference between them is drift.",
     "use_when": [
       "You need what-does-this-thing-contain answerable for images, hosts, clusters and firmware in one shape.",
-      "You need to say which scan or which supplier a package list came from, and when.",
+      "You need the captured package list checked against the store it came from, by digest.",
       "You need to point at a signed bill of materials without copying it."
     ],
     "not_for": [

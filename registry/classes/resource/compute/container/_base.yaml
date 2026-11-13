@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/1.0/class/Container/1.4.0
+$id: https://udlm.dev/registry/udlm/1.0/class/Container/1.3.2
 conforms_to: udlm/1.0
 uuid: 941d9211-6d64-47b8-9e1d-ccb4ccac2d49
 record_type: class
 class: base
 resource_type: Container
-version: 1.4.0
+version: 1.3.2
 family: Resource
 status: active
 filed_under:
@@ -235,14 +235,6 @@ relationships:
     target: Machine.BareMetalHost
     cardinality: 0..1
     description: Or runs directly on a host (e.g. rootless podman).
-  - edge_type: references
-    target: SoftwareImage
-    name: runs_image
-    cardinality: 0..1
-    description: 'The image this container runs, as a record: the SoftwareImage whose digest is `image.digest`.
-      Written at Realized or Discovered, where the digest is known. It is the edge that joins a running container
-      to the image''s bill of materials, so a walk from a vulnerability reaches the container. Non-ordering: the
-      image record is a fact about the container, and nothing waits on it.'
   - edge_type: references
     target: CredentialRef
     cardinality: 0..n

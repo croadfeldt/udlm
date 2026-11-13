@@ -8,6 +8,13 @@ it is non-normative. It adds no rule: every check below reads a field the model 
 the last section lists what the model does not carry yet. Which scanner, which feed and which
 scheduler run it are the organization's choice.
 
+**The rule the process rests on.** Package lists are captured into the records and stored there,
+because a graph walk needs them there. The document each list came from stays in an SBOM store, and
+that store is the system of record. A captured copy is trusted only while it is refreshed and
+checked against its source. The same holds for ownership and change-calendar data from a business
+or service-management system: the system is an Information Provider, the record points at it, and
+the reference is verified on a schedule.
+
 ## 1. Why this is the work
 
 A record is a claim about a moment. An impact answer walks five kinds of record, and each goes out
@@ -31,7 +38,7 @@ and what does the work (Provider).
 
 | Step | Data | Policy | Provider |
 |---|---|---|---|
-| **1. Observe** | A Discovered record per subject and per bill of materials, each stamped with `at`, `time_source` and `provider`; edges name targets by natural key (`oci_digest`, `purl`, `vulnerability_id`) | How often each kind of subject is observed | A discovery probe; a scanner or the supplier's published document; the advisory publisher's feed |
+| **1. Observe** | A Discovered record per subject and per bill of materials, each stamped with `at`, `time_source` and `provider`; edges name targets by natural key (`oci_digest`, `purl`, `vulnerability_id`) | How often each kind of subject is observed | A discovery probe; a scanner or a supplier, whose document goes to the SBOM store; the advisory publisher's feed |
 | **2. Declare the rhythm** | `expected_observation` on the record: a `cadence` or a `window`, and what being overdue means (`on_exceeded`) | The cadence per kind of subject, and where overdue is normal | none; this is a declaration |
 | **3. Judge** | Nothing new is stored. Each verdict in §3 is derived when asked | Which verdicts block a decision and which only inform | Whatever consumer asks: a report, a gate, a graph view |
 | **4. Report** | Every answer carries its own currency (§4) | Who is told, and how soon | The reporting or alerting system already in place |
@@ -48,19 +55,20 @@ Each check is a comparison between fields that exist. None needs a stored result
 
 | # | Check | Compares | A failure means |
 |---|---|---|---|
-| C1 | **Coverage** | Every `Container` and image-booted `Machine` has a `runs_image` edge to a `SoftwareImage`; every `SoftwareImage`, package-installed `Machine`, cluster and device is the target of a `describes` edge | The asset is invisible to every impact answer. Report it by name |
+| C1 | **Coverage** | Every `Container` and image-booted `Machine` states an image digest that matches a `SoftwareImage`; every `SoftwareImage`, package-installed `Machine`, cluster and device is the target of a `describes` edge | The asset is invisible to every impact answer. Report it by name |
 | C2 | **Resolution** | Every edge on a discovered record resolved its `target_key` to an entity (`target_uuid` present) | The scanner saw something the estate has no record of, or the keys disagree |
 | C3 | **Subject match** | The bill of materials' `created_at` against its subject's latest observed change | The document describes a subject that no longer exists in that form |
 | C4 | **Rhythm** | Each record's latest `at` against its `expected_observation` | `stale_deviant`: an observation that should have arrived did not. `stale_expected` is healthy |
 | C5 | **Feed currency** | The latest `at` across `Vulnerability` records from a feed against that feed's declared cadence | New advisories are not reaching the records. Every answer is suspect until it recovers |
 | C6 | **Agreement** | Two `SoftwareBillOfMaterials` records about one subject, from different producers | One producer misses components. The difference is the finding |
-| C7 | **Closure** | A subject fixed for an advisory no longer reaches it through a current bill of materials, or carries a `VexStatement` that says `fixed` | The fix was recorded but not observed |
+| C7 | **Store agreement** | The record's `document_digest` against the digest of the document the store serves at `document_url` now | The captured package list no longer matches its source. Refresh the record; until then its subject is not judged |
+| C8 | **Closure** | A subject fixed for an advisory no longer reaches it through a current bill of materials, or carries a `VexStatement` that says `fixed` | The fix was recorded but not observed |
 
 Two properties of the model do part of this work:
 
 - **An image never drifts from its bill of materials.** A `SoftwareImage` is identified by digest, so
-  C3 cannot fail for an image. What changes is which image a container runs, and that is the
-  `runs_image` edge on the container's next observation.
+  C3 cannot fail for an image. What changes is which image a container runs, and that is the digest
+  on the container's next observation.
 - **A machine does drift.** A host whose packages are updated in place changes under its bill of
   materials. Its probe therefore produces the document and observes the machine in the same run, and
   C3 compares the two.
@@ -71,8 +79,8 @@ An impact answer is a derived view, and it is only as current as the oldest reco
 therefore reports three things beside its result:
 
 1. **As of.** The oldest observation the answer relied on.
-2. **Not judged.** The subjects C1 to C4 exclude, by name and by reason: no bill of materials, a
-   stale one, an unresolved edge. These are neither affected nor clear. They are unknown.
+2. **Not judged.** The subjects C1 to C4 and C7 exclude, by name and by reason: no bill of
+   materials, a stale one, one that no longer matches its store, an unresolved edge. These are neither affected nor clear. They are unknown.
 3. **Feed as of.** The currency of the advisory data (C5).
 
 An answer without these reads as complete when it is not. The rule for acting on one follows
@@ -108,9 +116,10 @@ A storefront service runs one container image on a cluster, on hosts that instal
 a switch.
 
 1. The nightly probe observes the container and its image digest. The digest is new since
-   yesterday: a deploy happened. The container's `runs_image` edge now names an image with no
-   `describes` edge pointing at it. **C1 fails for one image**, and the report names it.
-2. The scanner produces a bill of materials for the new digest. Its record resolves 212 of 214
+   yesterday: a deploy happened. The digest matches no image that a bill of materials describes.
+   **C1 fails for one image**, and the report names it.
+2. The scanner produces a bill of materials for the new digest and files it in the SBOM store. The
+   record captured from it resolves 212 of 214
    `contains` edges; two packages are new to the estate and get records. C1 and C2 pass.
 3. The advisory feed publishes a new advisory affecting one package. An impact walk from it reaches
    the storefront image, its container, and two hosts that install the same package.
@@ -120,7 +129,7 @@ a switch.
    not in the execute path. A `VexStatement` records it. The image leaves the affected list with the
    reason attached; the two hosts stay.
 6. The hosts are updated. The next probe produces new bills of materials that no longer list the
-   affected version. **C7 passes** by observation, with no one editing a record.
+   affected version. **C8 passes** by observation, with no one editing a record.
 
 ## 8. What the model does not carry yet
 

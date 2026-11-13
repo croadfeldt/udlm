@@ -8,7 +8,7 @@
   "status": "active",
   "metadata": {
     "display_name": "Software Image",
-    "description": "An OCI image as a fact about the estate: the digest-identified artifact a Container runs, or a Machine boots when its operating system is delivered as an image. A Knowledge class: discovered by a scanner sweep, never provider-realized. The OCI image spec is adopted by reference — the digest is the identity, a pinned pointer names the version, and the standard's schema is not restated. Referenced by Container and Machine (`runs_image`); described by a SoftwareBillOfMaterials, which lists its packages.",
+    "description": "An OCI image as a fact about the estate: the digest-identified artifact a Container runs, or a Machine boots when its operating system is delivered as an image. A Knowledge class: discovered by a scanner sweep, never provider-realized. The OCI image spec is adopted by reference; the digest is the identity. A Container or Machine that states this digest runs this image: the join is derived and no edge is stored. A SoftwareBillOfMaterials describes the image and lists its packages.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-22T00:00:00Z",
     "generated": true,
@@ -93,7 +93,7 @@
       "A package inside the image — SoftwarePackage, listed by the image's SoftwareBillOfMaterials."
     ],
     "works_with": [
-      "Container and Machine — the things that run this image.",
+      "Container and Machine — the things that run this image, joined by the digest each one states.",
       "SoftwareBillOfMaterials — the document that describes the image and lists its packages."
     ]
   }

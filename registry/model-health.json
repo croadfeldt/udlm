@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 6082,
-    "mutations_rejected": 6082,
+    "mutations_attempted": 6075,
+    "mutations_rejected": 6075,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -192,8 +192,8 @@
         "rejected": 76
       },
       "SoftwareBillOfMaterials": {
-        "attempted": 84,
-        "rejected": 84
+        "attempted": 77,
+        "rejected": 77
       },
       "SoftwareImage": {
         "attempted": 47,
@@ -438,7 +438,7 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 166,
+    "files_scanned": 167,
     "covered": [
       "AddressService",
       "Automation",
@@ -469,6 +469,7 @@
       "Machine.BareMetalHost",
       "Machine.VM",
       "NetworkGateway",
+      "SoftwareBillOfMaterials",
       "SoftwareImage",
       "SoftwarePackage",
       "StorageClass",
@@ -498,7 +499,6 @@
       "NetworkSwitch",
       "PowerFeed",
       "Processor",
-      "SoftwareBillOfMaterials",
       "SovereigntyZone",
       "StorageCluster",
       "StorageDevice",

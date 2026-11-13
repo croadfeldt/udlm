@@ -168,7 +168,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 
 ## Container
 
-### Container (1.4.0)
+### Container (1.3.2)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -725,7 +725,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.7.0)
+### Machine (2.6.3)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -925,11 +925,11 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 
 **Purpose:** Records one software bill of materials — which subject it describes, where the document is kept, and which packages it lists — so what a thing contains is a graph walk and the document stays where it is authoritative.
 
-One bill of materials about one subject. The subject can be a container image, a machine whose packages are installed one by one, a cluster, or a device that runs firmware. The record names the document's `format`, where it is kept (`document_url`) and its `document_digest`, when and by what it was produced, and the signed form if there is one. It then carries one `contains` edge per package. The subject declares nothing: a host with fifteen hundred packages keeps a small record, and each rescan supersedes this record and leaves the host's history alone. A supplier's document and a scanner's document about the same subject are two records, and a reader can see where they disagree.
+One bill of materials about one subject: a container image, a machine whose packages are installed one by one, a cluster, or a device that runs firmware. The record says where the document is kept (`document_url`) and its `document_digest`, when it was produced, and the signed form if there is one. It then carries one `contains` edge per package. It names the document's `format`. The subject declares nothing: a host with fifteen hundred packages keeps a small record, and each rescan supersedes this record and leaves the host's history alone. The four states read as they do for all curated knowledge: a supplier's published document is the canonical (Realized) record, a scan is the observed (Discovered) one, and a difference between them is drift.
 
 **Use when:**
 - You need what-does-this-thing-contain answerable for images, hosts, clusters and firmware in one shape.
-- You need to say which scan or which supplier a package list came from, and when.
+- You need the captured package list checked against the store it came from, by digest.
 - You need to point at a signed bill of materials without copying it.
 
 **Not for:**
@@ -960,7 +960,7 @@ One image, identified by its content digest (one observed `tag` is recorded, sin
 - A package inside the image — SoftwarePackage, listed by the image's SoftwareBillOfMaterials.
 
 **Works with:**
-- Container and Machine — the things that run this image.
+- Container and Machine — the things that run this image, joined by the digest each one states.
 - SoftwareBillOfMaterials — the document that describes the image and lists its packages.
 
 ## SoftwarePackage

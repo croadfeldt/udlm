@@ -194,24 +194,27 @@ supplier produces them and the resource estate references them. This is the firs
 ingestion** under this family, and the method is reusable: a discovery avenue → Knowledge classes →
 reference edges → filter and impact walk.
 
-> **The record points at the system of record; it does not replace it** (row 170). The bill of
-> materials document stays where it is authoritative, in a registry, a supplier's feed or an SBOM
-> store, and a `SoftwareBillOfMaterials` record carries its location and digest. What the record adds
-> is what no document holds: which estate record the document is about, and one edge per package, so
-> an advisory reaches every image, host and device by a graph walk. *Which* store, how often it is
-> read and which source wins a disagreement are **operational details each organization sets by its
-> own policy**. Federation with a third-party store is tracked in
-> [udlm#188](https://github.com/dcm-project/udlm/issues/188).
+> **The store is the system of record; the record is captured from it and checked against it**
+> (row 170). The bill of materials document stays in an SBOM store, and a `SoftwareBillOfMaterials`
+> record carries its location and digest. The package list is captured into the record as edges, so
+> an advisory reaches every image, host and device by a graph walk. A captured list is only as good
+> as its last check: the record's `document_digest` is compared with what the store serves, and the
+> record is refreshed on a declared rhythm (`expected_observation`, ADR-048). *Which* store, how
+> often it is read and which source wins a disagreement are **operational details each organization
+> sets by its own policy**. The store is an Information Provider.
 
 - **`SoftwareImage`** — an OCI image (correlation id: **digest**). *Adopts:* OCI image-spec. A
-  `Container` runs it and a `Machine` whose operating system is delivered as an image boots it; each
-  declares a `runs_image` edge. The image lists no packages itself.
+  `Container` runs it and a `Machine` whose operating system is delivered as an image boots it. Each
+  states the digest it runs, so which things run an image is derived by matching digests and no edge
+  is stored. The image lists no packages itself.
 
 - **`SoftwareBillOfMaterials`** — one bill of materials document about one subject. *Adopts:* SPDX and
   CycloneDX (the document, by reference) and the in-toto Statement (its signed form). `describes` →
   the subject: a SoftwareImage, a Machine, a KubernetesCluster, a NetworkSwitch, a NetworkGateway or a
-  BMC. `contains` → one SoftwarePackage per component listed. The subject declares nothing, so a
-  rescan supersedes this record and leaves the subject's history alone. Class:
+  BMC, or any other resource that carries software. `contains` → one SoftwarePackage per component
+  listed. The subject declares nothing, so a rescan supersedes this record and leaves the subject's
+  history alone. A supplier's published document is the canonical record, a scan is the observed one,
+  and a difference between them is drift. Class:
   `registry/classes/knowledge/software-bill-of-materials/_base.yaml`.
 
 - **`SoftwarePackage`** — a software component: a library, an application, an operating system or a
@@ -231,7 +234,7 @@ reference edges → filter and impact walk.
 
   ```
   Vulnerability ← affected_by ← SoftwarePackage ← contains ← SoftwareBillOfMaterials
-      → describes → SoftwareImage ← runs_image ← Container, Machine
+      → describes → SoftwareImage ⇐ same digest ⇐ Container, Machine   (derived, not stored)
       → describes → Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC
   ```
 
