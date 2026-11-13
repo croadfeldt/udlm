@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/1.0/SoftwareImage/0.3.3",
+  "$id": "https://udlm.dev/registry/udlm/1.0/SoftwareImage/0.4.0",
   "conforms_to": "udlm/1.0",
   "uuid": "d9635416-81f7-431f-b3b7-dca3919a1f16",
   "resource_type": "SoftwareImage",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
     "display_name": "Software Image",
-    "description": "A container image as a fact about the estate: the digest-identified artifact a Container runs and the anchor for its bill of materials. A Knowledge class: discovered by a scanner sweep, never provider-realized. The OCI image spec is adopted by reference — the digest is the identity, a pinned pointer names the version, and the standard's schema is not restated. Referenced by Container; contains SoftwarePackage.",
+    "description": "An OCI image as a fact about the estate: the digest-identified artifact a Container runs, or a Machine boots when its operating system is delivered as an image. A Knowledge class: discovered by a scanner sweep, never provider-realized. The OCI image spec is adopted by reference; the digest is the identity. A Container or Machine that states this digest runs this image: the join is derived and no edge is stored. A SoftwareBillOfMaterials describes the image and lists its packages.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-22T00:00:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SoftwareImage",
-          "version": "0.3.3",
+          "version": "0.4.0",
           "uuid": "d9635416-81f7-431f-b3b7-dca3919a1f16"
         }
       ]
@@ -67,14 +67,6 @@
     ]
   },
   "outputs": {},
-  "relationships": [
-    {
-      "edge_type": "references",
-      "target": "SoftwarePackage",
-      "cardinality": "0..n",
-      "description": "contains — the image bundles this package (SPDX CONTAINS; the software bill-of-materials). A declarative typed reference; the scan that produced it is Policy. Non-ordering, but walked by blast-radius/impact in reverse."
-    }
-  ],
   "adopts": [
     {
       "standard": "OCI Image Format Specification",
@@ -89,19 +81,20 @@
   ],
   "entity_type": "SoftwareImage",
   "context": {
-    "purpose": "Records a container image as a digest-identified fact — the anchor a container's software bill of materials hangs from.",
-    "plain_description": "One container image, identified by its content digest (one observed `tag` is recorded, singular and advisory — tags move, the digest does not). It is knowledge about the estate, discovered by scanning, never provisioned: which `repository` and `registry` it came from, what platform it targets (`os` and `arch`), and — through its contains edges — every package inside it. That containment is what turns which containers run something shipping a given library from an investigation into a graph walk.",
+    "purpose": "Records an OCI image as a digest-identified fact — the thing a container runs or a machine boots, and the subject its software bill of materials describes.",
+    "plain_description": "One image, identified by its content digest (one observed `tag` is recorded, singular and advisory — tags move, the digest does not). It is knowledge about the estate, discovered by scanning, never provisioned: which `repository` and `registry` it came from and what platform it targets (`os` and `arch`). A container image and a bootable operating-system image are the same kind of artifact and the same class. What is inside the image is not listed here: a SoftwareBillOfMaterials describes the image and lists its packages, so two scans of one image are two documents about one record. That chain is what turns which containers run something shipping a given library from an investigation into a graph walk.",
     "use_when": [
       "You need every running container tied to the exact image digest it runs, deduplicated across the fleet.",
-      "You need a bill-of-materials anchor: image → packages → vulnerabilities, walkable in both directions."
+      "You need a host that boots an image tied to that image, so a fix is a new image and not a package update.",
+      "You need the subject a bill of materials hangs from: image ← document → packages → vulnerabilities."
     ],
     "not_for": [
       "The running workload — Container runs an image; this is the image as a fact.",
-      "A package inside the image — SoftwarePackage; the image contains packages."
+      "A package inside the image — SoftwarePackage, listed by the image's SoftwareBillOfMaterials."
     ],
     "works_with": [
-      "Container — workloads that run this image.",
-      "SoftwarePackage — the packages the image contains (the software bill of materials)."
+      "Container and Machine — the things that run this image, joined by the digest each one states.",
+      "SoftwareBillOfMaterials — the document that describes the image and lists its packages."
     ]
   }
 }

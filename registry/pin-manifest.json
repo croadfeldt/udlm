@@ -1773,8 +1773,15 @@
    "0.8.3": "sha256:2be85b776b7a3403acb30b7f646986761f35b5b6f810abfa66e1ad81e78241e2"
   }
  },
+ "type:SoftwareBillOfMaterials": {
+  "current": "0.1.0",
+  "path": "registry/classes/knowledge/software-bill-of-materials/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:1232b8d94e0adf5a7e9e010e138e29353f36b326a27d18863519198805e54d08"
+  }
+ },
  "type:SoftwareImage": {
-  "current": "0.3.3",
+  "current": "0.4.0",
   "path": "registry/classes/knowledge/software-image/_base.yaml",
   "versions": {
    "0.1.1": "sha256:2249bb711492dd03d8c84650a919c67ea637730ef2fe681c96430545cc10bc70",
@@ -1784,11 +1791,12 @@
    "0.3.0": "sha256:bc64cdd6f5a86a885017f9a8e2651ff671cc8cead46809dbc881dbbdcfce1419",
    "0.3.1": "sha256:dfd83818bad30b8492cadc2a3a106e0497f2b93e0d6b3c0b212c793862984c68",
    "0.3.2": "sha256:a63e3e80c217dc38b49a00267ec3afc50a0f64182bfd246a276b2f3c1a6f49c5",
-   "0.3.3": "sha256:e2c0f38a0dbd26affd02abfe1969d1c2e6b13fae35d0500f3b0c53c38788fbb1"
+   "0.3.3": "sha256:e2c0f38a0dbd26affd02abfe1969d1c2e6b13fae35d0500f3b0c53c38788fbb1",
+   "0.4.0": "sha256:d887a026933f4d5307df1b1e46b8e9a65002432535d2b61e21402a9595bcd73a"
   }
  },
  "type:SoftwarePackage": {
-  "current": "0.4.2",
+  "current": "0.5.0",
   "path": "registry/classes/knowledge/software-package/_base.yaml",
   "versions": {
    "0.1.0": "sha256:40f7c35de3837300c7ba68155f09d3b381f397c08131d117ffd059bc92c60e6e",
@@ -1798,7 +1806,8 @@
    "0.3.1": "sha256:bf9ed5d1c5dbe08ebce8bc28c4b1ea2ee48106e403e0926a0528042b6c52a017",
    "0.4.0": "sha256:829ec6560225d1da9df42cda1fb5b76b673d37c28b084f3149ff3d60b13532ec",
    "0.4.1": "sha256:af51243c5d2c2bb5c805ae81a5ff38c390debcb9504f3505813e4581defd12f1",
-   "0.4.2": "sha256:8923f35aaf377ed08b0335b806a194f5f227cf67666a83f80e77a4e09dc2a9f3"
+   "0.4.2": "sha256:8923f35aaf377ed08b0335b806a194f5f227cf67666a83f80e77a4e09dc2a9f3",
+   "0.5.0": "sha256:6ae869c68411ca1bfd75f13bd6dc652442c35ca85138df8b6df859a805e75b1e"
   }
  },
  "type:SovereigntyZone": {

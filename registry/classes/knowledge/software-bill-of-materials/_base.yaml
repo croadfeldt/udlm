@@ -1,0 +1,228 @@
+$id: https://udlm.dev/registry/udlm/1.0/class/SoftwareBillOfMaterials/0.1.0
+conforms_to: udlm/1.0
+uuid: 7da883d3-0ffa-4c2c-9a86-4183e3b9ae20
+record_type: class
+class: base
+resource_type: SoftwareBillOfMaterials
+version: 0.1.0
+family: Knowledge
+status: active
+metadata:
+  display_name: Software Bill of Materials
+  description: 'One software bill of materials as a fact: the document listing what one subject contains. A Knowledge
+    class: produced by a scanner or a supplier, never provider-realized. SPDX and CycloneDX are adopted by reference;
+    the document stays in the store that is its system of record and this record points at it by URL and digest. The
+    record adds which estate record the document describes and one captured edge per package listed.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-11-13T00:00:00Z'
+entity_type: SoftwareBillOfMaterials
+elements:
+- element: format
+  scope: SoftwareBillOfMaterials
+  optional: false
+  state: proposed
+  description: 'The adopted document format: `spdx` or `cyclonedx`.'
+  schema:
+    type: string
+    enum:
+    - spdx
+    - cyclonedx
+    description: 'The adopted document format: `spdx` or `cyclonedx`.'
+- element: spec_version
+  scope: SoftwareBillOfMaterials
+  optional: true
+  state: proposed
+  description: The version of the format the document is written in, as the document states it (SPDX `spdxVersion`,
+    CycloneDX `specVersion`).
+  schema:
+    type: string
+    description: The version of the format the document is written in, as the document states it (SPDX `spdxVersion`,
+      CycloneDX `specVersion`).
+- element: document_url
+  scope: SoftwareBillOfMaterials
+  optional: false
+  state: proposed
+  description: Where the document is kept in the store that is its system of record. A location, not an entity reference.
+    The store is authoritative for the document; this record is checked against it.
+  schema:
+    type: string
+    format: uri
+    description: Where the document is kept in the store that is its system of record. A location, not an entity reference.
+      The store is authoritative for the document; this record is checked against it.
+- element: document_digest
+  scope: SoftwareBillOfMaterials
+  optional: false
+  state: proposed
+  description: 'The sha256 digest of the document''s bytes when this record was built from it. A reader compares it
+    with what the store serves now: a difference means the record is out of date.'
+  schema:
+    type: string
+    pattern: ^sha256:[a-f0-9]{64}$
+    description: 'The sha256 digest of the document''s bytes when this record was built from it. A reader compares
+      it with what the store serves now: a difference means the record is out of date.'
+- element: document_id
+  scope: SoftwareBillOfMaterials
+  optional: true
+  state: proposed
+  description: The document's own identifier in its format (SPDX `documentNamespace`, CycloneDX `serialNumber`). It
+    is how a VEX document or another bill of materials names this one.
+  schema:
+    type: string
+    description: The document's own identifier in its format (SPDX `documentNamespace`, CycloneDX `serialNumber`).
+      It is how a VEX document or another bill of materials names this one.
+- element: created_at
+  scope: SoftwareBillOfMaterials
+  optional: true
+  state: proposed
+  description: When the document was produced, as the document states it (SPDX `creationInfo.created`, CycloneDX `metadata.timestamp`).
+    A subject that changed after this instant is not described by this document.
+  schema:
+    $ref: ../../../common-elements.schema.json#/$defs/Timestamp
+    description: When the document was produced, as the document states it (SPDX `creationInfo.created`, CycloneDX
+      `metadata.timestamp`). A subject that changed after this instant is not described by this document.
+- element: attestation
+  scope: SoftwareBillOfMaterials
+  optional: true
+  state: proposed
+  description: The signed form of the document, where one exists. An in-toto Statement whose predicate is the document
+    and whose subject is the thing described. This record points at it and never asserts that the signature verified.
+    Verifying it, and deciding whose signature counts, is Policy.
+  schema:
+    type: object
+    additionalProperties: false
+    required:
+    - predicate_type
+    - url
+    description: The signed form of the document, where one exists. An in-toto Statement whose predicate is the document
+      and whose subject is the thing described. This record points at it and never asserts that the signature verified.
+      Verifying it, and deciding whose signature counts, is Policy.
+    properties:
+      predicate_type:
+        type: string
+        x-standard: in-toto Attestation Framework:1.0 predicateType
+        enum:
+        - https://spdx.dev/Document
+        - https://cyclonedx.org/bom
+        description: The in-toto predicate type of the statement, one per adopted format.
+      url:
+        type: string
+        format: uri
+        description: Where the signed statement is kept, such as an OCI referrer of the image or a transparency log
+          entry.
+      digest:
+        type: string
+        pattern: ^sha256:[a-f0-9]{64}$
+        description: The sha256 digest of the statement envelope.
+spec_examples:
+- format: cyclonedx
+  spec_version: '1.5'
+  document_id: urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79
+  document_url: https://sbom.example.com/documents/storefront-web-1.4.2.cdx.json
+  document_digest: sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b
+  created_at: '2026-11-12T04:10:00Z'
+  attestation:
+    predicate_type: https://cyclonedx.org/bom
+    url: https://registry.example.com/v2/org/storefront-web/referrers/sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f
+    digest: sha256:7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c
+relationships:
+- edge_type: references
+  target: SoftwareImage
+  name: describes
+  cardinality: 0..1
+  adopted_from: SPDX 2.3 DESCRIBES
+  description: The image this document lists the contents of. A document describes exactly one subject, so a record
+    carries one `describes` edge in all. Any resource that carries software can be a subject; the targets declared
+    here are the usual ones and not a closed set.
+- edge_type: references
+  target: Machine
+  name: describes
+  cardinality: 0..1
+  adopted_from: SPDX 2.3 DESCRIBES
+  description: Or the machine whose installed software it lists, a host or a guest whose operating system is delivered
+    package by package.
+- edge_type: references
+  target: KubernetesCluster
+  name: describes
+  cardinality: 0..1
+  adopted_from: SPDX 2.3 DESCRIBES
+  description: Or the cluster whose platform release it lists.
+- edge_type: references
+  target: NetworkSwitch
+  name: describes
+  cardinality: 0..1
+  adopted_from: SPDX 2.3 DESCRIBES
+  description: Or the switch whose firmware it lists.
+- edge_type: references
+  target: NetworkGateway
+  name: describes
+  cardinality: 0..1
+  adopted_from: SPDX 2.3 DESCRIBES
+  description: Or the gateway whose firmware it lists.
+- edge_type: references
+  target: BMC
+  name: describes
+  cardinality: 0..1
+  adopted_from: SPDX 2.3 DESCRIBES
+  description: Or the management controller whose firmware it lists.
+- edge_type: references
+  target: SoftwarePackage
+  name: contains
+  cardinality: 0..n
+  adopted_from: SPDX 2.3 CONTAINS
+  description: One edge per package the document lists, captured from the document and stored. Declared here and nowhere
+    else, so a subject never lists its own packages and a rescan rewrites this record alone. Non-ordering. An exposure
+    walk reads it in reverse, from a package to every subject that carries it.
+adopts:
+- standard: SPDX
+  version: '2.3'
+  standard_name: SPDX document, creation information and relationship types
+  role: one of the two adopted document formats, pointed at and not restated; the `describes` and `contains` relation
+    names are its DESCRIBES and CONTAINS relationship types
+  source: https://spdx.github.io/spdx-spec/v2.3/
+  license: Community-Spec-1.0
+  license_compatibility: reference_only
+  disposition: tier1_value
+- standard: CycloneDX
+  version: '1.5'
+  standard_name: CycloneDX bill of materials and its metadata
+  role: the other adopted document format, pointed at and not restated
+  source: https://cyclonedx.org/docs/1.5/json/
+  license: Apache-2.0
+  license_compatibility: compatible_reference
+  disposition: tier1_value
+- standard: in-toto Attestation Framework
+  version: '1.0'
+  standard_name: in-toto Statement with the SPDX or CycloneDX predicate
+  role: the signed form of the document, pointed at by `attestation`; its subject is the thing described; the statement
+    schema is not restated
+  source: https://github.com/in-toto/attestation/tree/main/spec/predicates
+  license: Apache-2.0
+  license_compatibility: compatible_reference
+  disposition: tier1_value
+context:
+  purpose: Records one software bill of materials — which subject it describes, where the document is kept, and which
+    packages it lists — so what a thing contains is a graph walk and the document stays where it is authoritative.
+  plain_description: 'One bill of materials about one subject: a container image, a machine whose packages are installed
+    one by one, a cluster, or a device that runs firmware. The record says where the document is kept (`document_url`)
+    and its `document_digest`, when it was produced, and the signed form if there is one. It then carries one `contains`
+    edge per package. It names the document''s `format`. The subject declares nothing: a host with fifteen hundred
+    packages keeps a small record, and each rescan supersedes this record and leaves the host''s history alone. The
+    four states read as they do for all curated knowledge: a supplier''s published document is the canonical (Realized)
+    record, a scan is the observed (Discovered) one, and a difference between them is drift.'
+  use_when:
+  - You need what-does-this-thing-contain answerable for images, hosts, clusters and firmware in one shape.
+  - You need the captured package list checked against the store it came from, by digest.
+  - You need to point at a signed bill of materials without copying it.
+  not_for:
+  - The package itself — SoftwarePackage, one record per package URL, shared by every document that lists it.
+  - Whether a listed package is exploitable — VexStatement.
+  - The thing described — SoftwareImage, Machine or the device; this is a document about it.
+  works_with:
+  - SoftwareImage, Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC — the subjects a document describes.
+  - SoftwarePackage — the packages a document lists.
+  - Vulnerability — reached through the package, for the walk from an advisory to every subject.
+coverage:
+  use_cases:
+  - knowledge/record-software-bill-of-materials
+  flows:
+  - docs/flows/secure-software-supply-chain.md

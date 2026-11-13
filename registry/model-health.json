@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 67,
+    "types": 68,
     "by_family": {
       "Access": 8,
-      "Knowledge": 9,
+      "Knowledge": 10,
       "Process": 3,
       "Resource": 47
     }
   },
   "discrimination": {
-    "mutations_attempted": 5990,
-    "mutations_rejected": 5990,
+    "mutations_attempted": 6075,
+    "mutations_rejected": 6075,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -191,13 +191,17 @@
         "attempted": 76,
         "rejected": 76
       },
+      "SoftwareBillOfMaterials": {
+        "attempted": 77,
+        "rejected": 77
+      },
       "SoftwareImage": {
         "attempted": 47,
         "rejected": 47
       },
       "SoftwarePackage": {
-        "attempted": 21,
-        "rejected": 21
+        "attempted": 29,
+        "rejected": 29
       },
       "SovereigntyZone": {
         "attempted": 40,
@@ -286,8 +290,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 67,
-    "total": 67
+    "strict_specs": 68,
+    "total": 68
   },
   "outputs": {
     "per_type": {
@@ -335,6 +339,7 @@
       "NetworkSwitch": 2,
       "PowerFeed": 0,
       "Processor": 0,
+      "SoftwareBillOfMaterials": 0,
       "SoftwareImage": 0,
       "SoftwarePackage": 0,
       "SovereigntyZone": 0,
@@ -371,6 +376,7 @@
       "Identity",
       "PowerFeed",
       "Processor",
+      "SoftwareBillOfMaterials",
       "SoftwareImage",
       "SoftwarePackage",
       "SovereigntyZone",
@@ -408,13 +414,13 @@
     ]
   },
   "context": {
-    "with_context": 67,
-    "total": 67,
+    "with_context": 68,
+    "total": 68,
     "missing": []
   },
   "relationships": {
     "with_relationships": 55,
-    "total": 67,
+    "total": 68,
     "missing": [
       "Automation",
       "Automation.OSPatch",
@@ -423,6 +429,7 @@
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Identity",
+      "SoftwareImage",
       "SovereigntyZone",
       "Template",
       "Template.Application",
@@ -431,7 +438,7 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 166,
+    "files_scanned": 167,
     "covered": [
       "AddressService",
       "Automation",
@@ -462,6 +469,7 @@
       "Machine.BareMetalHost",
       "Machine.VM",
       "NetworkGateway",
+      "SoftwareBillOfMaterials",
       "SoftwareImage",
       "SoftwarePackage",
       "StorageClass",
@@ -570,6 +578,7 @@
       "NetworkSwitch",
       "PowerFeed",
       "Processor",
+      "SoftwareBillOfMaterials",
       "SoftwareImage",
       "SoftwarePackage",
       "SovereigntyZone",
@@ -593,7 +602,7 @@
       "Vulnerability",
       "Workload"
     ],
-    "consumed_by_at_least_one": 67
+    "consumed_by_at_least_one": 68
   },
   "expressibility_coverage": {
     "value": null,
