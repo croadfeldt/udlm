@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.7.0",
+          "version": "2.8.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
@@ -122,27 +122,73 @@
       },
       "mounts": {
         "type": "array",
-        "description": "Network file shares the guest mounts: a FileShare, one of its exports, a mount path, read-only.",
+        "description": "What the guest mounts: a FileShare export (optionally a directory inside it) or a local Volume, a mount path, read-only.",
         "items": {
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "source_ref",
-            "share",
             "mount_path"
+          ],
+          "oneOf": [
+            {
+              "title": "share",
+              "required": [
+                "source_ref",
+                "share"
+              ],
+              "not": {
+                "required": [
+                  "volume_ref"
+                ]
+              }
+            },
+            {
+              "title": "volume",
+              "required": [
+                "volume_ref"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "source_ref"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "share"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "subpath"
+                    ]
+                  }
+                ]
+              }
+            }
           ],
           "properties": {
             "source_ref": {
               "$ref": "../common-elements.schema.json#/$defs/Reference",
-              "description": "Reference to the FileShare serving the export."
+              "description": "Reference to the FileShare serving the export. A share entry only."
+            },
+            "volume_ref": {
+              "$ref": "../common-elements.schema.json#/$defs/Reference",
+              "description": "Reference to a Volume on this machine to mount at `mount_path`. A volume entry only: it takes no `share` or `subpath`."
             },
             "share": {
               "type": "string",
               "description": "The export to mount, a `shares[].name` on that FileShare."
             },
+            "subpath": {
+              "type": "string",
+              "pattern": "^(?!/)(?!(.*/)?\\.\\.(/|$)).+$",
+              "description": "The directory inside the export to mount, relative to the export root: `ethan` mounts `<export>/ethan`. No leading `/` and no `..` segment, so a mount never reaches outside its export. Absent means the export root. A share entry only. Kubernetes `volumeMounts[].subPath`."
+            },
             "mount_path": {
               "type": "string",
-              "description": "Absolute path in the guest where the share is mounted."
+              "description": "Absolute path in the guest where the share or volume is mounted."
             },
             "read_only": {
               "type": "boolean",
@@ -402,6 +448,13 @@
     },
     {
       "edge_type": "references",
+      "target": "Volume",
+      "name": "mounts_volume",
+      "cardinality": "0..n",
+      "description": "Declared on the machine: its guest mounts this local Volume (a spec.mounts entry with `volume_ref`), so the path stays on the machine rather than coming from a share."
+    },
+    {
+      "edge_type": "references",
       "target": "Bucket",
       "name": "buckets",
       "cardinality": "0..n",
@@ -459,7 +512,7 @@
       "standard": "Kubernetes Container (core/v1)",
       "version": "core/v1",
       "standard_name": "volumeMounts",
-      "role": "mount field names for `mounts` (mountPath, readOnly), snake_case, shared with UDLM's Container `mounts`",
+      "role": "mount field names for `mounts` (mountPath, readOnly, subPath), snake_case, shared with UDLM's Container `mounts`",
       "source": "https://kubernetes.io/docs/concepts/storage/volumes/",
       "license": "Apache-2.0",
       "license_compatibility": "compatible_reference",

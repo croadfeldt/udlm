@@ -1238,7 +1238,7 @@
   }
  },
  "type:Machine": {
-  "current": "2.7.0",
+  "current": "2.8.0",
   "path": "registry/classes/resource/compute/machine/_base.yaml",
   "versions": {
    "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
@@ -1257,7 +1257,8 @@
    "2.6.1": "sha256:2903f01699b9d7a4923d8332cc697cfcabeb8edf605da5bebd29702c3aef111a",
    "2.6.2": "sha256:a62c1092d6a958d6d8575664437a40dc16e77a2d136677332a7138751e08007b",
    "2.6.3": "sha256:b8d1f74393473e81b507e326a69501114b9c00ca90737dcd0e2ae1bcddb3c318",
-   "2.7.0": "sha256:e023c9014a4d3673ddff40c4e5447591151060b87448c5720adffbb23de36739"
+   "2.7.0": "sha256:6d4e3bec6dedff57349dbb90acc2b892cae7bded05f2ee90efc1fd78ce5fd797",
+   "2.8.0": "sha256:483b052a6da965be2fb06da6cba7aab744815fb4ab6e824ec3e1dbb135b055f7"
   }
  },
  "type:Machine.BareMetalHost": {

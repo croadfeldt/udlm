@@ -726,7 +726,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.7.0)
+### Machine (2.8.0)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -744,6 +744,7 @@ The most portable way to ask for a machine: how big, what image, which disks, wh
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 - FileShare — the network shares its guest mounts (`mounts`).
+- Volume — a local volume its guest mounts in place of a share (`mounts`, `volume_ref`).
 - Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
 - CredentialRef — an SSH key a local account accepts (`authorized_keys`), when held by reference.
 

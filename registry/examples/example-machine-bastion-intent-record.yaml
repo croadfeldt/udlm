@@ -8,8 +8,8 @@ entity_uuid: 6b1d9e3a-4c7f-4a2b-8d5e-3f0a1c2b4d6e
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/1.0
 resource_type: Machine
-type_version: 2.7.0
-type_ref: https://udlm.dev/registry/udlm/1.0/Machine/2.7.0
+type_version: 2.8.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Machine/2.8.0
 handle: lab/machine/bastion-01
 generation: 1
 origin: declared

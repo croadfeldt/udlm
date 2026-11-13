@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 6097,
-    "mutations_rejected": 6097,
+    "mutations_attempted": 6179,
+    "mutations_rejected": 6179,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -156,20 +156,20 @@
         "rejected": 128
       },
       "Machine": {
-        "attempted": 277,
-        "rejected": 277
+        "attempted": 341,
+        "rejected": 341
       },
       "Machine.BareMetalHost": {
-        "attempted": 334,
-        "rejected": 334
+        "attempted": 340,
+        "rejected": 340
       },
       "Machine.LPAR": {
-        "attempted": 325,
-        "rejected": 325
+        "attempted": 331,
+        "rejected": 331
       },
       "Machine.VM": {
-        "attempted": 398,
-        "rejected": 398
+        "attempted": 404,
+        "rejected": 404
       },
       "NetworkGateway": {
         "attempted": 109,
