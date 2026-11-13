@@ -1,6 +1,7 @@
 # asserts: ENT-006, TRN-001
 # proves: a key issued while the machine was built comes back as a field, attributed to the provider that placed it; the consumer reads the login, the public key and the address from this record alone.
 # The same machine as example-machine-bastion-intent-record and -requested-record.
+# Only the public half is shown. How the private half of a provisioner-issued pair reaches the caller is not yet specified (register row 169).
 record_type: realized_record
 state: Realized
 record_uuid: 01a2e7d0-0000-7000-8000-0000000000a3
