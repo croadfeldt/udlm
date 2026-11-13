@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Machine",
-          "version": "2.6.3",
+          "version": "2.8.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
@@ -122,27 +122,73 @@
       },
       "mounts": {
         "type": "array",
-        "description": "Network file shares the guest mounts: a FileShare, one of its exports, a mount path, read-only.",
+        "description": "What the guest mounts: a FileShare export (optionally a directory inside it) or a local Volume, a mount path, read-only.",
         "items": {
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "source_ref",
-            "share",
             "mount_path"
+          ],
+          "oneOf": [
+            {
+              "title": "share",
+              "required": [
+                "source_ref",
+                "share"
+              ],
+              "not": {
+                "required": [
+                  "volume_ref"
+                ]
+              }
+            },
+            {
+              "title": "volume",
+              "required": [
+                "volume_ref"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "source_ref"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "share"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "subpath"
+                    ]
+                  }
+                ]
+              }
+            }
           ],
           "properties": {
             "source_ref": {
               "$ref": "../common-elements.schema.json#/$defs/Reference",
-              "description": "Reference to the FileShare serving the export."
+              "description": "Reference to the FileShare serving the export. A share entry only."
+            },
+            "volume_ref": {
+              "$ref": "../common-elements.schema.json#/$defs/Reference",
+              "description": "Reference to a Volume on this machine to mount at `mount_path`. A volume entry only: it takes no `share` or `subpath`."
             },
             "share": {
               "type": "string",
               "description": "The export to mount, a `shares[].name` on that FileShare."
             },
+            "subpath": {
+              "type": "string",
+              "pattern": "^(?!/)(?!(.*/)?\\.\\.(/|$)).+$",
+              "description": "The directory inside the export to mount, relative to the export root: `ethan` mounts `<export>/ethan`. No leading `/` and no `..` segment, so a mount never reaches outside its export. Absent means the export root. A share entry only. Kubernetes `volumeMounts[].subPath`."
+            },
             "mount_path": {
               "type": "string",
-              "description": "Absolute path in the guest where the share is mounted."
+              "description": "Absolute path in the guest where the share or volume is mounted."
             },
             "read_only": {
               "type": "boolean",
@@ -173,6 +219,38 @@
             "read_only": {
               "type": "boolean",
               "description": "The access is read-only."
+            }
+          }
+        }
+      },
+      "authorized_keys": {
+        "type": "array",
+        "description": "SSH keys that may log in to local accounts: a login and one key, by value or by reference.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "login"
+          ],
+          "not": {
+            "required": [
+              "public_key",
+              "credential_ref"
+            ]
+          },
+          "properties": {
+            "login": {
+              "type": "string",
+              "description": "The local account name on the machine the key logs in to."
+            },
+            "public_key": {
+              "type": "string",
+              "pattern": "^[a-z0-9@.-]+ [A-Za-z0-9+/]+=*( .*)?$",
+              "description": "The SSH public key, one OpenSSH authorized_keys line: key type, base64 key, optional comment. A public key is not a secret."
+            },
+            "credential_ref": {
+              "$ref": "../common-elements.schema.json#/$defs/Reference",
+              "description": "Reference to an `ssh_key` CredentialRef whose `public_key` is the key; one key on many machines is one CredentialRef referenced from each."
             }
           }
         }
@@ -370,6 +448,13 @@
     },
     {
       "edge_type": "references",
+      "target": "Volume",
+      "name": "mounts_volume",
+      "cardinality": "0..n",
+      "description": "Declared on the machine: its guest mounts this local Volume (a spec.mounts entry with `volume_ref`), so the path stays on the machine rather than coming from a share."
+    },
+    {
+      "edge_type": "references",
       "target": "Bucket",
       "name": "buckets",
       "cardinality": "0..n",
@@ -381,6 +466,13 @@
       "name": "bucket_credential",
       "cardinality": "0..n",
       "description": "The credential a `buckets` entry reaches its bucket with (spec.buckets[].credential_ref)."
+    },
+    {
+      "edge_type": "references",
+      "target": "CredentialRef",
+      "name": "authorized_key",
+      "cardinality": "0..n",
+      "description": "Declared on the machine: a local account accepts the SSH key this CredentialRef carries (spec.authorized_keys[].credential_ref). The machine declares the edge, so a key never lists the machines that accept it."
     },
     {
       "edge_type": "contained_by",
@@ -420,8 +512,28 @@
       "standard": "Kubernetes Container (core/v1)",
       "version": "core/v1",
       "standard_name": "volumeMounts",
-      "role": "mount field names for `mounts` (mountPath, readOnly), snake_case, shared with UDLM's Container `mounts`",
+      "role": "mount field names for `mounts` (mountPath, readOnly, subPath), snake_case, shared with UDLM's Container `mounts`",
       "source": "https://kubernetes.io/docs/concepts/storage/volumes/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible_reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "OpenSSH",
+      "version": "9.x",
+      "standard_name": "authorized_keys",
+      "role": "the `authorized_keys` element name and the `public_key` line format (key type, base64 key, comment)",
+      "source": "https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT",
+      "license": "BSD-2-Clause",
+      "license_compatibility": "compatible_reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "KubeVirt",
+      "version": "kubevirt.io/v1",
+      "standard_name": "accessCredentials.sshPublicKey",
+      "role": "the shape of an `authorized_keys` entry, a guest user and an SSH public key held by reference",
+      "source": "https://kubevirt.io/user-guide/user_workloads/accessing_virtual_machines/",
       "license": "Apache-2.0",
       "license_compatibility": "compatible_reference",
       "disposition": "tier1_value"

@@ -1,0 +1,36 @@
+must_reject:
+  rule: payload.fields
+  gate: conformance
+  because: The entry gives the key twice, once as a value (`public_key`) and once as a CredentialRef
+    (`credential_ref`). If the two ever differ, a provider cannot tell which key the account accepts. Machine
+    2.8.0 allows at most one per entry.
+record:
+  record_type: intent_record
+  state: Intent
+  record_uuid: 01a2e7d0-0000-7000-8000-000000000039
+  entity_uuid: 8e2c4a6b-1d3f-4b5a-9c7e-0f1a2b3c4d5e
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  conforms_to: udlm/1.0
+  resource_type: Machine
+  type_version: 2.8.0
+  type_ref: https://udlm.dev/registry/udlm/1.0/Machine/2.8.0
+  handle: lab/machine/host-02
+  generation: 1
+  origin: declared
+  at: '2026-11-12T09:00:00Z'
+  time_source: dcm-api
+  metadata:
+    display_name: host-02 (one key stated two ways)
+  fields:
+    authorized_keys:
+      - login: cloud-user
+        public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXAMPLEKEYEXAMPLEKEYEXAMPLEKEYEXAMPLEKEY0000 ops@example
+        credential_ref: credential/ops-ssh-key
+  provenance:
+    authorized_keys:
+    - source:
+        kind: actor
+        id: lab/users/platform-admin
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-11-12T09:00:00Z'

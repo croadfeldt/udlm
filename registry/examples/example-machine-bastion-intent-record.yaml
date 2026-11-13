@@ -1,0 +1,48 @@
+# asserts: ENT-006
+# proves: an order can ask for a local account without naming a key; the account's key is not the consumer's to state here.
+# The same machine as example-machine-bastion-requested-record and -realized-record.
+record_type: intent_record
+state: Intent
+record_uuid: 01a2e7d0-0000-7000-8000-0000000000a1
+entity_uuid: 6b1d9e3a-4c7f-4a2b-8d5e-3f0a1c2b4d6e
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/1.0
+resource_type: Machine
+type_version: 2.8.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Machine/2.8.0
+handle: lab/machine/bastion-01
+generation: 1
+origin: declared
+at: '2026-11-12T09:00:00Z'
+time_source: dcm-api
+metadata:
+  display_name: bastion-01 (default account, key left to the implementation)
+fields:
+  instance_size: small
+  guest_os:
+    type: linux-server-9
+    version: '9.6'
+  authorized_keys:
+    - login: cloud-user
+provenance:
+  instance_size:
+    - source:
+        kind: actor
+        id: lab/users/platform-admin
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-11-12T09:00:00Z'
+  guest_os:
+    - source:
+        kind: actor
+        id: lab/users/platform-admin
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-11-12T09:00:00Z'
+  authorized_keys:
+    - source:
+        kind: actor
+        id: lab/users/platform-admin
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-11-12T09:00:00Z'
