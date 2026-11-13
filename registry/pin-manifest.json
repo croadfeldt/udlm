@@ -699,7 +699,7 @@
   }
  },
  "type:CredentialRef": {
-  "current": "0.8.4",
+  "current": "0.9.0",
   "path": "registry/classes/resource/security/credential-ref/_base.yaml",
   "versions": {
    "0.7.0": "sha256:e1b32e251fca9506d1026027483a413a738ee695e4b635760e9c0719bcc1cfbf",
@@ -708,7 +708,8 @@
    "0.8.1": "sha256:59981c8538a32b93ab91fefaedcb7aa5858a97c21ed2313e9cf1d0c31c0067b4",
    "0.8.2": "sha256:b779ba7db49ea3c628184053f4418034ca85e6884f5fbfbf28d95da45f3481ba",
    "0.8.3": "sha256:632545a2f9977b1825961f8818d2adc3e75a88776a34a117243af2c9b79b0daf",
-   "0.8.4": "sha256:d17578ad8de11c109276b425c7251944f977538f6f0d256c7ee38543fffc70aa"
+   "0.8.4": "sha256:d17578ad8de11c109276b425c7251944f977538f6f0d256c7ee38543fffc70aa",
+   "0.9.0": "sha256:55aa22019bd0a12654265639cbd298709e3cec0a6c5435777e4b20ea8913a789"
   }
  },
  "type:DHCPScope": {
@@ -1237,7 +1238,7 @@
   }
  },
  "type:Machine": {
-  "current": "2.6.3",
+  "current": "2.7.0",
   "path": "registry/classes/resource/compute/machine/_base.yaml",
   "versions": {
    "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
@@ -1255,7 +1256,8 @@
    "2.6.0": "sha256:a31366fd386791898ecb57fcdf5c8d05ee5fe90e1f24d12ab15e348f8316f840",
    "2.6.1": "sha256:2903f01699b9d7a4923d8332cc697cfcabeb8edf605da5bebd29702c3aef111a",
    "2.6.2": "sha256:a62c1092d6a958d6d8575664437a40dc16e77a2d136677332a7138751e08007b",
-   "2.6.3": "sha256:b8d1f74393473e81b507e326a69501114b9c00ca90737dcd0e2ae1bcddb3c318"
+   "2.6.3": "sha256:b8d1f74393473e81b507e326a69501114b9c00ca90737dcd0e2ae1bcddb3c318",
+   "2.7.0": "sha256:e023c9014a4d3673ddff40c4e5447591151060b87448c5720adffbb23de36739"
   }
  },
  "type:Machine.BareMetalHost": {
