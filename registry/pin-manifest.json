@@ -2207,7 +2207,7 @@
   }
  },
  "type:Workload": {
-  "current": "0.11.3",
+  "current": "0.12.0",
   "path": "registry/classes/resource/services/workload/_base.yaml",
   "versions": {
    "0.10.0": "sha256:ecb97b2145ef45854388e948638554b03f840006e055975b137663735da471aa",
@@ -2215,6 +2215,7 @@
    "0.11.1": "sha256:0fa3d2a7d7fb12045d08c330d22c3c534efd1f53601913f82f136577cdd5c5d4",
    "0.11.2": "sha256:23ce8d0c575974b5154d2daa14cb084586b0fe9de8a3355d75e144bfdbc25969",
    "0.11.3": "sha256:e7a7f0ae1f50f9e8e5348b536a2fcb932196c2a3b7e2c244cd76f9483bd3b43b",
+   "0.12.0": "sha256:f8901a6c3bb094c0e42170590512a4b4ffda8bf383f18c07d6f2e7f7bf02a1f4",
    "0.9.0": "sha256:53db3b1d7919ebd239a6efbac8b41ee84e624ac3b2ca0196f07bb73c1802dec8",
    "0.9.1": "sha256:b87d2e3c0d39204102da7f627b31f0c7ea3ca645db93a3f165eaa7bda0bb9042",
    "0.9.2": "sha256:31e84c328a30dae1a78cafd172f08086eb02e640e97e661aff585b6a121d4cbc"

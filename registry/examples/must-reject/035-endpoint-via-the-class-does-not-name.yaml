@@ -1,0 +1,35 @@
+must_reject:
+  rule: payload.outputs
+  gate: conformance
+  because: A provider reports a Workload 0.12.0 endpoint exposed `via` a mechanism the class does not name, and with
+    no `name`. An endpoint is what a consumer binds to and what a gate compares with the workload's stated
+    exposure; an entry outside the declared shape is a URL nobody can reason about (row 166).
+record:
+  record_type: discovered_record
+  state: Discovered
+  entity_uuid: 7b4c2d10-9e3f-4a61-8c57-2f1e0d9a6b35
+  record_uuid: 01a2e7d0-0000-7000-8000-000000000035
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  conforms_to: udlm/1.0
+  resource_type: Workload
+  type_version: 0.12.0
+  type_ref: https://udlm.dev/registry/udlm/1.0/Workload/0.12.0
+  handle: cexample/services/shop-web
+  at: '2026-11-09T13:00:00Z'
+  time_source: example clock, NTP-synced
+  origin: discovered_derived
+  fields:
+    service_kind: application
+  provenance:
+    fields.service_kind:
+    - source:
+        kind: discovery
+        id: cexample/providers/ai-test-harness
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-11-09T13:00:00Z'
+  generation: 1
+  outputs:
+    endpoints:
+      - url: https://shop.example.com/
+        via: carrier_pigeon

@@ -1373,11 +1373,11 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 
 ## Workload
 
-### Workload (0.11.3)
+### Workload (0.12.0)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
-The application layer: the mail service, the registry, model serving — a named service, classified by its required `service_kind` (application, infrastructure_daemon, database, and kin), composed of `constituents` that each declare their `form`: a `container` constituent references its container record via `container_ref`; a `systemd` constituent names its `host` and `units`. It declares what the service needs — a database, a directory, name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications derivable. Endpoints and a ready signal surface how it is reached and whether it is serving.
+The application layer: the mail service, the registry, model serving — a named service, classified by its required `service_kind` (application, infrastructure_daemon, database, and kin), composed of `constituents` that each declare their `form`: a `container` constituent references its container record via `container_ref`; a `systemd` constituent names its `host` and `units`. It declares what the service needs — a database, a directory, name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications derivable. `exposure` states the names and visibility it asks for; the `endpoints` output says where the provider put it; readiness is a status condition.
 
 **Use when:**
 - You need an application composed of several workloads treated as one node with one dependency surface.
