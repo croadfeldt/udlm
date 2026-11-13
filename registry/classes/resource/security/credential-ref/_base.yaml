@@ -118,6 +118,16 @@ spec_examples:
     required_assurance: aal2
   - credential_type: ssh_key
     public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXAMPLEKEYEXAMPLEKEYEXAMPLEKEYEXAMPLEKEY0000 ops@example
+spec_constraints:
+  description: A `public_key` is stated only on an `ssh_key` credential; on any other kind there is no OpenSSH
+    public half to state.
+  if:
+    required:
+      - public_key
+  then:
+    properties:
+      credential_type:
+        const: ssh_key
 outputs:
   resolved:
     type: boolean

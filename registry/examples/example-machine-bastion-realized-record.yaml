@@ -1,0 +1,52 @@
+# asserts: ENT-006, TRN-001
+# proves: a key issued while the machine was built comes back as a field, attributed to the provider that placed it; the consumer reads the login, the public key and the address from this record alone.
+# The same machine as example-machine-bastion-intent-record and -requested-record.
+record_type: realized_record
+state: Realized
+record_uuid: 01a2e7d0-0000-7000-8000-0000000000a3
+requested_ref: 01a2e7d0-0000-7000-8000-0000000000a2
+entity_uuid: 6b1d9e3a-4c7f-4a2b-8d5e-3f0a1c2b4d6e
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/1.0
+resource_type: Machine
+type_version: 2.7.0
+type_ref: https://udlm.dev/registry/udlm/1.0/Machine/2.7.0
+handle: lab/machine/bastion-01
+generation: 1
+origin: declared
+at: '2026-11-12T09:02:00Z'
+time_source: provider-callback
+provider: lab/providers/libvirt-host-a
+fields:
+  instance_size: small
+  guest_os:
+    type: linux-server-9
+    version: '9.6'
+  authorized_keys:
+    - login: cloud-user
+      public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXAMPLEKEYEXAMPLEKEYEXAMPLEKEYEXAMPLEKEY0000 cloud-user@bastion-01
+outputs:
+  primary_ip: 192.0.2.61
+  hostname: bastion-01.lab.example
+provenance:
+  authorized_keys[0].public_key:
+    - source:
+        kind: provider
+        id: lab/providers/libvirt-host-a
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-11-12T09:02:00Z'
+  outputs.primary_ip:
+    - source:
+        kind: provider
+        id: lab/providers/libvirt-host-a
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-11-12T09:02:00Z'
+  outputs.hostname:
+    - source:
+        kind: provider
+        id: lab/providers/libvirt-host-a
+      operation_type: set
+      sequence: 1
+      timestamp: '2026-11-12T09:02:00Z'
