@@ -1,0 +1,50 @@
+# asserts: ENT-006, RHY-007
+# proves: a bill of materials is its own Knowledge record about one subject. A scanner observed it, so its edges name their targets by the natural key the document gives: the image by its digest, each package by its purl. The image record lists no packages and a rescan supersedes this record alone.
+---
+record_type: discovered_record
+state: Discovered
+record_uuid: 01a1c9d4-5e10-7041-8041-000000000041
+entity_uuid: c8d24c2b-a3e6-4328-85a3-433159b45670
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/1.0
+resource_type: SoftwareBillOfMaterials
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/1.0/SoftwareBillOfMaterials/0.1.0
+handle: cexample/knowledge/sbom/storefront-web-1-4-2
+generation: 1
+origin: discovered_derived
+at: '2026-11-12T04:12:00Z'
+time_source: example clock, NTP-synced
+provider: cexample/providers/image-scanner
+fields:
+  format: cyclonedx
+  spec_version: '1.5'
+  document_id: urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79
+  document_url: https://sbom.example.com/documents/storefront-web-1.4.2.cdx.json
+  document_digest: sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b
+  created_at: '2026-11-12T04:10:00Z'
+  creators:
+  - 'Tool: example-scanner-1.9.0'
+correlation_ids:
+- scheme: provider_id
+  value: urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79
+dependencies:
+- edge_type: references
+  target_key:
+    scheme: oci_digest
+    value: sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f
+  resolved_at: '2026-11-12T04:12:00Z'
+- edge_type: references
+  target_key:
+    scheme: purl
+    value: pkg:rpm/redhat/openssl@3.0.7-18.el9?arch=x86_64
+  resolved_at: '2026-11-12T04:12:00Z'
+- edge_type: references
+  target_key:
+    scheme: purl
+    value: pkg:pypi/python-jose@3.3.0
+  resolved_at: '2026-11-12T04:12:00Z'
+integrity:
+  head: sha256:1a2116170693c219005d730532cf6658ce9db3c8e41248e03cd4895aad0ca924
+  previous: null
+  algorithm: sha256_jcs

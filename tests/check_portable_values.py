@@ -54,7 +54,7 @@ BASELINE = os.path.join(ROOT, "tests", "portable-values-baseline.yaml")
 FREE = re.compile(
     r"(^|_)(name|handle|login|description|definition|display_name|notes?|reason|comment|label|title|"
     r"summary|text|uuid|id|version|hash|digest|url|uri|endpoint|path|email|address|serial_number|"
-    r"wwn|mac|fqdn|hostname|cidr|subnet|prefix|schema_version|dn|realm|mountpoint|purl|cwe|"
+    r"wwn|mac|fqdn|hostname|cidr|subnet|prefix|schema_version|dn|realm|mountpoint|purl|cpe|cwe|"
     r"registry|repository|tag|criterion|jitter|timeout|time|from|at|by|to|"
     # 2026-09-30 triage (PVD-001 burn-down): quantities and version strings carry a pattern, not a
     # codelist (capacity, speed, used, release); identifiers and references are not selectable

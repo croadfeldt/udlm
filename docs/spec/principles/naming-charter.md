@@ -155,7 +155,7 @@ The scoped-Class paradigm (ADR-038) and the policy-firewall (ADR-041) introduced
 - **Base / Type / Provider Class** · **`SharedDataElement`** — the scoped resource-type meta-model (subsumes the retired `provider_extensions` and the Vendor.Type fork).
 - **authority** (the addressing/routing namespace) · **references-context edge** (a classified, dereferenceable edge — the former `reference_data` layer, retired) · **`covers` / `applies_on` / `from_layers`** (layer→request injection scoping).
 - **information firewall** / **guard** · **structural vs value policy** · **egress / ingress** mediation — the policy-flow vocabulary (ADR-041).
-- **Knowledge classes** `SoftwareImage` / `SoftwarePackage` / `Vulnerability` — the SBOM/CVE knowledge domain.
+- **Knowledge classes** `SoftwareImage` / `SoftwareBillOfMaterials` / `SoftwarePackage` / `Vulnerability` — the SBOM/CVE knowledge domain.
 
 Canonical as of their ADRs; adding the glossary rows is a mechanical follow-up.
 

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/1.0/class/Machine/2.6.3
+$id: https://udlm.dev/registry/udlm/1.0/class/Machine/2.7.0
 conforms_to: udlm/1.0
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Machine
-version: 2.6.3
+version: 2.7.0
 family: Resource
 status: active
 filed_under:
@@ -312,6 +312,14 @@ context:
     - FileShare — the network shares its guest mounts (`mounts`).
     - Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
 relationships:
+  - edge_type: references
+    target: SoftwareImage
+    name: runs_image
+    cardinality: 0..1
+    description: 'The image this machine booted, as a record, when its operating system is delivered as an image
+      that is replaced whole (bootc, rpm-ostree). Written at Realized or Discovered, where the digest is known.
+      A machine whose operating system is installed package by package has no such edge: a SoftwareBillOfMaterials
+      describes the machine directly. Non-ordering.'
   - edge_type: references
     target: FileShare
     name: mounts

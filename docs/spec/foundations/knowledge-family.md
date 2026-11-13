@@ -188,39 +188,54 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
 > carry provisioning connotation ("Requested" ≈ dispatched-to-a-provider), which the Knowledge family reinterprets
 > as `under_review` for curated artifacts. No structural incompatibility.
 
-### 4.6 SoftwareImage · SoftwarePackage · Vulnerability — the software-supply-chain triad
-Facts *about* resources (their bill-of-materials and its known vulnerabilities), discovered by a scanner sweep
-and referenced by the resource estate — the first **knowledge-domain ingestion** under this family. The reusable
-method: a discovery avenue → Knowledge classes → references-context edges → filter + blast-radius.
+### 4.6 SoftwareImage · SoftwareBillOfMaterials · SoftwarePackage · Vulnerability — the software supply chain
+Facts *about* resources: what software each one carries and which advisories affect it. A scanner or a
+supplier produces them and the resource estate references them. This is the first **knowledge-domain
+ingestion** under this family, and the method is reusable: a discovery avenue → Knowledge classes →
+reference edges → filter and impact walk.
 
-> **⚠ Proof of concept — not best practice.** Materializing these software facts as
-> local-discovery Knowledge records is a **POC** to demonstrate filter + blast-radius; it is
-> **not** the recommended production shape and **may be removed** for a more robust solution.
-> The authoritative source for *what is deployed and its config* is the live **System of
-> Record** — the cluster API and its **gitops repos** (once control-plane-at-home lands, query OCP/gitops
-> directly), and for SBOM a central SBOM/SCA/VEX store. The robust direction is to
-> **reference / query the SOR on demand** rather than duplicate it here; a Knowledge record,
-> where kept, should *point at* its SOR, not *be* it. *Which* SOR, refresh cadence, and
-> precedence are an **operational detail each organization sets per its internal policy**.
-> Tracked: [udlm#197](https://github.com/croadfeldt/udlm/issues/197) (principle),
-> [udlm#188](https://github.com/croadfeldt/udlm/issues/188) (SBOM SoR),
-> [dcm#66](https://github.com/croadfeldt/dcm/issues/66) (OCP/gitops SOR, control-plane-at-home).
+> **The record points at the system of record; it does not replace it** (row 170). The bill of
+> materials document stays where it is authoritative, in a registry, a supplier's feed or an SBOM
+> store, and a `SoftwareBillOfMaterials` record carries its location and digest. What the record adds
+> is what no document holds: which estate record the document is about, and one edge per package, so
+> an advisory reaches every image, host and device by a graph walk. *Which* store, how often it is
+> read and which source wins a disagreement are **operational details each organization sets by its
+> own policy**. Federation with a third-party store is tracked in
+> [udlm#188](https://github.com/dcm-project/udlm/issues/188).
 
-- **`SoftwareImage`** — a container image (correlation id: **digest**). *Adopts:* OCI image-spec. `contains`
-  (→ SoftwarePackage) is its SBOM; referenced by `Container` via `runs_image`.
+- **`SoftwareImage`** — an OCI image (correlation id: **digest**). *Adopts:* OCI image-spec. A
+  `Container` runs it and a `Machine` whose operating system is delivered as an image boots it; each
+  declares a `runs_image` edge. The image lists no packages itself.
 
-- **`SoftwarePackage`** — a library/package (correlation id: **purl**). *Adopts:* Package-URL + SPDX/CycloneDX
-  component. One record per purl, shared by every image that contains it. `affected_by` (→ Vulnerability).
+- **`SoftwareBillOfMaterials`** — one bill of materials document about one subject. *Adopts:* SPDX and
+  CycloneDX (the document, by reference) and the in-toto Statement (its signed form). `describes` →
+  the subject: a SoftwareImage, a Machine, a KubernetesCluster, a NetworkSwitch, a NetworkGateway or a
+  BMC. `contains` → one SoftwarePackage per component listed. The subject declares nothing, so a
+  rescan supersedes this record and leaves the subject's history alone. Class:
+  `registry/classes/knowledge/software-bill-of-materials/_base.yaml`.
 
-- **`Vulnerability`** — a CVE / GHSA / OSV advisory (correlation id: **id**). *Adopts:* OSV / NVD-CVE (+ VEX for
-  status). Terminal in the chain; blast-radius reverse-walks from here.
+- **`SoftwarePackage`** — a software component: a library, an application, an operating system or a
+  firmware build (correlation id: **purl**). *Adopts:* Package-URL, CPE, and the SPDX/CycloneDX
+  component. One record per purl, shared by every document that lists it. Firmware and appliances
+  use the `generic` purl type and carry a `cpe`. `affected_by` (→ Vulnerability).
 
-- **Lifecycle:** curated upstream (NVD/OSV), **`Discovered`** locally (a scanner is a discovery avenue,
-  DCM ADR-017) — never provider-realized.
+- **`Vulnerability`** — a CVE / GHSA / OSV advisory (correlation id: **id**). *Adopts:* OSV and CVSS.
+  Terminal in the chain; an impact walk starts here and reads the edges in reverse.
 
-- **Edges** are `edge_type: references` (non-ordering, so outside the shutdown sort) but **walked by
-  blast-radius/impact in reverse** — "everything pointing to `Vulnerability#X`" = the affected package → image →
-  container → app → host set.
+- **Lifecycle:** curated upstream (NVD, OSV, the supplier), **`Discovered`** locally. A scanner is a
+  discovery avenue and never a provider that realizes anything. A discovered record names its edge
+  targets by natural key: `oci_digest`, `purl`, `vulnerability_id` (`correlation_ids`, RHY-007).
+
+- **Edges** are `edge_type: references`. They order nothing, so they stay outside a shutdown or a
+  rebuild sort. Read in reverse they answer what an advisory reaches:
+
+  ```
+  Vulnerability ← affected_by ← SoftwarePackage ← contains ← SoftwareBillOfMaterials
+      → describes → SoftwareImage ← runs_image ← Container, Machine
+      → describes → Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC
+  ```
+
+- **States:** `proposed` → `canonical`; established at setup and governed thereafter.
 
 ### 4.7 Pattern
 A pattern to follow — the reusable "what a thing of this kind IS" at type level: Antipattern's
@@ -296,7 +311,7 @@ drafts it (the intent record); product security confirms it (the realized record
 `Gap`, `Assessment`, `Finding`, **`Resolution`** extend this family as the first implementation's UDLM-conformance
 expands beyond the capability catalog (the pilot). Each follows the curation archetype and
 the universal contracts; all remain universal definitions, free to use by any implementation.
-(`SoftwareImage` / `SoftwarePackage` / `Vulnerability` have landed — §4.6.)
+(`SoftwareImage` / `SoftwareBillOfMaterials` / `SoftwarePackage` / `Vulnerability` have landed — §4.6.)
 
 > **`Finding` / `Resolution`** arrive with the **Findings & Resolutions** implementation
 > (`dav/docs/findings-resolution-design.md`): a `Finding` is an externally-surfaced observation about the

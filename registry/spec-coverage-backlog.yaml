@@ -37,6 +37,7 @@ uncovered:
 - NetworkSwitch
 - PowerFeed
 - Processor
+- SoftwareBillOfMaterials
 - SoftwareImage
 - SoftwarePackage
 - SovereigntyZone

@@ -680,7 +680,7 @@
   }
  },
  "type:Container": {
-  "current": "1.3.2",
+  "current": "1.4.0",
   "path": "registry/classes/resource/compute/container/_base.yaml",
   "versions": {
    "1.0.0": "sha256:92633f880404503be454c87a88d699228f45eb88096b70d708c510ed2472a10d",
@@ -695,7 +695,8 @@
    "1.2.0": "sha256:719add64755a7c289f16b2705e8f661e7abb64ae4eb3a9ef5bdca1d1dd7177ed",
    "1.3.0": "sha256:58e4448d519d33f790823cc3707b071c5fc2d1138972ad369698555f6c075ef0",
    "1.3.1": "sha256:1fa88c0ed438ab6ebe72b405fba933efe28a016a119e033abb28fc9fff631d1e",
-   "1.3.2": "sha256:1311838ea854adb8ca9ad0fd64b404e22a5b9379f95126aa5114c988c4be0bf0"
+   "1.3.2": "sha256:1311838ea854adb8ca9ad0fd64b404e22a5b9379f95126aa5114c988c4be0bf0",
+   "1.4.0": "sha256:09f333a8d1cf8239f576a02249ed828b709dbe1b170ddecc5c6551cc04a9ae9a"
   }
  },
  "type:CredentialRef": {
@@ -1237,7 +1238,7 @@
   }
  },
  "type:Machine": {
-  "current": "2.6.3",
+  "current": "2.7.0",
   "path": "registry/classes/resource/compute/machine/_base.yaml",
   "versions": {
    "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
@@ -1255,7 +1256,8 @@
    "2.6.0": "sha256:a31366fd386791898ecb57fcdf5c8d05ee5fe90e1f24d12ab15e348f8316f840",
    "2.6.1": "sha256:2903f01699b9d7a4923d8332cc697cfcabeb8edf605da5bebd29702c3aef111a",
    "2.6.2": "sha256:a62c1092d6a958d6d8575664437a40dc16e77a2d136677332a7138751e08007b",
-   "2.6.3": "sha256:b8d1f74393473e81b507e326a69501114b9c00ca90737dcd0e2ae1bcddb3c318"
+   "2.6.3": "sha256:b8d1f74393473e81b507e326a69501114b9c00ca90737dcd0e2ae1bcddb3c318",
+   "2.7.0": "sha256:dd98a1a115a60cf6ec83a9feeaff6817d454ce5c00b7aed7ed5744d6113e981c"
   }
  },
  "type:Machine.BareMetalHost": {
@@ -1773,8 +1775,15 @@
    "0.8.3": "sha256:2be85b776b7a3403acb30b7f646986761f35b5b6f810abfa66e1ad81e78241e2"
   }
  },
+ "type:SoftwareBillOfMaterials": {
+  "current": "0.1.0",
+  "path": "registry/classes/knowledge/software-bill-of-materials/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:a54165d0e05465392c102b4365228fcbae505dfe0cf153aaefe526eaabae3250"
+  }
+ },
  "type:SoftwareImage": {
-  "current": "0.3.3",
+  "current": "0.4.0",
   "path": "registry/classes/knowledge/software-image/_base.yaml",
   "versions": {
    "0.1.1": "sha256:2249bb711492dd03d8c84650a919c67ea637730ef2fe681c96430545cc10bc70",
@@ -1784,11 +1793,12 @@
    "0.3.0": "sha256:bc64cdd6f5a86a885017f9a8e2651ff671cc8cead46809dbc881dbbdcfce1419",
    "0.3.1": "sha256:dfd83818bad30b8492cadc2a3a106e0497f2b93e0d6b3c0b212c793862984c68",
    "0.3.2": "sha256:a63e3e80c217dc38b49a00267ec3afc50a0f64182bfd246a276b2f3c1a6f49c5",
-   "0.3.3": "sha256:e2c0f38a0dbd26affd02abfe1969d1c2e6b13fae35d0500f3b0c53c38788fbb1"
+   "0.3.3": "sha256:e2c0f38a0dbd26affd02abfe1969d1c2e6b13fae35d0500f3b0c53c38788fbb1",
+   "0.4.0": "sha256:58743f3a47ba99b348b253dc8f27cc7d856f2d0cf62549c9d0cd02f3ff1468f2"
   }
  },
  "type:SoftwarePackage": {
-  "current": "0.4.2",
+  "current": "0.5.0",
   "path": "registry/classes/knowledge/software-package/_base.yaml",
   "versions": {
    "0.1.0": "sha256:40f7c35de3837300c7ba68155f09d3b381f397c08131d117ffd059bc92c60e6e",
@@ -1798,7 +1808,8 @@
    "0.3.1": "sha256:bf9ed5d1c5dbe08ebce8bc28c4b1ea2ee48106e403e0926a0528042b6c52a017",
    "0.4.0": "sha256:829ec6560225d1da9df42cda1fb5b76b673d37c28b084f3149ff3d60b13532ec",
    "0.4.1": "sha256:af51243c5d2c2bb5c805ae81a5ff38c390debcb9504f3505813e4581defd12f1",
-   "0.4.2": "sha256:8923f35aaf377ed08b0335b806a194f5f227cf67666a83f80e77a4e09dc2a9f3"
+   "0.4.2": "sha256:8923f35aaf377ed08b0335b806a194f5f227cf67666a83f80e77a4e09dc2a9f3",
+   "0.5.0": "sha256:6ae869c68411ca1bfd75f13bd6dc652442c35ca85138df8b6df859a805e75b1e"
   }
  },
  "type:SovereigntyZone": {

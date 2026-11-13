@@ -168,7 +168,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 
 ## Container
 
-### Container (1.3.2)
+### Container (1.4.0)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -725,7 +725,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.6.3)
+### Machine (2.7.0)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -919,44 +919,68 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 - Machine.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.
 - Machine.VM — the guest a virtual CPU is presented to.
 
+## SoftwareBillOfMaterials
+
+### SoftwareBillOfMaterials (0.1.0)
+
+**Purpose:** Records one software bill of materials — which subject it describes, where the document is kept, and which packages it lists — so what a thing contains is a graph walk and the document stays where it is authoritative.
+
+One bill of materials about one subject. The subject can be a container image, a machine whose packages are installed one by one, a cluster, or a device that runs firmware. The record names the document's `format`, where it is kept (`document_url`) and its `document_digest`, when and by what it was produced, and the signed form if there is one. It then carries one `contains` edge per package. The subject declares nothing: a host with fifteen hundred packages keeps a small record, and each rescan supersedes this record and leaves the host's history alone. A supplier's document and a scanner's document about the same subject are two records, and a reader can see where they disagree.
+
+**Use when:**
+- You need what-does-this-thing-contain answerable for images, hosts, clusters and firmware in one shape.
+- You need to say which scan or which supplier a package list came from, and when.
+- You need to point at a signed bill of materials without copying it.
+
+**Not for:**
+- The package itself — SoftwarePackage, one record per package URL, shared by every document that lists it.
+- Whether a listed package is exploitable — VexStatement.
+- The thing described — SoftwareImage, Machine or the device; this is a document about it.
+
+**Works with:**
+- SoftwareImage, Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC — the subjects a document describes.
+- SoftwarePackage — the packages a document lists.
+- Vulnerability — reached through the package, for the walk from an advisory to every subject.
+
 ## SoftwareImage
 
-### SoftwareImage (0.3.3)
+### SoftwareImage (0.4.0)
 
-**Purpose:** Records a container image as a digest-identified fact — the anchor a container's software bill of materials hangs from.
+**Purpose:** Records an OCI image as a digest-identified fact — the thing a container runs or a machine boots, and the subject its software bill of materials describes.
 
-One container image, identified by its content digest (one observed `tag` is recorded, singular and advisory — tags move, the digest does not). It is knowledge about the estate, discovered by scanning, never provisioned: which `repository` and `registry` it came from, what platform it targets (`os` and `arch`), and — through its contains edges — every package inside it. That containment is what turns which containers run something shipping a given library from an investigation into a graph walk.
+One image, identified by its content digest (one observed `tag` is recorded, singular and advisory — tags move, the digest does not). It is knowledge about the estate, discovered by scanning, never provisioned: which `repository` and `registry` it came from and what platform it targets (`os` and `arch`). A container image and a bootable operating-system image are the same kind of artifact and the same class. What is inside the image is not listed here: a SoftwareBillOfMaterials describes the image and lists its packages, so two scans of one image are two documents about one record. That chain is what turns which containers run something shipping a given library from an investigation into a graph walk.
 
 **Use when:**
 - You need every running container tied to the exact image digest it runs, deduplicated across the fleet.
-- You need a bill-of-materials anchor: image → packages → vulnerabilities, walkable in both directions.
+- You need a host that boots an image tied to that image, so a fix is a new image and not a package update.
+- You need the subject a bill of materials hangs from: image ← document → packages → vulnerabilities.
 
 **Not for:**
 - The running workload — Container runs an image; this is the image as a fact.
-- A package inside the image — SoftwarePackage; the image contains packages.
+- A package inside the image — SoftwarePackage, listed by the image's SoftwareBillOfMaterials.
 
 **Works with:**
-- Container — workloads that run this image.
-- SoftwarePackage — the packages the image contains (the software bill of materials).
+- Container and Machine — the things that run this image.
+- SoftwareBillOfMaterials — the document that describes the image and lists its packages.
 
 ## SoftwarePackage
 
-### SoftwarePackage (0.4.2)
+### SoftwarePackage (0.5.0)
 
-**Purpose:** Records a software package or library as one shared fact per package URL, so every image containing it points at the same record.
+**Purpose:** Records a software component as one shared fact per package URL, so every bill of materials that lists it points at the same record.
 
-One package at one version — identified by its purl (Package URL), the portable id that carries ecosystem, name, and version in one string. There is exactly one record per purl no matter how many images contain it, which is what makes blast-radius questions cheap: find the package once, walk back to every image and container that includes it. Discovered by scanners; never built or provisioned.
+One component at one version — a library, an application, an operating system release or a firmware build — identified by its purl (Package URL), the portable id that carries ecosystem, name, and version in one string. Firmware and appliances with no package ecosystem use the `generic` purl type and carry a `cpe`, the name a vulnerability database knows them by. There is exactly one record per purl no matter how many documents list it, which is what makes blast-radius questions cheap: find the package once, walk back to every image, host and device that carries it. Discovered by scanners; never built or provisioned.
 
 **Use when:**
 - You need where-do-we-run-version-X-of-library-Y answerable as a graph walk.
 - You need packages linked to the advisories affecting them.
 
 **Not for:**
-- The image bundling the package — SoftwareImage contains packages.
+- The image or host carrying the package — its SoftwareBillOfMaterials lists packages.
 - The advisory itself — Vulnerability; a package is affected_by it.
 
 **Works with:**
-- SoftwareImage — the images that contain this package.
+- SoftwareBillOfMaterials — the documents that list this package, each about one image, host or device.
 - Vulnerability — the advisories affecting this package version.
 
 ## SovereigntyZone
@@ -1396,4 +1420,4 @@ The application layer: the mail service, the registry, model serving — a named
 - CredentialRef — the service's secrets, by reference.
 
 ---
-*67 types; 67 with context, 0 pending.*
+*68 types; 68 with context, 0 pending.*
