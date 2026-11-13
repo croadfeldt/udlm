@@ -184,7 +184,7 @@
             "subpath": {
               "type": "string",
               "pattern": "^(?!/)(?!(.*/)?\\.\\.(/|$)).+$",
-              "description": "The directory inside the export to mount, relative to the export root: `ethan` mounts `<export>/ethan`. No leading `/` and no `..` segment, so a mount never reaches outside its export. Absent means the export root. A share entry only. Kubernetes `volumeMounts[].subPath`."
+              "description": "The directory inside the export to mount, relative to the export root: `alice` mounts `<export>/alice`. No leading `/` and no `..` segment, so a mount never reaches outside its export. Absent means the export root. A share entry only. Kubernetes `volumeMounts[].subPath`."
             },
             "mount_path": {
               "type": "string",

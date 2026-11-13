@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/1.0/class/Workload/0.11.3
+$id: https://udlm.dev/registry/udlm/1.0/class/Workload/0.12.0
 conforms_to: udlm/1.0
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: base
 resource_type: Workload
-version: 0.11.3
+version: 0.12.0
 family: Resource
 status: active
 filed_under:
@@ -80,18 +80,103 @@ elements:
     schema:
       type: integer
       description: Desired instance count; 0 means intentionally scaled down.
+  - element: exposure
+    scope: Workload
+    optional: true
+    state: proposed
+    description: 'The ask to be reached over the network: the `names` consumers should reach it at and the `visibility`
+      it is meant to have. Stated, never inferred: a workload with no `exposure` asked for none, and a gate compares
+      this ask with the `endpoints` the provider reports (row 166).'
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - visibility
+      description: 'The ask to be reached over the network: the `names` consumers should reach it at and the
+        `visibility` it is meant to have. Stated, never inferred: a workload with no `exposure` asked for none, and a
+        gate compares this ask with the `endpoints` the provider reports (row 166).'
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+          description: Hostnames consumers reach the service at (dav.example.com). The provider publishes where each
+            resolves in `endpoints`; the zone record is DNSZone's.
+        visibility:
+          type: string
+          enum:
+            - loopback
+            - internal
+            - external
+          description: 'How far the service is meant to be reachable: `loopback` (its own host), `internal` (the
+            estate''s networks), `external` (the internet). The same codelist Container `network.ports` uses. A
+            security fact, so it is declared here and never derived from where the service happens to run.'
+        protocols:
+          type: array
+          items:
+            type: string
+          description: Application protocols the service is meant to serve (https, imaps, ssh). Open codelist.
 spec_examples:
   - service_kind: application
     constituents:
       - form: container
         container_ref: estate/storefront-web?resource_type==Container
     replicas: 3
+    exposure:
+      names:
+        - shop.example.com
+      visibility: external
+      protocols:
+        - https
 outputs:
   endpoints:
     type: array
-    description: 'How the service is reached, as the provider reports it once Realized: each entry a `name`, a `url` or
-      a `host` and `port`, and a `protocol`. An output, not an element: a consumer asks for exposure, the provider says
-      where (row 116).'
+    description: 'How the service is reached, as the provider reports it once Realized. An output, not an element: a
+      consumer asks for exposure, the provider says where (row 116). Each entry names the mechanism (`via`) and the
+      address; `visibility` is set only by a collector that can see the boundary (the gateway), never guessed from
+      the address (row 166).'
+    items:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The endpoint's name within the service (web, api, imaps).
+        url:
+          type: string
+          description: Full URL when the protocol has one (https://dav.example.com/).
+        host:
+          type: string
+          description: Hostname or address when there is no URL form.
+        port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        protocol:
+          type: string
+          description: Application or transport protocol (https, imaps, tcp). Open codelist.
+        via:
+          type: string
+          enum:
+            - route
+            - ingress
+            - load_balancer
+            - node_port
+            - published_port
+            - listener
+            - port_forward
+          description: 'The mechanism that exposes it: a Kubernetes `route` or `ingress`, a `load_balancer` service,
+            a `node_port`, a container''s `published_port`, a process `listener` on a host, or a gateway `port_forward`.'
+        visibility:
+          type: string
+          enum:
+            - loopback
+            - internal
+            - external
+          description: Reach as observed at the boundary, the same codelist as `exposure.visibility`. Absent when the
+            collector could not see it.
 relationships:
   - edge_type: references
     name: runs_on
@@ -140,7 +225,8 @@ adopts:
   - standard: OASIS TOSCA
     version: '1.3'
     standard_name: ServiceTemplate / node composition + HostedOn·DependsOn·BindsTo
-    role: service-as-composed-nodes shape and the typed relationship vocabulary for runs_on / requires / binds_to
+    role: service-as-composed-nodes shape, the typed relationship vocabulary for runs_on / requires / binds_to, and
+      the Endpoint capability (protocol, port, secure, network_name) that grounds `exposure` and `endpoints`
     source: https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/
     license: OASIS
     license_compatibility: compatible_reference
@@ -169,7 +255,8 @@ context:
     that each declare their `form`: a `container` constituent references its container record via `container_ref`;
     a `systemd` constituent names its `host` and `units`. It declares what the service needs — a database, a directory,
     name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications
-    derivable. Endpoints and a ready signal surface how it is reached and whether it is serving.'
+    derivable. `exposure` states the names and visibility it asks for; the `endpoints` output says where the provider
+    put it; readiness is a status condition.'
   use_when:
     - You need an application composed of several workloads treated as one node with one dependency surface.
     - You need service-to-service and service-to-infrastructure dependencies (with hard/soft strength) to drive

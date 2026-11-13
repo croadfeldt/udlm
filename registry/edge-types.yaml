@@ -14,19 +14,43 @@
 # entry. This used to read "MUST stay in sync with the enum in resource-type-spec.schema.json" —
 # which is two homes plus an obligation, and the obligation is what drifts.
 
+#
+# It is also the single source for how a WALK reads each edge (row 167; service-dependencies.md §6.4).
+# Two walks cover every ordering question: `needs` asks what must exist for A to exist (build,
+# rehydrate, start — foundations first); `dependents` asks what A's absence reaches (stop, power off,
+# decommission — leaves first). Each edge type says whether a walk follows it:
+#
+#   walk.needs       follow A -> B when asking what A needs
+#   walk.dependents  follow B -> A when asking what needs B. Containment is asymmetric here: a host
+#                    contains its guests, so walking `contains` upward from one guest drags in every
+#                    unrelated sibling; containment propagates DOWN (a container's teardown reaches its
+#                    contents), never up.
+#   walk.cascades    a teardown of B reaches A along this edge whether or not A declared more
+#   walk.terminates  the walk stops here: pointing at something is not needing it
+#
+# Strength is read the same way on every walk: a `soft` depends_on orders but never blocks (DEP-006),
+# so no walk follows it; an absent strength reads as hard. The order a walk yields is topological:
+# in a needs walk a node's step is one more than the highest step of what it needs, and step 0 needs
+# nothing else in the closure; a dependents walk is the reverse. A cycle is DEP-002: its members get
+# no step and are reported, never silently ordered.
+
 record_type: edge_type_registry
-version: 1.0.0
+version: 1.1.0
 
 edge_types:
   - edge_type: depends_on
     inverse: required_by
     description: A operationally requires B to function; deriving the inverse, B is required_by A.
+    walk: {needs: true, dependents: true, cascades: false, terminates: false}
   - edge_type: references
     inverse: referenced_by
     description: A points at B (a classified, dereferenceable reference, ADR-054); B is referenced_by A.
+    walk: {needs: false, dependents: false, cascades: false, terminates: true}
   - edge_type: contained_by
     inverse: contains
     description: A is contained by B (part-of / locality — a pool in a host); B contains A.
+    walk: {needs: true, dependents: false, cascades: true, terminates: false}
   - edge_type: binds_to
     inverse: bound_by
     description: A binds to B at runtime (e.g. a consumed output); B is bound_by A.
+    walk: {needs: true, dependents: true, cascades: false, terminates: false}

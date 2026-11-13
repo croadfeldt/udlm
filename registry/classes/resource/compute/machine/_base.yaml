@@ -200,8 +200,8 @@ elements:
           subpath:
             type: string
             pattern: ^(?!/)(?!(.*/)?\.\.(/|$)).+$
-            description: 'The directory inside the export to mount, relative to the export root: `ethan` mounts
-              `<export>/ethan`. No leading `/` and no `..` segment, so a mount never reaches outside its export.
+            description: 'The directory inside the export to mount, relative to the export root: `alice` mounts
+              `<export>/alice`. No leading `/` and no `..` segment, so a mount never reaches outside its export.
               Absent means the export root. A share entry only. Kubernetes `volumeMounts[].subPath`.'
           mount_path:
             type: string
@@ -382,10 +382,10 @@ spec_examples:
         read_only: false
       - source_ref: fileshare/example-nfs
         share: homes
-        subpath: ethan
-        mount_path: /home/ethan
-      - volume_ref: volume/host-01-home-chris
-        mount_path: /home/chris
+        subpath: alice
+        mount_path: /home/alice
+      - volume_ref: volume/host-01-home-bob
+        mount_path: /home/bob
     buckets:
       - source_ref: bucket/app-assets
         credential_ref: credential/app-assets-s3
