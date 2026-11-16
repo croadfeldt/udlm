@@ -200,8 +200,8 @@ elements:
           subpath:
             type: string
             pattern: ^(?!/)(?!(.*/)?\.\.(/|$)).+$
-            description: 'The directory inside the export to mount, relative to the export root: `ethan` mounts
-              `<export>/ethan`. No leading `/` and no `..` segment, so a mount never reaches outside its export.
+            description: 'The directory inside the export to mount, relative to the export root: `alice` mounts
+              `<export>/alice`. No leading `/` and no `..` segment, so a mount never reaches outside its export.
               Absent means the export root. A share entry only. Kubernetes `volumeMounts[].subPath`.'
           mount_path:
             type: string
@@ -242,27 +242,30 @@ elements:
     scope: Machine
     optional: true
     state: proposed
-    description: 'SSH keys that local accounts on the machine accept. Each entry is an account (`login`) and one
-      key: the public key itself (`public_key`) or a CredentialRef carrying it (`credential_ref`). An entry with
-      no key asks for an account; the realized record states its key. Read by the provider configuring the guest.
-      Local accounts only: a directory user''s keys hang on its Identity. A `credential_ref` entry is also an
-      `authorized_key` edge.'
+    description: 'SSH keys that local accounts on the machine accept. Each entry is exactly one key: the public
+      key itself (`public_key`) or a CredentialRef carrying it (`credential_ref`). The account (`login`) is
+      optional. Without it the key goes to the image''s default account, and the realized record states the login
+      used. Read by the provider configuring the guest. Local accounts only: a directory user''s keys hang on its
+      Identity. A `credential_ref` entry is also an `authorized_key` edge.'
     schema:
       type: array
-      description: 'SSH keys that may log in to local accounts: a login and one key, by value or by reference.'
+      description: 'SSH keys that may log in to local accounts: one key, by value or by reference, and optionally
+        the login.'
       items:
         type: object
         additionalProperties: false
-        required:
-          - login
-        not:
-          required:
-            - public_key
-            - credential_ref
+        oneOf:
+          - title: by value
+            required:
+              - public_key
+          - title: by reference
+            required:
+              - credential_ref
         properties:
           login:
             type: string
-            description: The local account name on the machine the key logs in to.
+            description: The local account on the machine the key logs in to. Absent means the image's default
+              account; the realized record then states the login the provider used.
           public_key:
             type: string
             pattern: '^[a-z0-9@.-]+ [A-Za-z0-9+/]+=*( .*)?$'
@@ -424,10 +427,10 @@ spec_examples:
         read_only: false
       - source_ref: fileshare/example-nfs
         share: homes
-        subpath: ethan
-        mount_path: /home/ethan
-      - volume_ref: volume/host-01-home-chris
-        mount_path: /home/chris
+        subpath: alice
+        mount_path: /home/alice
+      - volume_ref: volume/host-01-home-bob
+        mount_path: /home/bob
     buckets:
       - source_ref: bucket/app-assets
         credential_ref: credential/app-assets-s3

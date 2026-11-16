@@ -1,5 +1,5 @@
 # asserts: ENT-006, TRN-001, DSP-002, DSP-004
-# proves: the order crosses to the provider unchanged; the entry still names a login and no key.
+# proves: the order crosses to the provider unchanged; the entry still states a key and no login.
 # The same machine as example-machine-bastion-intent-record and -realized-record.
 record_type: requested_record
 state: Requested
@@ -23,13 +23,13 @@ fields:
     type: linux-server-9
     version: '9.6'
   authorized_keys:
-    - login: cloud-user
+    - public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXAMPLEKEYEXAMPLEKEYEXAMPLEKEYEXAMPLEKEY0000 ops@example
 dispatch:
   provider: lab/providers/libvirt-host-a
   admitted:
     - instance_size
     - guest_os.type
     - guest_os.version
-    - authorized_keys[0].login
+    - authorized_keys[0].public_key
   granted: []
   stripped: []

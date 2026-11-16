@@ -1,7 +1,6 @@
 # asserts: ENT-006, TRN-001
-# proves: a key issued while the machine was built comes back as a field, attributed to the provider that placed it; the consumer reads the login, the public key and the address from this record alone.
+# proves: the account the key was placed on comes back as a field, attributed to the provider that chose it; the consumer reads the login, the public key and the address from this record alone.
 # The same machine as example-machine-bastion-intent-record and -requested-record.
-# Only the public half is shown. How the private half of a provisioner-issued pair reaches the caller is not yet specified (register row 169).
 record_type: realized_record
 state: Realized
 record_uuid: 01a2e7d0-0000-7000-8000-0000000000a3
@@ -25,12 +24,12 @@ fields:
     version: '9.6'
   authorized_keys:
     - login: cloud-user
-      public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXAMPLEKEYEXAMPLEKEYEXAMPLEKEYEXAMPLEKEY0000 cloud-user@bastion-01
+      public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXAMPLEKEYEXAMPLEKEYEXAMPLEKEYEXAMPLEKEY0000 ops@example
 outputs:
   primary_ip: 192.0.2.61
   hostname: bastion-01.lab.example
 provenance:
-  authorized_keys[0].public_key:
+  authorized_keys[0].login:
     - source:
         kind: provider
         id: lab/providers/libvirt-host-a

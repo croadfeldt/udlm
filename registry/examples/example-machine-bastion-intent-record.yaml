@@ -1,5 +1,5 @@
 # asserts: ENT-006
-# proves: an order can ask for a local account without naming a key; the account's key is not the consumer's to state here.
+# proves: an order can state a public key without naming the account; which account the image offers is not the consumer's to know.
 # The same machine as example-machine-bastion-requested-record and -realized-record.
 record_type: intent_record
 state: Intent
@@ -16,14 +16,14 @@ origin: declared
 at: '2026-11-12T09:00:00Z'
 time_source: dcm-api
 metadata:
-  display_name: bastion-01 (default account, key left to the implementation)
+  display_name: bastion-01 (one public key, account left to the image)
 fields:
   instance_size: small
   guest_os:
     type: linux-server-9
     version: '9.6'
   authorized_keys:
-    - login: cloud-user
+    - public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXAMPLEKEYEXAMPLEKEYEXAMPLEKEYEXAMPLEKEY0000 ops@example
 provenance:
   instance_size:
     - source:

@@ -193,7 +193,7 @@
             "subpath": {
               "type": "string",
               "pattern": "^(?!/)(?!(.*/)?\\.\\.(/|$)).+$",
-              "description": "The directory inside the export to mount, relative to the export root: `ethan` mounts `<export>/ethan`. No leading `/` and no `..` segment, so a mount never reaches outside its export. Absent means the export root. A share entry only. Kubernetes `volumeMounts[].subPath`."
+              "description": "The directory inside the export to mount, relative to the export root: `alice` mounts `<export>/alice`. No leading `/` and no `..` segment, so a mount never reaches outside its export. Absent means the export root. A share entry only. Kubernetes `volumeMounts[].subPath`."
             },
             "mount_path": {
               "type": "string",
@@ -234,23 +234,28 @@
       },
       "authorized_keys": {
         "type": "array",
-        "description": "SSH keys that may log in to local accounts: a login and one key, by value or by reference.",
+        "description": "SSH keys that may log in to local accounts: one key, by value or by reference, and optionally the login.",
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "login"
+          "oneOf": [
+            {
+              "title": "by value",
+              "required": [
+                "public_key"
+              ]
+            },
+            {
+              "title": "by reference",
+              "required": [
+                "credential_ref"
+              ]
+            }
           ],
-          "not": {
-            "required": [
-              "public_key",
-              "credential_ref"
-            ]
-          },
           "properties": {
             "login": {
               "type": "string",
-              "description": "The local account name on the machine the key logs in to."
+              "description": "The local account on the machine the key logs in to. Absent means the image's default account; the realized record then states the login the provider used."
             },
             "public_key": {
               "type": "string",

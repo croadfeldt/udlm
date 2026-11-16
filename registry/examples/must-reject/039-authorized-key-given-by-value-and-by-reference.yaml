@@ -3,7 +3,7 @@ must_reject:
   gate: conformance
   because: The entry gives the key twice, once as a value (`public_key`) and once as a CredentialRef
     (`credential_ref`). If the two ever differ, a provider cannot tell which key the account accepts. Machine
-    2.8.0 allows at most one per entry.
+    2.8.0 requires exactly one per entry.
 record:
   record_type: intent_record
   state: Intent

@@ -23,10 +23,10 @@ record:
     display_name: host-01 (keeps one user's home on a local volume)
   fields:
     mounts:
-      - volume_ref: volume/host-01-home-chris
+      - volume_ref: volume/host-01-home-bob
         source_ref: fileshare/example-nfs
         share: homes
-        mount_path: /home/chris
+        mount_path: /home/bob
   provenance:
     mounts:
     - source:
