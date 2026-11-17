@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """CI compat gate — makes SPEC-DESIGN §9 [enforced: compat-check] real.
 
-For every resource-type spec that differs from the base ref (default origin/main), run
+For every served spec that differs from the base ref (default origin/main), run
 registry/tools/compat-check.py with old=base-version, new=working-version and fail if the
 declared `version` bump is under-declared (a breaking change shipped as MINOR/REVISION, etc.).
 New type files (absent on base) are skipped — there is no prior version to compare.
+
+The served specs are the compiled ones under registry/generated/. A served spec is what a consumer
+validates against, and it is where a change to an ancestor class lands, so checking it covers a
+class and every class beneath it in one pass (ADR-045 Decision 1, register row 171). The gate
+watched registry/resource-types/ until that directory retired; it then passed with nothing checked.
 
 Usage: tests/ci_compat_gate.py [base_ref]   (base_ref default: origin/main)
 Exit 0 = all changed specs declare a sufficient bump (or are new); 1 = at least one
@@ -17,6 +22,7 @@ import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 COMPAT = os.path.join(ROOT, "registry", "tools", "compat-check.py")
+SPECS = "registry/generated"
 
 
 def sh(*args):
@@ -61,16 +67,21 @@ def main() -> int:
               f"bumps. Refusing to pass vacuously (fail-closed).", file=sys.stderr)
         return 2
 
-    diff = sh("git", "diff", "--name-only", base, "--", "registry/resource-types")
+    diff = sh("git", "diff", "--name-only", base, "--", SPECS)
     if diff.returncode != 0:
         print(f"ERROR: compat-gate cannot diff against {base} ({diff.stderr.strip()}) "
               f"(fail-closed).", file=sys.stderr)
         return 2
 
+    # One file per served spec sits directly in SPECS; groups/ holds views over them, not specs.
     changed = [f for f in diff.stdout.splitlines()
-               if f.endswith((".json", ".yaml", ".yml"))]
+               if f.endswith(".json") and os.path.dirname(f) == SPECS]
+    if not os.path.isdir(os.path.join(ROOT, SPECS)):
+        print(f"ERROR: compat-gate watches {SPECS}/, which does not exist. Refusing to pass with "
+              f"nothing checked (fail-closed).", file=sys.stderr)
+        return 2
     if not changed:
-        print(f"compat-gate: no resource-type changes vs {base}")
+        print(f"compat-gate: no served spec changed vs {base}")
         return 0
 
     ren = renames()                          # old path -> new path

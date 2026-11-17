@@ -141,7 +141,7 @@ conversion model: one canonical version per major, declared conversions between 
 downstream registries, external tooling — reference registry entities. **Inside the registry,
 none of this applies to class references** (ADR-045): a Type or Provider Class references its
 parent by handle only and compiles against the release's current version; the registry ref
-(commit) is the sole intra-registry pin. The revision store behind consumer pins is the
+(commit) is the sole intra-registry pin. Versions still carry down the tree; see the next section. The revision store behind consumer pins is the
 registry's git history. A `thing@version` or `thing@sha256:<hex>` pin (ADR-051) resolves within
 the registry ref (or ref range) the consumer declares it consumes. That is how a pin can be
 legally *behind* the current ref, while a pin resolving in no declared ref is refused as unknown.
@@ -150,6 +150,37 @@ legally *behind* the current ref, while a pin resolving in no declared ref is re
   (`~1.2`), or major-floating (`^1`). Default resolution returns the latest **active** version
   satisfying the constraint.
 - `deprecated` versions resolve only to consumers that pin them; `retired` versions do not resolve.
+
+## Versions carry down the class tree
+
+This section amends ADR-045 Decisions 1, 3 and 8 (register row 171, 2026-11-17). ADR-045 had an
+authored class re-version only when its own file changed.
+
+- **A class that moves advances every class beneath it.** A descendant's served spec is compiled
+  from its ancestors, so an ancestor's change alters what the descendant's version stands for.
+  Every class beneath a changed class advances by at least the same level: a revision for a
+  revision, a minor for a minor, a major for a major. The level is measured from the
+  descendant's own version on the base branch.
+- **The tooling writes the bumps.** `scripts/regen.sh` runs
+  `registry/tools/propagate_versions.py`, which advances the descendants and moves the examples
+  that pinned their old versions. Nobody hand-lists them. `--check` fails a change that left a
+  descendant behind.
+- **Each descendant version names one version of every ancestor.** The served spec records them
+  in `compilation_provenance.sources`. A consumer can tell what `Machine.VM` at a given version
+  accepts without knowing a registry commit.
+- **A class inside the registry still does not pin its parent.** Siblings always share one
+  version of their Base. That is what keeps a record portable between them.
+- **A provider's bound version is its statement of support.** A provider registers a class at a
+  version (`class_binding`: `fqn` plus `version`). That says it honours every element of the
+  class at that version, ancestors' elements included. A provider that cannot yet honour a new
+  element stays bound to the earlier version until it can.
+- **Fit is a comparison.** Within one major of the Base, a record fits any provider whose bound
+  version carries every element the record states. Across a major it needs a declared conversion
+  ("Version conversion" above).
+- **The compat gate checks the served specs.** `tests/ci_compat_gate.py` compares every changed
+  spec under `registry/generated/` with its version on the base branch. One pass covers a class
+  and every class beneath it.
+- **Nothing was re-versioned to catch up.** The rule applies from row 171 on.
 
 ## Identity, version, digest
 

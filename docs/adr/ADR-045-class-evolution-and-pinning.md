@@ -1,7 +1,7 @@
 # UDLM ADR-045: Class evolution and pinning — atomic recompilation, two-plane pins, portability in the compat contract
 
-**Status:** Accepted (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25. **Amended by ADR-051** (identity/version/digest — the uuid is frozen identity; revision exactness moved to content digests; the pin, provenance, and provider-surface clauses below carry the amended text).
-**Realized by:** `registry/pin-manifest.json` · `registry/tools/generate_pin_manifest.py` · `registry/tools/generate_class_specs.py`
+**Status:** Accepted (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25. **Amended by ADR-051** (identity/version/digest — the uuid is frozen identity; revision exactness moved to content digests; the pin, provenance, and provider-surface clauses below carry the amended text). **Amended by register row 171** (2026-11-17 — a class that moves advances every class beneath it, and a provider's bound version is its statement of support; the amended rule is in `registry/VERSIONING.md`, "Versions carry down the class tree").
+**Realized by:** `registry/pin-manifest.json` · `registry/tools/generate_pin_manifest.py` · `registry/tools/generate_class_specs.py` · `registry/tools/propagate_versions.py` · `tests/ci_compat_gate.py`
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The class system this governs (ADR-038 —
