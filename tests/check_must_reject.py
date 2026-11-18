@@ -142,7 +142,14 @@ def _conformance(record):
             if where == "<case>"]
 
 
+def _provider_registration(record):
+    """REG-014 at the provider's edge, and the capability rules: one registration judged on its own."""
+    m = _load("registry/tools/validate.py", "_val4")
+    return m.check_provider_registration(record)
+
+
 GATES = {
+    "check_provider_registration": _provider_registration,
     "conformance": _conformance,
     "check_grant_derivation": _grant_derivation,
     "check_ownership_declaration": _ownership,

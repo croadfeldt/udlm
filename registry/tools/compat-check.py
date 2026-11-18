@@ -135,6 +135,12 @@ def main() -> int:
     old, new = load(sys.argv[1]), load(sys.argv[2])
     required, reasons = classify(old, new)
     declared = declared_bump(old["version"], new["version"])
+    # A version only moves forward. Read component by component, 0.10.0 -> 0.9.2 looks like a minor
+    # bump, so the direction is checked first.
+    if [int(x) for x in str(new["version"]).split(".")] < [int(x) for x in str(old["version"]).split(".")]:
+        print(f"{old['resource_type']}: {old['version']} -> {new['version']}")
+        print(f"\nFAIL: the version went backwards ({old['version']} -> {new['version']}).")
+        return 1
     # Pre-1.0 relaxation (semver 0.x; UDLM 1.0 not yet cut): a 0.x type is not yet
     # backward-compat-committed, so a breaking (MAJOR-classified) change is permitted under a MINOR
     # bump until 1.0. The classification is still computed and printed so the break stays VISIBLE and

@@ -202,6 +202,10 @@ jobs:
       # Real §9 gate: every changed served spec must declare a sufficient version bump
       # vs origin/main (compat-check old-vs-new). New types are skipped.
       - run: python3 tests/ci_compat_gate.py origin/main
+      # A provider registration that changes a class binding moves its own version (REG-018):
+      # a raise or an addition is a minor, a lowering or a removal is a major.
+      - run: python3 tests/check_registration_bumps.py --self-test
+      - run: python3 tests/check_registration_bumps.py origin/main
       # Attestation evidence: after the whole suite passed, emit the scoreboard + registry ref
       # as an uncommitted artifact (a committed ref would be permanently stale). Validation
       # results become signable attestation input downstream; a failed suite emits nothing

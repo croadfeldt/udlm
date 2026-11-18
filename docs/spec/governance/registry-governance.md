@@ -410,10 +410,25 @@ realizes. The honest-enforcement ledger is
 claims `[enforced]`. Two of them describe checks that already run on the flat-spec plane and are
 being generalized rather than invented, and both are called out where they apply.
 
+**What runs in CI as of rows 171 and 172.** Four of these rules now have a check that fails a change:
+
+- **Version sufficiency (`REG-011`):** `tests/ci_compat_gate.py` checks every served spec under
+  `registry/generated/`, so a class and each class beneath it.
+- **Unresolvable pins (`REG-014`):** `registry/tools/validate.py` (`check_class_bindings`) checks a
+  provider registration's class bindings only. Estate pins are still unchecked here.
+- **Descendants advance (`REG-017`):** `registry/tools/propagate_versions.py --check` checks every
+  class beneath a class whose version moved.
+- **Registration bumps (`REG-018`):** `tests/check_registration_bumps.py` checks every provider
+  registration whose bindings changed.
+
+`REG-013` needs no separate check: the class schema gives a parent reference no place to carry a
+version. These checks fail a change. They do not yet write the durable refusal record `REG-015`
+describes, so the refusal contract itself remains specification.
+
 **Version sufficiency (`REG-011`).** A change is classified by rule against the bump table
 (`registry/VERSIONING.md` — what bumps what), and a bump smaller than the classification is
-refused. This runs today for resource-type specs (`registry/tools/compat-check.py` via
-`tests/ci_compat_gate.py`), and the class plane reuses the same classification rules rather than
+refused. This runs today for the served specs under `registry/generated/`
+(`registry/tools/compat-check.py` via `tests/ci_compat_gate.py`), and the class plane reuses the same classification rules rather than
 growing a second, divergent notion of "breaking". What the class plane adds is the refusal's
 content: the element, the classification, and the minimum bump that would be accepted. A refusal
 that reports only "insufficient" leaves the maintainer to re-derive the classification the gate
@@ -512,6 +527,8 @@ registry gates emit, so that the recording story is uniform rather than per-gate
 | `REG-014` | An organization-edge pin that names a version or digest absent from the registry ref the estate declares it consumes is refused (`validation.pin_unresolvable`), typed distinctly from a pin that is legally behind. The refusal names the pinned reference and the registry ref it failed to resolve against. A pin carrying both `version` and `digest` must carry a matching pair per the pin manifest; a mismatch is refused and the digest is authoritative (ADR-051). Pins that are behind continue to validate, each emitting its version-distance as enumerated debt — behind is legal, never silent. |
 | `REG-015` | Every registry or estate gate refusal emits a **durable gate-outcome record**: the artifact and change under evaluation, the rule that refused, the classification or comparison that justified it, the named correction, and the actor and time. A CI log line and an exit code are not a gate-outcome record — a refused change and an unattempted one must remain distinguishable after the job that produced them has aged out. The record is the registry-plane counterpart of the `REFUSE` audit record (`AUD-023`) and carries the same content discipline. |
 | `REG-016` | Promotion of an estate from pinned to candidate revisions is refused when the typed-output diff between the two dry-run compilations is neither empty nor explicitly approved (`policy.promotion_diff_unapproved`). The refusal carries the diff, naming each changed output and the consumers bound to it; the estate remains wholly on its pinned revisions — nothing partially promotes. Because a dirty diff contradicts the upstream compatibility claim, the refusal also produces a finding routed to the registry with the diff as provenance. Both comparisons are computed at the same recorded corpus ref; a corpus that moved between them voids the comparison. |
+| `REG-017` | A class whose ancestor's version moved advances by at least the same level: revision, minor or major (`registry/VERSIONING.md`, "Versions carry down the class tree"; register row 171). A change that leaves a descendant behind is refused, and the refusal names the descendant, the ancestor and the version it must reach. Gate: `registry/tools/propagate_versions.py --check`. |
+| `REG-018` | A provider registration that changes a class binding moves its own version. Adding a binding or raising its version needs at least a MINOR. Removing one or lowering its version needs a MAJOR, relaxed to a MINOR while the registration is 0.x. Gate: `tests/check_registration_bumps.py`. |
 | `REG-DP-001` | Default deprecation notification period: P30D before deprecation status is applied. Overridable. |
 | `REG-DP-002` | Default sunset period: Tier 1 = P12M, Tier 2 = P6M. Overridable; locked as immutable in fsi and sovereign profiles. |
 | `REG-DP-003` | Default migration window after retirement: P90D. Overridable. |
