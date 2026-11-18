@@ -191,7 +191,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 
 ## CredentialRef
 
-### CredentialRef (0.8.4)
+### CredentialRef (0.9.0)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -209,6 +209,7 @@ A reference to a secret, never the secret. It names the kind of credential (the 
 **Works with:**
 - Identity.Person / Identity.ServiceAccount — whose credential this is.
 - Container / Workload / FileShare — consumers that reference it from env, mounts, or config.
+- Machine — local accounts that accept an `ssh_key` credential's `public_key` (`authorized_keys`).
 
 ## DHCPScope
 
@@ -725,7 +726,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.6.3)
+### Machine (2.8.0)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -743,7 +744,9 @@ The most portable way to ask for a machine: how big, what image, which disks, wh
 - Machine.VM, Machine.BareMetalHost, Machine.LPAR — the forms an order here resolves to.
 - Volume and VirtualNetwork — what the realized machine attaches to.
 - FileShare — the network shares its guest mounts (`mounts`).
+- Volume — a local volume its guest mounts in place of a share (`mounts`, `volume_ref`).
 - Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
+- CredentialRef — an SSH key a local account accepts (`authorized_keys`), when held by reference.
 
 ### Machine.BareMetalHost (0.18.1)
 
@@ -1397,11 +1400,11 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 
 ## Workload
 
-### Workload (0.11.3)
+### Workload (0.12.0)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
-The application layer: the mail service, the registry, model serving — a named service, classified by its required `service_kind` (application, infrastructure_daemon, database, and kin), composed of `constituents` that each declare their `form`: a `container` constituent references its container record via `container_ref`; a `systemd` constituent names its `host` and `units`. It declares what the service needs — a database, a directory, name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications derivable. Endpoints and a ready signal surface how it is reached and whether it is serving.
+The application layer: the mail service, the registry, model serving — a named service, classified by its required `service_kind` (application, infrastructure_daemon, database, and kin), composed of `constituents` that each declare their `form`: a `container` constituent references its container record via `container_ref`; a `systemd` constituent names its `host` and `units`. It declares what the service needs — a database, a directory, name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications derivable. `exposure` states the names and visibility it asks for; the `endpoints` output says where the provider put it; readiness is a status condition.
 
 **Use when:**
 - You need an application composed of several workloads treated as one node with one dependency surface.
