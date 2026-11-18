@@ -1,0 +1,44 @@
+# A PROVIDER THAT BINDS ITS OWN PROVIDER CLASS (VERSIONING.md, "Versions carry down the class tree").
+#
+# This provider's offering carries data the Type does not, so it authors a Provider Class (CLS-005) and
+# binds that. The binding's version says it honours every element of the Provider Class at that version,
+# and of the Type and Base above it. Contrast example-provider-binds-a-type.yaml, which needs no class
+# of its own. Either way the pin is in the registration.
+record_type: provider_registration
+uuid: 8a40d2f6-1b93-4c57-a6e2-7f3c0d915e84
+conforms_to: udlm/1.0
+handle: lab/services/three-tier-apps
+version: 1.0.0
+display_name: Three-tier application service
+description: Realizes the Acme three-tier web application as one unit.
+
+capabilities:
+  - realize_resources
+
+capability_profiles:
+  realize_resources:
+    resource_types:
+      # A Provider Class, pinned the same way a Type is.
+      - fqn: Template.Application.AcmeThreeTier
+        version: 0.2.4
+    two_phase_realization:
+      hold_supported: false
+
+sovereignty_declaration:
+  operating_jurisdictions: [US]
+  data_residency_zones: [US-MN]
+  enforcement_plane: both
+
+accepts_roles: [execution]
+
+health_endpoint: https://three-tier-apps.lab.example/health
+
+certificate:
+  pem: |
+    -----BEGIN CERTIFICATE-----
+    (provider leaf certificate)
+    -----END CERTIFICATE-----
+  ca_chain: |
+    -----BEGIN CERTIFICATE-----
+    (lab intermediate CA)
+    -----END CERTIFICATE-----
