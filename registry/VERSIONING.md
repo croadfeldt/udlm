@@ -182,6 +182,28 @@ authored class re-version only when its own file changed.
   and every class beneath it.
 - **Nothing was re-versioned to catch up.** The rule applies from row 171 on.
 
+**Where the pin is.** A class holds no pin. A provider's pin is the `fqn` and `version` in its
+registration, and it moves when the provider re-registers.
+
+| Example | What it shows |
+|---|---|
+| `registry/examples/example-provider-binds-a-type.yaml` | A provider with no Provider Class binds `Machine.VM` at a version. |
+| `registry/examples/example-provider-binds-a-provider-class.yaml` | A provider with data of its own binds its Provider Class at a version. |
+| `registry/examples/example-provider-raises-a-binding.yaml` | A provider that stayed on `CredentialRef` 0.8.4 takes up 0.9.0, and its registration goes 1.0.0 to 1.1.0. |
+| `registry/examples/must-reject/042-provider-binding-with-no-version.yaml` | A binding that names no version is refused. |
+
+**How a bump carries down.** Suppose a change adds an optional element to `Machine`, a minor.
+
+| Class | Before | After | Why |
+|---|---|---|---|
+| `Machine` | 2.8.0 | 2.9.0 | Its own change. |
+| `Machine.VM` | 2.4.2 | 2.5.0 | Follows `Machine` by a minor. |
+| `Machine.BareMetalHost` | 0.18.1 | 0.19.0 | Follows `Machine` by a minor. |
+| `Machine.LPAR` | 0.2.3 | 0.3.0 | Follows `Machine` by a minor. |
+
+A provider bound to `Machine.VM` 2.4.2 is unaffected until it re-registers at 2.5.0. A record
+that states the new element fits only providers bound at 2.5.0 or later.
+
 ## Identity, version, digest
 
 Three fields, three jobs — never one field doing two (the Kubernetes

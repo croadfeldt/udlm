@@ -1,0 +1,55 @@
+# A PROVIDER TAKES UP A NEWER CLASS VERSION BY RE-REGISTERING (VERSIONING.md, "Versions carry down the class tree").
+#
+# CredentialRef 0.9.0 added `public_key`. This provider had not built support for it, so its registration
+# 1.0.0 stayed bound to the earlier version:
+#
+#       - fqn: CredentialRef
+#         version: 0.8.4
+#
+# That was legal and visible: the registry moved on, the provider's statement of support did not. A record
+# that stated a `public_key` did not fit this provider; one that left it out still did.
+#
+# The provider now honours `public_key`, so it re-registers with the binding raised to 0.9.0. This is
+# that registration. Two versions are involved, each moved by its owner:
+#   - the class version was already there; the registry published 0.9.0 and the provider only names it.
+#   - the registration's own `version` goes 1.0.0 -> 1.1.0. Honouring more elements is an additive change
+#     to the provider's declared surface, so it is a minor (ADR-045 Decision 8).
+# The uuid does not move: it is the same provider. Lowering a binding would withdraw support, a breaking change.
+record_type: provider_registration
+uuid: 2f7b6c15-9e04-4d83-b2a7-6c1d8e30f942
+conforms_to: udlm/1.0
+handle: lab/security/key-issuer
+version: 1.1.0
+display_name: Key issuer
+description: Issues and holds SSH key credentials for the lab.
+
+capabilities:
+  - realize_resources
+
+capability_profiles:
+  realize_resources:
+    resource_types:
+      # The bound version is the statement of support.
+      - fqn: CredentialRef
+        version: 0.9.0
+    two_phase_realization:
+      hold_supported: false
+
+sovereignty_declaration:
+  operating_jurisdictions: [US]
+  data_residency_zones: [US-MN]
+  enforcement_plane: both
+
+accepts_roles: [execution]
+
+health_endpoint: https://key-issuer.lab.example/health
+
+certificate:
+  pem: |
+    -----BEGIN CERTIFICATE-----
+    (provider leaf certificate)
+    -----END CERTIFICATE-----
+  ca_chain: |
+    -----BEGIN CERTIFICATE-----
+    (lab intermediate CA)
+    -----END CERTIFICATE-----
