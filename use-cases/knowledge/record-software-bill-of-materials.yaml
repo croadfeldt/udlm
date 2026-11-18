@@ -1,0 +1,60 @@
+uuid: uc-f7418c57-53d5-4c29-9344-e76a8b462343
+handle: knowledge/record-software-bill-of-materials
+version: 1.0.0
+scenario:
+  description: 'A platform engineer records a SoftwareBillOfMaterials for a container image: the document is kept
+    in the organization''s SBOM store, and the record points at it by URL and digest and captures its package list
+    as edges to SoftwarePackage records, one per package URL. The image record lists nothing itself. A later advisory
+    against one of those packages is walked in reverse to the bill of materials, to the image it describes, and
+    by matching digests to every container that runs the image. This stresses that the captured list is a checked
+    copy: the record''s digest is compared with what the store serves, a record whose digest no longer matches is
+    out of date and is refreshed, and a subject with no bill of materials is reported as not judged, never as clear.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+  - security-officer
+  - compliance-auditor
+  - platform-operator
+  intent: Record a bill of materials for an image, captured from the SBOM store and checkable against it, so an
+    advisory reaches every container that runs the image
+  success_criteria:
+  - The record names the document by URL and digest in the SBOM store; the document itself is not restated
+  - Each listed package is one edge to a SoftwarePackage shared by every document that lists it
+  - The image record carries no package list; a rescan supersedes the bill of materials and leaves the image alone
+  - A walk from an advisory reaches the image through the bill of materials and reaches each container by matching
+    digests
+  - A record whose digest differs from what the store serves is identified as out of date
+  - A subject with no bill of materials is reported as not judged, distinct from not affected
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: single_no_deps
+    policy_complexity: no_policy
+    provider_landscape: single_eligible
+    governance_context: compliance_gated
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: 'the SoftwareBillOfMaterials record: document location and digest, the subject it describes, one
+      edge per package'
+  - domain: policy
+    interaction: how often the record is refreshed and whose signature on the document counts are set by policy,
+      not by the record
+  - domain: provider
+    interaction: the SBOM store serves the document as an Information Provider; a scanner or a supplier produces
+      it; nothing is realized
+  - domain: audit
+    interaction: each capture is a superseding record with its source and time, so what was known when is recoverable
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: knowledge-2026-11-13
+  timestamp: '2026-11-13T00:00:00.000000+00:00'
+tags:
+- knowledge-sbom
+- software-bill-of-materials
+- captured-from-store
+- exposure-walk
+- referenceable

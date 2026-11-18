@@ -173,12 +173,16 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** the cross-ecosystem package identifier every SBOM tool speaks. MIT, compatible_reference.
 
 ### SPDX — CANONICAL
-**Covers:** `SPDX` · **Body:** Linux Foundation / ISO 5962 · **Since:** registered 2026-07-25 (SoftwarePackage `adopts[]`). · **Where:** SoftwarePackage — SBOM interchange + license identifiers.
+**Covers:** `SPDX` · **Body:** Linux Foundation / ISO 5962 · **Since:** registered 2026-07-25 (SoftwarePackage `adopts[]`). · **Where:** SoftwarePackage — SBOM interchange + license identifiers. SoftwareBillOfMaterials (row 170) — the document itself, pointed at by URL and digest, and the DESCRIBES and CONTAINS relationship types as its two relation names.
 **Why:** SBOM interchange alignment; license identifiers use the SPDX license list (data CC0-1.0). Spec under Community-Spec terms — reference_only posture.
 
 ### CycloneDX — CANONICAL
-**Covers:** `CycloneDX` · **Body:** OWASP / ECMA-424 · **Since:** registered 2026-07-25 (SoftwarePackage `adopts[]`). · **Where:** SoftwarePackage — SBOM component identity.
+**Covers:** `CycloneDX` · **Body:** OWASP / ECMA-424 · **Since:** registered 2026-07-25 (SoftwarePackage `adopts[]`). · **Where:** SoftwarePackage — SBOM component identity and, from 0.5.0, the component type codelist (`component_type`). SoftwareBillOfMaterials (row 170) — the document itself, pointed at by URL and digest.
 **Why:** the second SBOM interchange lingua franca; component/bom-ref alignment. Apache-2.0, compatible_reference.
+
+### CPE — CANONICAL
+**Covers:** `CPE` `Common Platform Enumeration` · **Body:** NIST (NISTIR 7695, CPE Naming 2.3) · **Since:** registered 2026-11-13 (row 170; SoftwarePackage `adopts[]`). · **Where:** SoftwarePackage `cpe` — the second component identifier, for operating systems, appliances and firmware.
+**Why:** a vulnerability database names an operating system, an appliance or a firmware build by CPE, and no package ecosystem gives those a purl with a registry behind it. Carrying the CPE beside the purl lets a scanner's match be recorded for a switch as it is for a library. Public domain (NIST), compatible_reference.
 
 ### OSV Schema — CANONICAL
 **Covers:** `OSV Schema` `OSV` · **Body:** OpenSSF · **Since:** registered 2026-07-25 (Vulnerability `adopts[]`). · **Where:** Vulnerability — the interchange record shape.
@@ -279,7 +283,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** Gaia-X is the closest existing system to what this model is — federated, self-described, trust-anchored sovereignty attestation for cloud providers — and validated the architecture (three-party spine, self-description-then-verify, no central byte enforcement). **Pattern:** conceptual alignment; we don't consume the Gaia-X ontology or credential-event service. *Related:* EUCS assurance levels (PRIOR-ART, informed the plane/level axes). **License:** Gaia-X (open) — compatible_reference.
 
 ### in-toto Attestation Framework — CANONICAL
-**Covers:** `in-toto` `in-toto Statement` `DSSE` · **Body:** CNCF (in-toto) · **Since:** pattern 2026-07-14; adopted 2026-09-13 (row 074, #558) · **Where:** the signed projection of a UDLM record. `TestEvidence` `adopts[]` the in-toto Statement with the `test-result/v0.1` predicate: the statement's subject is the realized record's `integrity.head` (ADR-059 canonical bytes), the envelope is DSSE, and the join runs one way, statement to record (row 071 brief, decision 4). Per-hop re-attestation down the fulfillment graph (accreditation-and-authorization-matrix.md §3.3.1) is in-toto's layout-step MATCH at each link, as before.
+**Covers:** `in-toto` `in-toto Statement` `DSSE` · **Body:** CNCF (in-toto) · **Since:** pattern 2026-07-14; adopted 2026-09-13 (row 074, #558) · **Where:** the signed projection of a UDLM record. `TestEvidence` `adopts[]` the in-toto Statement with the `test-result/v0.1` predicate: the statement's subject is the realized record's `integrity.head` (ADR-059 canonical bytes), the envelope is DSSE, and the join runs one way, statement to record (row 071 brief, decision 4). Per-hop re-attestation down the fulfillment graph (accreditation-and-authorization-matrix.md §3.3.1) is in-toto's layout-step MATCH at each link, as before. `SoftwareBillOfMaterials.attestation` (row 170) points at a Statement with the SPDX or CycloneDX predicate, whose subject is the thing the document describes; the record never asserts that the signature verified.
 **Why:** adopt, not invent. UDLM records carry provenance per field and a tamper-evident head per record; what they lacked was a signed, verifiable projection a supply-chain consumer already understands. The in-toto Statement is that projection, produced from the record rather than beside it, so a verifier checks the envelope signature, compares the subject to the record's head, and walks `supersedes`. **License:** Apache-2.0 — compatible_reference.
 
 ### SLSA — CANONICAL
