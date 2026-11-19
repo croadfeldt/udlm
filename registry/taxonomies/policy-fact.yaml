@@ -215,14 +215,15 @@ terms:
     parent: evaluation-context
     curation_state: canonical
     definition: >-
-      Whether a vulnerability is being exploited, as the sources read for this pass report it: one
-      of `none`, `poc`, `active`, the values of the SSVC Exploitation decision point. `active` is
-      reliable evidence that attackers are using it, and an entry in a known-exploited catalog is
-      that evidence. `poc` is a public proof of concept. `none` is a source's own statement that it
-      looked and found neither. A fact of the pass and never a stored field on the Vulnerability
-      record: a party other than the advisory says it, on its own clock, so a stored copy would go
-      stale and would hide who said it (DRV-001). When no source read has spoken the fact is absent,
-      and absent is never read as `none`.
+      Whether a vulnerability is exploited in the wild, as the sources read for this pass report it:
+      one of `none`, `poc`, `active`, the values of the SSVC Exploitation decision point. `active` is
+      reliable evidence that attackers are using it somewhere, and an entry in a known-exploited
+      catalog is that evidence. It is a fact about the vulnerability and never about the estate: it
+      does not say the estate was attacked. `poc` is a public proof of concept. `none` is a source's
+      own statement that it looked and found neither. A fact of the pass and never a stored field on
+      the Vulnerability record: a party other than the advisory says it, on its own clock, so a stored
+      copy would go stale and would hide who said it (DRV-001). When no source read has spoken the
+      fact is absent, and absent is never read as `none`.
 
   # ---- evaluation context: reserve-phase facts (ADR-011) ----
   - term: reserved
