@@ -34,7 +34,7 @@ use-cases/        the CI-consumed coverage corpus · tests/ the gates · scripts
 
 - **Commits:** `--no-gpg-sign`, author = the repo owner's public git identity (match `git log -1 --format='%an <%ae>'`), trailer
   `Co-Authored-By: <the Claude model in use> <noreply@anthropic.com>`. This repo is on **GitHub**
-  (`croadfeldt/udlm`) — use `gh`, not `glab`.
+  (`dcm-project/udlm`) — use `gh`, not `glab`.
 - **PRs are subject-scoped** — one logical thing per PR, ≤2–3k lines.
 - **Run `bash scripts/signoff.sh` before every PR.** It runs every gate CI runs, then prints the
   judgment checklist. The list is **derived** from `.github/workflows/validate.yml` (via
@@ -74,7 +74,7 @@ use-cases/        the CI-consumed coverage corpus · tests/ the gates · scripts
 
 | Concern | Repo |
 |---|---|
-| **Spec + resource-type registry** (the *types*) | `udlm` (this repo, croadfeldt/udlm) |
+| **Spec + resource-type registry** (the *types*) | `udlm` (this repo, dcm-project/udlm) |
 | **DCM** control-plane / consumer code | `dcm` (croadfeldt/dcm) |
 | **DAV** review console | `dav` (croadfeldt/dav) |
 | **Estate DATA** (instances, the dependency graph) | a private estate-data repo (kept off GitHub — no personal infrastructure in the public specs) |

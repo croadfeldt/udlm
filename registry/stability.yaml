@@ -160,6 +160,9 @@ parts:
   - part: class:Subnet
     stability: experimental
     why: no use case exercises it yet
+  - part: class:WirelessAccessPoint
+    stability: experimental
+    why: new 2026-11-06 for the estate's UniFi fleet (row 164); no use case exercises it yet
   - part: class:VirtualNetwork
     stability: experimental
     why: candidate — exercised by the use-case corpus and the estate; stable once used and validated (row 144)
