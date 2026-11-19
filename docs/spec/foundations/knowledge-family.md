@@ -238,8 +238,9 @@ reference edges → a named walk (service-dependencies.md §6.5).
   targets by natural key: `oci_digest`, `firmware_build`, `purl`, `vulnerability_id` (`correlation_ids`,
   RHY-007).
 
-- **Whether a vulnerability is being exploited is derived, not stored** (row 174). Severity says how
-  bad a vulnerability could be and not whether anyone is using it. A party other than the advisory
+- **Whether a vulnerability is exploited in the wild is derived, not stored** (row 174). Severity says
+  how bad a vulnerability could be and not whether attackers use it anywhere. The fact is about the
+  vulnerability and never about the estate: it does not say the estate was attacked. A party other than the advisory
   says that, a known-exploited catalog or a vendor, and it changes on that party's clock. So the
   `Vulnerability` record does not carry it (DRV-001). It is the policy fact
   `vulnerability.exploitation` (`registry/taxonomies/policy-fact.yaml`): computed when the answer is
