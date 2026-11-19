@@ -1,0 +1,44 @@
+# A PROVIDER THAT BINDS A TYPE, WITH NO PROVIDER CLASS (VERSIONING.md, "Versions carry down the class tree").
+#
+# This hypervisor needs no data beyond what Machine.VM carries, so it authors no Provider Class (CLS-005).
+# It binds the Type directly. The binding's version is its statement of support: it honours every element
+# of Machine.VM at that version, Machine's elements included. The pin is here, in the registration. No
+# class holds it.
+record_type: provider_registration
+uuid: 5c1e9a72-3d48-4b06-8f1a-2e7d90c4b631
+conforms_to: udlm/1.0
+handle: lab/compute/kvm-host-b
+version: 1.0.0
+display_name: KVM host B
+description: Realizes virtual machines on one lab host.
+
+capabilities:
+  - realize_resources/Machine
+
+capability_profiles:
+  realize_resources:
+    resource_types:
+      # The whole pin: a class and a version.
+      - fqn: Machine.VM
+        version: 2.4.2
+    two_phase_realization:
+      hold_supported: false
+
+sovereignty_declaration:
+  operating_jurisdictions: [US]
+  data_residency_zones: [US-MN]
+  enforcement_plane: both
+
+accepts_roles: [execution]
+
+health_endpoint: https://kvm-host-b.lab.example/health
+
+certificate:
+  pem: |
+    -----BEGIN CERTIFICATE-----
+    (provider leaf certificate)
+    -----END CERTIFICATE-----
+  ca_chain: |
+    -----BEGIN CERTIFICATE-----
+    (lab intermediate CA)
+    -----END CERTIFICATE-----
