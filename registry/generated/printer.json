@@ -1,0 +1,123 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/1.0/Printer/0.1.0",
+  "conforms_to": "udlm/1.0",
+  "uuid": "472b09ae-2918-4a32-9922-7101b5b77b9d",
+  "resource_type": "Printer",
+  "version": "0.1.0",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "Printer",
+    "description": "A network printer or multifunction device as a managed asset: an embedded computer on the network that runs its own firmware and that nobody logs in to. A Base by the Base test (CLS-002): every printer has a maker, a model and a serial number, runs one firmware version and answers on a network address. Its queues, trays, supplies and jobs stay with the provider. It enters as Discovered.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-11-19T22:00:00Z",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "Printer",
+          "version": "0.1.0",
+          "uuid": "472b09ae-2918-4a32-9922-7101b5b77b9d"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "identity": {
+        "$ref": "../common-elements.schema.json#/$defs/identity",
+        "description": "Device identity: vendor, model, serial, and the UUID the printer states for itself.",
+        "properties": {
+          "serial_number": {
+            "description": "Vendor serial. Primary discovered-identity key (correlation scheme `serial_number`)."
+          },
+          "printer_uuid": {
+            "type": "string",
+            "description": "The UUID URN the printer states for itself (IPP printer-uuid, PWG 5100.13). Stable across a rename, a new address and a change of interface, so a printer that has both a wired and a wireless interface is one entity whichever one it is using."
+          },
+          "system_name": {
+            "type": "string",
+            "description": "Configured name (IPP printer-name, RFC 8011) — mutable, secondary to serial_number and printer_uuid."
+          }
+        }
+      }
+    },
+    "examples": [
+      {
+        "identity": {
+          "manufacturer": "ExamplePrint",
+          "model": "EP Color MFP 400",
+          "serial_number": "PRN-OBS-0001",
+          "printer_uuid": "urn:uuid:5f0c2a4e-7d1b-4c1e-9a53-000000005301",
+          "system_name": "print-floor2"
+        }
+      }
+    ]
+  },
+  "outputs": {
+    "management_address": {
+      "type": "string",
+      "description": "Reachable management endpoint (IP/hostname) once Realized."
+    },
+    "firmware_version": {
+      "type": "string",
+      "description": "Observed firmware version (IPP printer-firmware-string-version) — Discovered-state data; what an advisory about the device's firmware is matched against, and drift input for fleet-consistency checks."
+    }
+  },
+  "immutable": [
+    "identity.serial_number"
+  ],
+  "relationships": [
+    {
+      "edge_type": "contained_by",
+      "name": "located_in",
+      "target": "Location",
+      "cardinality": "0..1",
+      "description": "located_in — the room, building or site the printer stands in. Stated on the record, never inferred from its address; a thing is where its placement says it is, and residency reads this edge."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "RFC 8011",
+      "version": "8011",
+      "standard_name": "Internet Printing Protocol/1.1: Model and Semantics",
+      "role": "what a printer is to the network — the Printer object, and the description attributes its make, model and name are read from (printer-make-and-model, printer-name)",
+      "source": "https://www.rfc-editor.org/rfc/rfc8011",
+      "license": "IETF-Trust-TLP",
+      "license_compatibility": "compatible_reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "PWG 5100.13",
+      "version": "2023",
+      "standard_name": "IPP Driver Replacement Extensions v2.0",
+      "role": "discovered identity and firmware — printer-uuid names the printer whichever interface it is using, and printer-firmware-string-version is the value of firmware_version",
+      "source": "https://ftp.pwg.org/pub/pwg/candidates/cs-ippnodriver20-20230301-5100.13.pdf",
+      "license": "IEEE-ISTO-PWG",
+      "license_compatibility": "reference_only",
+      "disposition": "tier1_value"
+    }
+  ],
+  "filed_under": [
+    "hardware"
+  ],
+  "context": {
+    "purpose": "Models a network printer or multifunction device as a managed asset — an embedded computer with its own firmware, so its exposure to an advisory can be judged like any other device's.",
+    "plain_description": "One printer or multifunction device: who made it, its model and serial number, the UUID it states for itself, the firmware version it runs and where it stands. It carries no queues, trays, supplies, jobs or scan destinations; those belong to the device and its print service, which is the provider. It enters the model as discovered, from what the device answers when asked to describe itself, and is then claimed and placed like a switch.",
+    "use_when": [
+      "You need every device that runs firmware inventoried with its version, so an advisory about that firmware can be matched to the devices that run it.",
+      "You need the printers on a network recorded with a stated place and owner, the same way switches and hosts are."
+    ],
+    "not_for": [
+      "A print server or spooler that runs on a host — a Workload on a Machine.",
+      "A print queue, a job or a driver — provider configuration, not a UDLM entity.",
+      "The network interfaces of the printer — not modeled in 0.1.0; its address is the management_address output."
+    ],
+    "works_with": [
+      "Location — where it stands."
+    ]
+  }
+}

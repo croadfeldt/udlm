@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 69,
+    "types": 70,
     "by_family": {
       "Access": 8,
       "Knowledge": 10,
       "Process": 3,
-      "Resource": 48
+      "Resource": 49
     }
   },
   "discrimination": {
-    "mutations_attempted": 6394,
-    "mutations_rejected": 6394,
+    "mutations_attempted": 6443,
+    "mutations_rejected": 6443,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -187,6 +187,10 @@
         "attempted": 49,
         "rejected": 49
       },
+      "Printer": {
+        "attempted": 49,
+        "rejected": 49
+      },
       "Processor": {
         "attempted": 76,
         "rejected": 76
@@ -294,8 +298,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 69,
-    "total": 69
+    "strict_specs": 70,
+    "total": 70
   },
   "outputs": {
     "per_type": {
@@ -342,6 +346,7 @@
       "NetworkInterface": 1,
       "NetworkSwitch": 2,
       "PowerFeed": 0,
+      "Printer": 2,
       "Processor": 0,
       "SoftwareBillOfMaterials": 0,
       "SoftwareImage": 0,
@@ -418,13 +423,13 @@
     ]
   },
   "context": {
-    "with_context": 69,
-    "total": 69,
+    "with_context": 70,
+    "total": 70,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 56,
-    "total": 69,
+    "with_relationships": 57,
+    "total": 70,
     "missing": [
       "Automation",
       "Automation.OSPatch",
@@ -502,6 +507,7 @@
       "NetworkInterface",
       "NetworkSwitch",
       "PowerFeed",
+      "Printer",
       "Processor",
       "SovereigntyZone",
       "StorageCluster",
@@ -582,6 +588,7 @@
       "NetworkInterface",
       "NetworkSwitch",
       "PowerFeed",
+      "Printer",
       "Processor",
       "SoftwareBillOfMaterials",
       "SoftwareImage",
@@ -608,7 +615,7 @@
       "WirelessAccessPoint",
       "Workload"
     ],
-    "consumed_by_at_least_one": 69
+    "consumed_by_at_least_one": 70
   },
   "expressibility_coverage": {
     "value": null,
