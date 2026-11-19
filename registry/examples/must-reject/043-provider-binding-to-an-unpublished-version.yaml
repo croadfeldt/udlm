@@ -1,0 +1,44 @@
+must_reject:
+  rule: REG-014
+  gate: check_provider_registration
+  because: The binding names Machine.VM 9.9.0, a version the registry never published. A bound version is the
+    provider's statement of support, so it has to be one a consumer can look up. A version that is behind is
+    legal; one that does not exist promises nothing.
+record:
+  record_type: provider_registration
+  uuid: 5c1e9a72-3d48-4b06-8f1a-2e7d90c4b643
+  conforms_to: udlm/1.0
+  handle: lab/compute/kvm-host-d
+  version: 1.0.0
+  display_name: KVM host D
+  description: Realizes virtual machines on one lab host.
+
+  capabilities:
+    - realize_resources/Machine
+
+  capability_profiles:
+    realize_resources:
+      resource_types:
+        - fqn: Machine.VM
+          version: 9.9.0
+      two_phase_realization:
+        hold_supported: false
+
+  sovereignty_declaration:
+    operating_jurisdictions: [US]
+    data_residency_zones: [US-MN]
+    enforcement_plane: both
+
+  accepts_roles: [execution]
+
+  health_endpoint: https://kvm-host-d.lab.example/health
+
+  certificate:
+    pem: |
+      -----BEGIN CERTIFICATE-----
+      (provider leaf certificate)
+      -----END CERTIFICATE-----
+    ca_chain: |
+      -----BEGIN CERTIFICATE-----
+      (lab intermediate CA)
+      -----END CERTIFICATE-----
