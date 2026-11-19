@@ -1,18 +1,18 @@
-$id: https://udlm.dev/registry/udlm/1.0/class/SoftwarePackage/0.4.2
+$id: https://udlm.dev/registry/udlm/1.0/class/SoftwarePackage/0.5.0
 conforms_to: udlm/1.0
 uuid: df4b2ff1-c6d4-4075-a355-ee85db5bc366
 record_type: class
 class: base
 resource_type: SoftwarePackage
-version: 0.4.2
+version: 0.5.0
 family: Knowledge
 status: active
 metadata:
   display_name: Software Package
-  description: 'A software package or library as a fact: one record per purl, shared by every SoftwareImage that
-    contains it. A Knowledge class: discovered by a scanner sweep, never provider-realized. Package URL and SPDX/CycloneDX
-    component identity are adopted by reference; the purl is the portable correlation id. Contained by SoftwareImage;
-    references Vulnerability.'
+  description: 'A software component as a fact: a library, an application, an operating system or a firmware build.
+    One record per purl, shared by every SoftwareBillOfMaterials that lists it. A Knowledge class: discovered by
+    a scanner sweep, never provider-realized. Package URL, CPE and SPDX/CycloneDX component identity are adopted
+    by reference; the purl is the portable correlation id. Listed by SoftwareBillOfMaterials; references Vulnerability.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-22T00:00:00Z'
 entity_type: SoftwarePackage
@@ -35,12 +35,57 @@ elements:
     schema:
       type: string
       description: Declared license as an SPDX identifier (Apache-2.0), where the SBOM reports one.
+  - element: cpe
+    scope: SoftwarePackage
+    optional: true
+    state: proposed
+    description: The CPE 2.3 name of the component, where one is assigned. It is the identifier a vulnerability
+      database matches an operating system, an appliance or a firmware build by, where no package ecosystem gives
+      one. A second correlation id beside the purl, never a replacement for it.
+    schema:
+      type: string
+      pattern: ^cpe:2\.3:[aho*-](:[^:]+){10}$
+      description: The CPE 2.3 name of the component, where one is assigned. It is the identifier a vulnerability
+        database matches an operating system, an appliance or a firmware build by, where no package ecosystem gives
+        one. A second correlation id beside the purl, never a replacement for it.
+  - element: component_type
+    scope: SoftwarePackage
+    optional: true
+    state: proposed
+    description: 'What kind of component this is, as the bill of materials reports it: the CycloneDX component type,
+      adopted by reference. It tells a reader whether a fix is a package update, an image rebuild or a firmware
+      flash. Absent means the document did not say.'
+    schema:
+      type: string
+      x-standard: "CycloneDX:1.5 component.type"
+      enum:
+        - application
+        - framework
+        - library
+        - container
+        - platform
+        - operating-system
+        - device
+        - device-driver
+        - firmware
+        - file
+        - machine-learning-model
+        - data
+        - cryptographic-asset
+      description: 'What kind of component this is, as the bill of materials reports it: the CycloneDX component
+        type, adopted by reference. It tells a reader whether a fix is a package update, an image rebuild or a
+        firmware flash. Absent means the document did not say.'
 spec_examples:
   - purl: pkg:rpm/redhat/openssl@3.0.7-18.el9?arch=x86_64
     license: OpenSSL
+    component_type: library
+  - purl: pkg:generic/example-networks/edge-switch-firmware@7.1.26
+    cpe: cpe:2.3:o:example_networks:edge_switch_firmware:7.1.26:*:*:*:*:*:*:*
+    component_type: firmware
 relationships:
   - edge_type: references
     target: Vulnerability
+    name: affected_by
     cardinality: 0..n
     description: affected_by — this package version is affected by the vulnerability (OSV / VEX). A declarative
       typed reference; the match is Policy. Non-ordering, but walked by blast-radius/impact in reverse (the CVE
@@ -70,19 +115,30 @@ adopts:
     license: Apache-2.0
     license_compatibility: compatible_reference
     disposition: tier1_value
+  - standard: CPE
+    version: '2.3'
+    standard_name: Common Platform Enumeration naming (NISTIR 7695)
+    role: the second component identifier, for operating systems, appliances and firmware that a vulnerability
+      database names by CPE
+    source: https://csrc.nist.gov/pubs/ir/7695/final
+    license: public domain (NIST)
+    license_compatibility: compatible_reference
+    disposition: tier1_value
 context:
-  purpose: Records a software package or library as one shared fact per package URL, so every image containing it
-    points at the same record.
-  plain_description: 'One package at one version — identified by its purl (Package URL), the portable id that carries
-    ecosystem, name, and version in one string. There is exactly one record per purl no matter how many images contain
-    it, which is what makes blast-radius questions cheap: find the package once, walk back to every image and container
-    that includes it. Discovered by scanners; never built or provisioned.'
+  purpose: Records a software component as one shared fact per package URL, so every bill of materials that lists
+    it points at the same record.
+  plain_description: 'One component at one version — a library, an application, an operating system release or
+    a firmware build — identified by its purl (Package URL), the portable id that carries ecosystem, name, and version
+    in one string. Firmware and appliances with no package ecosystem use the `generic` purl type and carry a `cpe`,
+    the name a vulnerability database knows them by. There is exactly one record per purl no matter how many documents
+    list it, which is what makes blast-radius questions cheap: find the package once, walk back to every image,
+    host and device that carries it. Discovered by scanners; never built or provisioned.'
   use_when:
     - You need where-do-we-run-version-X-of-library-Y answerable as a graph walk.
     - You need packages linked to the advisories affecting them.
   not_for:
-    - The image bundling the package — SoftwareImage contains packages.
+    - The image or host carrying the package — its SoftwareBillOfMaterials lists packages.
     - The advisory itself — Vulnerability; a package is affected_by it.
   works_with:
-    - SoftwareImage — the images that contain this package.
+    - SoftwareBillOfMaterials — the documents that list this package, each about one image, host or device.
     - Vulnerability — the advisories affecting this package version.

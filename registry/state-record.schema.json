@@ -1121,7 +1121,10 @@
               "provider_id",
               "segment_id",
               "subnet_prefix",
-              "gateway_mac"
+              "gateway_mac",
+              "oci_digest",
+              "purl",
+              "vulnerability_id"
             ],
             "x-extensible-enum": true,
             "description": "The kind of natural key. `provider_id` = the owning provider's identifier (Avenue-1 discovery). Scoped keys carry their scope, rooted at the observed isolation domain (four-states §2.4, row 118). `segment_id` = `<observer>/<domain>/<id>` (device key, bridge domain/VRF/overlay, 802.1Q tag or VNI): an OBSERVATION, resolving to a VLAN only where that record lists it, never by inference (row 119). `subnet_prefix` = `<segment_id value>#<cidr>`, or the bare CIDR. `gateway_mac` = the gateway's MAC, separating deliberate duplicates. A tie is refused as ambiguous."
