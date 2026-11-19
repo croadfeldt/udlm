@@ -292,6 +292,11 @@ renames:
   # restated the class system in pre-ADR-038 terms.
   docs/spec/foundations/resource-type-hierarchy.md: docs/spec/foundations/class-tiers.md
 
+  # 2026-11-19 — FirmwareImage is renamed FirmwareRelease (row 178). The record names a release of
+  # firmware for one device model and holds no digest, so it is not an image. The class keeps its uuid.
+  registry/classes/knowledge/firmware-image/_base.yaml: registry/classes/knowledge/firmware-release/_base.yaml
+  registry/generated/firmware-image.json: registry/generated/firmware-release.json
+
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
   # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),

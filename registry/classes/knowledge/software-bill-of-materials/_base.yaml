@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/1.0/class/SoftwareBillOfMaterials/0.1.0
+$id: https://udlm.dev/registry/udlm/1.0/class/SoftwareBillOfMaterials/0.3.0
 conforms_to: udlm/1.0
 uuid: 7da883d3-0ffa-4c2c-9a86-4183e3b9ae20
 record_type: class
 class: base
 resource_type: SoftwareBillOfMaterials
-version: 0.1.0
+version: 0.3.0
 family: Knowledge
 status: active
 metadata:
@@ -134,6 +134,13 @@ relationships:
     carries one `describes` edge in all. Any resource that carries software can be a subject; the targets declared
     here are the usual ones and not a closed set.
 - edge_type: references
+  target: FirmwareRelease
+  name: describes
+  cardinality: 0..1
+  adopted_from: SPDX 2.3 DESCRIBES
+  description: Or the firmware release it lists the contents of. The devices that run the release are found by what
+    they state, so one document covers every device on that release.
+- edge_type: references
   target: Machine
   name: describes
   cardinality: 0..1
@@ -218,7 +225,8 @@ context:
   - Whether a listed package is exploitable — VexStatement.
   - The thing described — SoftwareImage, Machine or the device; this is a document about it.
   works_with:
-  - SoftwareImage, Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC — the subjects a document describes.
+  - SoftwareImage, FirmwareRelease, Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC — the subjects a
+    document describes.
   - SoftwarePackage — the packages a document lists.
   - Vulnerability — reached through the package, for the walk from an advisory to every subject.
 coverage:

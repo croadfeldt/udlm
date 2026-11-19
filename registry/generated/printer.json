@@ -117,7 +117,8 @@
       "The network interfaces of the printer — not modeled in 0.1.0; its address is the management_address output."
     ],
     "works_with": [
-      "Location — where it stands."
+      "Location — where it stands.",
+      "FirmwareRelease — the firmware it runs, matched by the maker, model and firmware version it states. No edge is stored."
     ]
   }
 }

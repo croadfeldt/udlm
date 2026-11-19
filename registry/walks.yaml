@@ -20,7 +20,9 @@
 #   field_reference  a reference a class holds in a field. `declared_on` holds it, `field` is the
 #                    record path, and the step is read in reverse.
 #   join             two records that state the same value. Nothing is stored: the match is made when
-#                    the answer is read (DRV-001). `from_field` and `to_field` are the record paths,
+#                    the answer is read (DRV-001). `from_field` and `to_field` are the record paths.
+#                    Where one value does not name the thing, `match` lists two or more such pairs and
+#                    every pair must be equal (row 177). A step gives one form or the other,
 #                    and `read_state: observed` means the newest Discovered or Realized record is
 #                    compared, never an Intent.
 #
@@ -51,7 +53,7 @@
 # not narrow by exploitability: a VexStatement does (knowledge-family.md §4.10).
 
 record_type: walk_registry
-version: 0.1.0
+version: 0.4.0
 
 walks:
   - walk: affected
@@ -101,6 +103,31 @@ walks:
         relation: describes
         edge_type: references
         read: forward
+        yields: affected
+      # A firmware release is evidence the way an image is. A document describes the release once, for
+      # every device that runs it.
+      - step: firmware_releases
+        from: SoftwareBillOfMaterials
+        to: [FirmwareRelease]
+        via: relationship
+        declared_on: SoftwareBillOfMaterials
+        relation: describes
+        edge_type: references
+        read: forward
+        target_key_scheme: firmware_release
+        yields: evidence
+      # A device states who made it, its model and the firmware version it runs. A device that states
+      # the release's three values runs the release. No one value is enough: two makers use the same
+      # version number, and one maker ships a version to several models.
+      - step: devices
+        from: FirmwareRelease
+        to: [NetworkSwitch, NetworkGateway, WirelessAccessPoint, Printer]
+        via: join
+        match:
+          - {from_field: fields.manufacturer, to_field: fields.identity.manufacturer}
+          - {from_field: fields.model, to_field: fields.identity.model}
+          - {from_field: fields.version, to_field: outputs.firmware_version}
+        read_state: observed
         yields: affected
       # An image is not affected until something runs it. A container states the digest it runs, so
       # the match cannot disagree with what the container reports.

@@ -861,6 +861,21 @@
    "0.7.5": "sha256:584148b5ad706994abba8633abe6b48cfc803d29aaee163a7b52ef8fc6dd4d29"
   }
  },
+ "type:FirmwareImage": {
+  "current": "0.1.0",
+  "path": "registry/classes/knowledge/firmware-image/_base.yaml",
+  "stranded": true,
+  "versions": {
+   "0.1.0": "sha256:8aeb4184682c1db2257bb0478abc19a39fb7a7151e4dec474d9c1f95ea96ad88"
+  }
+ },
+ "type:FirmwareRelease": {
+  "current": "0.2.0",
+  "path": "registry/classes/knowledge/firmware-release/_base.yaml",
+  "versions": {
+   "0.2.0": "sha256:3bd4b6628373eaa75b6721d52f324a7e6c71039b63d3bfa804acf7e8c78100f0"
+  }
+ },
  "type:GPU": {
   "current": "0.8.5",
   "path": "registry/classes/resource/hardware/gpu/_base.yaml",
@@ -1687,7 +1702,7 @@
   "current": "0.1.0",
   "path": "registry/classes/resource/hardware/printer/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:7dc2340f1665dbdd60b306c522e63bb5a4eb9fc2b103e178e10117ac86bf01f7"
+   "0.1.0": "sha256:e444be244ff4ed7eeb070c6ca9295f03b8c681e54c11e0649b40fb7970bde545"
   }
  },
  "type:Process": {
@@ -1806,10 +1821,12 @@
   }
  },
  "type:SoftwareBillOfMaterials": {
-  "current": "0.1.0",
+  "current": "0.3.0",
   "path": "registry/classes/knowledge/software-bill-of-materials/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:1232b8d94e0adf5a7e9e010e138e29353f36b326a27d18863519198805e54d08"
+   "0.1.0": "sha256:1232b8d94e0adf5a7e9e010e138e29353f36b326a27d18863519198805e54d08",
+   "0.2.0": "sha256:c30207a7d94415e72537a5c60158e52bf06870b77a83ab4cf8a553f43485101e",
+   "0.3.0": "sha256:0286bfd99f47e1ad2371a44a80b64244be40cb741dc76e044ec4a69f9704b0b5"
   }
  },
  "type:SoftwareImage": {

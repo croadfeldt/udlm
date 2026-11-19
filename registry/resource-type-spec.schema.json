@@ -610,7 +610,8 @@
               "SovereigntyZone",
               "TestEvidence",
               "VexStatement",
-              "SoftwareBillOfMaterials"
+              "SoftwareBillOfMaterials",
+              "FirmwareRelease"
             ],
             "x-value-form": "name"
           }

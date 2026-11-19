@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 70,
+    "types": 71,
     "by_family": {
       "Access": 8,
-      "Knowledge": 10,
+      "Knowledge": 11,
       "Process": 3,
       "Resource": 49
     }
   },
   "discrimination": {
-    "mutations_attempted": 6443,
-    "mutations_rejected": 6443,
+    "mutations_attempted": 6472,
+    "mutations_rejected": 6472,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -74,6 +74,10 @@
       "FileShare": {
         "attempted": 120,
         "rejected": 120
+      },
+      "FirmwareRelease": {
+        "attempted": 29,
+        "rejected": 29
       },
       "GPU": {
         "attempted": 55,
@@ -298,8 +302,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 70,
-    "total": 70
+    "strict_specs": 71,
+    "total": 71
   },
   "outputs": {
     "per_type": {
@@ -318,6 +322,7 @@
       "Database": 5,
       "DirectoryService": 3,
       "FileShare": 1,
+      "FirmwareRelease": 0,
       "GPU": 0,
       "Grouping": 0,
       "Grouping.Authorization": 0,
@@ -379,6 +384,7 @@
       "Automation.OSPatch",
       "BMC",
       "BucketClass",
+      "FirmwareRelease",
       "GPU",
       "Grouping",
       "Grouping.Authorization",
@@ -423,17 +429,18 @@
     ]
   },
   "context": {
-    "with_context": 70,
-    "total": 70,
+    "with_context": 71,
+    "total": 71,
     "missing": []
   },
   "relationships": {
     "with_relationships": 57,
-    "total": 70,
+    "total": 71,
     "missing": [
       "Automation",
       "Automation.OSPatch",
       "BucketClass",
+      "FirmwareRelease",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
@@ -495,6 +502,7 @@
     "uncovered": [
       "Bucket",
       "BucketClass",
+      "FirmwareRelease",
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Identity.Person",
@@ -562,6 +570,7 @@
       "DNSZone",
       "DirectoryService",
       "FileShare",
+      "FirmwareRelease",
       "GPU",
       "Grouping",
       "Grouping.Authorization",
@@ -615,7 +624,7 @@
       "WirelessAccessPoint",
       "Workload"
     ],
-    "consumed_by_at_least_one": 70
+    "consumed_by_at_least_one": 71
   },
   "expressibility_coverage": {
     "value": null,

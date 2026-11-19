@@ -18,7 +18,7 @@ What it refuses:
   ambiguity     one class reaches one target class by two relationships of the same edge type. An
                 observed edge names no relation (RHY-007), so a consumer could not tell them apart
   field         a field path does not resolve on the class, a field_reference does not land on a
-                Reference, or a join does not compare two strings
+                Reference, or a join does not compare two strings in every pair it names
   key scheme    target_key_scheme is not a correlation_ids scheme
   answer        a walk yields no affected record, or a service step does not read from one
 
@@ -282,7 +282,14 @@ def judge_field_reference(step, at, specs):
 
 def judge_join(step, at, specs):
     fails = []
-    pairs = [(step["from"], step["from_field"])] + [(cls, step["to_field"]) for cls in step["to"]]
+    compared = step.get("match") or [{"from_field": step["from_field"], "to_field": step["to_field"]}]
+    pairs = []
+    for pair in compared:
+        pairs += [(step["from"], pair["from_field"])] + [(cls, pair["to_field"]) for cls in step["to"]]
+    for side in ("from_field", "to_field"):
+        paths = [pair[side] for pair in compared]
+        for path in sorted({p for p in paths if paths.count(p) > 1}):
+            fails.append(f"field: {at}: {path} is compared twice, so one of the pairs says nothing")
     for cls, path in pairs:
         if cls not in specs:
             fails.append(f"field: {at}: {cls!r} is a family name; a join needs a class that declares the field")
@@ -334,6 +341,18 @@ def self_test(registry, specs, schemes):
     def join_on_non_string(reg, sp):
         step(reg, "containers")["to_field"] = "fields.image"
 
+    def join_pair_missing_on_one_class(reg, sp):
+        step(reg, "devices")["match"][2]["to_field"] = "outputs.firmware"
+
+    def join_pair_compared_twice(reg, sp):
+        step(reg, "devices")["match"][1]["to_field"] = "fields.identity.manufacturer"
+
+    def join_in_both_forms(reg, sp):
+        step(reg, "devices").update(from_field="fields.version", to_field="outputs.firmware_version")
+
+    def join_on_one_pair(reg, sp):
+        del step(reg, "devices")["match"][1:]
+
     def reference_field_missing(reg, sp):
         step(reg, "workloads")["field"] = "fields.constituents[].container"
 
@@ -360,6 +379,7 @@ def self_test(registry, specs, schemes):
     cases = [rename_relation, wrong_edge_type, drop_declared_target, undeclared_target,
              forward_from_wrong_class, reverse_from_non_target, second_relation_to_one_target,
              unknown_class, unreachable_from, join_field_missing, join_on_non_string,
+             join_pair_missing_on_one_class, join_pair_compared_twice, join_in_both_forms, join_on_one_pair,
              reference_field_missing, field_is_not_a_reference, unknown_key_scheme, no_affected_step,
              service_not_from_affected, bad_shape, duplicate_step]
     bad = 0

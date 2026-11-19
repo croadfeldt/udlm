@@ -12,6 +12,7 @@ uncovered:
 - Database
 - DirectoryService
 - FileShare
+- FirmwareRelease
 - GPU
 - Grouping
 - Grouping.Authorization
