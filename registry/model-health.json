@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 69,
+    "types": 70,
     "by_family": {
       "Access": 8,
-      "Knowledge": 10,
+      "Knowledge": 11,
       "Process": 3,
       "Resource": 48
     }
   },
   "discrimination": {
-    "mutations_attempted": 6394,
-    "mutations_rejected": 6394,
+    "mutations_attempted": 6423,
+    "mutations_rejected": 6423,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -74,6 +74,10 @@
       "FileShare": {
         "attempted": 120,
         "rejected": 120
+      },
+      "FirmwareImage": {
+        "attempted": 29,
+        "rejected": 29
       },
       "GPU": {
         "attempted": 55,
@@ -294,8 +298,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 69,
-    "total": 69
+    "strict_specs": 70,
+    "total": 70
   },
   "outputs": {
     "per_type": {
@@ -314,6 +318,7 @@
       "Database": 5,
       "DirectoryService": 3,
       "FileShare": 1,
+      "FirmwareImage": 0,
       "GPU": 0,
       "Grouping": 0,
       "Grouping.Authorization": 0,
@@ -374,6 +379,7 @@
       "Automation.OSPatch",
       "BMC",
       "BucketClass",
+      "FirmwareImage",
       "GPU",
       "Grouping",
       "Grouping.Authorization",
@@ -418,17 +424,18 @@
     ]
   },
   "context": {
-    "with_context": 69,
-    "total": 69,
+    "with_context": 70,
+    "total": 70,
     "missing": []
   },
   "relationships": {
     "with_relationships": 56,
-    "total": 69,
+    "total": 70,
     "missing": [
       "Automation",
       "Automation.OSPatch",
       "BucketClass",
+      "FirmwareImage",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
@@ -490,6 +497,7 @@
     "uncovered": [
       "Bucket",
       "BucketClass",
+      "FirmwareImage",
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Identity.Person",
@@ -556,6 +564,7 @@
       "DNSZone",
       "DirectoryService",
       "FileShare",
+      "FirmwareImage",
       "GPU",
       "Grouping",
       "Grouping.Authorization",
@@ -608,7 +617,7 @@
       "WirelessAccessPoint",
       "Workload"
     ],
-    "consumed_by_at_least_one": 69
+    "consumed_by_at_least_one": 70
   },
   "expressibility_coverage": {
     "value": null,
