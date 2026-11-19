@@ -590,7 +590,8 @@
               "Vulnerability",
               "SovereigntyZone",
               "TestEvidence",
-              "VexStatement"
+              "VexStatement",
+              "SoftwareBillOfMaterials"
             ],
             "x-value-form": "name"
           }
