@@ -564,6 +564,8 @@ capability_profiles:
     resource_types:                       # a PROJECTION of the classes the provider binds to: a Base or a
       - fqn: Machine.VM                   # Type, a Provider Class only for provider-specific data (CLS-005).
         version: "2.1.0"                  # Binding at a tier accepts orders above it (CLS-002 (c)).
+                                          # The version is the statement of support: every element of the
+                                          # class at that version, ancestors' included (VERSIONING.md, register row 171).
     two_phase_realization:                # reserve/commit/release, a base obligation (§6a)
       hold_supported: true                # false = reserve validates and returns facts, holds nothing
       min_hold_ttl: PT30S                 # a requested TTL is clamped to [min, max]

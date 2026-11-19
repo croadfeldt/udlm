@@ -389,6 +389,27 @@
    "0.2.0": "sha256:a23d2aad5cefacc877b435f9459426fbdd85efd2cb900c26b4971549bcd9b027"
   }
  },
+ "provider_registration:lab/compute/kvm-host-b": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-provider-binds-a-type.yaml",
+  "versions": {
+   "1.0.0": "sha256:c55473bc5f2ce63c14651dab7d094d36bb1da906113a2d4e3da24688808e4c1f"
+  }
+ },
+ "provider_registration:lab/network/edge-firewall": {
+  "current": "1.1.0",
+  "path": "registry/examples/example-provider-raises-a-binding.yaml",
+  "versions": {
+   "1.1.0": "sha256:13d58520b2a9f329fa2fc64c272bea71418882087698d50a28d6ef443f4065ee"
+  }
+ },
+ "provider_registration:lab/services/three-tier-apps": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-provider-binds-a-provider-class.yaml",
+  "versions": {
+   "1.0.0": "sha256:61a702eedb64301367705e416e631409434abf0b1ac9e3c56574d53bf4d7ce12"
+  }
+ },
  "provider_registration:lab/storage/zfs-host-a": {
   "current": "1.1.1",
   "path": "registry/examples/example-provider-registration.yaml",
