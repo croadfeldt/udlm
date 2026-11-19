@@ -924,7 +924,7 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 
 ## SoftwareBillOfMaterials
 
-### SoftwareBillOfMaterials (0.1.0)
+### SoftwareBillOfMaterials (0.2.0)
 
 **Purpose:** Records one software bill of materials — which subject it describes, where the document is kept, and which packages it lists — so what a thing contains is a graph walk and the document stays where it is authoritative.
 
@@ -941,7 +941,7 @@ One bill of materials about one subject: a container image, a machine whose pack
 - The thing described — SoftwareImage, Machine or the device; this is a document about it.
 
 **Works with:**
-- SoftwareImage, Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC — the subjects a document describes.
+- SoftwareImage, Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC, WirelessAccessPoint, UPS — the subjects a document describes.
 - SoftwarePackage — the packages a document lists.
 - Vulnerability — reached through the package, for the walk from an advisory to every subject.
 

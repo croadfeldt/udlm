@@ -247,7 +247,7 @@ reference edges → a named walk (service-dependencies.md §6.5).
   ```
   Vulnerability ← affected_by ← SoftwarePackage ← contains ← SoftwareBillOfMaterials
       → describes → SoftwareImage ⇐ same digest ⇐ Container, Machine   (derived, not stored)
-      → describes → Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC
+      → describes → Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC, WirelessAccessPoint, UPS
   ```
 
 - **States:** `proposed` → `canonical`; established at setup and governed thereafter.

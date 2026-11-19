@@ -338,7 +338,7 @@ advisory names. This table restates the registry:
 | `packages` | `Vulnerability` | `SoftwarePackage` | `affected_by`, in reverse | evidence |
 | `documents` | `SoftwarePackage` | `SoftwareBillOfMaterials` | `contains`, in reverse | evidence |
 | `images` | `SoftwareBillOfMaterials` | `SoftwareImage` | `describes` | evidence |
-| `described_assets` | `SoftwareBillOfMaterials` | `Machine`, `KubernetesCluster`, `NetworkSwitch`, `NetworkGateway`, `BMC` | `describes` | affected |
+| `described_assets` | `SoftwareBillOfMaterials` | `Machine`, `KubernetesCluster`, `NetworkSwitch`, `NetworkGateway`, `BMC`, `WirelessAccessPoint`, `UPS` | `describes` | affected |
 | `containers` | `SoftwareImage` | `Container` | the image's `digest` equals the `image.digest` the container was observed running | affected |
 | `workloads` | `Container` | `Workload` | `constituents[].container_ref`, in reverse | a service |
 

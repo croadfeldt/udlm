@@ -51,7 +51,7 @@
 # not narrow by exploitability: a VexStatement does (knowledge-family.md §4.10).
 
 record_type: walk_registry
-version: 0.1.0
+version: 0.2.0
 
 walks:
   - walk: affected
@@ -95,7 +95,7 @@ walks:
       # is described directly and is already a running thing.
       - step: described_assets
         from: SoftwareBillOfMaterials
-        to: [Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC]
+        to: [Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC, WirelessAccessPoint, UPS]
         via: relationship
         declared_on: SoftwareBillOfMaterials
         relation: describes
