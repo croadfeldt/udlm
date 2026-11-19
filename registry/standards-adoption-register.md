@@ -200,6 +200,10 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `CWE` · **Body:** MITRE · **Since:** registered 2026-07-25 (Vulnerability `adopts[]`). · **Where:** Vulnerability — weakness identifiers, by reference.
 **Why:** weakness classification identifiers; carried by id, never restated. MITRE terms (free use with attribution) — reference_only.
 
+### SSVC — CANONICAL
+**Covers:** `SSVC` · **Body:** CERT/CC, Software Engineering Institute, Carnegie Mellon University · **Since:** registered 2026-11-18 (row 174). · **Where:** the policy fact `vulnerability.exploitation` (`registry/taxonomies/policy-fact.yaml`) — the value names of the Exploitation decision point, version 1.1.0.
+**Why:** severity says how bad a vulnerability could be and not whether anyone is using it. SSVC names that second question and gives it three values. The fact is derived when a decision is evaluated and is never stored on the `Vulnerability` record, because a party other than the advisory states it; an entry in a known-exploited catalog is evidence for `active`. SSVC's other inputs for an organization that applies patches are facts only the estate has: how far the system is reachable, which a workload's `exposure` states (row 166), and the impact on the organization. Its Automatable decision point is not adopted until a source the estate reads states it. Documentation CC BY-NC 4.0, data files MIT (SEI)-style; the three value names are used and SSVC's own text is referenced, never restated, compatible_reference.
+
 ### NUT (Network UPS Tools) — CANONICAL
 **Covers:** `NUT` · **Since:** 2026-06-26T22:30:12Z · **Where:** PowerFeed (`ups.status` vocabulary).
 **Why:** the estate's actual UPS telemetry producer (NUT upsd/upsmon daemons); its status vocabulary is the de-facto open standard. **License:** GPL-2.0+ — reference_only.
