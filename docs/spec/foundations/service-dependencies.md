@@ -339,7 +339,7 @@ advisory names. This table restates the registry:
 | `documents` | `SoftwarePackage` | `SoftwareBillOfMaterials` | `contains`, in reverse | evidence |
 | `images` | `SoftwareBillOfMaterials` | `SoftwareImage` | `describes` | evidence |
 | `firmware_releases` | `SoftwareBillOfMaterials` | `FirmwareRelease` | `describes` | evidence |
-| `devices` | `FirmwareRelease` | `NetworkSwitch`, `NetworkGateway`, `WirelessAccessPoint` | the release's `manufacturer`, `model` and `version` equal the `identity.manufacturer`, `identity.model` and `firmware_version` the device was observed stating | affected |
+| `devices` | `FirmwareRelease` | `NetworkSwitch`, `NetworkGateway`, `WirelessAccessPoint`, `Printer` | the release's `manufacturer`, `model` and `version` equal the `identity.manufacturer`, `identity.model` and `firmware_version` the device was observed stating | affected |
 | `described_assets` | `SoftwareBillOfMaterials` | `Machine`, `KubernetesCluster`, `NetworkSwitch`, `NetworkGateway`, `BMC` | `describes` | affected |
 | `containers` | `SoftwareImage` | `Container` | the image's `digest` equals the `image.digest` the container was observed running | affected |
 | `workloads` | `Container` | `Workload` | `constituents[].container_ref`, in reverse | a service |

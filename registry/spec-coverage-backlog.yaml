@@ -37,6 +37,7 @@ uncovered:
 - NetworkInterface
 - NetworkSwitch
 - PowerFeed
+- Printer
 - Processor
 - SoftwareImage
 - SoftwarePackage

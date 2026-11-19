@@ -31,6 +31,13 @@
       "types": []
     },
     {
+      "class": "Printer",
+      "version": "0.1.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/hardware/printer/_base.yaml",
+      "types": []
+    },
+    {
       "class": "Processor",
       "version": "0.7.5",
       "instantiable": true,

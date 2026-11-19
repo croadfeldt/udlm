@@ -925,6 +925,27 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 - NetworkSwitch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.
 - Job — the shutdown job a feed's on-battery status triggers.
 
+## Printer
+
+### Printer (0.1.0)
+
+**Purpose:** Models a network printer or multifunction device as a managed asset — an embedded computer with its own firmware, so its exposure to an advisory can be judged like any other device's.
+
+One printer or multifunction device: who made it, its model and serial number, the UUID it states for itself, the firmware version it runs and where it stands. It carries no queues, trays, supplies, jobs or scan destinations; those belong to the device and its print service, which is the provider. It enters the model as discovered, from what the device answers when asked to describe itself, and is then claimed and placed like a switch.
+
+**Use when:**
+- You need every device that runs firmware inventoried with its version, so an advisory about that firmware can be matched to the devices that run it.
+- You need the printers on a network recorded with a stated place and owner, the same way switches and hosts are.
+
+**Not for:**
+- A print server or spooler that runs on a host — a Workload on a Machine.
+- A print queue, a job or a driver — provider configuration, not a UDLM entity.
+- The network interfaces of the printer — not modeled in 0.1.0; its address is the management_address output.
+
+**Works with:**
+- Location — where it stands.
+- FirmwareRelease — the firmware it runs, matched by the maker, model and firmware version it states. No edge is stored.
+
 ## Processor
 
 ### Processor (0.7.5)
@@ -1468,4 +1489,4 @@ The application layer: the mail service, the registry, model serving — a named
 - CredentialRef — the service's secrets, by reference.
 
 ---
-*70 types; 70 with context, 0 pending.*
+*71 types; 71 with context, 0 pending.*

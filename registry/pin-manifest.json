@@ -1698,6 +1698,13 @@
    "0.9.2": "sha256:ceb2b3359dd8b70e16759ccaa0c0d8d2da9f72902e9bfcc9d2d04058570929bc"
   }
  },
+ "type:Printer": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/hardware/printer/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:e444be244ff4ed7eeb070c6ca9295f03b8c681e54c11e0649b40fb7970bde545"
+  }
+ },
  "type:Process": {
   "current": "1.0.0",
   "path": "registry/classes/process.yaml",

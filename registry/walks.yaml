@@ -53,7 +53,7 @@
 # not narrow by exploitability: a VexStatement does (knowledge-family.md §4.10).
 
 record_type: walk_registry
-version: 0.3.0
+version: 0.4.0
 
 walks:
   - walk: affected
@@ -121,7 +121,7 @@ walks:
       # version number, and one maker ships a version to several models.
       - step: devices
         from: FirmwareRelease
-        to: [NetworkSwitch, NetworkGateway, WirelessAccessPoint]
+        to: [NetworkSwitch, NetworkGateway, WirelessAccessPoint, Printer]
         via: join
         match:
           - {from_field: fields.manufacturer, to_field: fields.identity.manufacturer}

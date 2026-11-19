@@ -210,9 +210,9 @@ reference edges → a named walk (service-dependencies.md §6.5).
 
 - **`FirmwareRelease`** — one firmware release (correlation id: **firmware_release**, the maker, model and
   version together). *Adopts:* the Redfish SoftwareInventory vocabulary. It is to a device what a
-  `SoftwareImage` is to a `Container`. A switch, a gateway or an access point states its maker, its
-  model and the firmware version it runs, so which devices run a release is derived by matching those
-  three values and no edge is stored (row 177). Twenty devices on one release share one record and one
+  `SoftwareImage` is to a `Container`. A switch, a gateway, an access point or a printer states its maker, its
+  model and the firmware version it runs. Which devices run a release is derived by matching those
+  three values, and no edge is stored (row 177). Twenty devices on one release share one record and one
   bill of materials, and a device that is updated stops matching the old release with no edit to
   either record. Class: `registry/classes/knowledge/firmware-release/_base.yaml`.
 
@@ -258,7 +258,7 @@ reference edges → a named walk (service-dependencies.md §6.5).
   Vulnerability ← affected_by ← SoftwarePackage ← contains ← SoftwareBillOfMaterials
       → describes → SoftwareImage ⇐ same digest ⇐ Container, Machine   (derived, not stored)
       → describes → FirmwareRelease ⇐ same maker, model and version ⇐ NetworkSwitch, NetworkGateway,
-                                                          WirelessAccessPoint   (derived, not stored)
+                                                 WirelessAccessPoint, Printer   (derived, not stored)
       → describes → Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC
   ```
 
