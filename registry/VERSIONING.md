@@ -182,6 +182,20 @@ authored class re-version only when its own file changed.
   and every class beneath it.
 - **Nothing was re-versioned to catch up.** The rule applies from row 171 on.
 
+**What CI refuses.** Each line is a check in `.github/workflows/validate.yml`.
+
+| Refused | Rule | Check |
+|---|---|---|
+| A descendant left behind when its ancestor's version moved | `REG-017` | `registry/tools/propagate_versions.py --check` |
+| A served spec whose change is bigger than its declared bump, or whose version went backwards | `REG-011` | `tests/ci_compat_gate.py` |
+| A provider binding with no version | schema | `registry/provider-registration.schema.json` |
+| A provider binding to a version the registry never published | `REG-014` | `registry/tools/validate.py` |
+| A provider registration that changed a binding without a sufficient bump of its own | `REG-018` | `tests/check_registration_bumps.py` |
+
+Two things are stated and not yet checked. A binding for a Process-family class carries no version
+(`execute_workflows.supported_definitions` is a list of names). Nothing compares a record with a
+provider's bound version at placement; that belongs to the control plane.
+
 **Where the pin is.** A class holds no pin. A provider's pin is the `fqn` and `version` in its
 registration, and it moves when the provider re-registers.
 
@@ -191,6 +205,7 @@ registration, and it moves when the provider re-registers.
 | `registry/examples/example-provider-binds-a-provider-class.yaml` | A provider with data of its own binds its Provider Class at a version. |
 | `registry/examples/example-provider-raises-a-binding.yaml` | A provider that stayed on `NetworkGateway` 0.9.2 takes up 0.10.0, and its registration goes 1.0.0 to 1.1.0. |
 | `registry/examples/must-reject/042-provider-binding-with-no-version.yaml` | A binding that names no version is refused. |
+| `registry/examples/must-reject/043-provider-binding-to-an-unpublished-version.yaml` | A binding to a version the registry never published is refused. |
 
 **How a bump carries down.** Suppose a change adds an optional element to `Machine`, a minor.
 

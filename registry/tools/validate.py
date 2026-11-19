@@ -805,6 +805,43 @@ def check_provider_registration(doc):
         need = "realize_resources" if verb == "composite_service" else verb
         if need not in verbs:
             errors.append(f"capability_profiles.{verb}: the provider declares no {need} capability")
+    errors += check_class_bindings(doc)
+    return errors
+
+
+_PUBLISHED = None
+
+
+def _published_versions():
+    """class name -> the set of versions the registry has published, from the pin manifest."""
+    global _PUBLISHED
+    if _PUBLISHED is None:
+        try:
+            manifest = json.load(open(ROOT / "pin-manifest.json", encoding="utf-8"))
+        except Exception:
+            manifest = {}
+        _PUBLISHED = {k[len("type:"):]: set(v.get("versions") or {})
+                      for k, v in manifest.items() if k.startswith("type:")}
+    return _PUBLISHED
+
+
+def check_class_bindings(doc):
+    """REG-014 at the provider's edge. A binding's version is the provider's statement of support
+    (VERSIONING.md, "Versions carry down the class tree"), so it has to name a version the registry
+    published. A version that is behind is legal. One that was never published says nothing a consumer
+    can check, and is refused."""
+    published, errors = _published_versions(), []
+    profile = (doc.get("capability_profiles") or {}).get("realize_resources") or {}
+    for i, binding in enumerate(profile.get("resource_types") or []):
+        fqn, version = binding.get("fqn"), binding.get("version")
+        where = f"capability_profiles.realize_resources.resource_types[{i}]"
+        if not published or fqn is None or version is None:
+            continue
+        if fqn not in published:
+            errors.append(f"REG-014 {where}: {fqn!r} is not a class this registry publishes")
+        elif version not in published[fqn]:
+            errors.append(f"REG-014 {where}: {fqn} {version} was never published; a binding names a "
+                          f"version the registry published, the current one or an earlier one")
     return errors
 
 
