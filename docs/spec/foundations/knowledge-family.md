@@ -192,7 +192,7 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
 Facts *about* resources: what software each one carries and which advisories affect it. A scanner or a
 supplier produces them and the resource estate references them. This is the first **knowledge-domain
 ingestion** under this family, and the method is reusable: a discovery avenue → Knowledge classes →
-reference edges → filter and impact walk.
+reference edges → a named walk (service-dependencies.md §6.5).
 
 > **The store is the system of record; the record is captured from it and checked against it**
 > (row 170). The bill of materials document stays in an SBOM store, and a `SoftwareBillOfMaterials`
@@ -223,14 +223,16 @@ reference edges → filter and impact walk.
   use the `generic` purl type and carry a `cpe`. `affected_by` (→ Vulnerability).
 
 - **`Vulnerability`** — a CVE / GHSA / OSV advisory (correlation id: **id**). *Adopts:* OSV and CVSS.
-  Terminal in the chain; an impact walk starts here and reads the edges in reverse.
+  Terminal in the chain; the affected walk starts here and reads the edges in reverse.
 
 - **Lifecycle:** curated upstream (NVD, OSV, the supplier), **`Discovered`** locally. A scanner is a
   discovery avenue and never a provider that realizes anything. A discovered record names its edge
   targets by natural key: `oci_digest`, `purl`, `vulnerability_id` (`correlation_ids`, RHY-007).
 
 - **Edges** are `edge_type: references`. They order nothing, so they stay outside a shutdown or a
-  rebuild sort. Read in reverse they answer what an advisory reaches:
+  rebuild sort. Read in reverse they answer what an advisory reaches. That path is the `affected`
+  walk; `registry/walks.yaml` is its single source and the diagram restates it (service-dependencies.md
+  §6.5, DEP-019):
 
   ```
   Vulnerability ← affected_by ← SoftwarePackage ← contains ← SoftwareBillOfMaterials

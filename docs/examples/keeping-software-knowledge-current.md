@@ -17,8 +17,8 @@ the reference is verified on a schedule.
 
 ## 1. Why this is the work
 
-A record is a claim about a moment. An impact answer walks five kinds of record, and each goes out
-of date for its own reason and at its own pace:
+A record is a claim about a moment. An answer from the affected walk reads five kinds of record, and
+each goes out of date for its own reason and at its own pace:
 
 | Record | Goes out of date when | Typical pace |
 |---|---|---|
@@ -55,7 +55,7 @@ Each check is a comparison between fields that exist. None needs a stored result
 
 | # | Check | Compares | A failure means |
 |---|---|---|---|
-| C1 | **Coverage** | Every `Container` and image-booted `Machine` states an image digest that matches a `SoftwareImage`; every `SoftwareImage`, package-installed `Machine`, cluster and device is the target of a `describes` edge | The asset is invisible to every impact answer. Report it by name |
+| C1 | **Coverage** | Every `Container` and image-booted `Machine` states an image digest that matches a `SoftwareImage`; every `SoftwareImage`, package-installed `Machine`, cluster and device is the target of a `describes` edge | The asset is invisible to every answer. Report it by name |
 | C2 | **Resolution** | Every edge on a discovered record resolved its `target_key` to an entity (`target_uuid` present) | The scanner saw something the estate has no record of, or the keys disagree |
 | C3 | **Subject match** | The bill of materials' `created_at` against its subject's latest observed change | The document describes a subject that no longer exists in that form |
 | C4 | **Rhythm** | Each record's latest `at` against its `expected_observation` | `stale_deviant`: an observation that should have arrived did not. `stale_expected` is healthy |
@@ -75,8 +75,9 @@ Two properties of the model do part of this work:
 
 ## 4. Every answer states its own currency
 
-An impact answer is a derived view, and it is only as current as the oldest record it walked. It
-therefore reports three things beside its result:
+An answer from the affected walk is a derived view (service-dependencies.md §6.5, DEP-020), and it
+is only as current as the oldest record it read. It therefore reports three things beside its
+result:
 
 1. **As of.** The oldest observation the answer relied on.
 2. **Not judged.** The subjects C1 to C4 and C7 exclude, by name and by reason: no bill of
@@ -108,7 +109,7 @@ Four numbers show whether the process works, each derived from the records:
 - **Coverage:** the share of running things C1 passes. The target is all of them; the gap is a list.
 - **Age:** the median and the oldest observation among the records an answer uses.
 - **Deviant count:** records C4 judges `stale_deviant`. The target is zero, and each one has an owner.
-- **Time to answer:** from an advisory's publication to the first impact answer that includes it.
+- **Time to answer:** from an advisory's publication to the first answer that includes it.
 
 ## 7. A worked pass
 
@@ -121,8 +122,8 @@ a switch.
 2. The scanner produces a bill of materials for the new digest and files it in the SBOM store. The
    record captured from it resolves 212 of 214
    `contains` edges; two packages are new to the estate and get records. C1 and C2 pass.
-3. The advisory feed publishes a new advisory affecting one package. An impact walk from it reaches
-   the storefront image, its container, and two hosts that install the same package.
+3. The advisory feed publishes a new advisory affecting one package. The affected walk from it
+   reaches the storefront image, its container, and two hosts that install the same package.
 4. The answer reports: as of last night; not judged, one host whose probe has not reported for three
    days against a daily cadence (**C4, `stale_deviant`**); feed as of this morning.
 5. The supplier publishes a statement that the image is not affected, because the vulnerable code is
