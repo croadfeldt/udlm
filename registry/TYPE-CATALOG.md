@@ -319,27 +319,28 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 - CredentialRef — service credentials (e.g. a keytab), by reference.
 - Machine — machines whose guest mounts an export (their `mounts`, which declare the edge).
 
-## FirmwareImage
+## FirmwareRelease
 
-### FirmwareImage (0.1.0)
+### FirmwareRelease (0.2.0)
 
-**Purpose:** Records a firmware build as a fact — the thing a device runs, and the subject its software bill of materials describes — so one advisory about a build reaches every device that runs it.
+**Purpose:** Records a firmware release as a fact — the thing a device runs, and the subject its software bill of materials describes — so one advisory about a release reaches every device that runs it.
 
-One firmware build, identified by who makes it, the device model it is for and its version, each written exactly as a device reports it. It is knowledge about the estate, never provisioned. Nothing ties it to a device by a stored edge: a device already states its maker, its model and the firmware version it runs, and a device that states the same three values runs this build. So twenty switches on one build share one record, and a device that is updated stops matching the old build without anyone editing either record. What is inside the build is not listed here: a SoftwareBillOfMaterials describes it and lists its components, one today for most devices and many where a maker publishes a full list.
+One firmware release, identified by who makes it, the device model it is for and its version, each written exactly as a device reports it. It is knowledge about the estate, never provisioned. Nothing ties it to a device by a stored edge: a device already states its maker, its model and the firmware version it runs, and a device that states the same three values runs this release. So twenty switches on one release share one record, and a device that is updated stops matching the old release without anyone editing either record. What is inside the release is not listed here: a SoftwareBillOfMaterials describes it and lists its components, one today for most devices and many where a maker publishes a full list.
 
 **Use when:**
-- You need every device tied to the exact firmware build it runs, deduplicated across the fleet.
-- You need the subject a firmware bill of materials hangs from: build ← document → packages → vulnerabilities.
+- You need every device tied to the exact firmware release it runs, deduplicated across the fleet.
+- You need the subject a firmware bill of materials hangs from: release ← document → packages → vulnerabilities.
 
 **Not for:**
-- The device — NetworkSwitch, NetworkGateway, WirelessAccessPoint and the other device classes state the version they run; this is the build as a fact.
+- The device — NetworkSwitch, NetworkGateway, WirelessAccessPoint and the other device classes state the version they run; this is the release as a fact.
 - A container or operating-system image — SoftwareImage, identified by its digest.
-- A component inside the build — SoftwarePackage, listed by the build's SoftwareBillOfMaterials.
+- The firmware file itself — a binary identified by its digest is an image. This record names a release and holds no digest, and one file a maker ships for several models is one release per model.
+- A component inside the release — SoftwarePackage, listed by the release's SoftwareBillOfMaterials.
 - A host's boot firmware settings — the Machine `firmware` element.
 
 **Works with:**
-- NetworkSwitch, NetworkGateway and WirelessAccessPoint — the devices that run a build, matched by the maker, model and firmware version each one states.
-- SoftwareBillOfMaterials — the document that describes the build and lists its components.
+- NetworkSwitch, NetworkGateway and WirelessAccessPoint — the devices that run a release, matched by the maker, model and firmware version each one states.
+- SoftwareBillOfMaterials — the document that describes the release and lists its components.
 
 ## GPU
 
@@ -946,7 +947,7 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 
 ## SoftwareBillOfMaterials
 
-### SoftwareBillOfMaterials (0.2.0)
+### SoftwareBillOfMaterials (0.3.0)
 
 **Purpose:** Records one software bill of materials — which subject it describes, where the document is kept, and which packages it lists — so what a thing contains is a graph walk and the document stays where it is authoritative.
 
@@ -963,7 +964,7 @@ One bill of materials about one subject: a container image, a machine whose pack
 - The thing described — SoftwareImage, Machine or the device; this is a document about it.
 
 **Works with:**
-- SoftwareImage, FirmwareImage, Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC — the subjects a document describes.
+- SoftwareImage, FirmwareRelease, Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC — the subjects a document describes.
 - SoftwarePackage — the packages a document lists.
 - Vulnerability — reached through the package, for the walk from an advisory to every subject.
 

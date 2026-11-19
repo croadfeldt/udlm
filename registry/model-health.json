@@ -75,7 +75,7 @@
         "attempted": 120,
         "rejected": 120
       },
-      "FirmwareImage": {
+      "FirmwareRelease": {
         "attempted": 29,
         "rejected": 29
       },
@@ -318,7 +318,7 @@
       "Database": 5,
       "DirectoryService": 3,
       "FileShare": 1,
-      "FirmwareImage": 0,
+      "FirmwareRelease": 0,
       "GPU": 0,
       "Grouping": 0,
       "Grouping.Authorization": 0,
@@ -379,7 +379,7 @@
       "Automation.OSPatch",
       "BMC",
       "BucketClass",
-      "FirmwareImage",
+      "FirmwareRelease",
       "GPU",
       "Grouping",
       "Grouping.Authorization",
@@ -435,7 +435,7 @@
       "Automation",
       "Automation.OSPatch",
       "BucketClass",
-      "FirmwareImage",
+      "FirmwareRelease",
       "Grouping",
       "Grouping.Authorization",
       "Grouping.Tenant",
@@ -497,7 +497,7 @@
     "uncovered": [
       "Bucket",
       "BucketClass",
-      "FirmwareImage",
+      "FirmwareRelease",
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Identity.Person",
@@ -564,7 +564,7 @@
       "DNSZone",
       "DirectoryService",
       "FileShare",
-      "FirmwareImage",
+      "FirmwareRelease",
       "GPU",
       "Grouping",
       "Grouping.Authorization",

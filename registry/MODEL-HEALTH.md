@@ -24,7 +24,7 @@ The registry holds **70 types** (Access 8, Knowledge 11, Process 3, Resource 48)
 Outputs are the contract-checked binding surface — a type with none publishes nothing a
 downstream consumer can bind on.
 
-**Zero-output types (21):** `Automation`, `Automation.OSPatch`, `BMC`, `BucketClass`, `FirmwareImage`, `GPU`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Identity`, `PowerFeed`, `Processor`, `SoftwareBillOfMaterials`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
+**Zero-output types (21):** `Automation`, `Automation.OSPatch`, `BMC`, `BucketClass`, `FirmwareRelease`, `GPU`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Identity`, `PowerFeed`, `Processor`, `SoftwareBillOfMaterials`, `SoftwareImage`, `SoftwarePackage`, `SovereigntyZone`, `Template`, `TestEvidence`, `TestEvidence.VulnerabilityCheck`, `VexStatement`, `Vulnerability`
 
 **One-output types (23):** `AddressService`, `Capability`, `DHCPScope`, `DNSZone`, `FileShare`, `IPAddress`, `Identity.Person`, `Identity.ServiceAccount`, `IdentityGroup`, `Location`, `LogShipper`, `LogShipper.OTLP`, `LogShipper.Syslog`, `LogStore`, `NetworkInterface`, `StorageClass`, `StorageDevice`, `TaxonomyTerm`, `Template.Application`, `Topology`, `VLAN`, `VirtualNetwork`, `Workload`
 
@@ -36,7 +36,7 @@ single-word handles could in principle match prose):
 
 - `Bucket`
 - `BucketClass`
-- `FirmwareImage`
+- `FirmwareRelease`
 - `Grouping.Authorization`
 - `Grouping.Tenant`
 - `Identity.Person`
@@ -78,7 +78,7 @@ All-types (envelope-level) consumers: `dav`, `graph-explorer`, `records-ci`, `re
 ## Coverage detail
 
 - Context blocks missing (0): none
-- `relationships[]` missing (14): `Automation`, `Automation.OSPatch`, `BucketClass`, `FirmwareImage`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Identity`, `SoftwareImage`, `SovereigntyZone`, `Template`, `Template.Application`, `Topology`, `Vulnerability`
+- `relationships[]` missing (14): `Automation`, `Automation.OSPatch`, `BucketClass`, `FirmwareRelease`, `Grouping`, `Grouping.Authorization`, `Grouping.Tenant`, `Identity`, `SoftwareImage`, `SovereigntyZone`, `Template`, `Template.Application`, `Topology`, `Vulnerability`
 
 ## Pending metrics (owned elsewhere, shape reserved)
 

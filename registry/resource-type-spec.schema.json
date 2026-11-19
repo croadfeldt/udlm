@@ -611,7 +611,7 @@
               "TestEvidence",
               "VexStatement",
               "SoftwareBillOfMaterials",
-              "FirmwareImage"
+              "FirmwareRelease"
             ],
             "x-value-form": "name"
           }

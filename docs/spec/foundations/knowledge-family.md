@@ -208,17 +208,17 @@ reference edges → a named walk (service-dependencies.md §6.5).
   states the digest it runs, so which things run an image is derived by matching digests and no edge
   is stored. The image lists no packages itself.
 
-- **`FirmwareImage`** — one firmware build (correlation id: **firmware_build**, the maker, model and
+- **`FirmwareRelease`** — one firmware release (correlation id: **firmware_release**, the maker, model and
   version together). *Adopts:* the Redfish SoftwareInventory vocabulary. It is to a device what a
   `SoftwareImage` is to a `Container`. A switch, a gateway or an access point states its maker, its
-  model and the firmware version it runs, so which devices run a build is derived by matching those
-  three values and no edge is stored (row 177). Twenty devices on one build share one record and one
-  bill of materials, and a device that is updated stops matching the old build with no edit to
-  either record. Class: `registry/classes/knowledge/firmware-image/_base.yaml`.
+  model and the firmware version it runs, so which devices run a release is derived by matching those
+  three values and no edge is stored (row 177). Twenty devices on one release share one record and one
+  bill of materials, and a device that is updated stops matching the old release with no edit to
+  either record. Class: `registry/classes/knowledge/firmware-release/_base.yaml`.
 
 - **`SoftwareBillOfMaterials`** — one bill of materials document about one subject. *Adopts:* SPDX and
   CycloneDX (the document, by reference) and the in-toto Statement (its signed form). `describes` →
-  the subject: a SoftwareImage, a FirmwareImage, a Machine, a KubernetesCluster, a NetworkSwitch, a
+  the subject: a SoftwareImage, a FirmwareRelease, a Machine, a KubernetesCluster, a NetworkSwitch, a
   NetworkGateway or a BMC, or any other resource that carries software. `contains` → one SoftwarePackage per component
   listed. The subject declares nothing, so a rescan supersedes this record and leaves the subject's
   history alone. A supplier's published document is the canonical record, a scan is the observed one,
@@ -235,7 +235,7 @@ reference edges → a named walk (service-dependencies.md §6.5).
 
 - **Lifecycle:** curated upstream (NVD, OSV, the supplier), **`Discovered`** locally. A scanner is a
   discovery avenue and never a provider that realizes anything. A discovered record names its edge
-  targets by natural key: `oci_digest`, `firmware_build`, `purl`, `vulnerability_id` (`correlation_ids`,
+  targets by natural key: `oci_digest`, `firmware_release`, `purl`, `vulnerability_id` (`correlation_ids`,
   RHY-007).
 
 - **Whether a vulnerability is exploited in the wild is derived, not stored** (row 174). Severity says
@@ -257,7 +257,7 @@ reference edges → a named walk (service-dependencies.md §6.5).
   ```
   Vulnerability ← affected_by ← SoftwarePackage ← contains ← SoftwareBillOfMaterials
       → describes → SoftwareImage ⇐ same digest ⇐ Container, Machine   (derived, not stored)
-      → describes → FirmwareImage ⇐ same maker, model and version ⇐ NetworkSwitch, NetworkGateway,
+      → describes → FirmwareRelease ⇐ same maker, model and version ⇐ NetworkSwitch, NetworkGateway,
                                                           WirelessAccessPoint   (derived, not stored)
       → describes → Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC
   ```
