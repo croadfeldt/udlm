@@ -3,7 +3,7 @@
 **What this settles:** the 21 September-release use cases, grouped by the **persona** who drives
 them: a usage view of the system, one role at a time. Every entry is a **lighter** flow that builds on
 [request-realization](request-realization.md); read that first. Each release flow has a **stage** (in
-croadfeldt/udlm, the model's telling) and a **play** (in the example implementation, croadfeldt/dcm,
+dcm-project/udlm, the model's telling) and a **play** (in the example implementation, croadfeldt/dcm,
 the engine's telling). The links below resolve to the docs in *this* repo.
 
 ## application-team-member — request and consume resources

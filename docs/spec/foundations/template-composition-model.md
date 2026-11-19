@@ -16,7 +16,7 @@
 >
 > The prose below still says "Composite Service" in places, and the rule family is still `CMP-*`.
 > Those are identifiers and wording, aligned under
-> [#405](https://github.com/croadfeldt/udlm/issues/405); the tier they name is the one above.
+> [#405](https://github.com/dcm-project/udlm/issues/405); the tier they name is the one above.
 
 > **Bindings are **output-resolved** — the validator checks each `bindings[].output` against the producer type's declared outputs. Machine-validatable schema:** the constituents shape is
 > [`registry/composition.schema.json`](../../../registry/composition.schema.json); a Template class

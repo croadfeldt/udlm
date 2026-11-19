@@ -43,6 +43,13 @@
       "instantiable": true,
       "path": "registry/classes/resource/hardware/storage-device/_base.yaml",
       "types": []
+    },
+    {
+      "class": "WirelessAccessPoint",
+      "version": "0.1.0",
+      "instantiable": true,
+      "path": "registry/classes/resource/network/wireless-access-point/_base.yaml",
+      "types": []
     }
   ]
 }
