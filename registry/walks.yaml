@@ -1,0 +1,125 @@
+# Named-walk registry — the paths a consumer follows to answer a scoping question that the two
+# ordering walks deliberately do not answer.
+#
+# registry/edge-types.yaml says how the needs and dependents walks read each EDGE TYPE, and both stop
+# at a `references` edge: pointing at something is not needing it. Some questions are carried by
+# exactly those edges. An advisory names a package, a bill of materials lists the package and
+# describes an image, a container runs the image. Every link is a reference and none orders anything,
+# so no ordering walk reaches from the advisory to the container.
+#
+# A NAMED WALK is a path over specific declared relationships that answers one such question. This
+# file is the single source for each walk's steps (row 173; service-dependencies.md §6.5, DEP-019).
+# A consumer reads it and follows nothing else. It changes nothing about the ordering walks.
+#
+# A step is one of three kinds (`via`):
+#
+#   relationship     one relationship a class declares by name. `declared_on` is the class whose
+#                    records hold the edge, `relation` its declared name, `edge_type` its edge type.
+#                    `read: forward` follows the edge from the record that holds it; `read: reverse`
+#                    finds the records that hold an edge to the one in hand.
+#   field_reference  a reference a class holds in a field. `declared_on` holds it, `field` is the
+#                    record path, and the step is read in reverse.
+#   join             two records that state the same value. Nothing is stored: the match is made when
+#                    the answer is read (DRV-001). `from_field` and `to_field` are the record paths,
+#                    and `read_state: observed` means the newest Discovered or Realized record is
+#                    compared, never an Intent.
+#
+# How a consumer recognizes a step in records. An edge an observer wrote names no relation: a
+# Discovered edge carries its edge type and the natural key of its target (RHY-007). So a
+# `relationship` step is recognized by three facts: the class of the record that holds the edge, the
+# edge type, and the class the target resolves to. A record of a Type is a record of its Base
+# (`Machine.VM` is a `Machine`). `target_key_scheme` is the natural-key scheme such an edge carries
+# where the target class has exactly one; it lets a consumer place an edge whose target has no
+# record yet. No class declares its key scheme in a form a gate can read, so the gate checks only
+# that the scheme is a registered one. tests/check_walks.py proves every class, relationship and
+# field named here against the classes, and refuses a walk in which one class reaches one target
+# class by two relations of the same edge type.
+#
+# `yields` says what a record a step reaches is, in the answer:
+#
+#   evidence  a record on the path that says why: a package, a bill of materials, an image. An
+#             image nothing runs is carried and not running; it is not affected.
+#   affected  a thing that runs or carries the software. These records are the affected set.
+#   service   the unit people own that affected things make up. It restates the affected set and
+#             adds nothing to it.
+#
+# A walk may be entered at any class a step reads from: "what runs this image" starts at
+# SoftwareImage and skips the steps before it.
+#
+# What a walk does not do. It does not say what a fix disturbs: that is the dependents walk and the
+# blast radius of ADR-010, taken over the affected set, and it is a separate list (DEP-020). It does
+# not narrow by exploitability: a VexStatement does (knowledge-family.md §4.10).
+
+record_type: walk_registry
+version: 0.1.0
+
+walks:
+  - walk: affected
+    description: >-
+      Which running things carry what an advisory names. From a Vulnerability to the packages it
+      affects, to the bills of materials that list them, to what those documents describe, to what
+      runs it, and up to the services those things make up.
+    start: Vulnerability
+    steps:
+      - step: packages
+        from: Vulnerability
+        to: [SoftwarePackage]
+        via: relationship
+        declared_on: SoftwarePackage
+        relation: affected_by
+        edge_type: references
+        read: reverse
+        target_key_scheme: vulnerability_id
+        yields: evidence
+      - step: documents
+        from: SoftwarePackage
+        to: [SoftwareBillOfMaterials]
+        via: relationship
+        declared_on: SoftwareBillOfMaterials
+        relation: contains
+        edge_type: references
+        read: reverse
+        target_key_scheme: purl
+        yields: evidence
+      - step: images
+        from: SoftwareBillOfMaterials
+        to: [SoftwareImage]
+        via: relationship
+        declared_on: SoftwareBillOfMaterials
+        relation: describes
+        edge_type: references
+        read: forward
+        target_key_scheme: oci_digest
+        yields: evidence
+      # A machine whose packages are installed one by one, a cluster, or a device that runs firmware
+      # is described directly and is already a running thing.
+      - step: described_assets
+        from: SoftwareBillOfMaterials
+        to: [Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC]
+        via: relationship
+        declared_on: SoftwareBillOfMaterials
+        relation: describes
+        edge_type: references
+        read: forward
+        yields: affected
+      # An image is not affected until something runs it. A container states the digest it runs, so
+      # the match cannot disagree with what the container reports.
+      - step: containers
+        from: SoftwareImage
+        to: [Container]
+        via: join
+        from_field: fields.digest
+        to_field: fields.image.digest
+        read_state: observed
+        yields: affected
+      # A container is rarely the unit anyone owns. A workload names its containers. A workload made
+      # of systemd units on a host is NOT reached from the host: nothing ties one of a host's
+      # packages to a unit, so that workload is in the reach of the host, not in the affected set.
+      - step: workloads
+        from: Container
+        to: [Workload]
+        via: field_reference
+        declared_on: Workload
+        field: fields.constituents[].container_ref
+        read: reverse
+        yields: service

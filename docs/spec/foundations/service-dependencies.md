@@ -305,6 +305,69 @@ its own location, and a resource no chain reaches has none. The layered topology
 (location-topology-layers.md §3.3) owns what a Location is; this rule only says how a resource finds
 its own.
 
+### 6.5 Named walks — what an advisory reaches
+
+The two walks of §6.4 answer ordering questions, and both stop at a `references` edge because
+pointing at something is not needing it. Some questions are carried by exactly those edges. An
+advisory names a package, a bill of materials lists the package and describes an image, and a
+container runs the image. Every link is a reference and none orders anything, so neither ordering
+walk gets from the advisory to the container.
+
+A **named walk** is a path over specific declared relationships that answers one such question.
+`registry/walks.yaml` is the single source for each walk's steps (row 173), and it changes nothing
+about what the ordering walks follow. A step is one of three kinds:
+
+| `via` | What the step follows | Stored |
+|---|---|---|
+| `relationship` | One relationship a class declares by name, read forward or in reverse | As an edge on the record that declares it |
+| `field_reference` | A reference a class holds in a field, read in reverse | In the field |
+| `join` | Two records that state the same value | Nowhere: the match is made when the answer is read (DRV-001) |
+
+An edge an observer wrote names no relation: it carries its edge type and the natural key of its
+target (RHY-007). A step is therefore recognized by three facts: the class of the record that holds
+the edge, the edge type, and the class the target resolves to. A record of a Type counts as a record
+of its Base. For that to be sound, a class in a walk never reaches one target class by two
+relationships of the same edge type. `tests/check_walks.py` refuses a walk where one does, and proves
+every class, relationship and field a step names against the classes.
+
+**The affected walk** is the first named walk. It answers which running things carry what an
+advisory names. This table restates the registry:
+
+| Step | From | To | How it is read | The record reached is |
+|---|---|---|---|---|
+| `packages` | `Vulnerability` | `SoftwarePackage` | `affected_by`, in reverse | evidence |
+| `documents` | `SoftwarePackage` | `SoftwareBillOfMaterials` | `contains`, in reverse | evidence |
+| `images` | `SoftwareBillOfMaterials` | `SoftwareImage` | `describes` | evidence |
+| `described_assets` | `SoftwareBillOfMaterials` | `Machine`, `KubernetesCluster`, `NetworkSwitch`, `NetworkGateway`, `BMC` | `describes` | affected |
+| `containers` | `SoftwareImage` | `Container` | the image's `digest` equals the `image.digest` the container was observed running | affected |
+| `workloads` | `Container` | `Workload` | `constituents[].container_ref`, in reverse | a service |
+
+The records reached as *affected* are the **affected set**. An image is evidence and not an affected
+thing: nothing is affected until something runs the image, and an image nothing runs is reported as
+carried and not running. The last step restates the affected set as the services people own and
+adds nothing to it. A workload made of systemd units on a host is not reached from the host, because
+nothing ties one of a host's packages to a unit; that workload is in the host's reach. A machine
+that boots an image joins by the same match on the digest it states, and that step is added with
+the field. A walk may be entered at any class a step reads from, so "what runs this image" starts at
+`SoftwareImage`.
+
+Three things are outside the walk on purpose, and an answer keeps each of them apart (DEP-020):
+
+- **Reach.** What fixing an affected thing disturbs is the dependents walk of §6.4 and the blast
+  radius of ADR-010 (everything that depends on it, plus the members of any fault domain it
+  anchors), taken over the affected set. A database on a host that needs a kernel update is in the
+  reach and is not in the affected set.
+- **Narrowing.** Whether a carried vulnerability can be exploited is a `VexStatement`
+  (knowledge-family.md §4.10). A confirmed statement removes or confirms an entry, and the answer
+  shows the statement behind every removal.
+- **What could not be judged.** Every record of a class the walk reaches as affected is a subject. A
+  subject no current bill of materials reaches, directly or through an image it runs, is neither
+  affected nor clear. The answer lists it by name with the reason: no bill of materials, a stale
+  one, a container that states no digest, an edge whose target has no record. A bill of materials is
+  current while it is not stale against its declared `expected_observation` (ADR-048) and its
+  `document_digest` still matches its store (row 170). The answer also states the currency of what
+  it read: the oldest observation it relied on, and when the advisory data was last refreshed.
+
 ---
 
 ## 7. Dependency Payload Passing
@@ -492,6 +555,8 @@ catalog_item:
 | `DEP-009` | **Walks read the registry:** any consumer that orders, scopes or tears down over the graph follows an edge only as `registry/edge-types.yaml` `walk` says (§6.4): `needs` and `dependents` per edge type, `soft` never followed, `references` terminates, `contained_by` cascades down and is not walked up. A consumer with its own table is a second model and drifts. | Authoring: the registry is the single source; consumers (control plane, estate tooling) cite it and read it. |
 | `DEP-010` | **Location is derived:** a resource's location is the nearest `Location` over `contained_by` (§6.4), never a stored field on the resource. | Consumers derive at read time; a stored copy is DRV-001 drift. |
 | `DEP-008` | **Constrained reference topology:** edge types carry structural constraints and violations are machine-reported with typed codes, never silently accepted (Kubernetes cross-namespace-ownerReference analog). Initial normative set: `connects_to` (common-elements §9) only between `device_class: physical` NetworkInterface instances; `lower_layer` and `parent_device` only between interfaces of the SAME containing device. Types may declare further constraints in `relationships[]`. | Authoring validation + control-plane graph construction. |
+| `DEP-019` | **A named walk reads the registry:** a consumer that answers a scoping question over declared relationships, such as which running things carry what an advisory names, follows the steps `registry/walks.yaml` gives for that walk and nothing else (§6.5). A step names a relationship a class declares, a reference a class holds in a field, or a derived join. A consumer with its own table is a second model and drifts. | Authoring: `tests/check_walks.py` proves every step against the classes and refuses a walk in which an observed edge could be read as two relationships. Consumers cite the walk by name and read the registry. |
+| `DEP-020` | **An answer says what it did not judge:** the answer to a named walk keeps the affected set apart from its reach (§6.4, ADR-010) and shows the statement behind every entry it removed. It lists every subject it could not judge, with the reason, and states the currency of what it read (§6.5). An absent record is never read as clear. | Consumers, at read time. A gate that acts on the answer refuses on stale knowledge (ADR-048); a display shows the verdict and never refuses. |
 
 > **Division of responsibility (DEP-006..008):** the model defines the states and edges;
 > *acting* on them — reconciliation, identity correlation, finalizer-style deletion gating,

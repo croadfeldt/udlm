@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/walk-registry.schema.json",
+  "title": "UDLM Named-Walk Registry",
+  "description": "The shape of registry/walks.yaml: the named walks and the steps each one follows (service-dependencies.md §6.5, DEP-019). This schema checks the shape only. tests/check_walks.py proves every class, relationship and field a step names against the classes.",
+  "type": "object",
+  "required": ["record_type", "version", "walks"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "record_type": "walk_registry",
+      "version": "0.1.0",
+      "walks": [
+        {
+          "walk": "affected",
+          "description": "Which running things carry what an advisory names.",
+          "start": "Vulnerability",
+          "steps": [
+            {
+              "step": "packages",
+              "from": "Vulnerability",
+              "to": ["SoftwarePackage"],
+              "via": "relationship",
+              "declared_on": "SoftwarePackage",
+              "relation": "affected_by",
+              "edge_type": "references",
+              "read": "reverse",
+              "target_key_scheme": "vulnerability_id",
+              "yields": "evidence"
+            },
+            {
+              "step": "containers",
+              "from": "SoftwareImage",
+              "to": ["Container"],
+              "via": "join",
+              "from_field": "fields.digest",
+              "to_field": "fields.image.digest",
+              "read_state": "observed",
+              "yields": "affected"
+            },
+            {
+              "step": "workloads",
+              "from": "Container",
+              "to": ["Workload"],
+              "via": "field_reference",
+              "declared_on": "Workload",
+              "field": "fields.constituents[].container_ref",
+              "read": "reverse",
+              "yields": "service"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "properties": {
+    "record_type": {"const": "walk_registry"},
+    "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "walks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/walk"}
+    }
+  },
+  "$defs": {
+    "class_name": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*(\\.[A-Z][A-Za-z0-9]*)*$",
+      "description": "A class by its registered name. A Base name also stands for its Types: `Machine` covers `Machine.VM`."
+    },
+    "record_path": {
+      "type": "string",
+      "pattern": "^(fields|outputs)(\\.[a-z][a-z0-9_]*(\\[\\])?)+$",
+      "description": "A path into a state record, from `fields` or `outputs`. `[]` after a segment reads every item of an array."
+    },
+    "walk": {
+      "type": "object",
+      "required": ["walk", "description", "start", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "walk": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "The walk's name. A consumer cites it."
+        },
+        "description": {"type": "string", "minLength": 20, "description": "The question the walk answers."},
+        "start": {"$ref": "#/$defs/class_name", "description": "The class the walk starts from. A consumer may also enter at any class a later step reads from."},
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/step"}
+        }
+      }
+    },
+    "step": {
+      "type": "object",
+      "required": ["step", "from", "to", "via", "yields"],
+      "additionalProperties": false,
+      "properties": {
+        "step": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "The step's name, unique within its walk."},
+        "from": {"$ref": "#/$defs/class_name", "description": "The class of the records in hand."},
+        "to": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/class_name"},
+          "description": "The classes the step reaches."
+        },
+        "via": {
+          "type": "string",
+          "enum": ["relationship", "field_reference", "join"],
+          "description": "`relationship`: one relationship a class declares by name. `field_reference`: a reference a class holds in a field. `join`: two records that state the same value, matched when read and never stored."
+        },
+        "declared_on": {"$ref": "#/$defs/class_name", "description": "The class whose records hold the edge or the field."},
+        "relation": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "The relationship's declared name on `declared_on`."},
+        "edge_type": {"$ref": "common-elements.schema.json#/$defs/edge_type", "description": "The relationship's edge type, restated from the class and proven equal by the gate."},
+        "read": {
+          "type": "string",
+          "enum": ["forward", "reverse"],
+          "description": "`forward`: follow the edge from the record that holds it. `reverse`: find the records that hold an edge, or a field, pointing at the record in hand."
+        },
+        "target_key_scheme": {"type": "string", "description": "The natural-key scheme an observed edge of this step carries, where the target class has exactly one. One of the `correlation_ids` schemes."},
+        "field": {"$ref": "#/$defs/record_path", "description": "The field that holds the reference."},
+        "from_field": {"$ref": "#/$defs/record_path", "description": "The value stated on the record in hand."},
+        "to_field": {"$ref": "#/$defs/record_path", "description": "The same value stated on the record reached."},
+        "read_state": {
+          "type": "string",
+          "enum": ["observed"],
+          "description": "Which record of the reached entity is compared. `observed`: its newest Discovered or Realized record, never an Intent."
+        },
+        "yields": {
+          "type": "string",
+          "enum": ["evidence", "affected", "service"],
+          "description": "What a reached record is in the answer. `evidence`: on the path, says why. `affected`: a thing that runs or carries the software; these are the affected set. `service`: the unit people own that affected things make up."
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"via": {"const": "relationship"}}},
+          "then": {
+            "required": ["declared_on", "relation", "edge_type", "read"],
+            "properties": {"field": false, "from_field": false, "to_field": false, "read_state": false}
+          }
+        },
+        {
+          "if": {"properties": {"via": {"const": "field_reference"}}},
+          "then": {
+            "required": ["declared_on", "field", "read"],
+            "properties": {
+              "read": {"const": "reverse"},
+              "relation": false, "edge_type": false, "target_key_scheme": false,
+              "from_field": false, "to_field": false, "read_state": false
+            }
+          }
+        },
+        {
+          "if": {"properties": {"via": {"const": "join"}}},
+          "then": {
+            "required": ["from_field", "to_field", "read_state"],
+            "properties": {
+              "declared_on": false, "relation": false, "edge_type": false, "read": false,
+              "target_key_scheme": false, "field": false
+            }
+          }
+        }
+      ]
+    }
+  }
+}

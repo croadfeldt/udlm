@@ -313,6 +313,9 @@ parts:
   - part: schema:vocabulary-term.schema.json
     stability: experimental
     why: candidate — a record contract every peer reads; stable once used and validated (row 144)
+  - part: schema:walk-registry.schema.json
+    stability: experimental
+    why: new with the affected walk (row 173); no consumer has read it in a running estate yet
   - part: doc:contracts/audit-provenance-observability.md
     stability: experimental
     why: candidate — normative and exercised; stable once used and validated (row 144)

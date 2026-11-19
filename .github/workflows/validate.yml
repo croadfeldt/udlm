@@ -176,6 +176,12 @@ jobs:
       # derivable inverse so the graph is navigable both ways (GRAPH-003). A one-sided declaration
       # never yields a one-sided graph; a dangling edge fails.
       - run: python3 tests/check_graph_integrity.py
+      # Named walks (DEP-019): registry/walks.yaml restates facts the classes own, so every step is
+      # proven against them: the relationship is declared with that name, edge type and target,
+      # each field resolves, and no class reaches one target class by two relationships an observed
+      # edge could not tell apart. The self-test breaks the walk each way and requires a refusal.
+      - run: python3 tests/check_walks.py --self-test
+      - run: python3 tests/check_walks.py
       # Instance-fuzz: every type spec must be satisfiable (a minimal instance synthesized from
       # the schema itself validates) and discriminating (dropped-required / enum-violation /
       # wrong-type / unknown-key mutations rejected); output schemas satisfiable ([D8.3]).
