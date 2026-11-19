@@ -396,4 +396,4 @@ specified in control-plane architecture docs.
 
 ---
 
-*Part of the UDLM specification. For questions or contributions see [GitHub](https://github.com/croadfeldt/udlm).*
+*Part of the UDLM specification. For questions or contributions see [GitHub](https://github.com/dcm-project/udlm).*
