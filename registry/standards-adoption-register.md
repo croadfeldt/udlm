@@ -200,6 +200,10 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `CWE` · **Body:** MITRE · **Since:** registered 2026-07-25 (Vulnerability `adopts[]`). · **Where:** Vulnerability — weakness identifiers, by reference.
 **Why:** weakness classification identifiers; carried by id, never restated. MITRE terms (free use with attribution) — reference_only.
 
+### SSVC — CANONICAL
+**Covers:** `SSVC` · **Body:** CERT/CC, Software Engineering Institute, Carnegie Mellon University · **Since:** registered 2026-11-18 (row 174; Vulnerability `adopts[]`). · **Where:** Vulnerability `exploitation` and `automatable` — the two decision points a source can state about a vulnerability itself.
+**Why:** severity says how bad a vulnerability could be and not whether anyone is using it. SSVC's decision for an organization that applies patches takes four inputs. Two are facts about the vulnerability, and public enrichment of CVE records publishes them; an entry in a known-exploited catalog is evidence for `active`. The other two are facts only the estate has and they stay there: how far the system is reachable, which a workload's `exposure` states (row 166), and the impact on the organization. Carrying the published two beside severity lets policy rank a medium that is being exploited above a critical that is not. Documentation CC BY-NC 4.0, data files MIT (SEI)-style; the value names are referenced and never restated, compatible_reference.
+
 ### NUT (Network UPS Tools) — CANONICAL
 **Covers:** `NUT` · **Since:** 2026-06-26T22:30:12Z · **Where:** PowerFeed (`ups.status` vocabulary).
 **Why:** the estate's actual UPS telemetry producer (NUT upsd/upsmon daemons); its status vocabulary is the de-facto open standard. **License:** GPL-2.0+ — reference_only.

@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 6394,
-    "mutations_rejected": 6394,
+    "mutations_attempted": 6408,
+    "mutations_rejected": 6408,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -280,8 +280,8 @@
         "rejected": 24
       },
       "Vulnerability": {
-        "attempted": 67,
-        "rejected": 67
+        "attempted": 81,
+        "rejected": 81
       },
       "WirelessAccessPoint": {
         "attempted": 54,

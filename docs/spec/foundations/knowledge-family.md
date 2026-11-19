@@ -227,7 +227,9 @@ reference edges → filter and impact walk.
 
 - **Lifecycle:** curated upstream (NVD, OSV, the supplier), **`Discovered`** locally. A scanner is a
   discovery avenue and never a provider that realizes anything. A discovered record names its edge
-  targets by natural key: `oci_digest`, `purl`, `vulnerability_id` (`correlation_ids`, RHY-007).
+  targets by natural key: `oci_digest`, `purl`, `vulnerability_id` (`correlation_ids`, RHY-007). A
+  feed also says whether a vulnerability is being used: `exploitation` and `automatable` on the
+  `Vulnerability` carry the SSVC values (row 174), and an absent value is never read as "not exploited".
 
 - **Edges** are `edge_type: references`. They order nothing, so they stay outside a shutdown or a
   rebuild sort. Read in reverse they answer what an advisory reaches:

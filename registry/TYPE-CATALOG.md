@@ -1380,11 +1380,11 @@ A snapshot of one volume, taken at one moment. It names the volume it copies (`s
 
 ## Vulnerability
 
-### Vulnerability (0.3.3)
+### Vulnerability (0.4.0)
 
 **Purpose:** Records a known vulnerability — CVE, GHSA, or OSV advisory — once, as the shared fact every affected package points at.
 
-One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the working set — `severity`, CVSS score and vector (`cvss`), the weakness class as `cwe`, `affected_ranges` — and points at the full advisory through `references` (URLs) rather than restating it. It is the terminal node of the software-knowledge chain: packages reference it, and impact analysis reverse-walks from here — advisory → packages → images → running containers.
+One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the working set — `severity`, CVSS score and vector (`cvss`), the weakness class as `cwe`, `affected_ranges` — and points at the full advisory through `references` (URLs) rather than restating it. Where a source states them it also carries `exploitation` and `automatable`: whether the vulnerability is being used, which severity does not say. It is the terminal node of the software-knowledge chain: packages reference it, and impact analysis reverse-walks from here — advisory → packages → images → running containers.
 
 **Use when:**
 - You need what-in-the-estate-is-exposed-to-this-advisory as a reverse graph walk.
@@ -1393,6 +1393,7 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 **Not for:**
 - The affected package — SoftwarePackage points here via affected_by.
 - Whether a particular deployment is exploitable — that applicability assessment (the VEX role) is analysis on top, not this record.
+- How urgent it is here. That is a decision an organization's policy makes from these facts, from how far the affected workload is reachable and from what it means to the business.
 
 **Works with:**
 - SoftwarePackage — the packages affected by this advisory.
