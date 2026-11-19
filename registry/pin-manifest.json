@@ -2228,7 +2228,7 @@
   }
  },
  "type:Vulnerability": {
-  "current": "0.4.0",
+  "current": "0.3.3",
   "path": "registry/classes/knowledge/vulnerability/_base.yaml",
   "versions": {
    "0.1.1": "sha256:16e6e1c0de0d263e087a6a86de8f362198fb88af06f303725fe8bbbad82f4684",
@@ -2237,8 +2237,7 @@
    "0.3.0": "sha256:e951b0e702b5cbc1d3cedcb652b29d531b7b23524e895ba404179218e02b290e",
    "0.3.1": "sha256:116b921c31fb3919d3c62dc8e906ecf51afaf8d9ee93e3a4dbc645b21b0ee9b6",
    "0.3.2": "sha256:020e5bcfe976036912ab033a2b2c4855a5540d677370cec3ff525f2edec29dde",
-   "0.3.3": "sha256:586aa0d70a064ddeb4558cd9909e7a0ce5d4c3f085808267c94516dcec61bea0",
-   "0.4.0": "sha256:3d7e7145695e7e16d2aace7c5be56e978646f18b87b17bbc49db366d9934b7a1"
+   "0.3.3": "sha256:586aa0d70a064ddeb4558cd9909e7a0ce5d4c3f085808267c94516dcec61bea0"
   }
  },
  "type:WirelessAccessPoint": {

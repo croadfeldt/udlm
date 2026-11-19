@@ -227,9 +227,17 @@ reference edges → filter and impact walk.
 
 - **Lifecycle:** curated upstream (NVD, OSV, the supplier), **`Discovered`** locally. A scanner is a
   discovery avenue and never a provider that realizes anything. A discovered record names its edge
-  targets by natural key: `oci_digest`, `purl`, `vulnerability_id` (`correlation_ids`, RHY-007). A
-  feed also says whether a vulnerability is being used: `exploitation` and `automatable` on the
-  `Vulnerability` carry the SSVC values (row 174), and an absent value is never read as "not exploited".
+  targets by natural key: `oci_digest`, `purl`, `vulnerability_id` (`correlation_ids`, RHY-007).
+
+- **Whether a vulnerability is being exploited is derived, not stored** (row 174). Severity says how
+  bad a vulnerability could be and not whether anyone is using it. A party other than the advisory
+  says that, a known-exploited catalog or a vendor, and it changes on that party's clock. So the
+  `Vulnerability` record does not carry it (DRV-001). It is the policy fact
+  `vulnerability.exploitation` (`registry/taxonomies/policy-fact.yaml`): computed when the answer is
+  read, from what the sources read report, with the values of the SSVC Exploitation decision point.
+  No report means the fact is absent, and absent is never read as "not exploited". A decision keeps
+  the value it used in its audit snapshot (policy-contract §7.5). The catalog is an Information
+  Provider, as the store is.
 
 - **Edges** are `edge_type: references`. They order nothing, so they stay outside a shutdown or a
   rebuild sort. Read in reverse they answer what an advisory reaches:
