@@ -123,6 +123,21 @@
         "field": {"$ref": "#/$defs/record_path", "description": "The field that holds the reference."},
         "from_field": {"$ref": "#/$defs/record_path", "description": "The value stated on the record in hand."},
         "to_field": {"$ref": "#/$defs/record_path", "description": "The same value stated on the record reached."},
+        "match": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["from_field", "to_field"],
+            "additionalProperties": false,
+            "properties": {
+              "from_field": {"$ref": "#/$defs/record_path", "description": "The value stated on the record in hand."},
+              "to_field": {"$ref": "#/$defs/record_path", "description": "The same value stated on the record reached."}
+            }
+          },
+          "description": "The pairs a join compares where one value does not name the thing. Two records match when every pair is stated on both and equal. Given in place of `from_field` and `to_field`."
+        },
         "read_state": {
           "type": "string",
           "enum": ["observed"],
@@ -139,7 +154,7 @@
           "if": {"properties": {"via": {"const": "relationship"}}},
           "then": {
             "required": ["declared_on", "relation", "edge_type", "read"],
-            "properties": {"field": false, "from_field": false, "to_field": false, "read_state": false}
+            "properties": {"field": false, "from_field": false, "to_field": false, "match": false, "read_state": false}
           }
         },
         {
@@ -149,14 +164,18 @@
             "properties": {
               "read": {"const": "reverse"},
               "relation": false, "edge_type": false, "target_key_scheme": false,
-              "from_field": false, "to_field": false, "read_state": false
+              "from_field": false, "to_field": false, "match": false, "read_state": false
             }
           }
         },
         {
           "if": {"properties": {"via": {"const": "join"}}},
           "then": {
-            "required": ["from_field", "to_field", "read_state"],
+            "required": ["read_state"],
+            "oneOf": [
+              {"required": ["from_field", "to_field"], "properties": {"match": false}},
+              {"required": ["match"], "properties": {"from_field": false, "to_field": false}}
+            ],
             "properties": {
               "declared_on": false, "relation": false, "edge_type": false, "read": false,
               "target_key_scheme": false, "field": false

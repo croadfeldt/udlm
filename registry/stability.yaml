@@ -40,6 +40,9 @@ parts:
   - part: class:SoftwareBillOfMaterials
     stability: experimental
     why: candidate — stable once the estate records and validates it (rows 144, 170)
+  - part: class:FirmwareImage
+    stability: experimental
+    why: candidate — stable once the estate records and validates it (row 177)
   - part: class:SoftwareImage
     stability: experimental
     why: candidate — stable once the estate records and validates it (rows 144, 170)
