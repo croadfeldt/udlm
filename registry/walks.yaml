@@ -53,7 +53,7 @@
 # not narrow by exploitability: a VexStatement does (knowledge-family.md §4.10).
 
 record_type: walk_registry
-version: 0.2.0
+version: 0.3.0
 
 walks:
   - walk: affected
@@ -104,23 +104,23 @@ walks:
         edge_type: references
         read: forward
         yields: affected
-      # A firmware build is evidence the way an image is. A document describes the build once, for
+      # A firmware release is evidence the way an image is. A document describes the release once, for
       # every device that runs it.
-      - step: firmware_images
+      - step: firmware_releases
         from: SoftwareBillOfMaterials
-        to: [FirmwareImage]
+        to: [FirmwareRelease]
         via: relationship
         declared_on: SoftwareBillOfMaterials
         relation: describes
         edge_type: references
         read: forward
-        target_key_scheme: firmware_build
+        target_key_scheme: firmware_release
         yields: evidence
       # A device states who made it, its model and the firmware version it runs. A device that states
-      # the build's three values runs the build. No one value is enough: two makers use the same
+      # the release's three values runs the release. No one value is enough: two makers use the same
       # version number, and one maker ships a version to several models.
       - step: devices
-        from: FirmwareImage
+        from: FirmwareRelease
         to: [NetworkSwitch, NetworkGateway, WirelessAccessPoint]
         via: join
         match:

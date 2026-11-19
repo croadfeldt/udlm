@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/1.0/SoftwareBillOfMaterials/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/1.0/SoftwareBillOfMaterials/0.3.0",
   "conforms_to": "udlm/1.0",
   "uuid": "7da883d3-0ffa-4c2c-9a86-4183e3b9ae20",
   "resource_type": "SoftwareBillOfMaterials",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SoftwareBillOfMaterials",
-          "version": "0.2.0",
+          "version": "0.3.0",
           "uuid": "7da883d3-0ffa-4c2c-9a86-4183e3b9ae20"
         }
       ]
@@ -121,11 +121,11 @@
     },
     {
       "edge_type": "references",
-      "target": "FirmwareImage",
+      "target": "FirmwareRelease",
       "name": "describes",
       "cardinality": "0..1",
       "adopted_from": "SPDX 2.3 DESCRIBES",
-      "description": "Or the firmware build it lists the contents of. The devices that run the build are found by what they state, so one document covers every device on that build."
+      "description": "Or the firmware release it lists the contents of. The devices that run the release are found by what they state, so one document covers every device on that release."
     },
     {
       "edge_type": "references",
@@ -223,7 +223,7 @@
       "The thing described — SoftwareImage, Machine or the device; this is a document about it."
     ],
     "works_with": [
-      "SoftwareImage, FirmwareImage, Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC — the subjects a document describes.",
+      "SoftwareImage, FirmwareRelease, Machine, KubernetesCluster, NetworkSwitch, NetworkGateway, BMC — the subjects a document describes.",
       "SoftwarePackage — the packages a document lists.",
       "Vulnerability — reached through the package, for the walk from an advisory to every subject."
     ]

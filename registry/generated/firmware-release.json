@@ -1,0 +1,94 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/1.0/FirmwareRelease/0.2.0",
+  "conforms_to": "udlm/1.0",
+  "uuid": "094dda0b-f5b7-4db8-be41-c17ce75ec625",
+  "resource_type": "FirmwareRelease",
+  "version": "0.2.0",
+  "family": "Knowledge",
+  "status": "active",
+  "metadata": {
+    "display_name": "Firmware Release",
+    "description": "One firmware release as a fact about the estate, named by its maker, the device model it is for and its version. A Knowledge class: discovered, never provider-realized. A device that states this maker, model and version runs this release: the match is derived and no edge is stored. A SoftwareBillOfMaterials describes the release and lists what is in it.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-11-19T23:30:00Z",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "FirmwareRelease",
+          "version": "0.2.0",
+          "uuid": "094dda0b-f5b7-4db8-be41-c17ce75ec625"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "manufacturer": {
+        "$ref": "../common-elements.schema.json#/$defs/identity/properties/manufacturer",
+        "description": "Who makes the device the release is for, written as the device states it (Redfish Manufacturer)."
+      },
+      "model": {
+        "$ref": "../common-elements.schema.json#/$defs/identity/properties/model",
+        "description": "The device model the release is for, written as the device states it."
+      },
+      "version": {
+        "type": "string",
+        "description": "The version, written as a device that runs the release reports it."
+      }
+    },
+    "required": [
+      "manufacturer",
+      "model",
+      "version"
+    ],
+    "examples": [
+      {
+        "manufacturer": "ExampleNet",
+        "model": "EN-SW48",
+        "version": "7.5.15"
+      }
+    ]
+  },
+  "outputs": {},
+  "immutable": [
+    "manufacturer",
+    "model",
+    "version"
+  ],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": ">=2023.1",
+      "standard_name": "SoftwareInventory (UpdateService FirmwareInventory)",
+      "role": "firmware as a thing of its own beside the devices it runs on — the Manufacturer and Version vocabulary this class's fields align to",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "license_compatibility": "compatible_reference",
+      "disposition": "tier1_value"
+    }
+  ],
+  "entity_type": "FirmwareRelease",
+  "context": {
+    "purpose": "Records a firmware release as a fact — the thing a device runs, and the subject its software bill of materials describes — so one advisory about a release reaches every device that runs it.",
+    "plain_description": "One firmware release, identified by who makes it, the device model it is for and its version, each written exactly as a device reports it. It is knowledge about the estate, never provisioned. Nothing ties it to a device by a stored edge: a device already states its maker, its model and the firmware version it runs, and a device that states the same three values runs this release. So twenty switches on one release share one record, and a device that is updated stops matching the old release without anyone editing either record. What is inside the release is not listed here: a SoftwareBillOfMaterials describes it and lists its components, one today for most devices and many where a maker publishes a full list.",
+    "use_when": [
+      "You need every device tied to the exact firmware release it runs, deduplicated across the fleet.",
+      "You need the subject a firmware bill of materials hangs from: release ← document → packages → vulnerabilities."
+    ],
+    "not_for": [
+      "The device — NetworkSwitch, NetworkGateway, WirelessAccessPoint and the other device classes state the version they run; this is the release as a fact.",
+      "A container or operating-system image — SoftwareImage, identified by its digest.",
+      "The firmware file itself — a binary identified by its digest is an image. This record names a release and holds no digest, and one file a maker ships for several models is one release per model.",
+      "A component inside the release — SoftwarePackage, listed by the release's SoftwareBillOfMaterials.",
+      "A host's boot firmware settings — the Machine `firmware` element."
+    ],
+    "works_with": [
+      "NetworkSwitch, NetworkGateway and WirelessAccessPoint — the devices that run a release, matched by the maker, model and firmware version each one states.",
+      "SoftwareBillOfMaterials — the document that describes the release and lists its components."
+    ]
+  }
+}

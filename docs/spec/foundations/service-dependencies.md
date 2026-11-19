@@ -338,16 +338,16 @@ advisory names. This table restates the registry:
 | `packages` | `Vulnerability` | `SoftwarePackage` | `affected_by`, in reverse | evidence |
 | `documents` | `SoftwarePackage` | `SoftwareBillOfMaterials` | `contains`, in reverse | evidence |
 | `images` | `SoftwareBillOfMaterials` | `SoftwareImage` | `describes` | evidence |
-| `firmware_images` | `SoftwareBillOfMaterials` | `FirmwareImage` | `describes` | evidence |
-| `devices` | `FirmwareImage` | `NetworkSwitch`, `NetworkGateway`, `WirelessAccessPoint` | the build's `manufacturer`, `model` and `version` equal the `identity.manufacturer`, `identity.model` and `firmware_version` the device was observed stating | affected |
+| `firmware_releases` | `SoftwareBillOfMaterials` | `FirmwareRelease` | `describes` | evidence |
+| `devices` | `FirmwareRelease` | `NetworkSwitch`, `NetworkGateway`, `WirelessAccessPoint` | the release's `manufacturer`, `model` and `version` equal the `identity.manufacturer`, `identity.model` and `firmware_version` the device was observed stating | affected |
 | `described_assets` | `SoftwareBillOfMaterials` | `Machine`, `KubernetesCluster`, `NetworkSwitch`, `NetworkGateway`, `BMC` | `describes` | affected |
 | `containers` | `SoftwareImage` | `Container` | the image's `digest` equals the `image.digest` the container was observed running | affected |
 | `workloads` | `Container` | `Workload` | `constituents[].container_ref`, in reverse | a service |
 
 The records reached as *affected* are the **affected set**. An image is evidence and not an affected
 thing: nothing is affected until something runs the image, and an image nothing runs is reported as
-carried and not running. A firmware build is evidence the same way. A device is affected when it
-states the build's maker, model and version. All three must be stated and equal, because two makers
+carried and not running. A firmware release is evidence the same way. A device is affected when it
+states the release's maker, model and version. All three must be stated and equal, because two makers
 reuse a version number and one maker ships a version to several models. The last step restates the affected set as the services people own and
 adds nothing to it. A workload made of systemd units on a host is not reached from the host, because
 nothing ties one of a host's packages to a unit; that workload is in the host's reach. A machine
@@ -365,7 +365,7 @@ Three things are outside the walk on purpose, and an answer keeps each of them a
   (knowledge-family.md §4.10). A confirmed statement removes or confirms an entry, and the answer
   shows the statement behind every removal.
 - **What could not be judged.** Every record of a class the walk reaches as affected is a subject. A
-  subject no current bill of materials reaches, directly or through an image or a firmware build it
+  subject no current bill of materials reaches, directly or through an image or a firmware release it
   runs, is neither affected nor clear. The answer lists it by name with the reason: no bill of
   materials, a stale one, a container that states no digest, a device that states no firmware
   version, an edge whose target has no record. A bill of materials is
