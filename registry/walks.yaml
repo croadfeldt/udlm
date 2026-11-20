@@ -30,8 +30,8 @@
 #                    hand names; each has a `basis`. `identifiers` gives, per basis, the field the
 #                    record reached states it in. A purl matches on type, namespace and name; a CPE
 #                    on part, vendor and product. A product named by name alone is never joined.
-#                    No version is compared: the range rides with the answer, and a policy reads
-#                    it (row 179).
+#                    No version is compared here: the range rides with the answer, and a policy
+#                    reads it as the fact `vulnerability.version_in_range` (row 179).
 #
 # How a consumer recognizes a step in records. An edge an observer wrote names no relation: a
 # Discovered edge carries its edge type and the natural key of its target (RHY-007). So a

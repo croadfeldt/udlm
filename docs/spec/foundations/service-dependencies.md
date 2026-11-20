@@ -366,8 +366,9 @@ Three things are outside the walk on purpose, and an answer keeps each of them a
   reach and is not in the affected set.
 - **Deciding.** The walk reaches every package a source names, whatever its version, and every
   package a party has made a statement about, whatever the statement says. Whether a version is in
-  a source's range, and what a statement means for a running thing, is a policy's answer over those
-  facts (knowledge-family.md §4.10, row 179). An answer names the source or statement behind every
+  a source's range is the policy fact `vulnerability.version_in_range` (`inside`, `outside` or
+  `not_comparable`), computed when the answer is read. What that and each statement mean for a
+  running thing is a policy's answer (knowledge-family.md §4.10, row 179). An answer names the source or statement behind every
   entry it removes or keeps.
 - **What could not be judged.** Every record of a class the walk reaches as affected is a subject. A
   subject no current bill of materials reaches, directly or through an image or a firmware release it
