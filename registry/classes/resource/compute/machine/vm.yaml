@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/1.0/class/Machine.VM/2.4.2
+$id: https://udlm.dev/registry/udlm/1.0/class/Machine.VM/2.5.0
 conforms_to: udlm/1.0
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Machine.VM
 parent: Machine
-version: 2.4.2
+version: 2.5.0
 family: Resource
 status: active
 ownership_model: whole_allocation
@@ -188,6 +188,19 @@ elements:
             version:
               type: string
               description: Inline OS version (e.g. 9.4).
+            delivery:
+              type: string
+              enum:
+                - package
+                - image
+              description: 'How the operating system reaches the machine: `package` (installed and updated package by
+                package) or `image` (booted from an image that is replaced whole, as bootc and rpm-ostree do). An
+                update tool reads this to know whether to run a package manager or to stage a new image.'
+            image_ref:
+              type: string
+              description: 'The image the machine booted, when delivery is `image`: transport, reference and digest
+                (`oci-archive:/var/tmp/host-4a02746.ociarchive@sha256:…`, `registry:quay.example/host:44@sha256:…`).
+                Observed, so a rebuild or rollback is checked against what actually runs.'
         - allOf:
             - $ref: ../../../../data-reference.schema.json#/$defs/data_reference
             - required:

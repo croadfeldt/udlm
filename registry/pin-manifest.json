@@ -1237,7 +1237,7 @@
   }
  },
  "type:Machine": {
-  "current": "2.6.3",
+  "current": "2.7.0",
   "path": "registry/classes/resource/compute/machine/_base.yaml",
   "versions": {
    "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
@@ -1255,7 +1255,8 @@
    "2.6.0": "sha256:a31366fd386791898ecb57fcdf5c8d05ee5fe90e1f24d12ab15e348f8316f840",
    "2.6.1": "sha256:2903f01699b9d7a4923d8332cc697cfcabeb8edf605da5bebd29702c3aef111a",
    "2.6.2": "sha256:a62c1092d6a958d6d8575664437a40dc16e77a2d136677332a7138751e08007b",
-   "2.6.3": "sha256:b8d1f74393473e81b507e326a69501114b9c00ca90737dcd0e2ae1bcddb3c318"
+   "2.6.3": "sha256:b8d1f74393473e81b507e326a69501114b9c00ca90737dcd0e2ae1bcddb3c318",
+   "2.7.0": "sha256:13de332c45191f19f7667ea1804cc0f0914a2525881135fed235f61a130390e1"
   }
  },
  "type:Machine.BareMetalHost": {
@@ -1295,7 +1296,7 @@
   }
  },
  "type:Machine.VM": {
-  "current": "2.4.2",
+  "current": "2.5.0",
   "path": "registry/classes/resource/compute/machine/vm.yaml",
   "versions": {
    "2.0.0": "sha256:2a5c4f36fbdf6c2cea6a7f2dc90c4f122b10a04c9b35d77622fc9d2c9092a47e",
@@ -1310,7 +1311,8 @@
    "2.3.0": "sha256:507f78d693b0a1e203e91329ee664134a021fdabe835b9140ce98a1a60d6ae9d",
    "2.4.0": "sha256:8624e104c10fda3059ecffd384283fce4e31fdbc1c709970e7273316cb84d062",
    "2.4.1": "sha256:88569f21b3d3fe3ff0089755384060e966298d148d12ba6ade0aeb3d05597f7b",
-   "2.4.2": "sha256:77932d598f1113d1cf7ff6923042b4adeaa56f4ae8ce6d4df9039c811a3a545b"
+   "2.4.2": "sha256:77932d598f1113d1cf7ff6923042b4adeaa56f4ae8ce6d4df9039c811a3a545b",
+   "2.5.0": "sha256:f17d8dfad8bdc1dfb9bb10e790522d57115c6a432dd3ea1e37e2179aebac3f8b"
   }
  },
  "type:Machine.VM.CExampleCloud": {
