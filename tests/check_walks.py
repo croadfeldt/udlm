@@ -19,6 +19,8 @@ What it refuses:
                 observed edge names no relation (RHY-007), so a consumer could not tell them apart
   field         a field path does not resolve on the class, a field_reference does not land on a
                 Reference, or a join does not compare two strings in every pair it names
+  identifier    an identifier_join's criteria are not applicability criteria, or it compares a
+                basis the criteria do not offer, or an identifier field is not a string
   key scheme    target_key_scheme is not a correlation_ids scheme
   answer        a walk yields no affected record, or a service step does not read from one
 
@@ -201,6 +203,8 @@ def judge(registry, specs, schemes, validate_shape=True):
                     fails += judge_relationship(step, at, specs, schemes, forward)
                 elif step["via"] == "field_reference":
                     fails += judge_field_reference(step, at, specs)
+                elif step["via"] == "identifier_join":
+                    fails += judge_identifier_join(step, at, specs)
                 else:
                     fails += judge_join(step, at, specs)
             reached += step["to"]
@@ -302,6 +306,39 @@ def judge_join(step, at, specs):
     return fails
 
 
+def judge_identifier_join(step, at, specs):
+    fails = []
+    holder = step["from"]
+    if holder not in specs:
+        return [f"field: {at}: {holder!r} is a family name; a join needs a class that declares the field"]
+    nodes = [deref(n) for n in resolve(specs[holder], step["criteria"])]
+    if not nodes:
+        return [f"field: {at}: {step['criteria']} does not resolve on {holder}"]
+    offered = set()
+    for node in nodes:
+        props = node.get("properties") or {} if isinstance(node, dict) else {}
+        basis, criterion = deref(props.get("basis") or {}), deref(props.get("criterion") or {})
+        if not (basis.get("enum") and criterion.get("type") == "string"):
+            fails.append(f"identifier: {at}: {holder} {step['criteria']} is not a list of applicability criteria "
+                         f"(a `basis` codelist and a `criterion` string)")
+            continue
+        offered |= set(basis["enum"])
+    for ident in step["identifiers"]:
+        if offered and ident["basis"] not in offered:
+            fails.append(f"identifier: {at}: compares basis {ident['basis']!r}, which {holder} "
+                         f"{step['criteria']} does not offer")
+        for cls in step["to"]:
+            if cls not in specs:
+                fails.append(f"field: {at}: {cls!r} is a family name; a join needs a class that declares the field")
+                continue
+            got = resolve(specs[cls], ident["to_field"])
+            if not got:
+                fails.append(f"field: {at}: {ident['to_field']} does not resolve on {cls}")
+            elif not is_string(got):
+                fails.append(f"identifier: {at}: {cls} {ident['to_field']} is not a string, so it states no identifier")
+    return fails
+
+
 def self_test(registry, specs, schemes):
     """Break the real walk one way at a time. A gate that never refuses proves nothing."""
     def step(reg, name):
@@ -326,7 +363,7 @@ def self_test(registry, specs, schemes):
         step(reg, "documents")["from"] = "Vulnerability"
 
     def second_relation_to_one_target(reg, sp):
-        sp["SoftwarePackage"]["relationships"].append(
+        sp["VexStatement"]["relationships"].append(
             {"edge_type": "references", "target": "Vulnerability", "name": "fixes"})
 
     def unknown_class(reg, sp):
@@ -352,6 +389,20 @@ def self_test(registry, specs, schemes):
 
     def join_on_one_pair(reg, sp):
         del step(reg, "devices")["match"][1:]
+
+    def identifier_criteria_missing(reg, sp):
+        step(reg, "named_packages")["criteria"] = "fields.applicability[].products[]"
+
+    def identifier_criteria_not_criteria(reg, sp):
+        step(reg, "named_packages")["criteria"] = "fields.references[]"
+
+    def identifier_field_missing(reg, sp):
+        step(reg, "named_packages")["identifiers"][1]["to_field"] = "fields.cpe_name"
+
+    def identifier_basis_not_offered(reg, sp):
+        crit = sp["Vulnerability"]["spec"]["properties"]["applicability"]["items"]["properties"]["affects"]
+        crit["items"] = {"type": "object", "properties": {"basis": {"type": "string", "enum": ["purl"]},
+                                                          "criterion": {"type": "string"}}}
 
     def reference_field_missing(reg, sp):
         step(reg, "workloads")["field"] = "fields.constituents[].container"
@@ -380,6 +431,8 @@ def self_test(registry, specs, schemes):
              forward_from_wrong_class, reverse_from_non_target, second_relation_to_one_target,
              unknown_class, unreachable_from, join_field_missing, join_on_non_string,
              join_pair_missing_on_one_class, join_pair_compared_twice, join_in_both_forms, join_on_one_pair,
+             identifier_criteria_missing, identifier_criteria_not_criteria, identifier_field_missing,
+             identifier_basis_not_offered,
              reference_field_missing, field_is_not_a_reference, unknown_key_scheme, no_affected_step,
              service_not_from_affected, bad_shape, duplicate_step]
     bad = 0

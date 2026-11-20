@@ -225,6 +225,19 @@ terms:
       copy would go stale and would hide who said it (DRV-001). When no source read has spoken the
       fact is absent, and absent is never read as `none`.
 
+  - term: vulnerability.version_in_range
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: >-
+      Whether a package's version falls inside the versions one source states for a product it names,
+      for each package the affected walk reaches through `named_packages` (row 179). One of `inside`,
+      `outside` or `not_comparable`, per source entry. It is computed when the answer is read, from the
+      criterion's VERS range and the version in the package's purl or CPE, under the VERS comparison
+      for the range's scheme; it is never stored (DRV-001). `not_comparable` means the reader cannot
+      compare them: a scheme it does not implement, a version that does not parse under the scheme, or
+      a range or version that is absent. It is read as not judged, never as `inside` or `outside`.
+
   # ---- evaluation context: reserve-phase facts (ADR-011) ----
   - term: reserved
     root: policy-fact

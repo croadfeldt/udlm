@@ -3,7 +3,7 @@
 #
 # registry/edge-types.yaml says how the needs and dependents walks read each EDGE TYPE, and both stop
 # at a `references` edge: pointing at something is not needing it. Some questions are carried by
-# exactly those edges. An advisory names a package, a bill of materials lists the package and
+# exactly those edges. An advisory names a product, a bill of materials lists the package and
 # describes an image, a container runs the image. Every link is a reference and none orders anything,
 # so no ordering walk reaches from the advisory to the container.
 #
@@ -11,7 +11,7 @@
 # file is the single source for each walk's steps (row 173; service-dependencies.md §6.5, DEP-019).
 # A consumer reads it and follows nothing else. It changes nothing about the ordering walks.
 #
-# A step is one of three kinds (`via`):
+# A step is one of four kinds (`via`):
 #
 #   relationship     one relationship a class declares by name. `declared_on` is the class whose
 #                    records hold the edge, `relation` its declared name, `edge_type` its edge type.
@@ -25,6 +25,13 @@
 #                    every pair must be equal (row 177). A step gives one form or the other,
 #                    and `read_state: observed` means the newest Discovered or Realized record is
 #                    compared, never an Intent.
+#   identifier_join  a product a source names, joined to a record that states the same identifier.
+#                    Nothing is stored (DRV-001). `criteria` is the list of products the record in
+#                    hand names; each has a `basis`. `identifiers` gives, per basis, the field the
+#                    record reached states it in. A purl matches on type, namespace and name; a CPE
+#                    on part, vendor and product. A product named by name alone is never joined.
+#                    No version is compared here: the range rides with the answer, and a policy
+#                    reads it as the fact `vulnerability.version_in_range` (row 179).
 #
 # How a consumer recognizes a step in records. An edge an observer wrote names no relation: a
 # Discovered edge carries its edge type and the natural key of its target (RHY-007). So a
@@ -39,8 +46,8 @@
 #
 # `yields` says what a record a step reaches is, in the answer:
 #
-#   evidence  a record on the path that says why: a package, a bill of materials, an image. An
-#             image nothing runs is carried and not running; it is not affected.
+#   evidence  a record on the path that says why: a statement, a package, a bill of materials, an
+#             image. An image nothing runs is carried and not running; it is not affected.
 #   affected  a thing that runs or carries the software. These records are the affected set.
 #   service   the unit people own that affected things make up. It restates the affected set and
 #             adds nothing to it.
@@ -50,28 +57,56 @@
 #
 # What a walk does not do. It does not say what a fix disturbs: that is the dependents walk and the
 # blast radius of ADR-010, taken over the affected set, and it is a separate list (DEP-020). It does
-# not narrow by exploitability: a VexStatement does (knowledge-family.md §4.10).
+# not decide what a statement means. It follows every statement, whatever its source, status or
+# match, and a policy over the statements' facts decides which running things are exposed
+# (knowledge-family.md §4.10, row 179).
 
 record_type: walk_registry
-version: 0.4.0
+version: 0.5.0
 
 walks:
   - walk: affected
     description: >-
-      Which running things carry what an advisory names. From a Vulnerability to the packages it
-      affects, to the bills of materials that list them, to what those documents describe, to what
+      Which running things carry what an advisory names. From a Vulnerability to the packages its
+      sources name and the packages a party has made a statement about, to the bills of materials
+      that list them, to what those documents describe, to what
       runs it, and up to the services those things make up.
     start: Vulnerability
     steps:
-      - step: packages
+      # What a source says the advisory applies to is on the advisory. A package whose purl or CPE
+      # names the same product is reached, whatever its version: whether the version is in the
+      # source's range is a policy's reading (row 179).
+      - step: named_packages
         from: Vulnerability
         to: [SoftwarePackage]
+        via: identifier_join
+        criteria: fields.applicability[].affects[]
+        identifiers:
+          - {basis: purl, to_field: fields.purl}
+          - {basis: cpe, to_field: fields.cpe}
+        read_state: observed
+        yields: evidence
+      # A link another party concluded, a supplier's VEX or an SBOM store's finding, is a statement
+      # naming that party. Every statement is followed, whatever it says.
+      - step: statements
+        from: Vulnerability
+        to: [VexStatement]
         via: relationship
-        declared_on: SoftwarePackage
-        relation: affected_by
+        declared_on: VexStatement
+        relation: about
         edge_type: references
         read: reverse
         target_key_scheme: vulnerability_id
+        yields: evidence
+      - step: packages
+        from: VexStatement
+        to: [SoftwarePackage]
+        via: relationship
+        declared_on: VexStatement
+        relation: concerns
+        edge_type: references
+        read: forward
+        target_key_scheme: purl
         yields: evidence
       - step: documents
         from: SoftwarePackage

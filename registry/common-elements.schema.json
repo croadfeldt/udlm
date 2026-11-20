@@ -612,6 +612,87 @@
       ],
       "description": "CVSS v3/v4 qualitative severity rating — adopted codelist."
     },
+    "vulnerability_source": {
+      "title": "Who states something about a vulnerability",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "issuer"
+      ],
+      "description": "The source of a statement about a vulnerability, in the source's own words (row 179). One home for Vulnerability `applicability` and VexStatement `source`.",
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": [
+            "cve_record",
+            "nvd",
+            "csaf",
+            "osv",
+            "openvex",
+            "cyclonedx",
+            "spdx"
+          ],
+          "description": "The format the source states it in: the CVE record (CVE JSON 5), the NVD CVE API, a CSAF advisory, an OSV record, an OpenVEX document, a CycloneDX VEX or VDR document, or an SPDX 3 security relationship."
+        },
+        "issuer": {
+          "type": "string",
+          "description": "Who states it, as the source names itself: NVD, a CVE Numbering Authority, a vendor's PSIRT, the GitHub Advisory Database, an SBOM store, a test harness."
+        },
+        "document": {
+          "type": "string",
+          "description": "Where the statement can be read again: a URL, or the source's own id for the document (a GHSA id, a CSAF tracking id)."
+        },
+        "record_status": {
+          "type": "string",
+          "description": "The state the source gives its own record, verbatim: NVD `Analyzed`, `Awaiting Analysis` or `Deferred`; a CVE record's `PUBLISHED` or `REJECTED`; a CSAF `final` or `interim`. It says how far the source has got, not anything about a product."
+        }
+      }
+    },
+    "csaf_product_status": {
+      "title": "CSAF product status category",
+      "description": "The CSAF 2.0 product status categories, spelled as the standard spells them. One home for every UDLM element that carries a CSAF status verbatim.",
+      "type": "string",
+      "x-standard": "CSAF: vulnerabilities[].product_status",
+      "enum": ["first_affected", "first_fixed", "fixed", "known_affected", "known_not_affected", "last_affected", "recommended", "under_investigation"]
+    },
+    "applicability_criterion": {
+      "title": "One product a vulnerability source names",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "criterion"
+      ],
+      "description": "One product, and the versions of it, that a source names, copied as the source writes it (row 179). Whether a given version falls in `versions` is computed when an answer is read, never stored (DRV-001).",
+      "properties": {
+        "basis": {
+          "type": "string",
+          "enum": [
+            "purl",
+            "cpe",
+            "product_name"
+          ],
+          "description": "What `criterion` is. `purl`: a package URL, or an OSV ecosystem and package name written as one. `cpe`: a CPE 2.3 match string. `product_name`: the vendor and product as the source writes them, where it gives no identifier."
+        },
+        "criterion": {
+          "type": "string",
+          "description": "The product as the source names it, verbatim."
+        },
+        "versions": {
+          "type": "string",
+          "pattern": "^vers:[a-z0-9.+-]+/.+$",
+          "description": "The versions the source states, as one VERS range (purl-spec), carried over bound for bound. Absent where the source states no versions."
+        },
+        "status": {
+          "description": "The status the source gives these versions, verbatim: a CVE record's `affected`, `unaffected` or `unknown`, a CSAF product status category. Absent where the source gives none.",
+          "anyOf": [
+            {"type": "string", "x-standard": "CVE Record Format: containers.cna.affected[].versions[].status", "enum": ["affected", "unaffected", "unknown"]},
+            {"$ref": "#/$defs/csaf_product_status"}
+          ]
+        }
+      }
+    },
     "assurance_level": {
       "title": "Authenticator assurance level",
       "type": "string",

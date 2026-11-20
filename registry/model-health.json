@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 6472,
-    "mutations_rejected": 6472,
+    "mutations_attempted": 6607,
+    "mutations_rejected": 6607,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -268,8 +268,8 @@
         "rejected": 36
       },
       "VexStatement": {
-        "attempted": 60,
-        "rejected": 60
+        "attempted": 96,
+        "rejected": 96
       },
       "VirtualNetwork": {
         "attempted": 57,
@@ -288,8 +288,8 @@
         "rejected": 24
       },
       "Vulnerability": {
-        "attempted": 67,
-        "rejected": 67
+        "attempted": 166,
+        "rejected": 166
       },
       "WirelessAccessPoint": {
         "attempted": 54,
@@ -434,7 +434,7 @@
     "missing": []
   },
   "relationships": {
-    "with_relationships": 57,
+    "with_relationships": 56,
     "total": 71,
     "missing": [
       "Automation",
@@ -446,6 +446,7 @@
       "Grouping.Tenant",
       "Identity",
       "SoftwareImage",
+      "SoftwarePackage",
       "SovereigntyZone",
       "Template",
       "Template.Application",

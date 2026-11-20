@@ -17,12 +17,12 @@
           "start": "Vulnerability",
           "steps": [
             {
-              "step": "packages",
+              "step": "statements",
               "from": "Vulnerability",
-              "to": ["SoftwarePackage"],
+              "to": ["VexStatement"],
               "via": "relationship",
-              "declared_on": "SoftwarePackage",
-              "relation": "affected_by",
+              "declared_on": "VexStatement",
+              "relation": "about",
               "edge_type": "references",
               "read": "reverse",
               "target_key_scheme": "vulnerability_id",
@@ -108,8 +108,8 @@
         },
         "via": {
           "type": "string",
-          "enum": ["relationship", "field_reference", "join"],
-          "description": "`relationship`: one relationship a class declares by name. `field_reference`: a reference a class holds in a field. `join`: two records that state the same value, matched when read and never stored."
+          "enum": ["relationship", "field_reference", "join", "identifier_join"],
+          "description": "`relationship`: one relationship a class declares by name. `field_reference`: a reference a class holds in a field. `join`: two records that state the same value, matched when read and never stored. `identifier_join`: a product a source names by an identifier that the record reached states, matched when read and never stored (row 179)."
         },
         "declared_on": {"$ref": "#/$defs/class_name", "description": "The class whose records hold the edge or the field."},
         "relation": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "The relationship's declared name on `declared_on`."},
@@ -138,6 +138,22 @@
           },
           "description": "The pairs a join compares where one value does not name the thing. Two records match when every pair is stated on both and equal. Given in place of `from_field` and `to_field`."
         },
+        "criteria": {"$ref": "#/$defs/record_path", "description": "identifier_join: the products the record in hand names, each an applicability criterion with a `basis` and a `criterion` (`fields.applicability[].affects[]`)."},
+        "identifiers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["basis", "to_field"],
+            "additionalProperties": false,
+            "properties": {
+              "basis": {"type": "string", "enum": ["purl", "cpe"], "description": "The criterion basis this identifier is compared under."},
+              "to_field": {"$ref": "#/$defs/record_path", "description": "The identifier as the record reached states it."}
+            }
+          },
+          "description": "identifier_join: the identifiers compared, one per basis. `purl`: type, namespace and name are equal; version, qualifiers and subpath are not compared. `cpe`: part, vendor and product are equal. A product named by name alone is never joined. No version is compared: the range rides with the answer, and a policy reads it."
+        },
         "read_state": {
           "type": "string",
           "enum": ["observed"],
@@ -154,7 +170,8 @@
           "if": {"properties": {"via": {"const": "relationship"}}},
           "then": {
             "required": ["declared_on", "relation", "edge_type", "read"],
-            "properties": {"field": false, "from_field": false, "to_field": false, "match": false, "read_state": false}
+            "properties": {"field": false, "from_field": false, "to_field": false, "match": false, "read_state": false,
+                           "criteria": false, "identifiers": false}
           }
         },
         {
@@ -164,7 +181,8 @@
             "properties": {
               "read": {"const": "reverse"},
               "relation": false, "edge_type": false, "target_key_scheme": false,
-              "from_field": false, "to_field": false, "match": false, "read_state": false
+              "from_field": false, "to_field": false, "match": false, "read_state": false,
+              "criteria": false, "identifiers": false
             }
           }
         },
@@ -178,7 +196,17 @@
             ],
             "properties": {
               "declared_on": false, "relation": false, "edge_type": false, "read": false,
-              "target_key_scheme": false, "field": false
+              "target_key_scheme": false, "field": false, "criteria": false, "identifiers": false
+            }
+          }
+        },
+        {
+          "if": {"properties": {"via": {"const": "identifier_join"}}},
+          "then": {
+            "required": ["criteria", "identifiers", "read_state"],
+            "properties": {
+              "declared_on": false, "relation": false, "edge_type": false, "read": false,
+              "target_key_scheme": false, "field": false, "from_field": false, "to_field": false, "match": false
             }
           }
         }

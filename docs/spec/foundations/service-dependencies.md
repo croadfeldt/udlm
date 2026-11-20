@@ -322,6 +322,7 @@ about what the ordering walks follow. A step is one of three kinds:
 | `relationship` | One relationship a class declares by name, read forward or in reverse | As an edge on the record that declares it |
 | `field_reference` | A reference a class holds in a field, read in reverse | In the field |
 | `join` | Two records that state the same value, or the same several values where one does not name the thing | Nowhere: the match is made when the answer is read (DRV-001) |
+| `identifier_join` | A product a source names, by purl or CPE, and a record that states the same identifier. A name alone is never joined, and no version is compared (row 179) | Nowhere: the match is made when the answer is read (DRV-001) |
 
 An edge an observer wrote names no relation: it carries its edge type and the natural key of its
 target (RHY-007). A step is therefore recognized by three facts: the class of the record that holds
@@ -335,7 +336,9 @@ advisory names. This table restates the registry:
 
 | Step | From | To | How it is read | The record reached is |
 |---|---|---|---|---|
-| `packages` | `Vulnerability` | `SoftwarePackage` | `affected_by`, in reverse | evidence |
+| `named_packages` | `Vulnerability` | `SoftwarePackage` | a product the advisory's `applicability` names by purl (type, namespace, name) or CPE (part, vendor, product) is the one the package states; no version is compared | evidence |
+| `statements` | `Vulnerability` | `VexStatement` | `about`, in reverse | evidence |
+| `packages` | `VexStatement` | `SoftwarePackage` | `concerns` | evidence |
 | `documents` | `SoftwarePackage` | `SoftwareBillOfMaterials` | `contains`, in reverse | evidence |
 | `images` | `SoftwareBillOfMaterials` | `SoftwareImage` | `describes` | evidence |
 | `firmware_releases` | `SoftwareBillOfMaterials` | `FirmwareRelease` | `describes` | evidence |
@@ -361,9 +364,12 @@ Three things are outside the walk on purpose, and an answer keeps each of them a
   radius of ADR-010 (everything that depends on it, plus the members of any fault domain it
   anchors), taken over the affected set. A database on a host that needs a kernel update is in the
   reach and is not in the affected set.
-- **Narrowing.** Whether a carried vulnerability can be exploited is a `VexStatement`
-  (knowledge-family.md §4.10). A confirmed statement removes or confirms an entry, and the answer
-  shows the statement behind every removal.
+- **Deciding.** The walk reaches every package a source names, whatever its version, and every
+  package a party has made a statement about, whatever the statement says. Whether a version is in
+  a source's range is the policy fact `vulnerability.version_in_range` (`inside`, `outside` or
+  `not_comparable`), computed when the answer is read. What that and each statement mean for a
+  running thing is a policy's answer (knowledge-family.md §4.10, row 179). An answer names the source or statement behind every
+  entry it removes or keeps.
 - **What could not be judged.** Every record of a class the walk reaches as affected is a subject. A
   subject no current bill of materials reaches, directly or through an image or a firmware release it
   runs, is neither affected nor clear. The answer lists it by name with the reason: no bill of

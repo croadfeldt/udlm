@@ -66,7 +66,7 @@ parts:
     why: no use case exercises it yet
   - part: class:VexStatement
     stability: experimental
-    why: no use case exercises it yet
+    why: candidate — stable once the estate records and validates it in its new shape (row 179)
   - part: class:Vulnerability
     stability: experimental
     why: proof of concept (#197)
