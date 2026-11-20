@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/1.0/class/SoftwarePackage/0.5.0
+$id: https://udlm.dev/registry/udlm/1.0/class/SoftwarePackage/0.6.0
 conforms_to: udlm/1.0
 uuid: df4b2ff1-c6d4-4075-a355-ee85db5bc366
 record_type: class
 class: base
 resource_type: SoftwarePackage
-version: 0.5.0
+version: 0.6.0
 family: Knowledge
 status: active
 metadata:
@@ -12,7 +12,8 @@ metadata:
   description: 'A software component as a fact: a library, an application, an operating system or a firmware build.
     One record per purl, shared by every SoftwareBillOfMaterials that lists it. A Knowledge class: discovered by
     a scanner sweep, never provider-realized. Package URL, CPE and SPDX/CycloneDX component identity are adopted
-    by reference; the purl is the portable correlation id. Listed by SoftwareBillOfMaterials; references Vulnerability.'
+    by reference; the purl is the portable correlation id. Listed by SoftwareBillOfMaterials. A VexStatement links
+    it to a vulnerability (row 179).'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-22T00:00:00Z'
 entity_type: SoftwarePackage
@@ -82,14 +83,6 @@ spec_examples:
   - purl: pkg:generic/example-networks/edge-switch-firmware@7.1.26
     cpe: cpe:2.3:o:example_networks:edge_switch_firmware:7.1.26:*:*:*:*:*:*:*
     component_type: firmware
-relationships:
-  - edge_type: references
-    target: Vulnerability
-    name: affected_by
-    cardinality: 0..n
-    description: affected_by — this package version is affected by the vulnerability (OSV / VEX). A declarative
-      typed reference; the match is Policy. Non-ordering, but walked by blast-radius/impact in reverse (the CVE
-      -> resource path).
 adopts:
   - standard: purl
     version: 1.x
@@ -135,10 +128,11 @@ context:
     host and device that carries it. Discovered by scanners; never built or provisioned.'
   use_when:
     - You need where-do-we-run-version-X-of-library-Y answerable as a graph walk.
-    - You need packages linked to the advisories affecting them.
+    - You need packages linked to the advisories that name them, through the statements that say so.
   not_for:
     - The image or host carrying the package — its SoftwareBillOfMaterials lists packages.
-    - The advisory itself — Vulnerability; a package is affected_by it.
+    - The advisory itself — Vulnerability.
+    - Which advisories concern it, and on whose word — VexStatement, one per source.
   works_with:
     - SoftwareBillOfMaterials — the documents that list this package, each about one image, host or device.
-    - Vulnerability — the advisories affecting this package version.
+    - VexStatement — each source's statement that a vulnerability concerns this package version.

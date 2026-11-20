@@ -228,10 +228,14 @@ reference edges → a named walk (service-dependencies.md §6.5).
 - **`SoftwarePackage`** — a software component: a library, an application, an operating system or a
   firmware build (correlation id: **purl**). *Adopts:* Package-URL, CPE, and the SPDX/CycloneDX
   component. One record per purl, shared by every document that lists it. Firmware and appliances
-  use the `generic` purl type and carry a `cpe`. `affected_by` (→ Vulnerability).
+  use the `generic` purl type and carry a `cpe`. It names no vulnerability. An advisory's
+  `applicability` names it by purl or CPE, and a party's statement about it is a VexStatement (§4.10).
 
 - **`Vulnerability`** — a CVE / GHSA / OSV advisory (correlation id: **id**). *Adopts:* OSV and CVSS.
-  Terminal in the chain; the affected walk starts here and reads the edges in reverse.
+  Terminal in the chain; the affected walk starts here. `applicability` keeps what each source says
+  the advisory applies to, in the source's own words: one entry per source and configuration, each
+  naming products by purl, CPE or name, with version ranges as VERS. Where NVD names firmware on
+  given hardware, the hardware is kept in `runs_on` (row 179).
 
 - **Lifecycle:** curated upstream (NVD, OSV, the supplier), **`Discovered`** locally. A scanner is a
   discovery avenue and never a provider that realizes anything. A discovered record names its edge
@@ -255,7 +259,8 @@ reference edges → a named walk (service-dependencies.md §6.5).
   §6.5, DEP-019):
 
   ```
-  Vulnerability ← affected_by ← SoftwarePackage ← contains ← SoftwareBillOfMaterials
+  Vulnerability ⇒ same purl or CPE (derived) ⇒ SoftwarePackage ← contains ← SoftwareBillOfMaterials
+  Vulnerability ← about ← VexStatement → concerns → SoftwarePackage
       → describes → SoftwareImage ⇐ same digest ⇐ Container, Machine   (derived, not stored)
       → describes → FirmwareRelease ⇐ same maker, model and version ⇐ NetworkSwitch, NetworkGateway,
                                                  WirelessAccessPoint, Printer   (derived, not stored)
@@ -310,16 +315,32 @@ suite already emits (CTRF or JUnit). A suite that checks a vulnerability binds a
 - **Relationships:** `references` → Job (`produced_by` — the run that executed the test).
 
 ### 4.10 VexStatement
-One exploitability claim about one vulnerability in one package version, with the evidence it rests
-on. It carries the OpenVEX status (affected, not affected, fixed, under investigation), the
-justification label when the status is not affected, and references to the tests that back it. A harness or a scanner
-drafts it (the intent record); product security confirms it (the realized record). Class:
+One party's statement about one vulnerability in one package version, in its own words (row 179).
+A supplier's VEX, an SBOM store's finding and a test harness's result are each one. The party's
+statement is drafted (the intent record); product security confirms it (the realized record). Class:
 `registry/classes/knowledge/vex-statement/_base.yaml`.
 
-- **Fields:** vulnerability_ref, software_package_ref, status, justification, status_notes,
-  evidence_refs, document_url.
+- **How a package and a vulnerability are linked.** There is no stored edge. Where the estate
+  makes the link, it is derived: the advisory's `applicability` names a product by purl or CPE, and
+  the package states the same one. Where another party made the link, it is a statement naming
+  that party. A product named by name alone is never joined by the walk. A matcher that links
+  one by name says so in a statement, with itself as the party.
 
-- **Relationships:** `references` → Vulnerability (`about`), → SoftwarePackage, → TestEvidence.
+- **It records what was said and decides nothing.** `source` holds who said it and the format
+  (the CVE record, NVD, CSAF, OSV, OpenVEX, CycloneDX or SPDX). `source_status` and
+  `source_justification` keep the party's own words. `status` carries one of the four shared VEX
+  statuses where the party's status is one of them. Whether a version falls in a source's range,
+  and whether a running thing is exposed, is a policy's answer over these facts
+  (policy-contract.md). Two estates can read the same facts under different rules.
+
+- **One statement per party.** Two parties saying different things about one pair make two
+  statements, and both are kept.
+
+- **Fields:** vulnerability_ref, software_package_ref, source, source_status, source_justification,
+  status, justification, status_notes, evidence_refs.
+
+- **Relationships:** `references` → Vulnerability (`about`), → SoftwarePackage (`concerns`),
+  → TestEvidence (`rests_on`).
 
 - **States:** `proposed` (drafted) → `canonical` (confirmed); `deprecated` when superseded.
 

@@ -1,19 +1,19 @@
-$id: https://udlm.dev/registry/udlm/1.0/class/VexStatement/0.1.3
+$id: https://udlm.dev/registry/udlm/1.0/class/VexStatement/0.2.0
 conforms_to: udlm/1.0
 uuid: 7d1f4e9a-2c5b-4a8e-b3d6-0f9e8c7b6a51
 record_type: class
 class: base
 resource_type: VexStatement
-version: 0.1.3
+version: 0.2.0
 family: Knowledge
 status: active
 metadata:
   display_name: VEX Statement
-  description: 'One exploitability claim about one vulnerability in one package version: the status, its justification
-    and the TestEvidence it rests on, all by reference. A Knowledge class: drafted by an analysis (a harness, a
-    scanner, a person) and curated by product security; the intent record is the draft, the realized record the
-    confirmed statement. VEX lives here and never on the Vulnerability, because one vulnerability affects many packages.
-    OpenVEX is adopted by reference: the interchange shape and the status codelist.'
+  description: 'One party''s statement about one vulnerability in one package version: who said it and the status
+    they give, in their own words (row 179). A supplier''s VEX, a test harness and an SBOM store''s finding are each
+    one. It records what was said and decides nothing; whether something is exposed is a policy''s answer. A
+    Knowledge class: the party''s statement is drafted, product security confirms it. It lives apart from the
+    Vulnerability, because one vulnerability concerns many packages.'
   maintainer: udlm-registry
   origination_timestamp: '2026-09-13T00:00:00Z'
 entity_type: VexStatement
@@ -34,11 +34,68 @@ elements:
     schema:
       $ref: ../../../common-elements.schema.json#/$defs/Reference
       description: The SoftwarePackage (one record per purl) this statement is about.
-  - element: status
+  - element: source
     scope: VexStatement
     optional: false
     state: proposed
-    description: 'The OpenVEX status, adopted by reference: not_affected, affected, fixed, under_investigation.'
+    description: Who states this, in which format, and where it can be read again. Two parties that say different
+      things about the same pair make two statements, and both are kept.
+    schema:
+      $ref: ../../../common-elements.schema.json#/$defs/vulnerability_source
+      description: Who states this, in which format, and where it can be read again. Two parties that say different
+        things about the same pair make two statements, and both are kept.
+  - element: source_status
+    scope: VexStatement
+    optional: true
+    state: proposed
+    description: 'The status the party gives this package version, in its own vocabulary, verbatim: a CSAF product
+      status such as `known_not_affected`, a CycloneDX analysis state such as `in_triage`, an SPDX relationship type
+      such as `doesNotAffect`, an OpenVEX status. Each standard''s codelist is accepted as it is spelled.'
+    schema:
+      description: 'The status the party gives this package version, in its own vocabulary, verbatim: a CSAF product
+        status such as `known_not_affected`, a CycloneDX analysis state such as `in_triage`, an SPDX relationship
+        type such as `doesNotAffect`, an OpenVEX status.'
+      anyOf:
+        - type: string
+          x-standard: 'OpenVEX: statement status'
+          enum: [not_affected, affected, fixed, under_investigation]
+        - $ref: ../../../common-elements.schema.json#/$defs/csaf_product_status
+        - type: string
+          x-standard: 'CycloneDX: vulnerabilities[].analysis.state'
+          enum: [resolved, resolved_with_pedigree, exploitable, in_triage, false_positive, not_affected]
+        - type: string
+          x-standard: 'SPDX: 3.0 security relationship type'
+          enum: [affects, doesNotAffect, fixedIn, underInvestigationFor]
+  - element: source_justification
+    scope: VexStatement
+    optional: true
+    state: proposed
+    description: The party's reason for a not-affected status, in its own vocabulary, verbatim (an OpenVEX or CSAF
+      label, a CycloneDX justification such as `code_not_reachable`).
+    schema:
+      description: The party's reason for a not-affected status, in its own vocabulary, verbatim (an OpenVEX or
+        CSAF label, a CycloneDX justification such as `code_not_reachable`).
+      anyOf:
+        - type: string
+          x-standard: 'OpenVEX: statement justification'
+          enum: [component_not_present, vulnerable_code_not_present, vulnerable_code_not_in_execute_path,
+                 vulnerable_code_cannot_be_controlled_by_adversary, inline_mitigations_already_exist]
+        - type: string
+          x-standard: 'CycloneDX: vulnerabilities[].analysis.justification'
+          enum: [code_not_present, code_not_reachable, requires_configuration, requires_dependency,
+                 requires_environment, protected_by_compiler, protected_at_runtime, protected_at_perimeter,
+                 protected_by_mitigating_control]
+        - type: string
+          x-standard: 'SPDX: 3.0 VexJustificationType'
+          enum: [componentNotPresent, vulnerableCodeNotPresent, vulnerableCodeNotInExecutePath,
+                 vulnerableCodeCannotBeControlledByAdversary, inlineMitigationsAlreadyExist]
+  - element: status
+    scope: VexStatement
+    optional: true
+    state: proposed
+    description: 'The status in the OpenVEX vocabulary, the one every VEX format shares: not_affected, affected,
+      fixed, under_investigation. Set where the party''s own status is one of the four in other words (CSAF
+      `known_not_affected` is `not_affected`). Absent where its status is not one of them.'
     schema:
       type: string
       enum:
@@ -46,12 +103,15 @@ elements:
         - affected
         - fixed
         - under_investigation
-      description: 'The OpenVEX status, adopted by reference: not_affected, affected, fixed, under_investigation.'
+      description: 'The status in the OpenVEX vocabulary, the one every VEX format shares: not_affected, affected,
+        fixed, under_investigation. Set where the party''s own status is one of the four in other words (CSAF
+        `known_not_affected` is `not_affected`). Absent where its status is not one of them.'
   - element: justification
     scope: VexStatement
     optional: true
     state: proposed
-    description: The OpenVEX justification label for a `not_affected` status.
+    description: The OpenVEX justification label for a `not_affected` status, where the party uses that vocabulary
+      (OpenVEX, CSAF).
     schema:
       type: string
       enum:
@@ -60,15 +120,16 @@ elements:
         - vulnerable_code_not_in_execute_path
         - vulnerable_code_cannot_be_controlled_by_adversary
         - inline_mitigations_already_exist
-      description: The OpenVEX justification label for a `not_affected` status.
+      description: The OpenVEX justification label for a `not_affected` status, where the party uses that
+        vocabulary (OpenVEX, CSAF).
   - element: status_notes
     scope: VexStatement
     optional: true
     state: proposed
-    description: The basis for the status in plain words, for the reviewer.
+    description: The basis for the statement in plain words, for the reviewer.
     schema:
       type: string
-      description: The basis for the status in plain words, for the reviewer.
+      description: The basis for the statement in plain words, for the reviewer.
   - element: evidence_refs
     scope: VexStatement
     optional: true
@@ -81,53 +142,89 @@ elements:
         $ref: ../../../common-elements.schema.json#/$defs/Reference
       description: The TestEvidence records the status rests on. A `fixed` or `affected` status with none is a claim,
         and says so by being empty here.
-  - element: document_url
-    scope: VexStatement
-    optional: true
-    state: proposed
-    description: Where the OpenVEX document carrying this statement is published.
-    schema:
-      type: string
-      description: Where the OpenVEX document carrying this statement is published.
 spec_examples:
   - vulnerability_ref: estate/cexample/knowledge/vulnerability/cve-2024-33664
     software_package_ref: estate/cexample/knowledge/software-package/python-jose-3-4-0
+    source:
+      format: openvex
+      issuer: cexample product security test harness
+      document: https://vex.example.com/python-jose-cve-2024-33664.json
+    source_status: fixed
     status: fixed
     status_notes: Two fix-pinning tests fail on 3.3.0 and pass on 3.4.0.
     evidence_refs:
       - estate/cexample/knowledge/test-evidence/python-jose-cve-2024-33664-fix-pinning
+  - vulnerability_ref: estate/cexample/knowledge/vulnerability/cve-2026-00003
+    software_package_ref: estate/cexample/knowledge/software-package/example-lib-2-3-0
+    source:
+      format: osv
+      issuer: cexample SBOM store, from the GitHub Advisory Database
+      document: GHSA-xxxx-xxxx-xxxx
+    source_status: affected
+    status: affected
+    status_notes: The SBOM store matched the package by purl and reports it affected. No test here backs it.
 relationships:
   - edge_type: references
     target: Vulnerability
+    name: about
     cardinality: 1..1
-    description: about — the vulnerability the status concerns.
+    description: about — the vulnerability the statement concerns. Read in reverse by the affected walk.
   - edge_type: references
     target: SoftwarePackage
+    name: concerns
     cardinality: 1..1
-    description: about — the package version the status concerns.
+    description: concerns — the package version the statement concerns.
   - edge_type: references
     target: TestEvidence
+    name: rests_on
     cardinality: 0..n
     description: rests_on — the tests that back the status.
 adopts:
   - standard: OpenVEX
     version: 0.2.0
     standard_name: OpenVEX statement and status codelist
-    role: the interchange document shape and the status vocabulary, carried by reference; the document is pointed
+    role: the shared status vocabulary and the justification codelist, carried by reference; a document is pointed
       at, not restated
     source: https://github.com/openvex/spec
     license: Apache-2.0
     license_compatibility: compatible_reference
     disposition: tier1_value
+  - standard: CSAF
+    version: '2.0'
+    standard_name: Common Security Advisory Framework, product_status and flags
+    role: a source format; the product status categories and flags a party states are copied verbatim
+    source: https://docs.oasis-open.org/csaf/csaf/v2.0/csaf-v2.0.html
+    license: OASIS IPR policy (specification free to implement)
+    license_compatibility: compatible_reference
+    disposition: tier1_value
+  - standard: CycloneDX
+    version: '1.5'
+    standard_name: vulnerabilities[].analysis (state, justification)
+    role: a source format; the analysis state and justification a party states are copied verbatim
+    source: https://cyclonedx.org/
+    license: Apache-2.0
+    license_compatibility: compatible_reference
+    disposition: tier1_value
+  - standard: SPDX
+    version: '3.0'
+    standard_name: security profile, VEX relationship types and justification types
+    role: a source format; the relationship type and justification type a party states are copied verbatim
+    source: https://spdx.dev/
+    license: Community-Spec-1.0
+    license_compatibility: reference_only
+    disposition: tier1_value
 context:
-  purpose: Records one exploitability claim about one vulnerability in one package version, with the evidence it
-    rests on, as a fact Product Security can confirm.
-  plain_description: One statement per (vulnerability, package version). It carries the OpenVEX status (affected,
-    not affected, fixed, under investigation), the standard's justification label when the status is not affected,
-    the basis in plain words, and references to the tests that back it. A harness or a scanner drafts it (the intent
-    record); Product Security confirms it (the realized record). It lives apart from the Vulnerability record because
-    one vulnerability affects many packages.
+  purpose: Records one party's statement about one vulnerability in one package version, in its own words, so a
+    policy can decide what it means.
+  plain_description: One statement per (vulnerability, package version, party). It names the party and the format,
+    keeps the party's own status word for word, and carries one of the four shared VEX statuses where the party's
+    status is one of them. It covers links someone else concluded, such as a supplier's VEX or an SBOM store's
+    finding. A link the estate concludes itself is not stored. It is read from the Vulnerability's `applicability`
+    and the package's purl or CPE. Product Security confirms a statement (the realized record).
   use_when:
-    - An analysis has produced a draft exploitability claim that needs a reviewer before anyone relies on it.
+    - A supplier, a scanner, an SBOM store or a test harness says something about a vulnerability in a package,
+      and the claim needs keeping with who made it.
     - A consumer or regulator asks what was verified about a known vulnerability in a shipped package.
-    - An SBOM consumer needs the VEX status for a component and the evidence behind it.
+  not_for:
+    - Deciding whether something is exposed. That is a policy over these facts (policy-contract.md).
+    - What an advisory says it applies to. That is the Vulnerability's `applicability`, one entry per source.

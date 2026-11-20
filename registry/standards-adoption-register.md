@@ -196,6 +196,10 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `OSV Schema` `OSV` · **Body:** OpenSSF · **Since:** registered 2026-07-25 (Vulnerability `adopts[]`). · **Where:** Vulnerability — the interchange record shape.
 **Why:** the open vulnerability interchange record the ecosystem converged on. Apache-2.0, compatible_reference.
 
+### Vulnerability sources — OpenVEX, CVE Record Format, NVD CVE API, CSAF, VERS — CANONICAL
+**Covers:** `OpenVEX` `CVE Record Format` `NVD CVE API` `CSAF` `VERS` · **Body:** OpenSSF (OpenVEX), the CVE Program (CVE JSON 5), NIST (NVD), OASIS (CSAF 2.0), the Package-URL project (VERS) · **Since:** 2026-11-20 (row 179; Vulnerability and VexStatement `adopts[]`). OpenVEX came with VexStatement 0.1.0 and is registered here. · **Where:** Vulnerability `applicability`, which copies what the CVE record, NVD, CSAF and OSV say an advisory applies to. VexStatement, whose shared statuses and justification labels are OpenVEX's. VERS is the one form every source's version bounds are written in.
+**Why:** sources say different things about what an advisory applies to, each in its own format. UDLM keeps each source's words, so a policy decides what they mean and no vocabulary is lost in translation. VERS is the range form CSAF 2.0 recommends, and every bound NVD, the CVE record and OSV state has a VERS spelling. *Alternatives:* translating each source into one status at intake (rejected: the translation is a decision, and it belongs to policy); OSV ranges as the common form (rejected: OSV has no start-excluding bound, which NVD uses). **License:** OpenVEX, VERS — compatible_reference (Apache-2.0, MIT); NVD — public domain; CSAF — OASIS, compatible_reference; CVE record — CVE Terms of Use, reference_only.
+
 ### CVSS — CANONICAL
 **Covers:** `CVSS` · **Body:** FIRST · **Since:** registered 2026-07-25 (Vulnerability `adopts[]`). · **Where:** Vulnerability — severity vector/score, by reference.
 **Why:** the severity vocabulary; carried as vector+score fields, never restated. FIRST terms (use with attribution) — reference_only.

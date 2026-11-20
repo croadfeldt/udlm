@@ -1012,7 +1012,7 @@ One image, identified by its content digest (one observed `tag` is recorded, sin
 
 ## SoftwarePackage
 
-### SoftwarePackage (0.5.0)
+### SoftwarePackage (0.6.0)
 
 **Purpose:** Records a software component as one shared fact per package URL, so every bill of materials that lists it points at the same record.
 
@@ -1020,15 +1020,16 @@ One component at one version — a library, an application, an operating system 
 
 **Use when:**
 - You need where-do-we-run-version-X-of-library-Y answerable as a graph walk.
-- You need packages linked to the advisories affecting them.
+- You need packages linked to the advisories that name them, through the statements that say so.
 
 **Not for:**
 - The image or host carrying the package — its SoftwareBillOfMaterials lists packages.
-- The advisory itself — Vulnerability; a package is affected_by it.
+- The advisory itself — Vulnerability.
+- Which advisories concern it, and on whose word — VexStatement, one per source.
 
 **Works with:**
 - SoftwareBillOfMaterials — the documents that list this package, each about one image, host or device.
-- Vulnerability — the advisories affecting this package version.
+- VexStatement — each source's statement that a vulnerability concerns this package version.
 
 ## SovereigntyZone
 
@@ -1322,16 +1323,19 @@ The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `v
 
 ## VexStatement
 
-### VexStatement (0.1.3)
+### VexStatement (0.2.0)
 
-**Purpose:** Records one exploitability claim about one vulnerability in one package version, with the evidence it rests on, as a fact Product Security can confirm.
+**Purpose:** Records one party's statement about one vulnerability in one package version, in its own words, so a policy can decide what it means.
 
-One statement per (vulnerability, package version). It carries the OpenVEX status (affected, not affected, fixed, under investigation), the standard's justification label when the status is not affected, the basis in plain words, and references to the tests that back it. A harness or a scanner drafts it (the intent record); Product Security confirms it (the realized record). It lives apart from the Vulnerability record because one vulnerability affects many packages.
+One statement per (vulnerability, package version, party). It names the party and the format, keeps the party's own status word for word, and carries one of the four shared VEX statuses where the party's status is one of them. It covers links someone else concluded, such as a supplier's VEX or an SBOM store's finding. A link the estate concludes itself is not stored. It is read from the Vulnerability's `applicability` and the package's purl or CPE. Product Security confirms a statement (the realized record).
 
 **Use when:**
-- An analysis has produced a draft exploitability claim that needs a reviewer before anyone relies on it.
+- A supplier, a scanner, an SBOM store or a test harness says something about a vulnerability in a package, and the claim needs keeping with who made it.
 - A consumer or regulator asks what was verified about a known vulnerability in a shipped package.
-- An SBOM consumer needs the VEX status for a component and the evidence behind it.
+
+**Not for:**
+- Deciding whether something is exposed. That is a policy over these facts (policy-contract.md).
+- What an advisory says it applies to. That is the Vulnerability's `applicability`, one entry per source.
 
 ## VirtualNetwork
 
@@ -1424,22 +1428,23 @@ A snapshot of one volume, taken at one moment. It names the volume it copies (`s
 
 ## Vulnerability
 
-### Vulnerability (0.3.3)
+### Vulnerability (0.4.0)
 
 **Purpose:** Records a known vulnerability — CVE, GHSA, or OSV advisory — once, as the shared fact every affected package points at.
 
-One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the working set — `severity`, CVSS score and vector (`cvss`), the weakness class as `cwe`, `affected_ranges` — and points at the full advisory through `references` (URLs) rather than restating it. It is the terminal node of the software-knowledge chain: packages reference it, and impact analysis reverse-walks from here — advisory → packages → images → running containers.
+One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the working set — `severity`, CVSS score and vector (`cvss`), the weakness class as `cwe`, and `applicability`: what each source (the CVE record, NVD, a vendor's CSAF, OSV) says it applies to, word for word — and points at the full advisory through `references` (URLs) rather than restating it. It is the terminal node of the software-knowledge chain: impact analysis walks from here — advisory → the packages its applicability names, and the statements about it → images → running containers.
 
 **Use when:**
 - You need what-in-the-estate-is-exposed-to-this-advisory as a reverse graph walk.
 - You need scanner findings deduplicated onto one record per advisory id, with severity and scoring at hand.
 
 **Not for:**
-- The affected package — SoftwarePackage points here via affected_by.
+- The link to a package. A package is linked when read, by its purl or CPE against `applicability`; a link another party concluded is a VexStatement naming that party.
 - Whether a particular deployment is exploitable — that applicability assessment (the VEX role) is analysis on top, not this record.
 
 **Works with:**
-- SoftwarePackage — the packages affected by this advisory.
+- SoftwarePackage — the packages whose purl or CPE `applicability` names.
+- VexStatement — a party's statement about this advisory and one package version.
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ## WirelessAccessPoint
