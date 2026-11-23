@@ -108,6 +108,7 @@ Every request flows through these stages in order:
 | Operation | When | Full pipeline? | Placement? |
 |-----------|------|---------------|------------|
 | `initial_provisioning` | New resource | Yes | Yes |
+| `adoption` | Discovered resource gains an intent (ADR-030) | Yes, run dry until approved | Yes, as a projection until approved |
 | `update` | Modify existing | Partial — changed fields only | Only if placement-affecting fields changed |
 | `scale` | Capacity change | Partial | Only if zone/provider-affecting |
 | `rehydration` | Rebuild from state | Yes — all current policies | Yes |
@@ -392,6 +393,7 @@ dcm_architecture:
 
   lifecycle_operations:
     - initial_provisioning
+    - adoption
     - update
     - scale
     - rehydration
