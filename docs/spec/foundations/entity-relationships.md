@@ -54,7 +54,7 @@ dependencies:
 
   - target_handle: "vm/db-replica-b"     # equal HA partner
     edge_type: depends_on
-    strength: soft                       # orders but never blocks (DEP-006)
+    strength: soft                       # never orders, never blocks (service-dependencies §4)
     relation: cluster_peer
 
 # Resolved — the same edges at reserve, uuids filled in:
