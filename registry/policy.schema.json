@@ -178,6 +178,7 @@
           "items": {
             "enum": [
               "initial_provisioning",
+              "adoption",
               "update",
               "rehydration",
               "decommission",
