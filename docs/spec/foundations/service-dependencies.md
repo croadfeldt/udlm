@@ -286,8 +286,10 @@ for how each edge type is read; this table restates it (row 167):
 | `binds_to` | followed | followed | no | no |
 | `references` | no | no | no | **yes**: pointing at something is not needing it |
 
-A `soft` `depends_on` orders but never blocks (§4, DEP-006), so no walk follows it; an absent
-`strength` reads as `hard`. The **needs walk** is what a build, a rehydration (§9) or a start runs:
+A `soft` `depends_on` never orders and never blocks, so no walk follows it. Its target is still
+attempted when it is in the same request, and its failure is recorded without failing the
+dependent (§4, §8.1). If the order matters, the dependency is `hard`. An absent `strength` reads as
+`hard`. The **needs walk** is what a build, a rehydration (§9) or a start runs:
 the closure of what the root needs, ordered topologically, foundations first. A node's step is one
 more than the highest step of anything it needs; step 0 needs nothing else in the closure; one step
 can be realized in parallel (§8.1). The **dependents walk** is what a stop, power-off or decommission
