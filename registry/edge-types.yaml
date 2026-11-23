@@ -28,11 +28,11 @@
 #   walk.cascades    a teardown of B reaches A along this edge whether or not A declared more
 #   walk.terminates  the walk stops here: pointing at something is not needing it
 #
-# Strength is read the same way on every walk: a `soft` depends_on orders but never blocks (DEP-006),
-# so no walk follows it; an absent strength reads as hard. The order a walk yields is topological:
-# in a needs walk a node's step is one more than the highest step of what it needs, and step 0 needs
-# nothing else in the closure; a dependents walk is the reverse. A cycle is DEP-002: its members get
-# no step and are reported, never silently ordered.
+# Strength is read the same way on every walk: a `soft` depends_on never orders and never blocks, so
+# no walk follows it (service-dependencies §4, §8.1); an absent strength reads as hard. The order a
+# walk yields is topological: in a needs walk a node's step is one more than the highest step of
+# what it needs, and step 0 needs nothing else in the closure; a dependents walk is the reverse.
+# A cycle is DEP-002: its members get no step and are reported, never silently ordered.
 
 record_type: edge_type_registry
 version: 1.1.0
