@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 6607,
-    "mutations_rejected": 6607,
+    "mutations_attempted": 6609,
+    "mutations_rejected": 6609,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -276,12 +276,12 @@
         "rejected": 57
       },
       "Volume": {
-        "attempted": 65,
-        "rejected": 65
+        "attempted": 66,
+        "rejected": 66
       },
       "Volume.ZFS": {
-        "attempted": 77,
-        "rejected": 77
+        "attempted": 78,
+        "rejected": 78
       },
       "VolumeSnapshot": {
         "attempted": 24,
@@ -372,8 +372,8 @@
       "VLAN": 1,
       "VexStatement": 0,
       "VirtualNetwork": 1,
-      "Volume": 3,
-      "Volume.ZFS": 4,
+      "Volume": 4,
+      "Volume.ZFS": 5,
       "VolumeSnapshot": 2,
       "Vulnerability": 0,
       "WirelessAccessPoint": 2,
