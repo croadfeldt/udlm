@@ -2,7 +2,9 @@
 
 **What this settles.** The one base contract every policy implements — match conditions,
 enforcement level, domain precedence, artifact structure, lifecycle — the evaluation model,
-the eight typed output schemas, the override model, and the `POL-*` system policies.
+the eight typed output schemas, the override model, and the `POL-*` system policies. It also
+settles where a policy's values live: a **policy** holds logic, and a **policy configuration**
+holds the values one deployment gives it (§9).
 
 **In one breath.** Every policy is the same artifact with one varying part: its **output
 schema** — what it produces when its match conditions are satisfied. **Adding a new policy
@@ -97,18 +99,18 @@ a fact the model does not carry is refused rather than silently never firing.
 
 ### 2.3 Policy Lifecycle Scope
 
-Each policy declares which lifecycle operations it applies to. This is configured per policy via `lifecycle_scope`:
+Each policy configuration declares which lifecycle operations its policy applies to, in `lifecycle_scope`. The scope is a deployment's value, so it is on the configuration (§9):
 
 ```yaml
-# illustrative: policy shape; the policy schema is policy.schema.json
-policy_artifact:
+# illustrative: three configurations; the schema is policy-configuration.schema.json
+policy_configuration:
   handle: "placement/sovereignty-zone-check"
   lifecycle_scope:
     operations: [initial_provisioning, rehydration, provider_migration]
     # This policy fires on: new resources, rebuilds, and provider moves
     # Does NOT fire on: memory updates, scaling, decommissions
 
-policy_artifact:
+policy_configuration:
   handle: "validation/vm-size-limits"
   lifecycle_scope:
     operations: [initial_provisioning, update]
@@ -116,7 +118,7 @@ policy_artifact:
     # Fires on new resources AND on updates that change sizing fields
     # Does NOT fire on: tag changes, owner changes, etc.
 
-policy_artifact:
+policy_configuration:
   handle: "sovereignty/data-residency"
   lifecycle_scope:
     operations: all                         # fires on EVERY lifecycle operation
@@ -136,7 +138,7 @@ policy_artifact:
 | Lifecycle | `all` | TTL/expiry constraints always active |
 | ITSM Action | `[initial_provisioning, update, decommission]` | ITSM records on provisioning, changes, and teardown |
 
-These defaults can be overridden per policy. Profile-governed minimums prevent downgrading below security requirements:
+These defaults can be overridden per configuration. Profile-governed minimums prevent downgrading below security requirements:
 
 | Profile | Minimum lifecycle scope |
 |---------|------------------------|
@@ -238,7 +240,11 @@ enforcement: hard | soft
 #        A soft DENY cannot be relaxed to ALLOW by a downstream rule
 ```
 
-Most policies are soft. Hard enforcement is reserved for absolute security constraints.
+Most configurations are soft. Hard enforcement is reserved for absolute security constraints.
+
+Enforcement is a policy configuration's value, not the policy's (§9): the same logic can block in
+one deployment and advise in another. Where this contract says "a hard policy" or "a soft policy",
+it means a policy as one configuration enforces it.
 
 ---
 
@@ -255,6 +261,8 @@ system (most trusted — control-plane built-in)
 ```
 
 Within the same domain level, DENY wins over ALLOW. More-specific domain wins over less-specific.
+The domain is the configuration's (`domain`, §9): one policy can be configured at `platform` for
+everyone and again at `tenant` for one tenant.
 
 Two things are true at once, and the schema says both. The specific domain wins for a value: an
 `entity` policy's value beats a `tenant` policy's. A higher domain can lock a value by declaring
@@ -265,14 +273,18 @@ sovereignty mandate holds. The same two rules order layers (layering-and-version
 
 ## 5. Base Contract — Artifact Structure
 
-All policies are first-class control-plane Data artifacts. They carry the standard identity, version and status (layering-and-versioning §4b):
+A policy is two first-class control-plane Data artifacts, each with the standard identity, version
+and status (layering-and-versioning §4b). The **policy** holds the logic. The **policy
+configuration** holds the values one deployment gives that logic and names the policy it is for
+(§9). The split is by one question: would a second deployment keep this field unchanged? If yes it
+is the policy's; if no it is the configuration's.
 
 ```yaml
-# illustrative: shape of the record, not schema-checked
-policy_artifact:
+# illustrative: shape of the record, not schema-checked (policy.schema.json)
+policy:
   # Identity, version and status (every governed record carries these)
   uuid: <uuid>
-  handle: "<domain>/<concern>/<name>"
+  handle: "<concern>/<name>"
   version: "1.0.0"
   status: active | deprecated | retired
 
@@ -280,21 +292,38 @@ policy_artifact:
   policy_type: <type>                    # validation | transformation | recovery |
                                          # orchestration_flow | governance_matrix_rule |
                                          # placement | lifecycle | itsm_action | override
-                                         # (policy.schema.json)
   concern_type: <concern>                # security | compliance | operational |
                                          # recovery_posture | zero_trust_posture |
                                          # data_authorization_boundary | orchestration_flow
 
-  domain: system | platform | tenant | resource_type | entity
-
-  # Match conditions (see §2)
+  # Match conditions (see §2): the facts it reads, and the rule in the engine's language
   match: { ... }
 
-  # Enforcement
-  enforcement: hard | soft
+  # The parameters a configuration supplies (see §9)
+  parameter_schema: { ... }
 
   # Output schema (varies by policy_type — see §10–17)
   output: { ... }
+```
+
+```yaml
+# illustrative: shape of the record, not schema-checked (policy-configuration.schema.json)
+policy_configuration:
+  uuid: <uuid>
+  handle: "<domain>/<concern>/<name>"
+  version: "1.0.0"
+  status: proposed | active | deprecated | retired
+  tenant_uuid: <uuid>                    # the owning tenant
+
+  # The one policy these values are for, pinned to a version (see §9)
+  configures: "<policy handle>@1.0.0"
+  parameters: { ... }                    # satisfy the policy's parameter_schema
+
+  # Scope and strictness
+  domain: system | platform | tenant | resource_type | entity
+  lifecycle_scope: { ... }               # see §2.3
+  enforcement: hard | soft               # see §3
+  schedule: [ ... ]                      # when a change may run (ADR-053)
 
   # Audit
   audit_on: [ALLOW, DENY, STRIP_FIELD]   # which decisions produce audit records
@@ -310,8 +339,8 @@ policy_artifact:
 
 ## 6. Base Contract — Lifecycle
 
-All policies follow the four-status lifecycle. An unpublished policy has no status; it is a
-draft in someone's working tree, not a record.
+A policy configuration follows the four-status lifecycle. An unpublished configuration has no
+status; it is a draft in someone's working tree, not a record.
 
 | Status | Behavior |
 |--------|---------|
@@ -320,7 +349,12 @@ draft in someone's working tree, not a record.
 | `deprecated` | Still active; replacement available; warning on evaluation. |
 | `retired` | Terminal; cannot be used. |
 
-**Shadow mode (proposed status):** The policy evaluates against real traffic. Its output is captured in the Validation Store. Platform admins review shadow results before promoting to active. This is the primary mechanism for safe policy change management.
+A policy has three of the four: `active` (it may be configured), `deprecated` (it may still be
+configured, with a replacement named) and `retired` (no configuration may pin it). It has no
+`proposed`, because a trial runs with values, and the values are a configuration's. A new policy
+is tried by publishing it `active` and giving it a `proposed` configuration.
+
+**Shadow mode (proposed status):** The policy evaluates against real traffic with the configuration's values. Its output is captured in the Validation Store. Platform admins review shadow results before promoting to active. This is the primary mechanism for safe policy change management.
 
 ---
 
@@ -593,7 +627,7 @@ hint_type:
 
 ### 8.4 Validation at Policy Activation
 
-When a policy enters `proposed` (shadow mode), policy activation validates:
+When a configuration enters `proposed` (shadow mode), policy activation validates:
 
 1. Every `emits_constraints[].constraint_type` is a registered constraint type
 2. The emitted value structure matches the registered schema
@@ -605,84 +639,112 @@ If any check fails, the policy cannot be activated. Vocabulary mismatches are ca
 
 ---
 
-## 9. Policy Templates
+## 9. Policy and Policy Configuration
 
-Policy templates separate reusable policy logic from instance-specific configuration, following the OPA Gatekeeper ConstraintTemplate pattern as the reference model. A template declares its parameter schema, emitted constraint types, and consumed constraint types — the contract — and carries the logic in the implementation's policy language. Rego/OPA is shown throughout this section as the reference example, not a mandate: a delegated engine may express the same logic differently (§7.2a). A policy artifact is an instance of a template with bound parameters and match conditions.
+A policy holds logic. A policy configuration holds the values one deployment gives it. They are
+two records, so one policy serves any number of deployments unchanged, and a deployment changes
+what a policy does for it without touching the logic. The pattern is OPA Gatekeeper's
+ConstraintTemplate and Constraint, the reference model; Rego is shown throughout this section as
+the reference example, not a mandate (§7.2a).
 
-### 9.1 Template Definition
+Before this section the schema held both in one `policy` record, and a profile entry's `settings`
+was a third place a value could sit. Two deployments that wanted one rule with different values
+kept two copies of the rule.
+
+### 9.1 The policy: logic
 
 ```yaml
-# illustrative: a template definition; the reference engine is shown, not mandated (§9)
-policy_template:
-  handle: "udlm.sovereignty.zone-restriction"
-  version: "1.0.0"
-  tier: core
+# illustrative: registry/examples/example-policy.yaml is the checked record
+policy:
+  handle: "data-residency-gate"
+  version: "3.0.0"
+  policy_type: validation
 
-  # Parameters this template accepts (OpenAPI v3 schema)
+  match:
+    facts: [data_classification, sovereignty_zone]
+    rule:
+      engine: rego
+      body: |
+        package udlm.residency
+        deny if {
+          input.data_classification in input.parameters.classification_levels
+          not input.sovereignty_zone in input.parameters.allowed_zones
+        }
+
+  # The parameters a configuration supplies (JSON Schema, draft 2020-12)
   parameter_schema:
     type: object
     required: [classification_levels, allowed_zones]
     properties:
-      classification_levels:
-        type: array
-        items: { type: string }
-      allowed_zones:
-        type: array
-        items: { type: string }
+      classification_levels: { type: array, items: { type: string } }
+      allowed_zones: { type: array, items: { type: string } }
 
-  # Registered constraint types this template emits
-  emits: [zone_restriction, provider_restriction]
-
-  # Registered constraint types this template reads from context
-  consumes: []
-
-  # Rego logic
-  rego: |
-    package udlm.sovereignty.zone_restriction
-    import data.udlm.constraint_types
-
-    emit_constraint[constraint] {
-      input.request.data_classification == input.parameters.classification_levels[_]
-      constraint := constraint_types.zone_restriction({
-        "allowed": input.parameters.allowed_zones,
-        "excluded": [],
-      })
-    }
-
-    deny[msg] {
-      not input.request.placement.zone == input.parameters.allowed_zones[_]
-      msg := sprintf("Zone %v not in allowed zones %v for %v data",
-        [input.request.placement.zone,
-         input.parameters.allowed_zones,
-         input.request.data_classification])
-    }
+  output:
+    decision: deny
 ```
 
-### 9.2 Policy Artifact (Template Instance)
+`parameter_schema` is the policy's whole contract with a configuration. A value the rule needs
+from a deployment is declared there, and nowhere else. A policy that needs none omits it. UDLM
+validates a configuration against it and reads nothing else from it. How the rule addresses a
+parameter is the engine's: the engine hands the configuration's parameters to the rule beside the
+facts, and in the reference engine they arrive as `input.parameters`.
+
+A parameter is not a fact. A fact is data the model carries about the request or the estate
+(§2.1). A parameter is a choice the deployment made about the rule. `match.facts` lists the first
+and `parameter_schema` the second.
+
+### 9.2 The policy configuration: values
 
 ```yaml
-# illustrative: a policy artifact instantiated from the §9.1 template
-policy_artifact:
-  handle: "sovereignty/eu-data-residency"
-  template: "udlm.sovereignty.zone-restriction"
+# illustrative: registry/examples/example-policy-configuration.yaml is the checked record
+policy_configuration:
+  handle: "eu-data-residency-gate"
   version: "1.0.0"
-  domain: system
-  policy_type: validation
-  enforcement_class: compliance
+  tenant_uuid: <uuid>
 
+  configures: "data-residency-gate@3.0.0"
   parameters:
-    classification_levels: [restricted, phi, pci]
-    allowed_zones: [eu-west-1, eu-central-1]
+    classification_levels: [eu_personal]
+    allowed_zones: [eu-west, eu-central, eu-north]
 
-  match:
-    facts: [data_classification]
-
+  domain: tenant
   enforcement: hard
-  on_conflict:
-    default: deny
+  lifecycle_scope:
+    operations: [all]
 ```
 
-### 9.3 Constraint-type constructor libraries (implementation-provided)
+The configuration carries everything a second deployment would choose differently. That is the
+parameters, the owning tenant, the domain and lifecycle scope it applies at, the enforcement level
+and the schedule clauses. It is also the audit and notification settings, the regulatory citation
+and the review deadline. It has its own identity, version and status.
+
+### 9.3 The relationships
+
+Three relationships hold the two records and a profile together.
+
+| Relationship | Carried by | Rule |
+|---|---|---|
+| A configuration **configures** exactly one policy, at a pinned version | the configuration's `configures`, a pinned reference (identifier-scheme §9) | `POL-012` |
+| A configuration's parameters **satisfy** that policy's `parameter_schema` | the configuration's `parameters` | `POL-013` |
+| A profile **turns a configuration on or off** and holds no values for it | the profile's `contains[]` (`required`, `advisory`, `off`) | `POL-014` |
+
+**The pin.** A configuration names its policy with a version or a digest, never without. An
+unpinned reference follows the policy to its next version, so the logic a deployment runs would
+change when someone else published. With the pin, a new version of a policy reaches a deployment
+only when a new version of the configuration moves the pin, and that change is the deployment's
+own record to review.
+
+**What is evaluated.** The policy engine evaluates a configuration, never a bare policy: the
+pinned policy's rule, over the facts it declares, with this configuration's parameters, at this
+configuration's domain, scope and enforcement level. A policy with no active configuration decides
+nothing. A policy configured twice is evaluated twice, and each evaluation is audited as its own
+(`POL-002`).
+
+**The profile.** A profile lists configurations and says whether each is required, advisory or
+off in that posture. It holds no parameter and no enforcement level for one: an entry's `settings`
+is for artifacts that have no record of their own to hold a value.
+
+### 9.4 Constraint-type constructor libraries (implementation-provided)
 
 The contract is that every emitted constraint references a **registered constraint type** (§8) — freeform
 constraint objects are not permitted. *How* an implementation makes that ergonomic for policy authors — e.g.
@@ -691,21 +753,21 @@ names/types are caught at bundle-compile time rather than at runtime — is an i
 implementation ships such a library for its engine; that library and its packaging live in the control plane
 architecture docs, not in this contract.
 
-### 9.4 Template Registration Validation
+### 9.5 Registration validation
 
-When a template is registered:
+When a policy is registered:
 
-1. Rego compiles without errors
-2. Parameter schema is valid OpenAPI v3
-3. All emitted constraint types are registered in the Constraint Type Registry
-4. All consumed constraint types are registered
-5. Emitted constraints reference registered constraint types (§8), not freeform objects (however the implementation's engine enforces this)
+1. The rule compiles in the engine it names
+2. `parameter_schema`, when present, is a valid JSON Schema for an object
+3. Emitted constraints reference registered constraint types (§8), not freeform objects (however the implementation's engine enforces this)
 
-When a policy artifact is created from a template:
+When a policy configuration is registered:
 
-1. Parameters validate against the template's parameter schema
-2. Match conditions reference valid field paths
-3. Emitted/consumed constraint types match the template's declarations
+1. `configures` resolves to exactly one policy at the pinned version, and that policy is not retired (`POL-012`)
+2. `parameters` satisfy the policy's `parameter_schema`, and no parameter is supplied that it does not declare (`POL-013`)
+3. Schedule clauses appear only on a configuration of a `validation` or `orchestration_flow` policy (ADR-053)
+
+`tests/check_policy_configurations.py` holds the configuration checks over the worked examples.
 
 ---
 
@@ -929,11 +991,11 @@ Overrides and `route-to-review` are a **last-resort path**, not a common one. A 
 
 ### 18.1 Override Policy (Planned Exceptions)
 
-A policy artifact that explicitly overrides another policy for a defined scope. Goes through the standard policy lifecycle (proposed → active) with review and shadow testing.
+A policy that explicitly overrides another policy, as one configuration enforces it, for a defined scope. Its configuration goes through the standard lifecycle (proposed → active) with review and shadow testing.
 
 ```yaml
-# illustrative: an override policy artifact (policy_type: override); not schema-checked
-policy_artifact:
+# illustrative: an override (policy_type: override); not schema-checked
+policy:
   handle: "override/payments-team-zone-c-exception"
   policy_type: override
   overrides: "sovereignty/eu-data-residency"
@@ -948,7 +1010,7 @@ policy_artifact:
   compensating_controls: []                  # optional — see §18.5
 ```
 
-**Constraint:** Override policies cannot target `enforcement: hard` policies. Hard policies can only be overridden via Exception Grant or Manual Override with dual-approval. This is validated at policy activation — attempting to create an override policy targeting a hard policy is rejected.
+**Constraint:** Override policies cannot target an `enforcement: hard` configuration (`output.target_configuration_uuid` names the configuration, because enforcement is the configuration's). Hard policies can only be overridden via Exception Grant or Manual Override with dual-approval. This is validated at policy activation — attempting to create an override policy targeting a hard policy is rejected.
 
 ### 18.2 Exception Grant (Pre-Authorized Waivers)
 
@@ -1219,13 +1281,17 @@ For a single request, all active matching policies at all domain levels evaluate
 | `POL-001` | All control-plane policy types implement the unified base contract. The output schema is the only thing that varies. |
 | `POL-002` | Every policy evaluation produces an audit record. No evaluation is silent. |
 | `POL-003` | Hard enforcement policies require dual-approval to override. Override policies (§18.1) cannot target hard policies — caught at activation. |
-| `POL-004` | Policies in `proposed` status execute in shadow mode — output is captured and never applied. Shadow mode is the primary mechanism for safe policy change management. |
+| `POL-004` | A policy configuration in `proposed` status executes in shadow mode — output is captured and never applied. Shadow mode is the primary mechanism for safe policy change management. |
 | `POL-005` | The policy evaluator is the sole evaluator of all policies. No component bypasses it to enforce rules directly. |
 | `POL-006` | Adding a new policy type requires defining a new output schema. The base contract, evaluation algorithm, lifecycle, and audit obligations are inherited. |
 | `POL-007` | Policies ARE the orchestration. Pipeline steps are Policies firing on payload type events. Static flows are Orchestration Flow Policies with `ordered: true`. |
 | `POL-008` | Every override produces a Merkle tree audit leaf. Override justification, authorizer identity, compensating controls, and the overridden policy are captured. |
 | `POL-009` | Exception Grants and Manual Overrides must have expiry dates. Permanent overrides are not permitted — use an Override Policy with a review cycle instead. |
 | `POL-010` | Compensating controls must be validated by a compliance officer role before activation. Self-validation is not permitted. |
+| `POL-011` | A policy holds logic and no deployment's values. The values (parameters, tenant, scope, enforcement level, schedule, audit and notification settings) are a policy configuration's. A policy with no active configuration decides nothing. |
+| `POL-012` | A policy configuration configures exactly one policy, pinned to a version or a digest. A new version of the policy reaches a deployment only when a new version of the configuration moves the pin. |
+| `POL-013` | A configuration's parameters satisfy the pinned policy's `parameter_schema`, and it supplies no parameter the policy does not declare. A policy that declares none takes none. |
+| `POL-014` | A profile turns a policy configuration on or off and holds no values for it. Each value has one home, the configuration. |
 
 ---
 

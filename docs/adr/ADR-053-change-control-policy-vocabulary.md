@@ -2,7 +2,7 @@
 
 **Status:** Accepted (croadfeldt upstream) — 0.1 work; 1.0 conferred by engineering acceptance
 (#217); decided 2026-07-27
-**Realized by:** `registry/policy.schema.json` (`schedule`) · `registry/tools/validate.py` (`check_schedule_clauses`) · `registry/examples/example-policy-change-window.yaml`
+**Realized by:** `registry/policy-configuration.schema.json` (`schedule`; the clauses are a deployment's values, so they moved to the configuration with POL-011) · `registry/tools/validate.py` (`check_schedule_clauses`) · `tests/check_policy_configurations.py` · `registry/examples/example-policy-configuration-change-window.yaml`
 **Date:** 2026-07-27
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** This decision

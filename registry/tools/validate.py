@@ -61,6 +61,7 @@ INSTANCE_VALIDATOR = _validator("entity-view.schema.json")
 PROFILE_VALIDATOR = _validator("profile.schema.json")
 CONFORMANCE_DECL_VALIDATOR = _validator("conformance-declaration.schema.json")
 POLICY_VALIDATOR = _validator("policy.schema.json")
+POLICY_CONFIGURATION_VALIDATOR = _validator("policy-configuration.schema.json")
 EVAL_CONTEXT_VALIDATOR = _validator("evaluation-context.schema.json")
 LAYER_VALIDATOR = _validator("layer.schema.json")
 VOCABULARY_TERM_VALIDATOR = _validator("vocabulary-term.schema.json")
@@ -589,25 +590,20 @@ def check_schedule_clauses(doc):
     """Temporal clauses govern WHEN, never WHETHER (ADR-053).
 
     The clause object is closed and carries no decision field, so "cannot encode a decision" is
-    structural. Three things the schema still cannot say:
+    structural. Two things the schema still cannot say:
 
     - `expedite` requires an approval at an ELEVATED authority. Without that, compressing the
       calendar needs no more standing than following it, and the exception becomes the cheap path.
-    - `schedule` belongs on a `validation` or `orchestration_flow` policy — the two that decide
-      whether a change proceeds. Elsewhere it reads as though timing could decide a question the
-      policy does not itself answer.
     - a `precondition` must name the stage it waits on. One that names nothing waits on nothing and
-      passes silently, which is worse than not declaring it."""
+      passes silently, which is worse than not declaring it.
+
+    The clauses are a policy configuration's (POL-011). A third rule, that they belong with a
+    `validation` or `orchestration_flow` policy, reads the type off the policy the configuration
+    pins, so tests/check_policy_configurations.py holds it."""
     sched = doc.get("schedule")
     if not isinstance(sched, list):
         return []
     errors = []
-    pt = doc.get("policy_type")
-    if pt not in ("validation", "orchestration_flow"):
-        errors.append(f"schedule: a temporal clause on a {pt!r} policy — schedule governs WHEN a "
-                      f"change may run, so it belongs on `validation` or `orchestration_flow`. "
-                      f"Elsewhere it reads as though timing could decide a question the policy does "
-                      f"not itself answer")
     for i, c in enumerate(sched):
         kind = c.get("kind")
         if kind == "expedite":
@@ -617,7 +613,7 @@ def check_schedule_clauses(doc):
                               f"no sign-off makes the exception cheaper than the rule")
             elif not ap.get("authority_level"):
                 errors.append(f"schedule[{i}] expedite: the approval names no `authority_level`. "
-                              f"Expedite requires an ELEVATED authority the policy declares — "
+                              f"Expedite requires an ELEVATED authority the configuration declares — "
                               f"otherwise it needs no more standing than following the calendar")
         if kind == "precondition" and not c.get("predecessor_stage"):
             errors.append(f"schedule[{i}] precondition: names no `predecessor_stage`. A "
@@ -1092,7 +1088,10 @@ def pick_instance(doc):
                 lambda d: f"composition {d.get('handle', d['uuid'][:8])} [{d.get('state')}]")
     if isinstance(doc, dict) and doc.get("record_type") == "policy":
         return (POLICY_VALIDATOR,
-                lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}",
+                lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}")
+    if isinstance(doc, dict) and doc.get("record_type") == "policy_configuration":
+        return (POLICY_CONFIGURATION_VALIDATOR,
+                lambda d: f"policy_configuration {d['name']} -> {d['configures']} {d['uuid'][:8]}",
                 check_schedule_clauses)
     # Dispatched by SHAPE, not by record_type: an evaluation context is deliberately NOT a record —
     # no identity uuid, no lifecycle, no version of its own. Giving it a record_type to satisfy the

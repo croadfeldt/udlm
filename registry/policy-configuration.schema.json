@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/1.0/policy-configuration.schema.json",
+  "title": "the control plane Policy Configuration record",
+  "description": "Machine-validatable policy configuration (docs/spec/contracts/policy-contract.md §9). A policy holds logic; this record holds the values one deployment gives it: the parameters, the owning tenant, the scope, how strictly it is enforced, when it may run and who hears about it. It configures exactly one policy, pinned to a version (POL-012). The policy engine evaluates a configuration, never a bare policy: a policy with no active configuration decides nothing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "uuid",
+    "conforms_to",
+    "name",
+    "version",
+    "tenant_uuid",
+    "configures"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "policy_configuration",
+      "description": "Dispatch discriminator (data-model-core §2). A policy configuration is its own record kind: the values one deployment gives a policy, kept apart from the policy's logic (POL-011)."
+    },
+    "uuid": {
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
+      "description": "RFC 9562 v4 identity (docs/spec/contracts/identifier-scheme.md)."
+    },
+    "handle": {
+      "$ref": "common-elements.schema.json#/$defs/handle",
+      "description": "Advisory human identity; uuid is authoritative."
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "tenant_uuid": {
+      "$ref": "common-elements.schema.json#/$defs/uuid_v4",
+      "description": "Owning tenant (TEN-001; data-model-core §5 [D3]). A system-domain configuration is owned by the platform tenant."
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "description": "Where the configuration is in its life. `proposed` is shadow mode: the policy runs on real traffic with these values and its output is logged, never applied (POL-004). `active` applies. `deprecated` still applies, with a replacement named and a warning on evaluation. `retired` is terminal. An unpublished configuration has no status; there is no `developing` (#723).",
+          "enum": [
+            "active",
+            "proposed",
+            "deprecated",
+            "retired"
+          ]
+        },
+        "deprecation_date": {
+          "type": "string"
+        },
+        "sunset_date": {
+          "type": "string"
+        },
+        "replacement_uuid": {
+          "type": "string"
+        },
+        "deprecation_reason": {
+          "type": "string"
+        },
+        "migration_guidance": {
+          "type": "string"
+        }
+      }
+    },
+    "configures": {
+      "type": "string",
+      "format": "udlm-ref-url",
+      "pattern": "@([0-9]+\\.[0-9]+\\.[0-9]+|sha256:[0-9a-f]{64})$",
+      "description": "The one policy these values are for, as a URF reference pinned to a version or a digest (identifier-scheme §9; POL-012). The pin is required: an unpinned reference would follow the policy to its next version (URF-014), and the logic an estate runs would change with no change to any record the estate owns. Moving to a new version of the policy is a new version of this record that moves the pin.",
+      "examples": [
+        "cexample/policy/data-residency-gate@3.0.0",
+        "uuid/764f476d-8fe8-4bfd-9c7e-5b2431cc79e7@3.0.0"
+      ]
+    },
+    "parameters": {
+      "type": "object",
+      "description": "The values this deployment gives the policy's parameters. The policy owns their shape: they satisfy the pinned policy's `parameter_schema`, and a policy that declares no parameters takes none (POL-013, tests/check_policy_configurations.py). UDLM does not interpret a value; the engine hands them to the rule beside the facts."
+    },
+    "domain": {
+      "$ref": "common-elements.schema.json#/$defs/policy_domain",
+      "description": "Precedence scope of this configuration. The specific domain wins for a value: `entity` over `resource_type` over `tenant` (policy-contract §4)."
+    },
+    "enforcement": {
+      "enum": [
+        "hard",
+        "soft"
+      ],
+      "description": "How strictly this deployment enforces the policy. hard = cannot be relaxed by any rule below it; soft = a default a more specific rule can tighten (policy-contract §3). The same logic can be hard in one deployment and soft in another, which is why this is not the policy's."
+    },
+    "lifecycle_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "operations": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "initial_provisioning",
+              "update",
+              "rehydration",
+              "decommission",
+              "discovery",
+              "drift_remediation",
+              "ownership_transfer",
+              "subscription_renewal",
+              "provider_migration",
+              "compliance_rescan",
+              "relationship_event",
+              "all"
+            ]
+          }
+        }
+      },
+      "description": "Which lifecycle operations the policy is evaluated on in this deployment (policy-contract §2.3). A configuration of a compliance-class validation policy or a governance_matrix_rule must include 'all' at standard/prod; fsi/sovereign cannot scope out any operation."
+    },
+    "schedule": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind"
+        ],
+        "description": "One temporal clause. CARRIES TIMING ONLY.\n\nA schedule clause governs WHEN, never WHETHER (ADR-053 Decision 2). The evidence gate is the policy's `match` rule, and no schedule clause — `expedite` included — can reference it away. Expedite compresses the calendar; it never skips the diff. A policy that gated *whether* from a schedule clause would let a deadline decide a safety question, which is the failure this shape makes unrepresentable rather than merely discouraged.",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "window",
+              "freeze",
+              "expedite",
+              "precondition"
+            ],
+            "description": "`window` — allowed execution times. `freeze` — a dated suspension that QUEUES rather than runs, so a frozen change is deferred and not lost. `expedite` — compress the calendar under elevated approval, with the audit record flagged. `precondition` — proceed only when a named predecessor stage's evidence is present (declared multi-estate chains)."
+          },
+          "effective_from": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+          },
+          "effective_until": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+          },
+          "recurrence": {
+            "type": "string",
+            "description": "For a `window`: when it recurs. Inline, or sourced from a calendar the configuration names. A sourced calendar keeps one estate's holidays out of the substrate."
+          },
+          "calendar_ref": {
+            "type": "string",
+            "description": "A sourced calendar, as a URF reference. UDLM carries the reference; whose calendar it is, is the estate's."
+          },
+          "predecessor_stage": {
+            "type": "string",
+            "description": "For a `precondition`: the stage whose evidence must be present."
+          },
+          "approval": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "approver",
+              "accepts_digest",
+              "at"
+            ],
+            "description": "A sign-off bound to the evidence it accepts — the accreditation shape, not a parallel one (ADR-053). An approval that names no digest accepts nothing in particular: the evidence can be regenerated afterwards and the signature still reads as covering it.",
+            "properties": {
+              "approver": {
+                "type": "string",
+                "description": "The authority signing off."
+              },
+              "authority_level": {
+                "type": "string",
+                "description": "The authority this approval was given at. An `expedite` clause requires one the configuration declares elevated. Otherwise compressing the calendar would need no more standing than following it."
+              },
+              "accepts_digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "description": "The digest of the evidence accepted — the ADR-046 promotion diff, typically. Binds the signature to bytes rather than to an intention."
+              },
+              "scope": {
+                "type": "string",
+                "description": "What the approval covers."
+              },
+              "at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+              }
+            }
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why this clause exists. Carried for the human reading a deferral; never evaluated."
+          }
+        }
+      },
+      "description": "Temporal clauses on a configuration of a `validation` or `orchestration_flow` policy (ADR-053). When a change may run is a property of the gate as one deployment applies it: the windows, freeze dates and approvals are that deployment's. TYPED ADOPTION DEBT IS DERIVED FROM THESE, never stored: `pin_behind` (ordinary lag), `windowed` (held by a `window`), `frozen` (held by a `freeze`). A stored verdict could disagree with its clauses (DRV-001)."
+    },
+    "audit_on": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Which decisions produce audit records (e.g. ALLOW, DENY, STRIP_FIELD)."
+    },
+    "notification_on": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Which decisions send a notification."
+    },
+    "notification_urgency": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "compliance_basis": {
+      "type": "string",
+      "description": "The regulatory citation this deployment enforces the policy under. One policy can serve two citations in two deployments."
+    },
+    "review_required_before": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+      "description": "RFC 3339 UTC 'Z' review deadline (common-elements §8.1)."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "at",
+              "author",
+              "text"
+            ],
+            "properties": {
+              "at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+              },
+              "author": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "record_type": "policy_configuration",
+      "uuid": "19180e96-aa97-4982-a6ac-56506ad2cd92",
+      "handle": "eu-data-residency-gate",
+      "conforms_to": "udlm/1.0",
+      "name": "EU data residency — eu_personal data stays in EU zones",
+      "description": "One deployment's values for the data residency gate. eu_personal data may only be realized in an EU sovereignty zone. Worked example (example.com content).",
+      "version": "1.0.0",
+      "tenant_uuid": "75ccf4ff-3e8d-4963-bc51-459ae1014cb7",
+      "status": {
+        "state": "active"
+      },
+      "configures": "data-residency-gate@3.0.0",
+      "parameters": {
+        "classification_levels": [
+          "eu_personal"
+        ],
+        "allowed_zones": [
+          "eu-west",
+          "eu-central",
+          "eu-north"
+        ]
+      },
+      "domain": "tenant",
+      "enforcement": "hard",
+      "lifecycle_scope": {
+        "operations": [
+          "all"
+        ]
+      },
+      "audit_on": [
+        "DENY"
+      ],
+      "notification_on": [
+        "DENY"
+      ],
+      "notification_urgency": "high",
+      "compliance_basis": "GDPR Art. 44 (transfers)",
+      "review_required_before": "2027-01-01T00:00:00Z"
+    }
+  ]
+}

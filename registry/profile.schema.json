@@ -75,7 +75,7 @@
     },
     "contains": {
       "type": "array",
-      "description": "The flat list of what this profile turns on or off — one entry per governed artifact, any kind (policy, capability, mechanism, layer, vocabulary). The entry's kind is whatever its reference resolves to; the profile does not classify it. AN UNLISTED ARTIFACT IS AVAILABLE BUT NOT MANDATED — the ADR-007 floor semantic: a floor is a minimum, never a filter, so omission never means disabled. `off` is the explicit, auditable way to disable.",
+      "description": "The flat list of what this profile turns on or off — one entry per governed artifact, any kind (policy configuration, never a bare policy (POL-014); capability, mechanism, layer, vocabulary). The entry's kind is whatever its reference resolves to; the profile does not classify it. AN UNLISTED ARTIFACT IS AVAILABLE BUT NOT MANDATED — the ADR-007 floor semantic: a floor is a minimum, never a filter, so omission never means disabled. `off` is the explicit, auditable way to disable.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -99,7 +99,7 @@
           },
           "settings": {
             "type": "object",
-            "description": "Per-entry configuration for the referenced artifact — the values that tune it in this posture (cadence, mode, thresholds). Values only; the artifact owns its schema."
+            "description": "Per-entry configuration for the referenced artifact — the values that tune it in this posture (cadence, mode, thresholds). Values only; the artifact owns its schema. NEVER FOR A POLICY CONFIGURATION: that record already holds the policy's values, and a second home could disagree with the first (POL-014, tests/check_policy_configurations.py)."
           },
           "reason": {
             "type": "string",

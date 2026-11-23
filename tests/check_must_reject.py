@@ -148,7 +148,15 @@ def _provider_registration(record):
     return m.check_provider_registration(record)
 
 
+def _policy_configurations(record):
+    """POL-012/013/014 — a configuration against the policy it pins, and a profile entry against what
+    it names. Judged beside the shipped examples, so a case supplies only the offending record."""
+    m = _load("tests/check_policy_configurations.py", "_pcfg")
+    return m.evaluate(record, m.load_index())
+
+
 GATES = {
+    "check_policy_configurations": _policy_configurations,
     "check_provider_registration": _provider_registration,
     "conformance": _conformance,
     "check_grant_derivation": _grant_derivation,

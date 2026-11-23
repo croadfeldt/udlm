@@ -1,0 +1,67 @@
+# asserts: POL-011, POL-012
+# proves: when a change may run is a deployment's value, so the schedule clauses sit on the
+# configuration and the evidence check stays on the policy (ADR-053). "You may adopt this — but
+# not on a Friday afternoon, and not during the freeze."
+#
+# This configuration supplies no `parameters`: the policy it pins declares none. A configuration
+# is still required. Without one the policy has no tenant, no scope and no enforcement level, and
+# the engine evaluates nothing.
+record_type: policy_configuration
+uuid: 0e58aad5-8973-4c80-b168-7c6f49bb4c22
+handle: adoption-change-window
+conforms_to: udlm/1.0
+name: Adoption runs in the change window, and pauses for the freeze
+description: >-
+  One deployment's values for the adoption evidence gate — a promotion may proceed only inside the
+  declared window, is queued during the year-end freeze, and may be expedited only under elevated
+  approval. Worked example (cexample content).
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status: {state: active}
+configures: adoption-evidence-gate@2.0.0
+domain: platform
+enforcement: hard
+lifecycle_scope:
+  operations: [all]
+
+# THE TEMPORAL CLAUSES — these decide WHEN.
+schedule:
+  # A window: allowed execution times, sourced rather than inlined. Whose holidays those are is the
+  # estate's business, so UDLM carries the reference and not the dates.
+  - kind: window
+    recurrence: MON-THU 02:00-05:00 UTC
+    calendar_ref: estate/calendars/platform-maintenance
+    reason: Adoption runs off-peak and never into a Friday, where nobody is available to unwind it.
+
+  # A freeze QUEUES rather than runs, so a change caught by it is deferred and not lost. Dated on
+  # purpose: an undated freeze queues forever, which loses the change rather than deferring it.
+  - kind: freeze
+    effective_from: '2026-12-19T00:00:00Z'
+    effective_until: '2027-01-05T00:00:00Z'
+    reason: Year-end freeze — trading close.
+
+  # Expedite compresses the calendar under an approval at an ELEVATED authority the configuration
+  # declares. Without that, the exception would need no more standing than following the rule, and
+  # would become the cheap path. The approval binds to the DIGEST of the evidence it accepts (the
+  # accreditation shape, ADR-053 §4) — an approval naming no digest accepts nothing in particular,
+  # because the evidence can be regenerated afterwards and the signature still reads as covering it.
+  - kind: expedite
+    reason: Security errata may compress the window.
+    approval:
+      approver: platform-admin/alice
+      authority_level: change-board
+      accepts_digest: sha256:9f1c2d3e4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5
+      scope: Security errata only.
+      at: '2026-08-16T09:30:00Z'
+
+audit_on: [DENY]
+notification_on: [DENY]
+notification_urgency: low
+metadata:
+  display_name: Adoption change window
+  notes:
+  - at: '2026-11-22T00:00:00Z'
+    author: UDLM project
+    text: >-
+      These clauses were part of the policy record until its version 2.0.0. The handle is the one
+      the policy carried.
