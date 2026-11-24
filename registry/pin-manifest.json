@@ -1781,7 +1781,7 @@
   "current": "0.1.0",
   "path": "registry/classes/knowledge/software-bill-of-materials/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:1232b8d94e0adf5a7e9e010e138e29353f36b326a27d18863519198805e54d08"
+   "0.1.0": "sha256:412e31e1a18bca31620942fb16fdc08f067fd7f707f76e3119adf6ece4b3c89a"
   }
  },
  "type:SoftwareImage": {
