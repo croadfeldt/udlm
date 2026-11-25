@@ -65,7 +65,10 @@ FREE = re.compile(
     # PVD-002 territory); instance_size is name-selectable but requirements-authoritative (ADR-036) —
     # the provider's offer is the list, never the class.
     r"capacity|speed|used|release|provisioner|workgroup|position|subject|entry|env|vendor|health|"
-    r"term|root|domain|pillar|category|normalization_rules|license|instance_size)($|_)")
+    r"term|root|domain|pillar|category|normalization_rules|license|instance_size|"
+    # 2026-11-12: an SSH public key is one OpenSSH authorized_keys line (adopted format, carries a
+    # pattern); it identifies a key and is never chosen from a set.
+    r"public_key)($|_)")
 
 
 def candidates():

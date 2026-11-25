@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/1.0/class/CredentialRef/0.8.4
+$id: https://udlm.dev/registry/udlm/1.0/class/CredentialRef/0.9.0
 conforms_to: udlm/1.0
 uuid: 942b6cc9-a0d5-4f91-8c5c-ade4ecdf5b50
 record_type: class
 class: base
 resource_type: CredentialRef
-version: 0.8.4
+version: 0.9.0
 family: Resource
 status: active
 filed_under:
@@ -93,6 +93,18 @@ elements:
       $ref: ../../../../common-elements.schema.json#/$defs/assurance_level
       description: 'The minimum assurance the consumer requires (NIST 800-63B AAL: aal1, aal2, aal3). A provider
         that cannot reach it is filtered out before binding.'
+  - element: public_key
+    scope: CredentialRef
+    optional: true
+    state: proposed
+    description: 'The public half of an `ssh_key` credential, one OpenSSH authorized_keys line: key type, base64
+      key, optional comment. The public half is not a secret; the private half stays with whoever holds it and
+      never enters the model. Read by a provider placing the key on a machine (Machine `authorized_keys`).'
+    schema:
+      type: string
+      pattern: '^[a-z0-9@.-]+ [A-Za-z0-9+/]+=*( .*)?$'
+      description: 'The public half of an `ssh_key` credential, one OpenSSH authorized_keys line. Never the
+        private half.'
 spec_examples:
   - credential_type: service_account_token
     issuer_ref: kubevirt-service-account-issuer
@@ -104,6 +116,18 @@ spec_examples:
         - read
         - list
     required_assurance: aal2
+  - credential_type: ssh_key
+    public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXAMPLEKEYEXAMPLEKEYEXAMPLEKEYEXAMPLEKEY0000 ops@example
+spec_constraints:
+  description: A `public_key` is stated only on an `ssh_key` credential; on any other kind there is no OpenSSH
+    public half to state.
+  if:
+    required:
+      - public_key
+  then:
+    properties:
+      credential_type:
+        const: ssh_key
 outputs:
   resolved:
     type: boolean
@@ -151,3 +175,4 @@ context:
   works_with:
     - Identity.Person / Identity.ServiceAccount — whose credential this is.
     - Container / Workload / FileShare — consumers that reference it from env, mounts, or config.
+    - Machine — local accounts that accept an `ssh_key` credential's `public_key` (`authorized_keys`).
