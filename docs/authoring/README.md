@@ -38,7 +38,7 @@ you can run it yourself (all run in `.github/workflows/validate.yml`; `./scripts
 | A **Class** (Base/Type/Provider scoped-Class) | [`scoped-class.md`](scoped-class.md) | `class.schema.json` | Liskov, generate_class_specs, COV |
 | A **process** (a job/operation with blast-radius) | [`process.md`](process.md) | `class.schema.json` (Process family; executions are `Job` records) | as Class / resource type |
 | A **profile** (an activatable posture — built-in or your own) | [`profile.md`](profile.md) | `profile.schema.json` | validate.py `check_profile`, check_urf, identity integrity |
-| A **policy** (schedule, validation, override…) | [`policy.md`](policy.md) | `policy.schema.json` | validate, rule-IDs, terminology |
+| A **policy** and its **configuration** (validation, override, schedule…) | [`policy.md`](policy.md) | `policy.schema.json`, `policy-configuration.schema.json` | validate, check_policy_configurations (POL-012 to POL-014), rule-IDs, terminology |
 | A **provider / API** (a naturalizing backend) | [`provider-api.md`](provider-api.md) | `provider-adopted-standards.schema.json`, `function-capability-matrix.schema.json` | provider-contracts, standards-registered |
 | A **layer** (defaults and bounds an estate applies to requests) | [`layer.md`](layer.md) | `layer.schema.json` | validate, check_layer_limits (LIM-001..005), estate tokens |
 | **Reference data** (a governed vocabulary) | [`reference-data.md`](reference-data.md) | `layer.schema.json` (`reference_data_type`) | validate, single-source |

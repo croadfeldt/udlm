@@ -26,6 +26,10 @@ Do **not** author a profile when:
   criterion), not a profile.
 - The value is a single setting with an obvious home — put it on the owning artifact's entry
   (`contains[].settings`) rather than minting a profile for it.
+- The value is a policy's: a parameter, an enforcement level, a scope. Those live on the policy
+  configuration and nowhere else. **POL-014 — a profile turns a policy configuration on or off and
+  holds no values for it.** The entry names the configuration, never the bare policy, and carries no
+  `settings` ([`policy.md`](policy.md)).
 
 ## 2. The four things a profile says
 

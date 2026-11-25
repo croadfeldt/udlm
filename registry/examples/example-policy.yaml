@@ -1,17 +1,21 @@
+# asserts: POL-011, POL-013
+# proves: a policy holds logic and no deployment's values. The rule reads two facts and two
+# parameters; which classifications are restricted and which zones are allowed is not written here.
+# example-policy-configuration.yaml gives those values for one deployment, and
+# example-policy-configuration-residency-trial.yaml gives different ones to the same logic.
 record_type: policy
 uuid: 764f476d-8fe8-4bfd-9c7e-5b2431cc79e7
-handle: eu-data-residency-gate
+handle: data-residency-gate
 conforms_to: udlm/1.0
-name: EU data residency — deny non-EU placement zones
-description: Compliance-class validation policy — a request whose data_classification is
-  eu_personal may only be realized in an EU sovereignty zone. Worked example (example.com content).
-version: 2.0.1
-tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+name: Data residency — restricted data is realized only in the zones a deployment allows
+description: Compliance-class validation policy. A request whose data_classification is one a
+  deployment restricts may only be realized in a sovereignty zone that deployment allows. Worked
+  example (example.com content).
+version: 3.0.0
 status: {state: active}
 policy_type: validation
 policy_class: compliance
 concern_type: compliance
-domain: tenant
 match:
   # WHAT this policy reads. HOW it compares is the engine's, in the engine's language — UDLM
   # specifies the contract, not the predicate (policy-contract §7.2a).
@@ -20,25 +24,39 @@ match:
     engine: rego
     body: |
       package udlm.residency
-      # eu_personal data may only be realized in an EU sovereignty zone.
+      # Restricted data may only be realized in an allowed zone. Both lists are a deployment's:
+      # the engine hands the configuration's parameters to the rule beside the facts.
       deny if {
-        input.data_classification == "eu_personal"
-        not input.sovereignty_zone in {"eu-west", "eu-central", "eu-north"}
+        input.data_classification in input.parameters.classification_levels
+        not input.sovereignty_zone in input.parameters.allowed_zones
       }
-enforcement: hard
-lifecycle_scope:
-  operations: [all]
+# The policy's whole contract with a configuration. A value the rule needs from a deployment is
+# declared here, so a configuration that leaves one out or misspells one is refused (POL-013).
+parameter_schema:
+  type: object
+  required: [classification_levels, allowed_zones]
+  properties:
+    classification_levels:
+      type: array
+      items: {type: string}
+      minItems: 1
+      uniqueItems: true
+    allowed_zones:
+      type: array
+      items: {type: string}
+      minItems: 1
+      uniqueItems: true
 output:
   decision: deny
-  reason: eu_personal data may only be realized in an EU sovereignty zone
-audit_on: [DENY]
-notification_on: [DENY]
-notification_urgency: high
-compliance_basis: "GDPR Art. 44 (transfers)"
-review_required_before: "2027-01-01T00:00:00Z"
+  reason: this data classification may only be realized in a sovereignty zone the deployment allows
 metadata:
-  display_name: EU data residency gate
+  display_name: Data residency gate
   notes:
   - at: "2026-07-07T13:20:00Z"
     author: claude-fable-5 (session f78102d7, wave 3.3)
     text: Worked example for the policy schema — validation/compliance shape (deny + reason).
+  - at: "2026-11-22T00:00:00Z"
+    author: UDLM project
+    text: Version 3.0.0 holds the logic alone. The classifications and zones it named moved to
+      parameters, and the tenant, scope, enforcement and notification settings moved to a policy
+      configuration (POL-011).

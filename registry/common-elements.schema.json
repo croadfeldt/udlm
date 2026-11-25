@@ -217,6 +217,17 @@
         "entity"
       ]
     },
+    "policy_lifecycle_state": {
+      "title": "Policy lifecycle state",
+      "description": "The four states a policy and a policy configuration move through: `proposed`, `active`, `deprecated`, `retired`. Each record says what a state means for it (policy-contract §6). An unpublished record has no status; there is no `developing` (#723). Declared once here; both record schemas reference it.",
+      "type": "string",
+      "enum": [
+        "active",
+        "proposed",
+        "deprecated",
+        "retired"
+      ]
+    },
     "edge_type": {
       "title": "Relationship edge type",
       "description": "The four edges of the model's graph: `depends_on` needs it to work, `contained_by` is part of it, `binds_to` borrows it across a boundary, `references` merely points at it. Nature is DERIVED from this plus `strength`, never stored (ADR-027 addendum). Declared once here; `kind`/`dependency_type`/`relationship_type` are rejected vocabulary (tests/check_model_vocabulary.py). Its home is registry/edge-types.yaml, which also carries each edge's DERIVED inverse; this enum is a projection of that file's `edge_type` column, and the single-source gate proves the two agree (VOC-002).",

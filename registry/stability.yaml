@@ -280,6 +280,9 @@ parts:
   - part: schema:log-checkpoint.schema.json
     stability: experimental
     why: ADR-059 typed chains not built (#394)
+  - part: schema:policy-configuration.schema.json
+    stability: experimental
+    why: candidate — the values one deployment gives a policy, split from the policy record (row 184); stable once used and validated (row 144)
   - part: schema:policy.schema.json
     stability: experimental
     why: candidate — a record contract every peer reads; stable once used and validated (row 144)

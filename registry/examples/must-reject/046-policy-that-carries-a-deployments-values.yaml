@@ -1,0 +1,25 @@
+must_reject:
+  rule: POL-011
+  gate: schema
+  expect_path: $
+  because: A policy that states its own enforcement level and owning tenant. Those are one deployment's
+    values. A policy that carried them could not be reused by a second deployment without being copied, and
+    two copies of one rule drift apart. The values belong on a policy configuration.
+record:
+  __schema__: policy.schema.json
+  record_type: policy
+  uuid: 5840fc1d-3c46-4bc6-941c-08186c2fcacb
+  handle: research/policy-with-values
+  conforms_to: udlm/1.0
+  name: A policy that carries a deployment's values
+  description: Deliberately wrong (must-reject). A residency policy that also says who owns it and how strictly it is enforced.
+  version: 1.0.0
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  policy_type: validation
+  policy_class: compliance
+  match:
+    facts: [data_classification, sovereignty_zone]
+  enforcement: hard
+  output:
+    decision: deny
+    reason: this data classification may only be realized in an allowed zone

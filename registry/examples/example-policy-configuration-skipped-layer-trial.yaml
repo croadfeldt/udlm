@@ -1,0 +1,23 @@
+# asserts: POL-015, POL-004
+# proves: provisional logic can be tried and cannot be applied. The policy is `proposed`, so this
+# configuration is `proposed` too: it runs on real traffic and its output is logged, never applied.
+record_type: policy_configuration
+uuid: d55d4fb0-ddf7-432b-9fb5-35bb651ec3b7
+handle: platform-skipped-layer-trial
+conforms_to: udlm/1.0
+name: The skipped-layer gate, on trial for the platform tenant
+description: >-
+  One deployment's shadow run of a provisional policy. It can become `active` only after the policy does. Worked example (cexample content).
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status: {state: proposed}
+configures: skipped-layer-gate@1.0.0
+domain: platform
+enforcement: hard
+lifecycle_scope:
+  operations: [all]
+audit_on: [DENY]
+notification_on: [DENY]
+notification_urgency: low
+metadata:
+  display_name: Skipped-layer gate trial (platform)

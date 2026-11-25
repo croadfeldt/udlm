@@ -16,6 +16,9 @@
 # it silently and be equally conformant.
 #
 # NOT A SHIPPED DEFAULT (NDF-001). This ships as an EXAMPLE.
+#
+# LOGIC ONLY (POL-011). Which tenant this applies to, at which scope and how strictly is one
+# deployment's choice, held by example-policy-configuration-hard-provider-pin.yaml.
 record_type: policy
 uuid: 5e91c73a-2f48-4b60-8d15-7a03c9e26418
 handle: hard-provider-pin-gate
@@ -24,13 +27,11 @@ name: A hard provider pin is reviewed, not assumed
 description: >-
   Validation policy — a request carrying a hard `provider_preference` is refused unless the consumer
   has acknowledged what it costs. Worked example (cexample content).
-version: 1.0.1
-tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+version: 2.0.0
 status: {state: active}
 policy_type: validation
 policy_class: structural
 concern_type: portability_boundary
-domain: platform
 match:
   # Read straight off the request. `request-payload` is an open subtree, so a dot-path into the
   # pin resolves without adding a fact — the model already carries what this needs.
@@ -55,9 +56,6 @@ match:
         input.provider_preference.strength == "hard"
         input.portability.classification == "portable"
       }
-enforcement: hard
-lifecycle_scope:
-  operations: [all]
 output:
   decision: deny
   reason: >-
@@ -65,9 +63,6 @@ output:
     makes rehydration provider-dependent — replaying the intent against a provider that no longer
     exists does not degrade, it fails. Acknowledge the cost, or use `strength: soft` and let
     placement choose among eligible providers
-audit_on: [DENY]
-notification_on: [DENY]
-notification_urgency: medium
 metadata:
   display_name: Hard provider-pin gate
   notes:

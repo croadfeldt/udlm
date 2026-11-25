@@ -104,7 +104,7 @@ terms:
     parent: operation-context
     curation_state: canonical
     definition: >-
-      The lifecycle operation being performed; one of the twelve values policy.schema.json names
+      The lifecycle operation being performed; one of the twelve values policy-configuration.schema.json names
       (initial_provisioning, update, rehydration, decommission, discovery, drift_remediation,
       ownership_transfer, subscription_renewal, provider_migration, compliance_rescan,
       relationship_event, all). The axis that lets a policy fire on change rather than on every

@@ -49,7 +49,8 @@ document is defect-fixed to defer here. Each section lists the detailed document
   `registry/class.schema.json` carrying the `registry/composition.schema.json` constituents shape, +
   validate.py semantic checks; the application model — an application IS a composition — and the
   ADR-016 evidence; `docs/spec/foundations/template-composition-model.md` §1.2/§2.5). (3) Policy
-  record + typed outputs **[DONE — registry/policy.schema.json; type-spec outputs are the
+  record + typed outputs **[DONE — registry/policy.schema.json for the logic and
+  registry/policy-configuration.schema.json for one deployment's values; type-spec outputs are the
   referenceable typed binding surface, output-resolved by the validator]**. (4) Layer record **[DONE
   — registry/layer.schema.json]**. (5) Audit record + Commit Log entry **[DONE —
   registry/audit-record.schema.json, registry/audit-leaf.schema.json,

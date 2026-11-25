@@ -1,0 +1,21 @@
+must_reject:
+  rule: POL-013
+  gate: check_policy_configurations
+  because: A configuration of the data residency gate that says which classifications are restricted and
+    spells the second parameter `allowed_zone`. The policy declares `allowed_zones`. Without this rule the
+    misspelled value would be carried and never read, the rule would compare against nothing, and every
+    request would be refused or none would, depending on the engine.
+record:
+  record_type: policy_configuration
+  uuid: 385b3db3-b15c-46e6-a450-bb8e24a09929
+  handle: research/misspelled-parameter
+  conforms_to: udlm/1.0
+  name: A configuration that misspells a parameter
+  description: Deliberately wrong (must-reject). Configures the residency gate with allowed_zone for allowed_zones.
+  version: 1.0.0
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  configures: data-residency-gate@3.0.0
+  parameters:
+    classification_levels: [eu_personal]
+    allowed_zone: [eu-west]
+  enforcement: hard
