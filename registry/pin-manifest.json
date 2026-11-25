@@ -396,6 +396,13 @@
    "1.0.0": "sha256:c55473bc5f2ce63c14651dab7d094d36bb1da906113a2d4e3da24688808e4c1f"
   }
  },
+ "provider_registration:lab/network/edge-firewall": {
+  "current": "1.1.0",
+  "path": "registry/examples/example-provider-raises-a-binding.yaml",
+  "versions": {
+   "1.1.0": "sha256:13d58520b2a9f329fa2fc64c272bea71418882087698d50a28d6ef443f4065ee"
+  }
+ },
  "provider_registration:lab/security/key-issuer": {
   "current": "1.1.0",
   "path": "registry/examples/example-provider-raises-a-binding.yaml",
@@ -1274,7 +1281,7 @@
   }
  },
  "type:Machine": {
-  "current": "2.8.0",
+  "current": "2.9.0",
   "path": "registry/classes/resource/compute/machine/_base.yaml",
   "versions": {
    "2.0.0": "sha256:e10d38bfa76509d13affaf18b8a77edc4729354ffea3c2e420654e448c60fc43",
@@ -1293,12 +1300,13 @@
    "2.6.1": "sha256:2903f01699b9d7a4923d8332cc697cfcabeb8edf605da5bebd29702c3aef111a",
    "2.6.2": "sha256:a62c1092d6a958d6d8575664437a40dc16e77a2d136677332a7138751e08007b",
    "2.6.3": "sha256:b8d1f74393473e81b507e326a69501114b9c00ca90737dcd0e2ae1bcddb3c318",
-   "2.7.0": "sha256:be63c8ac9721b1aede66a50b133309f6f472f4526f316b82327718fc411801b1",
-   "2.8.0": "sha256:37a4fe92fcf44e9dd2620dd6220d3056fef9580d6213276ccff4bee3cf0022a7"
+   "2.7.0": "sha256:13de332c45191f19f7667ea1804cc0f0914a2525881135fed235f61a130390e1",
+   "2.8.0": "sha256:ea812c786533f834a3762990875283ded2bf92024e9f23aaf216729737bf9585",
+   "2.9.0": "sha256:4ab3e6c897fa3dd4a1486abeef61d9f5fac0f208cf8fa0eaf393c29249e7efeb"
   }
  },
  "type:Machine.BareMetalHost": {
-  "current": "0.18.1",
+  "current": "0.19.0",
   "path": "registry/classes/resource/compute/machine/bare-metal-host.yaml",
   "versions": {
    "0.11.0": "sha256:74559543232fc83cd38c90ec25e206f788e14bc954ac3e3b7fe3a975d26173de",
@@ -1315,11 +1323,12 @@
    "0.17.1": "sha256:a8a92206a18def2b045d68783f0c39dea80de2434da9d23caaee7e92dcedcf14",
    "0.17.2": "sha256:177a43d4b044f46d487302dbbcea9956a6f676b33767458932a0e587d336cd41",
    "0.18.0": "sha256:8907e3ac202709bbe5c348cd3a92f77b4a14dc2722fd85544031edadb2ca188b",
-   "0.18.1": "sha256:df3885d36f36df47339a73f9f110825ddcd0595a3e05eb1b130b6c2c7ea1050b"
+   "0.18.1": "sha256:df3885d36f36df47339a73f9f110825ddcd0595a3e05eb1b130b6c2c7ea1050b",
+   "0.19.0": "sha256:d9a4d456b56d98195d470a80020dd9ee0bf7f01b004094ba6f377898bd964709"
   }
  },
  "type:Machine.LPAR": {
-  "current": "0.2.3",
+  "current": "0.3.0",
   "path": "registry/classes/resource/compute/machine/lpar.yaml",
   "versions": {
    "0.1.0": "sha256:d03991ca69a4774ff99404ce5fba9e945a4830e80b494e78047c41340474a52b",
@@ -1330,11 +1339,12 @@
    "0.2.0": "sha256:97a8154c8caa76ef6b1ad3f0e0058ea3def461e546f9867dda029bcf9bd56bba",
    "0.2.1": "sha256:d8e23e1a8f3a4f45e6444e51199ddb4e96b424e6ee47e6da6a35f28ab7a6f85d",
    "0.2.2": "sha256:77b9a6601ae190efac520a7d60a4ab0ff35922ce84e346450cd8c438289623fe",
-   "0.2.3": "sha256:3dc05ed04ca6af5546f0967e6631297e4cbab21696843d19aa1840ea5bc771fe"
+   "0.2.3": "sha256:3dc05ed04ca6af5546f0967e6631297e4cbab21696843d19aa1840ea5bc771fe",
+   "0.3.0": "sha256:a14c3824f649872df662d9747ce1c3a4cd4a7c49d4b14062cfa92236319abca4"
   }
  },
  "type:Machine.VM": {
-  "current": "2.4.2",
+  "current": "2.6.0",
   "path": "registry/classes/resource/compute/machine/vm.yaml",
   "versions": {
    "2.0.0": "sha256:2a5c4f36fbdf6c2cea6a7f2dc90c4f122b10a04c9b35d77622fc9d2c9092a47e",
@@ -1349,7 +1359,9 @@
    "2.3.0": "sha256:507f78d693b0a1e203e91329ee664134a021fdabe835b9140ce98a1a60d6ae9d",
    "2.4.0": "sha256:8624e104c10fda3059ecffd384283fce4e31fdbc1c709970e7273316cb84d062",
    "2.4.1": "sha256:88569f21b3d3fe3ff0089755384060e966298d148d12ba6ade0aeb3d05597f7b",
-   "2.4.2": "sha256:77932d598f1113d1cf7ff6923042b4adeaa56f4ae8ce6d4df9039c811a3a545b"
+   "2.4.2": "sha256:77932d598f1113d1cf7ff6923042b4adeaa56f4ae8ce6d4df9039c811a3a545b",
+   "2.5.0": "sha256:f17d8dfad8bdc1dfb9bb10e790522d57115c6a432dd3ea1e37e2179aebac3f8b",
+   "2.6.0": "sha256:55f787e20979ea4cf9239010e2fa2cc818fd242057cc8852599e3e2644bdcc6a"
   }
  },
  "type:Machine.VM.CExampleCloud": {
@@ -1821,12 +1833,13 @@
   }
  },
  "type:SoftwareBillOfMaterials": {
-  "current": "0.3.0",
+  "current": "0.4.0",
   "path": "registry/classes/knowledge/software-bill-of-materials/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:1232b8d94e0adf5a7e9e010e138e29353f36b326a27d18863519198805e54d08",
+   "0.1.0": "sha256:412e31e1a18bca31620942fb16fdc08f067fd7f707f76e3119adf6ece4b3c89a",
    "0.2.0": "sha256:c30207a7d94415e72537a5c60158e52bf06870b77a83ab4cf8a553f43485101e",
-   "0.3.0": "sha256:0286bfd99f47e1ad2371a44a80b64244be40cb741dc76e044ec4a69f9704b0b5"
+   "0.3.0": "sha256:0286bfd99f47e1ad2371a44a80b64244be40cb741dc76e044ec4a69f9704b0b5",
+   "0.4.0": "sha256:2c474503e5b820f8131955bca5877c03ee5fddf44a5998fcb098620f047f44bd"
   }
  },
  "type:SoftwareImage": {

@@ -203,7 +203,7 @@ registration, and it moves when the provider re-registers.
 |---|---|
 | `registry/examples/example-provider-binds-a-type.yaml` | A provider with no Provider Class binds `Machine.VM` at a version. |
 | `registry/examples/example-provider-binds-a-provider-class.yaml` | A provider with data of its own binds its Provider Class at a version. |
-| `registry/examples/example-provider-raises-a-binding.yaml` | A provider that stayed on `CredentialRef` 0.8.4 takes up 0.9.0, and its registration goes 1.0.0 to 1.1.0. |
+| `registry/examples/example-provider-raises-a-binding.yaml` | A provider that stayed on `NetworkGateway` 0.9.2 takes up 0.10.0, and its registration goes 1.0.0 to 1.1.0. |
 | `registry/examples/must-reject/042-provider-binding-with-no-version.yaml` | A binding that names no version is refused. |
 | `registry/examples/must-reject/043-provider-binding-to-an-unpublished-version.yaml` | A binding to a version the registry never published is refused. |
 
