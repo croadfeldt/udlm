@@ -512,6 +512,11 @@ marked `enforcement: structural` is an invariant: its cardinality is enforced on
 An instance edge's `relation`, when present, must be a `name` some template in the chain declares
 (`REL-001`).
 
+A relation may be declared for several targets: one template per target, all with the same `name`. They
+are one relation with alternative targets, so the cardinality counts across them. `SoftwareBillOfMaterials`
+declares `describes` six times, once per kind of subject, each `1..1` and structural: a record carries one
+`describes` edge in all, never one per target (`REL-002`).
+
 ```yaml
 # schema: class.schema.json
 # Machine.VM (registry/classes/resource/compute/machine/vm.yaml)
