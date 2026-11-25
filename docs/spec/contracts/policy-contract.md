@@ -61,7 +61,7 @@ Every request into the control plane carries an `operation.type` that identifies
 | Operation Type | When it occurs | Description |
 |---------------|---------------|-------------|
 | `initial_provisioning` | Day 0 — first request for a new resource | Full pipeline: assembly, all policies, placement, dispatch |
-| `adoption` | An observed resource is brought under management (DCM ADR-017, ADR-030) | Adoption pipeline: policy decides whether the observation counts and who owns it; reverse placement finds the claiming provider; a candidate intent is run dry through every policy, approved, then converged. Nothing is built or torn down before approval |
+| `adoption` | An observed resource is brought under management (DCM ADR-017, ADR-030) | Adoption pipeline: a policy decides whether the observation counts and who owns it; reverse placement finds the claiming provider; a candidate intent is run dry through every policy, approved, then converged. Nothing is built or torn down before approval |
 | `update` | Day 2 — modify an existing operational resource, including a change of capacity | Partial pipeline: assembly with existing entity as base, policies evaluate changed fields |
 | `rehydration` | Rebuild from stored state (DR, migration, refresh) | Full pipeline: all current policies re-evaluate from intent or realized state |
 | `decommission` | Day N — request to remove a resource | Decommission pipeline: dependency checks, notification, revocation, provider teardown |
@@ -132,10 +132,10 @@ policy_artifact:
 | Validation (structural-class) | `[initial_provisioning, adoption, update, rehydration]` | Structural validation on any data change |
 | Transformation | `[initial_provisioning, adoption, rehydration]` | Inject/enrich on new builds, adoptions and rebuilds; skip on minor updates |
 | Recovery | `all` | Recovery posture always applicable |
-| Orchestration Flow | `[initial_provisioning, adoption, rehydration, decommission]` | Pipeline orchestration on major lifecycle transitions |
+| Orchestration Flow | `[initial_provisioning, rehydration, decommission]` | Pipeline orchestration on major lifecycle transitions |
 | Governance Matrix Rule | `all` | Boundary controls always checked |
 | Lifecycle | `all` | TTL/expiry constraints always active |
-| ITSM Action | `[initial_provisioning, adoption, update, decommission]` | ITSM records on provisioning, adoption, changes, and teardown |
+| ITSM Action | `[initial_provisioning, update, decommission]` | ITSM records on provisioning, changes, and teardown |
 
 These defaults can be overridden per policy. Profile-governed minimums prevent downgrading below security requirements:
 
