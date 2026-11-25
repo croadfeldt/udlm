@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/1.0/SoftwareBillOfMaterials/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/1.0/SoftwareBillOfMaterials/0.4.0",
   "conforms_to": "udlm/1.0",
   "uuid": "7da883d3-0ffa-4c2c-9a86-4183e3b9ae20",
   "resource_type": "SoftwareBillOfMaterials",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "SoftwareBillOfMaterials",
-          "version": "0.3.0",
+          "version": "0.4.0",
           "uuid": "7da883d3-0ffa-4c2c-9a86-4183e3b9ae20"
         }
       ]
@@ -115,15 +115,17 @@
       "edge_type": "references",
       "target": "SoftwareImage",
       "name": "describes",
-      "cardinality": "0..1",
+      "cardinality": "1..1",
+      "enforcement": "structural",
       "adopted_from": "SPDX 2.3 DESCRIBES",
-      "description": "The image this document lists the contents of. A document describes exactly one subject, so a record carries one `describes` edge in all. Any resource that carries software can be a subject; the targets declared here are the usual ones and not a closed set."
+      "description": "The image this document lists the contents of. A document describes exactly one subject. `describes` is one relation declared for several targets. Its cardinality counts across all of them (REL-002), so a record carries one `describes` edge in all. A discovered record's edges carry no relation name, so its subject is the edge whose target is one of the classes declared here."
     },
     {
       "edge_type": "references",
       "target": "FirmwareRelease",
       "name": "describes",
-      "cardinality": "0..1",
+      "cardinality": "1..1",
+      "enforcement": "structural",
       "adopted_from": "SPDX 2.3 DESCRIBES",
       "description": "Or the firmware release it lists the contents of. The devices that run the release are found by what they state, so one document covers every device on that release."
     },
@@ -131,7 +133,8 @@
       "edge_type": "references",
       "target": "Machine",
       "name": "describes",
-      "cardinality": "0..1",
+      "cardinality": "1..1",
+      "enforcement": "structural",
       "adopted_from": "SPDX 2.3 DESCRIBES",
       "description": "Or the machine whose installed software it lists, a host or a guest whose operating system is delivered package by package."
     },
@@ -139,7 +142,8 @@
       "edge_type": "references",
       "target": "KubernetesCluster",
       "name": "describes",
-      "cardinality": "0..1",
+      "cardinality": "1..1",
+      "enforcement": "structural",
       "adopted_from": "SPDX 2.3 DESCRIBES",
       "description": "Or the cluster whose platform release it lists."
     },
@@ -147,7 +151,8 @@
       "edge_type": "references",
       "target": "NetworkSwitch",
       "name": "describes",
-      "cardinality": "0..1",
+      "cardinality": "1..1",
+      "enforcement": "structural",
       "adopted_from": "SPDX 2.3 DESCRIBES",
       "description": "Or the switch whose firmware it lists."
     },
@@ -155,7 +160,8 @@
       "edge_type": "references",
       "target": "NetworkGateway",
       "name": "describes",
-      "cardinality": "0..1",
+      "cardinality": "1..1",
+      "enforcement": "structural",
       "adopted_from": "SPDX 2.3 DESCRIBES",
       "description": "Or the gateway whose firmware it lists."
     },
@@ -163,7 +169,8 @@
       "edge_type": "references",
       "target": "BMC",
       "name": "describes",
-      "cardinality": "0..1",
+      "cardinality": "1..1",
+      "enforcement": "structural",
       "adopted_from": "SPDX 2.3 DESCRIBES",
       "description": "Or the management controller whose firmware it lists."
     },

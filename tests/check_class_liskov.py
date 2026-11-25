@@ -254,6 +254,23 @@ def rel_identity(rel):
     return rel.get("name") or (rel.get("edge_type"), rel.get("target"), rel.get("target_field"))
 
 
+def alternative_target_errors(rels, where):
+    """REL-002: templates that share a `name` are one relation with alternative targets, and its
+    cardinality counts across them. That reading only holds if they say the same thing, so every
+    template of one name states the same edge_type, cardinality and enforcement."""
+    fails, first = [], {}
+    for rel in rels or []:
+        nm = rel.get("name")
+        if not nm:
+            continue
+        said = (rel.get("edge_type"), rel.get("cardinality", "0..n"), rel.get("enforcement", "example"))
+        if first.setdefault(nm, said) != said:
+            fails.append(f"REL-002 {where}: relation {nm!r} is declared for several targets, so it is one relation "
+                         f"and its templates must agree on edge_type, cardinality and enforcement; "
+                         f"{rel.get('target')} says {said}, an earlier target says {first[nm]}")
+    return fails
+
+
 def check(by_name):
     fails, n = [], 0
     for name, cls in sorted(by_name.items()):
@@ -277,6 +294,7 @@ def check(by_name):
                 fails += refine_errors(anc_out[oname] or {}, oschema or {}, f"{name}.outputs.{oname}")
         # relationships (#323 + maintainer ruling 2026-08-03 "tighten at your scope"): a child
         # ADDS edges, or REDECLARES an ancestor's to TIGHTEN it — never loosen/retarget/re-type.
+        fails += alternative_target_errors(cls.get("relationships"), name)
         anc_rel = ancestor_axis(cls, by_name, "relationships", as_map=rel_identity)
         for rel in cls.get("relationships") or []:
             parent = anc_rel.get(rel_identity(rel))
@@ -320,6 +338,12 @@ def main():
     probe = refine_errors({"type": "integer", "minimum": 1}, {"type": "string"}, "self_test")
     if not probe:
         print("FAIL [LSK-SELF] the Liskov refinement check did not catch a type-change contradiction")
+        fails.append("self-test")
+    # one relation, several targets: templates of one name that disagree MUST be caught (REL-002)
+    if not alternative_target_errors([{"name": "describes", "edge_type": "references", "target": "A", "cardinality": "1..1"},
+                                      {"name": "describes", "edge_type": "references", "target": "B", "cardinality": "0..1"}],
+                                     "self_test"):
+        print("FAIL [LSK-SELF] two targets of one relation with different cardinalities were not caught")
         fails.append("self-test")
     # the OFFER checks self-test too — a gate that cannot fail proves nothing about the matrix
     if not supports_wellformed({"supports": [{"min": "8Gi", "max": "1Gi"}]}, "self_test"):
