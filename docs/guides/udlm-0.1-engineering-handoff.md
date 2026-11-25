@@ -128,16 +128,17 @@ and writes its own record of what it admitted. The contract is
 ## 8. The conformance suite and your evidence
 
 The suite judges the records an implementation writes. It is
-[`tests/conformance.py`](../../tests/conformance.py), suite 1.0.0, record level; [`CONFORMANCE.md`](../../CONFORMANCE.md)
+[`tests/conformance.py`](../../tests/conformance.py), suite 1.1.0, record level; [`CONFORMANCE.md`](../../CONFORMANCE.md)
 §8 is its contract. Run it against a directory of your records:
 
 ```bash
 python3 tests/conformance.py path/to/your/records --report conformance-report.json
 ```
 
-- **What it checks**, 14 rules: the state-record schema on stream heads, integrity chains (INT),
-  transition provenance (TRN), fulfillment conditions (FUL), dispatch receipts (DSP), and each head's
-  fields and outputs against the class version it pins.
+- **What it checks**, 15 rules: the state-record schema on stream heads, integrity chains (INT),
+  transition provenance (TRN), fulfillment conditions (FUL) and dispatch receipts (DSP). It also checks
+  the edges a class marks structural (REL-002), and each head's fields and outputs against the class
+  version it pins.
 - **What a pass means.** Exit 0 means every rule held on every record it read. Each rule has at least
   one must-reject case, so a rule that stopped refusing would turn the suite's own CI red.
 - **What it does not check.** Wire behaviour, §6 of `CONFORMANCE.md`, is 1.x. And a payload is judged
@@ -155,7 +156,7 @@ pipeline and governed through the four states.
 - **Every run keeps a report.** A CI job in the estate repository, `conformance-report`, runs the suite
   on every merge request and every commit to main. It keeps `conformance-report.json` as an artifact
   that never expires.
-- **Where it stands.** On 2026-11-03 the estate passed all 14 rules with no failure: 2,540 records and
+- **Where it stands.** On 2026-11-03 the estate passed all 14 rules of suite 1.0.0 with no failure: 2,540 records and
   1,149 stream heads. 883 heads pin an older class revision, so their payloads were reported unjudged.
   The estate re-pins to `udlm/1.0` after the tag, and then every payload is judged.
 - **How it is used.** A register row that promotes a part cites one report: the pipeline and how many of

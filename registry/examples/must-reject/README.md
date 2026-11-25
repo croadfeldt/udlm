@@ -51,7 +51,7 @@ Cases 024 onward name `gate: conformance`: they are refused by the conformance s
 (`tests/conformance.py`) rather than by a single gate. The record is judged beside this
 repository's worked records, so a reference or a supersession resolves against them, and only
 findings on the case itself count. The suite's `--self-test` also checks coverage: every rule the
-suite applies (14, from `schema` to `payload.outputs`) must have at least one case here, or CI fails.
+suite applies (15, from `schema` to `payload.outputs`) must have at least one case here, or CI fails.
 
 ## Relationship to `use-cases/must-reject/`
 

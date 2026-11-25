@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The UDLM conformance suite, record level (suite 1.0.0): run it against the records an implementation writes.
+"""The UDLM conformance suite, record level (suite 1.1.0): run it against the records an implementation writes.
 
 CONFORMANCE.md §8 requires an implementation to run the suite to self-certify and to record its version
 (`conformance_test_suite_version`, §4.1). The 1.0 bar (ruling 2, UDLM-1.0-LOCKDOWN.md) is record level: the
@@ -20,6 +20,11 @@ it finds (intent, requested, realized, discovered):
               of blockers can be walked to a root.
   DSP-002/003/004  a requested record carries a dispatch receipt, and what it admits is the class's
               execution elements or explicitly granted.
+  REL-002     a head carries, for every relationship its class marks structural, as many edges as the class's
+              cardinality allows. Templates that share a name are one relation and are counted together. An
+              edge with no relation name (a discovered record's) counts by its target's class, read from the
+              records beside it; where a target is not among them the count cannot be judged, and that is a
+              warning (REL-002.unjudged), not a failure.
   payload     a head's fields (and a realized or discovered head's outputs) validate at depth against the
               class at the version the record pins; a version this registry does not serve is a warning
               (payload.unjudged): the payload cannot be judged, not judged wrong.
@@ -47,7 +52,7 @@ import warnings
 import jsonschema
 import yaml
 
-SUITE_VERSION = "1.0.0"
+SUITE_VERSION = "1.1.0"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REG = os.path.join(ROOT, "registry")
 sys.path.insert(0, os.path.join(REG, "tools"))
@@ -60,8 +65,11 @@ import check_dispatch_slice as DSP  # noqa: E402
 
 STATE_KINDS = ("intent_record", "requested_record", "realized_record", "discovered_record")
 RULES = ["schema", "INT-001", "INT-002", "TRN-001", "TRN-002", "TRN-003", "FUL-001", "FUL-002", "FUL-003",
-         "DSP-002", "DSP-003", "DSP-004", "payload.fields", "payload.outputs"]
+         "DSP-002", "DSP-003", "DSP-004", "REL-002", "payload.fields", "payload.outputs"]
 SCHEMA_BOUND = {"CLS-010", "DEP-015", "RHY-007", "WIR-001", "WIR-002", "WIR-003", "WIR-007"}
+EDGE_KINDS = ("requested_record", "realized_record", "discovered_record")   # an intent record carries no edges
+UNJUDGED = {"payload.unjudged": "records pinning a class version this registry does not serve",
+            "REL-002.unjudged": "records with an edge whose target is not among the records given"}
 
 
 # ---------------------------------------------------------------- loading
@@ -130,12 +138,91 @@ def class_validators():
     return out
 
 
+def class_relations():
+    """resource_type -> (version, [relation]), from the served class specs. Templates that share a `name` are
+    one relation with alternative targets (REL-002); a template with no name is a relation by itself."""
+    out = {}
+    for p in sorted(glob.glob(os.path.join(REG, "generated", "*.json"))):
+        d = json.load(open(p, encoding="utf-8"))
+        if not d.get("resource_type"):
+            continue
+        rels = {}
+        for t in d.get("relationships") or []:
+            key = t.get("name") or (t.get("edge_type"), t.get("target"), t.get("target_field"))
+            rel = rels.setdefault(key, {"name": t.get("name"), "edge_type": t.get("edge_type"), "targets": [],
+                                        "cardinality": t.get("cardinality", "0..n"),
+                                        "structural": t.get("enforcement") == "structural"})
+            rel["targets"].append(t.get("target"))
+        out[d["resource_type"]] = (d.get("version"), list(rels.values()))
+    return out
+
+
+def _is_a(cls, target):
+    return cls == target or cls.startswith(f"{target}.")
+
+
+def relation_findings(record, relations, class_of):
+    """REL-002 on one record: ([what is wrong], [what could not be judged]). `class_of(edge)` is the class of
+    the edge's target, or None where the target is not among the records given.
+
+    An edge that names its `relation` counts toward that relation. An edge that names none counts toward
+    the relation that declares its target's class. Where the target's class is not known, or two relations
+    declare it, the edge may belong to any relation of its edge type and is counted for none of them."""
+    fails, unjudged = [], []
+    edges = [e for e in record.get("dependencies") or [] if isinstance(e, dict)]
+    for rel in relations:
+        if not rel["structural"]:
+            continue
+        low, _, high = str(rel["cardinality"]).partition("..")
+        low, high = int(low), (None if high == "n" else int(high))
+        known = unknown = 0
+        for e in edges:
+            if e.get("relation"):
+                known += e["relation"] == rel["name"]
+                continue
+            if e.get("edge_type") != rel["edge_type"]:
+                continue
+            cls = class_of(e)
+            declaring = [] if cls is None else [r for r in relations if r["edge_type"] == e["edge_type"]
+                                                and any(_is_a(cls, t) for t in r["targets"])]
+            if cls is None or (len(declaring) > 1 and any(r is rel for r in declaring)):
+                unknown += 1
+            elif declaring and declaring[0] is rel:
+                known += 1
+        what = (f"relation `{rel['name']}`" if rel["name"] else f"the `{rel['edge_type']}` relation") + \
+            f" to {' or '.join(rel['targets'])} is structural with cardinality {rel['cardinality']}"
+        if high is not None and known > high:
+            fails.append(f"{what}; this record carries {known} such edges")
+        elif known + unknown < low:
+            fails.append(f"{what}; this record carries {'none' if not known else known}")
+        elif unknown and (known < low or (high is not None and known + unknown > high)):
+            unjudged.append(f"{what}; {known} edge(s) counted and {unknown} more of that edge type name a target "
+                            f"that is not among these records")
+    return fails, unjudged
+
+
 # ---------------------------------------------------------------- the suite
 
-def run(records, rv=None, cv=None):
+def run(records, rv=None, cv=None, cr=None):
     """{"failures": [(rule, where, detail)], "warnings": [...], "checked": {rule: n}}."""
     rv = rv or record_validator()
     cv = cv if cv is not None else class_validators()
+    cr = cr if cr is not None else class_relations()
+    class_by_entity, classes_by_key = {}, {}
+    for d, _ in records:
+        if d.get("entity_uuid") and d.get("resource_type"):
+            class_by_entity.setdefault(d["entity_uuid"], d["resource_type"])
+        for c in d.get("correlation_ids") or []:
+            if isinstance(c, dict) and d.get("resource_type"):
+                classes_by_key.setdefault((c.get("scheme"), c.get("value")), set()).add(d["resource_type"])
+
+    def class_of(edge):
+        """The class of an edge's target: by its identity, else by a natural key exactly one class answers to."""
+        if edge.get("target_uuid") in class_by_entity:
+            return class_by_entity[edge["target_uuid"]]
+        key = edge.get("target_key") or {}
+        named = classes_by_key.get((key.get("scheme"), key.get("value")), ())
+        return next(iter(named)) if len(named) == 1 else None
     fails, warns, checked = [], [], {r: 0 for r in RULES}
     by_uuid = {}
     for d, _ in records:
@@ -188,8 +275,16 @@ def run(records, rv=None, cv=None):
                     checked[r] += 1
                 for f in DSP.judge(d, dsp_index, where):
                     fails.append((f.split()[0], where, f.split(" ", 2)[-1]))
-            # payload — at the class version the record pins
             rt, pinned = d.get("resource_type"), str(d.get("type_version"))
+            # REL-002 — the structural relationships of the class at the version the record pins. A version
+            # this registry does not serve is reported once, below, as payload.unjudged.
+            if d.get("record_type") in EDGE_KINDS and rt in cr and str(cr[rt][0]) == pinned \
+                    and any(r["structural"] for r in cr[rt][1]):
+                checked["REL-002"] += 1
+                wrong, unknown = relation_findings(d, cr[rt][1], class_of)
+                fails += [("REL-002", where, m) for m in wrong]
+                warns += [("REL-002.unjudged", where, m) for m in unknown]
+            # payload — at the class version the record pins
             if rt in cv and str(cv[rt][0]) == pinned:
                 _, fv, ov = cv[rt]
                 if isinstance(d.get("fields"), dict):
@@ -216,13 +311,47 @@ def udlm_ref():
 
 # ---------------------------------------------------------------- self-test
 
+def _relation_self_test():
+    """REL-002 counts what it should: the cases a must-reject file cannot show, because they pass."""
+    one = {"name": "describes", "edge_type": "references", "targets": ["Image", "Machine"], "cardinality": "1..1",
+           "structural": True}
+    lists = {"name": "contains", "edge_type": "references", "targets": ["Package"], "cardinality": "0..n",
+             "structural": False}
+    many = {"name": None, "edge_type": "references", "targets": ["Key"], "cardinality": "1..n", "structural": True}
+    classes = {"i": "Image", "vm": "Machine.VM", "p": "Package", "k": "Key"}
+
+    def judge(relations, *edges):
+        fails, unjudged = relation_findings({"dependencies": [dict(e, edge_type=e.get("edge_type", "references"))
+                                                              for e in edges]},
+                                            relations, lambda e: classes.get(e.get("target_uuid")))
+        return "fail" if fails else "unjudged" if unjudged else "pass"
+
+    cases = [
+        ("one subject among packages", judge([one, lists], {"target_uuid": "i"}, {"target_uuid": "p"}), "pass"),
+        ("a subclass of a declared target is that target", judge([one, lists], {"target_uuid": "vm"}), "pass"),
+        ("an edge that names the relation needs no lookup", judge([one, lists], {"relation": "describes"}), "pass"),
+        ("no subject", judge([one, lists], {"target_uuid": "p"}), "fail"),
+        ("two subjects", judge([one, lists], {"target_uuid": "i"}, {"target_uuid": "vm"}), "fail"),
+        ("two subjects, both named", judge([one, lists], {"relation": "describes"}, {"relation": "describes"}), "fail"),
+        ("an edge of another edge type is not counted", judge([one, lists], {"target_uuid": "i", "edge_type": "depends_on"}), "fail"),
+        ("a target that is not among the records", judge([one, lists], {"target_uuid": "elsewhere"}), "unjudged"),
+        ("one subject and a target that is not among the records",
+         judge([one, lists], {"target_uuid": "i"}, {"target_uuid": "elsewhere"}), "unjudged"),
+        ("an unnamed relation, one or more", judge([many], {"target_uuid": "k"}, {"target_uuid": "k"}), "pass"),
+        ("an unnamed relation, none", judge([many]), "fail"),
+        ("an example relation is never enforced", judge([dict(one, structural=False)]), "pass"),
+    ]
+    return [f"REL-002 self-test, {name}: expected {want}, got {got}" for name, got, want in cases if got != want]
+
+
 def self_test():
     """The worked records must pass, and every must-reject case bound to a rule this suite applies must be
     refused for that rule. A suite that cannot fail proves only that the files parsed."""
-    rv, cv = record_validator(), class_validators()
+    rv, cv, cr = record_validator(), class_validators(), class_relations()
     ex = load_tree([os.path.join(REG, "examples")])
-    res = run(ex, rv, cv)
+    res = run(ex, rv, cv, cr)
     problems = [f"worked record refused: {r} {w}: {d}" for r, w, d in res["failures"]]
+    problems += _relation_self_test()
     n_cases, covered = 0, set()
     for p in sorted(glob.glob(os.path.join(REG, "examples", "must-reject", "*.yaml"))):
         case = yaml.safe_load(open(p, encoding="utf-8")) or {}
@@ -234,7 +363,8 @@ def self_test():
         if want not in RULES:
             continue
         n_cases += 1
-        got = {r for r, w, _d in run(ex + [(rec, os.path.basename(p))], rv, cv)["failures"] if w == os.path.basename(p)}
+        got = {r for r, w, _d in run(ex + [(rec, os.path.basename(p))], rv, cv, cr)["failures"]
+               if w == os.path.basename(p)}
         if want not in got:
             hint = ""
             if want.startswith("payload."):
@@ -281,8 +411,10 @@ def main():
         print(f"  {r:16} {'FAIL' if n else 'pass'}  {res['checked'][r]} checked{f', {n} failed' if n else ''}")
         for w, dtl in by_rule.get(r, [])[:10]:
             print(f"             {w}: {dtl}")
-    if res["warnings"]:
-        print(f"  {len(res['warnings'])} warning(s): records pinning a class version this registry does not serve (payload.unjudged)")
+    for kind, says in UNJUDGED.items():
+        n = sum(1 for r, _w, _d in res["warnings"] if r == kind)
+        if n:
+            print(f"  {n} warning(s): {says} ({kind})")
     if args.report:
         with open(args.report, "w", encoding="utf-8") as fh:
             json.dump({"suite": "udlm-conformance", "suite_version": SUITE_VERSION, "udlm_ref": udlm_ref(),

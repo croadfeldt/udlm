@@ -419,7 +419,7 @@ error vocabulary in [`error-model.md`](docs/spec/contracts/error-model.md).
 ---
 ## 8. Test suite
 
-Conformance is verified by the udlm conformance test suite, `tests/conformance.py`. **Suite 1.0.0 is
+Conformance is verified by the udlm conformance test suite, `tests/conformance.py`. **Suite 1.1.0 is
 record level**: it judges the records an implementation writes, against the rules a record can be judged
 by alone or with the records beside it. Run it against a directory of your records (YAML, multi-document
 allowed, or JSON):
@@ -441,6 +441,11 @@ It applies, to every state record (intent, requested, realized, discovered):
   blocker chain reaches a root.
 - **Dispatch** (DSP-002..004): a requested record carries a dispatch receipt admitting only execution
   elements or grants.
+- **Relationships** (REL-002): a requested, realized or discovered head carries, for every relationship
+  its class marks structural, as many edges as the class's cardinality allows. Templates that share a
+  name are one relation, counted together. An edge with no relation name is counted by its target's
+  class, read from the records beside it. Where a target is not among them the count is reported as
+  `REL-002.unjudged`, not failed.
 - **payload:** a head's fields, and a realized or discovered head's outputs, validate at the class
   version it pins. A version this registry does not serve is reported, not failed.
 
@@ -452,12 +457,15 @@ The suite tests itself on every change (`--self-test`): this repository's worked
 rules must be refused for the rule it names. A rule that stopped refusing would turn CI red. Every rule
 the suite applies has at least one such case, and the self-test fails if a rule loses its last one.
 
-**What is not in 1.0.0.** The wire-level checklist of §6 (operations issued against an implementation's
-interop surfaces) is the 1.x half of the suite. Until it exists, a declaration states suite 1.0.0 and the
-record level it covers.
+**Versions.** Suite 1.0.0 applied 14 rules. Suite 1.1.0 adds one, REL-002 on records, so a record that
+1.0.0 passed can fail 1.1.0. A declaration states the version it ran.
+
+**What is not in the suite yet.** The wire-level checklist of §6 (operations issued against an
+implementation's interop surfaces) is the 1.x half of the suite. Until it exists, a declaration states the
+suite version it ran and the record level it covers.
 
 **The 1.0 bar** (maintainer rulings 2026-10-28 and 2026-10-29, `registry/UDLM-1.0-LOCKDOWN.md` §1).
-Suite 1.0.0 is the bar: one command a peer runs against a tree of its own records, versioned with
+The record-level suite is the bar: one command a peer runs against a tree of its own records, versioned with
 the spec. A 1.0 declaration certifies the record contracts and lists the §6 wire-level checklist in
 `exclusions` until the 1.x half exists. The first run is the authors' own deployment, and the
 declaration says so: UDLM 1.0 claims one production deployment, not the two independent
