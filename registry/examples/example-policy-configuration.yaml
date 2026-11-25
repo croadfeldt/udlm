@@ -1,0 +1,36 @@
+# asserts: POL-011, POL-012, POL-013
+# proves: a policy configuration holds one deployment's values for one policy. It pins the policy
+# by version, supplies the two parameters the policy declares, and says who owns it, where it
+# applies, how strictly, and who hears about a refusal. Nothing here is logic.
+record_type: policy_configuration
+uuid: 19180e96-aa97-4982-a6ac-56506ad2cd92
+handle: eu-data-residency-gate
+conforms_to: udlm/1.0
+name: EU data residency — eu_personal data stays in EU zones
+description: One deployment's values for the data residency gate. eu_personal data may only be
+  realized in an EU sovereignty zone. Worked example (example.com content).
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status: {state: active}
+# The one policy these values are for, pinned. A new version of the policy does not reach this
+# deployment until a new version of this record moves the pin (POL-012).
+configures: data-residency-gate@3.0.0
+parameters:
+  classification_levels: [eu_personal]
+  allowed_zones: [eu-west, eu-central, eu-north]
+domain: tenant
+enforcement: hard
+lifecycle_scope:
+  operations: [all]
+audit_on: [DENY]
+notification_on: [DENY]
+notification_urgency: high
+compliance_basis: "GDPR Art. 44 (transfers)"
+review_required_before: "2027-01-01T00:00:00Z"
+metadata:
+  display_name: EU data residency
+  notes:
+  - at: "2026-11-22T00:00:00Z"
+    author: UDLM project
+    text: These values were part of the policy record until its version 3.0.0. The handle is the
+      one the policy carried, so a record that named this decision by handle still finds it.

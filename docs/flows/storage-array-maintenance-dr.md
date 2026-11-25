@@ -98,7 +98,7 @@ role** column separates policies that *decide* (gate, refuse, select) from polic
 | DR gate (replica healthy, current, sized) | the replica pool's declared outputs (`usable_capacity`, `redundancy_status`, `fault_tolerance_remaining`, `spares_available`) **and the DR-pairing edge naming which pool is the replica** | Health outputs **EXIST** (StoragePool 0.7.2); the DR-pairing relationship is **MISSING** (issue #250; `Volume.ZFS` has `replica_of`, a pool has nothing) | Decides (`validation`): maintenance may not be scheduled until the gate passes |
 | Cutover re-bind | the replica shares' declared outputs (the [D8.3] binding surface) | Mechanism **EXISTS**; FileShare's surface is **THIN**: `mount_uri` only (issue #251), so a re-bind is possible but share-side verification is not | Decides (`validation`): cutover verified or rolled back |
 | Client health post-cutover | Machine `run_state` and the `observed_run_state` output; Container `endpoint`; the realized record's `status` | **EXISTS** | Decides: proceed to window or roll back |
-| Window + ceremony | the change policy's `schedule` clauses (`window`, `expedite`, `approval`) | **EXISTS** (`registry/policy.schema.json`, ADR-053) | Decides: when execution may occur and under what authority |
+| Window + ceremony | the change policy's `schedule` clauses (`window`, `expedite`, `approval`) | **EXISTS** (`registry/policy-configuration.schema.json`, ADR-053) | Decides: when execution may occur and under what authority |
 | Quiesce / restart order | the same `dependencies[]` edges, reverse and forward | **EXISTS**: derived, batched | Enriches: order derivation; decides (`validation`) per batch verdict |
 | Post-maintenance verification | array and share declared outputs vs expected | Pool outputs **EXIST**; share-side limited by #251 | Decides (`validation`): nothing restarts onto an unverified array |
 | Failback decision | a declared failback policy (`policy_type: recovery`) | Policy type **EXISTS**; the recovery output (policy-contract §13) has no failback action yet | Decides: return to primary vs promote replica; either outcome recorded |
@@ -152,6 +152,6 @@ and the trail. The control plane and the providers execute against them.
 |---|---|
 | Dependency edges → derived order | data-model-core §4 (edge model; ordering edge types) |
 | Typed outputs as the binding/cutover surface | data-model-core §2 [D8.3]; ADR-046 (adequacy prerequisite) |
-| Windows, ceremony, expedite, debt states | ADR-053 (change-control policy vocabulary); `registry/policy.schema.json` `schedule`; `docs/examples/change-control-walkthrough.md` |
+| Windows, ceremony, expedite, debt states | ADR-053 (change-control policy vocabulary); `registry/policy-configuration.schema.json` `schedule`; `docs/examples/change-control-walkthrough.md` |
 | Evidence and promotion/refusal | ADR-046 |
 | Corpus cases | `use-cases/change-control/009`, `/010` |

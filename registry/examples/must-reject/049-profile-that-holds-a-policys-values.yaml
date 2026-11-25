@@ -1,0 +1,21 @@
+must_reject:
+  rule: POL-014
+  gate: check_policy_configurations
+  because: A profile that turns the EU data residency configuration on and also sets its zones. The
+    configuration already holds that value. With two homes the profile and the configuration can disagree,
+    and a reader of either one cannot tell which zones are enforced.
+record:
+  record_type: profile
+  uuid: 89001d73-66b1-4d2b-aa9f-5d85c326f09f
+  handle: research/profile-with-policy-values
+  conforms_to: udlm/1.0
+  name: A profile that holds a policy's values
+  description: Deliberately wrong (must-reject). Sets a parameter of a policy configuration in the profile entry.
+  version: 1.0.0
+  status:
+    state: active
+  contains:
+  - ref: eu-data-residency-gate
+    state: required
+    settings:
+      allowed_zones: [eu-west]

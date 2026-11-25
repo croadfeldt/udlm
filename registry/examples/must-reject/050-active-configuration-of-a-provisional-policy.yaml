@@ -1,0 +1,21 @@
+must_reject:
+  rule: POL-015
+  gate: check_policy_configurations
+  because: A deployment likes a new rule and switches it on, while the rule's author still marks it proposed.
+    Provisional logic has not been shown to refuse the right requests, so it may run in shadow mode and nowhere
+    else. An active configuration would apply it for real before anyone promoted it.
+record:
+  record_type: policy_configuration
+  uuid: 9a4d7e3c-fa57-404a-bb11-3d522a66d2e0
+  handle: research/skipped-layer-enforced-early
+  conforms_to: udlm/1.0
+  name: A provisional policy applied for real
+  description: Deliberately wrong (must-reject). Configures a proposed policy and is itself active.
+  version: 1.0.0
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  status: {state: active}
+  configures: skipped-layer-gate@1.0.0
+  domain: platform
+  enforcement: hard
+  lifecycle_scope:
+    operations: [all]

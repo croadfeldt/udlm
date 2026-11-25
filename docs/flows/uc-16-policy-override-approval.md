@@ -24,7 +24,7 @@ suppressed event is audit-linked. Hard policies never reach an approval attempt.
   approval routed (`POL-003`: an override policy cannot target a hard policy).
 - **Separation of duties.** Approval goes to the role authorized for this override class, never to the
   requester. Human escalation is part of the flow, not a bypass of it.
-- **The grant is narrow and bounded.** `target_policy_uuid` names the soft policy it suppresses, `scope` is
+- **The grant is narrow and bounded.** `target_configuration_uuid` names the soft policy configuration it suppresses, `scope` is
   the narrowed match scope (never global), and `expires_at` is mandatory (`POL-009`: no permanent overrides).
   It carries the approver and rationale. It is not a global "policy off" switch.
 - **Suppression is audited.** The grant *and* every subsequent policy event it suppresses are audit-linked,
@@ -51,7 +51,7 @@ Everything else is request-realization.
 - The override grant and every subsequent policy-suppressed event are audit-linked.
 
 ## Data · Policy · Provider
-- **Data:** the override policy record (`target_policy_uuid`, `scope`, `expires_at`, approver, rationale)
+- **Data:** the override policy record (`target_configuration_uuid`, `scope`, `expires_at`, approver, rationale)
   attached to the policy-application state, plus the audit links to suppressed events.
 - **Policy:** each policy declares its `enforcement` (`soft` or `hard`) and its override eligibility; the
   approval routing to an authorized role is itself policy.

@@ -58,14 +58,14 @@ schema's vocabulary carries it.
 |---|---|---|---|
 | Change classified additive/breaking | the upstream change record's `classification` | `registry/regeneration-manifest.schema.json` (the durable change record, ADR-045) | Enriches (`transformation`): stamps the change class every later gate branches on |
 | Blast radius known | the class graph plus the consumer manifests | `registry/class.schema.json` and `registry/tools/generate_class_specs.py`; `registry/consumers/` (register row 044); the manifest's `affected_artifacts` and `consumer_debt` | Enriches: attaches the affected-artifact set to the change record |
-| Adoption mode chosen per class | the estate's change policy (`policy_type: validation` or `orchestration_flow`) with its `schedule` clauses | `registry/policy.schema.json` (`schedule[].kind`: `window`, `freeze`, `expedite`, `precondition`; ADR-053) | Decides: automatic vs windowed vs full ceremony |
-| Freeze suspends adoption | a dated `freeze` clause, which queues rather than runs | `registry/policy.schema.json` (`schedule`) | Decides: refuse-and-queue vs proceed |
+| Adoption mode chosen per class | the estate's change policy (`policy_type: validation` or `orchestration_flow`) with its `schedule` clauses | `registry/policy-configuration.schema.json` (`schedule[].kind`: `window`, `freeze`, `expedite`, `precondition`; ADR-053) | Decides: automatic vs windowed vs full ceremony |
+| Freeze suspends adoption | a dated `freeze` clause, which queues rather than runs | `registry/policy-configuration.schema.json` (`schedule`) | Decides: refuse-and-queue vs proceed |
 | Evidence gate | the blue/green typed-output diff record | `registry/promotion-evidence.schema.json` (ADR-046) | Decides (`validation`): promotion may proceed only on a clean or approved diff |
-| Approval gate | a named approver's sign-off, bound to the digest of the evidence it accepts | `registry/policy.schema.json` (`schedule[].approval`: `approver`, `accepts_digest`, `at`, `authority_level`) | Decides (`override`-class): a human authority accepts the evidence |
-| Window gate | a `window` clause, an `expedite` clause, or a calendar the policy names by reference (`calendar_ref`) and an information provider serves; authority declared per scope; stale knowledge fails closed (docs/design/change-control-knowledge-sources.md, UC 013–015) | `registry/policy.schema.json` (`schedule`); `registry/examples/example-policy-change-window.yaml` | Decides: execute now, defer, or expedite under elevated approval |
+| Approval gate | a named approver's sign-off, bound to the digest of the evidence it accepts | `registry/policy-configuration.schema.json` (`schedule[].approval`: `approver`, `accepts_digest`, `at`, `authority_level`) | Decides (`override`-class): a human authority accepts the evidence |
+| Window gate | a `window` clause, an `expedite` clause, or a calendar the policy names by reference (`calendar_ref`) and an information provider serves; authority declared per scope; stale knowledge fails closed (docs/design/change-control-knowledge-sources.md, UC 013–015) | `registry/policy-configuration.schema.json` (`schedule`); `registry/examples/example-policy-change-window.yaml` | Decides: execute now, defer, or expedite under elevated approval |
 | Propagation order | the entity's `dependencies[]` edges (state records): `edge_type` and its ordering semantics | `registry/state-record.schema.json`; the shutdown-order machinery's own surface | Enriches: derives batch order; no policy overrides structure |
 | Batch verification | target types' declared outputs vs realized values | each class's `outputs` ([D8.3]; per-type adequacy varies) | Decides (`validation`): batch passes or propagation halts |
-| Debt states (windowed, queued, frozen) | typed debt, derived from the schedule clauses and never stored: `pin_behind`, `windowed`, `frozen` | `registry/policy.schema.json` (`schedule`, ADR-053) | Enriches: makes waiting legible and auditable |
+| Debt states (windowed, queued, frozen) | typed debt, derived from the schedule clauses and never stored: `pin_behind`, `windowed`, `frozen` | `registry/policy-configuration.schema.json` (`schedule`, ADR-053) | Enriches: makes waiting legible and auditable |
 | Adoption trail | audit records | `registry/audit-record.schema.json` | Enriches: the reconstructible history every retrospective reads |
 
 Every surface this flow reads has a home in the registry today: the graph, the outputs, the
@@ -118,6 +118,6 @@ evaluates and runs them.
 |---|---|
 | Change classification, pins, debt | ADR-045 (class evolution and pinning) |
 | Evidence, promotion, refusal routing | ADR-046 (blue/green promotion contract) |
-| Policy clause vocabulary, debt states | [ADR-053](../adr/ADR-053-change-control-policy-vocabulary.md) (accepted; realized by `registry/policy.schema.json` `schedule`) |
+| Policy clause vocabulary, debt states | [ADR-053](../adr/ADR-053-change-control-policy-vocabulary.md) (accepted; realized by `registry/policy-configuration.schema.json` `schedule`) |
 | Corpus cases | `use-cases/change-control/` (ride every analysis run) |
 | Worked example (three regimes) | `docs/examples/change-control-walkthrough.md` |

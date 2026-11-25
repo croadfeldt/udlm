@@ -1,0 +1,29 @@
+# asserts: POL-004, POL-011, POL-012
+# proves: one policy serves a second deployment unchanged. This configuration pins the same logic
+# as example-policy-configuration.yaml with other values, a softer enforcement level and a
+# narrower scope, and it is `proposed`: the policy runs on real traffic with these values and its
+# output is logged, never applied. Shadow mode is a configuration's state, because a trial runs
+# with values.
+record_type: policy_configuration
+uuid: a84349d0-e44d-4fb1-9a77-925c3e36f070
+handle: health-data-residency-trial
+conforms_to: udlm/1.0
+name: Health data residency — a trial before it is enforced
+description: A second set of values for the data residency gate. Health records and payment data
+  may only be realized in two zones. In shadow mode while the tenant reviews what it would
+  refuse. Worked example (example.com content).
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status: {state: proposed}
+configures: data-residency-gate@3.0.0
+parameters:
+  classification_levels: [phi, pci]
+  allowed_zones: [eu-west, eu-central]
+domain: tenant
+enforcement: soft
+lifecycle_scope:
+  operations: [initial_provisioning, rehydration, provider_migration]
+audit_on: [ALLOW, DENY]
+notification_urgency: low
+metadata:
+  display_name: Health data residency (trial)

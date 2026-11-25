@@ -316,9 +316,10 @@ The owning Tenant is notified of the new claim
 ## 8. Lifecycle Policies
 
 **Lifecycle actions are policy, not entity fields.** No class, record or edge carries a `lifecycle_policy`. A
-policy (`registry/policy.schema.json`) decides the action for a relationship event. Its `domain` gives the
+policy (`registry/policy.schema.json`) decides the action for a relationship event. Its configuration
+(`registry/policy-configuration.schema.json`, policy-contract §9) holds the `domain`, which gives the
 authority tier of §8.4: `resource_type` for a class default, `entity` for a consumer's choice, `system` for a
-mandate. A policy fires on a relationship event by declaring it in its lifecycle scope
+mandate. A policy fires on a relationship event when its configuration declares it in its lifecycle scope
 (`lifecycle_scope.operations: [relationship_event]`, policy-contract §2.2).
 
 Lifecycle policies declare what happens to an entity when its related entity changes state. They apply to `constituent` and `operational` relationships only — `informational` relationships have no lifecycle implications.
