@@ -748,7 +748,7 @@ The most portable way to ask for a machine: how big, what image, which disks, wh
 - Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
 - CredentialRef — an SSH key a local account accepts (`authorized_keys`), when held by reference.
 
-### Machine.BareMetalHost (0.18.1)
+### Machine.BareMetalHost (0.19.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -771,7 +771,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - NetworkInterface, StorageDevice, GPU, BMC — the host's components, as contained records.
 - Machine.VM — the guests the host runs.
 
-### Machine.LPAR (0.2.3)
+### Machine.LPAR (0.3.0)
 
 **Purpose:** Declares a logical partition on a partitioned system as one provisionable Machine.
 
@@ -790,7 +790,7 @@ The request for a slice of a big partitioned server: how much processor capacity
 - Volume — the disks served through virtual I/O.
 - VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.5.0)
+### Machine.VM (2.6.0)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
