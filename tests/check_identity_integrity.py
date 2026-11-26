@@ -64,7 +64,7 @@ IMMUTABLE_RECORD_TYPES = {
     # by a successor naming it in `supersedes` — the supersession chain four-states.md §2.3 asks for.
     "intent_record", "requested_record", "realized_record", "discovered_record",
 }
-KNOWN_MUTABLE_RECORD_TYPES = {"policy", "catalog_item"}
+KNOWN_MUTABLE_RECORD_TYPES = {"policy", "policy_configuration", "catalog_item"}
 STATE_RECORD_TYPES = {"intent_record", "requested_record", "realized_record", "discovered_record"}
 
 

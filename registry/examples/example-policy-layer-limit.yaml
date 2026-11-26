@@ -20,6 +20,9 @@
 # NOT A SHIPPED DEFAULT (NDF-001). The deny below is one organization's posture. A peer that warns
 # instead, or that permits a violation on an attested exception, is equally conformant — UDLM
 # facilitates the posture and does not pick one (rule 42). This ships as an EXAMPLE.
+#
+# LOGIC ONLY (POL-011). Which tenant this applies to, at which scope and how strictly is one
+# deployment's choice, held by example-policy-configuration-layer-limit.yaml.
 record_type: policy
 uuid: 7c3ba51e-84d6-4f92-b107-2e5a90d4c368
 handle: layer-limit-gate
@@ -29,13 +32,11 @@ description: >-
   Validation policy — a request whose value falls outside any applicable ancestor envelope is
   refused, and the refusal names the binding layer, its owner and the clause. Worked example
   (cexample content).
-version: 1.0.1
-tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+version: 2.0.0
 status: {state: active}
 policy_type: validation
 policy_class: structural
 concern_type: configuration_boundary
-domain: platform
 match:
   # WHAT this policy reads. HOW it compares is the engine's (policy-contract §7.2a). These are facts
   # OF THE PASS, not fields on a record: which envelopes apply depends on which layers this request
@@ -60,18 +61,12 @@ match:
         some layer in input.limits.skipped_layers
         layer.narrow_only == true
       }
-enforcement: hard
-lifecycle_scope:
-  operations: [all]
 output:
   decision: deny
   reason: >-
     a value in this request falls outside an envelope declared by an ancestor layer — the refusal
     names the binding layer, its owner, the field, the submitted value and the clause, so the bound
     can be renegotiated with whoever set it rather than guessed at
-audit_on: [DENY]
-notification_on: [DENY]
-notification_urgency: medium
 metadata:
   display_name: Layer-limit gate
   notes:

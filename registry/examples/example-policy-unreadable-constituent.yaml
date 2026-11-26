@@ -19,6 +19,9 @@
 # vocabulary. Rule 42: UDLM facilitates the posture, it does not pick one. That is why this record
 # ships as an EXAMPLE and not as a shipped default (NDF-001) — the deny below is one organization's
 # choice, and a peer that ships the opposite is equally conformant.
+#
+# LOGIC ONLY (POL-011). Which tenant this applies to, at which scope and how strictly is one
+# deployment's choice, held by example-policy-configuration-unreadable-constituent.yaml.
 record_type: policy
 uuid: d9557af3-b2ef-4d21-b26d-fd2f14c68d6f
 handle: unreadable-constituent-gate
@@ -27,13 +30,11 @@ name: Refuse an order whose parts the consumer could not see
 description: >-
   Validation policy — a composition with any constituent the requesting actor could not read is
   refused before it is ordered, and the refusal names the parts. Worked example (cexample content).
-version: 1.0.1
-tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+version: 2.0.0
 status: {state: active}
 policy_type: validation
 policy_class: structural
 concern_type: data_authorization_boundary
-domain: tenant
 match:
   # WHAT this policy reads. HOW it compares is the engine's, in the engine's language
   # (policy-contract §7.2a). `composition.unreadable_constituents` is computed for THIS actor over
@@ -49,9 +50,6 @@ match:
       deny if {
         count(input.composition.unreadable_constituents) > 0
       }
-enforcement: hard
-lifecycle_scope:
-  operations: [all]
 output:
   decision: deny
   # The refusal NAMES the parts (CMP-013). "Denied" alone tells a consumer nothing they can act on;
@@ -59,9 +57,6 @@ output:
   reason: >-
     this order contains parts you would not be able to see once realized — the refusal names them,
     so the missing access can be requested rather than guessed at
-audit_on: [DENY]
-notification_on: [DENY]
-notification_urgency: medium
 metadata:
   display_name: Unreadable-constituent gate
   notes:

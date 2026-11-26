@@ -229,6 +229,20 @@
    "1.0.1": "sha256:8c8e00e24e32e5b03b002917ca17ee88bd1d7c5bc253a8a0f5b8b4f63551d391"
   }
  },
+ "policy:adoption-evidence-gate": {
+  "current": "2.0.0",
+  "path": "registry/examples/example-policy-change-window.yaml",
+  "versions": {
+   "2.0.0": "sha256:e11fe8d824e2c76637cca97288e831d685402c29b4704e03865382185093a5f4"
+  }
+ },
+ "policy:data-residency-gate": {
+  "current": "3.0.0",
+  "path": "registry/examples/example-policy.yaml",
+  "versions": {
+   "3.0.0": "sha256:fcd681ec240ead8898fef1c17f987347eb919a7a9ff29eb52da01e52d4509abc"
+  }
+ },
  "policy:eu-data-residency-gate": {
   "current": "2.0.1",
   "path": "registry/examples/example-policy.yaml",
@@ -239,27 +253,86 @@
   }
  },
  "policy:hard-provider-pin-gate": {
-  "current": "1.0.1",
+  "current": "2.0.0",
   "path": "registry/examples/example-policy-hard-provider-pin.yaml",
   "versions": {
    "1.0.0": "sha256:005ce20a1e491a6b2e4683704846a28404f88c8b3e8aa1b8f4894a01de91381c",
-   "1.0.1": "sha256:8d187b36a3e409737cce7d0ee134463d72b97399a0a7d72eb94119e089edf53a"
+   "1.0.1": "sha256:8d187b36a3e409737cce7d0ee134463d72b97399a0a7d72eb94119e089edf53a",
+   "2.0.0": "sha256:40c25eab1cd9b1ea754030723fc83992a98b25519b41d105638f6e1c00d1e39e"
   }
  },
  "policy:layer-limit-gate": {
-  "current": "1.0.1",
+  "current": "2.0.0",
   "path": "registry/examples/example-policy-layer-limit.yaml",
   "versions": {
    "1.0.0": "sha256:17d3aedd2039a219db629aeb1a734fe4be711c914960707ec040d9b96f3c2012",
-   "1.0.1": "sha256:8fd139753419f4191cde2802c1b50a30588e24c8c8194014c26b37edbe3809c1"
+   "1.0.1": "sha256:8fd139753419f4191cde2802c1b50a30588e24c8c8194014c26b37edbe3809c1",
+   "2.0.0": "sha256:4bd44acb278b5e1f3a06553c1052d21a74e410b1965f5be52b8716033e169edb"
+  }
+ },
+ "policy:skipped-layer-gate": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-skipped-layer.yaml",
+  "versions": {
+   "1.0.0": "sha256:4044ade555ef52db1ee318ed894844eda66a3ab030188675bd9d29490d3adb2f"
   }
  },
  "policy:unreadable-constituent-gate": {
-  "current": "1.0.1",
+  "current": "2.0.0",
   "path": "registry/examples/example-policy-unreadable-constituent.yaml",
   "versions": {
    "1.0.0": "sha256:c205deed6c2be1a3cb41d34f052bcf968602b43b64101a8abab4c486c5855ca4",
-   "1.0.1": "sha256:12e6894965e64015f08ba44b29efdfe8f79849e03da0c0cb65a3ca6ffc990720"
+   "1.0.1": "sha256:12e6894965e64015f08ba44b29efdfe8f79849e03da0c0cb65a3ca6ffc990720",
+   "2.0.0": "sha256:2b71ee81f0f4525cfa3c1f00fdf4199a6576bf2d8c7f3155e164e373616f4f77"
+  }
+ },
+ "policy_configuration:adoption-change-window": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-configuration-change-window.yaml",
+  "versions": {
+   "1.0.0": "sha256:e7a4b862115275d72309f1f47c2cc6865ab1620690353a1c0367a13ea86110c8"
+  }
+ },
+ "policy_configuration:eu-data-residency-gate": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-configuration.yaml",
+  "versions": {
+   "1.0.0": "sha256:0abfa37a44c8eb00d09a43c8cf95ad57d3ee0ba698b9bfc2e38637e503008da1"
+  }
+ },
+ "policy_configuration:health-data-residency-trial": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-configuration-residency-trial.yaml",
+  "versions": {
+   "1.0.0": "sha256:1f97ad79d2aa90aee2eb271e408a6d89ac03c4f892193639859a843ca6109f7d"
+  }
+ },
+ "policy_configuration:platform-hard-provider-pin": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-configuration-hard-provider-pin.yaml",
+  "versions": {
+   "1.0.0": "sha256:8b95ebe9821274af69b754bf87cb9526a7de39ea9f925a72a0f4b3b5d76282e1"
+  }
+ },
+ "policy_configuration:platform-layer-limit": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-configuration-layer-limit.yaml",
+  "versions": {
+   "1.0.0": "sha256:f61b235eb30053769982001ab7ac8bbbc12d5b2f165935278220f7aabd971c00"
+  }
+ },
+ "policy_configuration:platform-skipped-layer-trial": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-configuration-skipped-layer-trial.yaml",
+  "versions": {
+   "1.0.0": "sha256:9aa6623831f35b4fdd34e4fc57b629ad51a73bb92241adc5d199cea1dc90e700"
+  }
+ },
+ "policy_configuration:tenant-unreadable-constituent": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-configuration-unreadable-constituent.yaml",
+  "versions": {
+   "1.0.0": "sha256:97c9aa9781bd7b69848ae73ca369e73564dd6ca4f9291a1c860aeaa301fc6387"
   }
  },
  "policy_profile:udlm/profile/dev": {
@@ -311,11 +384,12 @@
   }
  },
  "profile:cexample/profile/baseline": {
-  "current": "1.0.1",
+  "current": "1.1.0",
   "path": "registry/examples/example-profile.yaml",
   "versions": {
    "1.0.0": "sha256:839feafbc100377864cb545e1d65b1f8627a93d18952f29aecd4f77b9d449228",
-   "1.0.1": "sha256:2825925d635ac1b9665d832b89baf5b03ba31944d8592fd86727bb5bad6b835e"
+   "1.0.1": "sha256:2825925d635ac1b9665d832b89baf5b03ba31944d8592fd86727bb5bad6b835e",
+   "1.1.0": "sha256:141bf70205fa91d77e660a054ef09fb0f6140bebd87d3e9156ee262d87c456af"
   }
  },
  "profile:udlm/profile/dev": {

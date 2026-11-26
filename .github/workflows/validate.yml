@@ -62,6 +62,10 @@ jobs:
       # decision it produces; the comparison language stays with the engine. Anti-creep —
       # the removed vocabulary must not return one convenience field at a time.
       - run: python3 tests/check_policy_boundary.py
+      # Policy and policy configuration (POL-011 to POL-014): a configuration pins exactly one
+      # policy and satisfies the parameters it declares; a profile holds no values for one.
+      - run: python3 tests/check_policy_configurations.py --self-test
+      - run: python3 tests/check_policy_configurations.py
       - run: python3 tests/check_definition_single_source.py
       # IMP-001 — the normative tier names no implementation (dcm-project review, 6 comments).
       - run: python3 tests/check_implementation_neutrality.py

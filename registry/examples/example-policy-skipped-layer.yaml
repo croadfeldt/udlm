@@ -1,0 +1,47 @@
+# "This rule is new, and nobody may apply it yet."
+#
+# WHAT THIS IS. A provisional policy: logic that is still on trial. Its status is `proposed`, so only a
+# `proposed` configuration may pin it (POL-015). It runs in shadow mode wherever someone tries it, its
+# output is logged, and it refuses nothing until its author promotes it to `active`.
+#
+# WHY THE STATE IS ON THE POLICY. A configuration's `proposed` says one deployment's values are on
+# trial. This says the rule itself is. Without it a new rule would have to be published `active`, and
+# nothing would stop a deployment from applying it on its first day.
+#
+# WHAT IT TRIES. The layer-limit gate refuses a request that skips a layer marked `narrow_only`. This
+# candidate refuses a request that skips any layer at all. Whether that is too strict is what the
+# shadow run is for.
+#
+# LOGIC ONLY (POL-011). The trial's tenant, scope and strictness are held by
+# example-policy-configuration-skipped-layer-trial.yaml.
+record_type: policy
+uuid: 5338011f-eeaa-4a7a-b5f3-609c4eda6a8b
+handle: skipped-layer-gate
+conforms_to: udlm/1.0
+name: Refuse a request that skips any layer
+description: >-
+  Validation policy, provisional. A request that declines any applicable layer is refused. It is
+  `proposed`, so it runs in shadow mode only. Worked example (cexample content).
+version: 1.0.0
+status: {state: proposed}
+policy_type: validation
+policy_class: structural
+concern_type: configuration_boundary
+match:
+  facts: [limits.skipped_layers]
+  rule:
+    engine: rego
+    body: |
+      package udlm.skipped_layers
+
+      # Stricter than the layer-limit gate, which objects only to a skipped narrow_only layer.
+      deny if {
+        count(input.limits.skipped_layers) > 0
+      }
+output:
+  decision: deny
+  reason: >-
+    this request declined a layer that applies to it; the refusal names each skipped layer and its
+    owner, so the requester knows whom to ask
+metadata:
+  display_name: Skipped-layer gate (provisional)

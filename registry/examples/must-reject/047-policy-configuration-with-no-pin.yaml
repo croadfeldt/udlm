@@ -1,0 +1,22 @@
+must_reject:
+  rule: POL-012
+  gate: schema
+  expect_path: $.configures
+  because: A configuration that names its policy and no version. An unpinned reference follows the policy to
+    its next version, so the logic this deployment runs would change when someone else published, with no
+    change to any record the deployment owns and nothing for its reviewers to approve.
+record:
+  __schema__: policy-configuration.schema.json
+  record_type: policy_configuration
+  uuid: 3f58ccd2-dcf2-446c-9b26-7d26f55ccdc4
+  handle: research/unpinned-configuration
+  conforms_to: udlm/1.0
+  name: A configuration that does not pin its policy
+  description: Deliberately wrong (must-reject). Configures the residency gate without a version.
+  version: 1.0.0
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  configures: data-residency-gate
+  parameters:
+    classification_levels: [eu_personal]
+    allowed_zones: [eu-west]
+  enforcement: hard
