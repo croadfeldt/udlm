@@ -86,7 +86,8 @@ rule. The schema's `policy_type` enum is the menu: `validation`, `transformation
    which operations it evaluates on — a configuration of a compliance-class validation policy or a
    `governance_matrix_rule` must include `all`.
 5. **To try it first, set `status: {state: proposed}`.** The policy runs on real traffic with these values
-   and its output is logged, never applied (POL-004).
+   and its output is logged, never applied (POL-004). A policy that is itself `proposed` is provisional
+   logic: every configuration of it stays `proposed` until the policy is `active` (POL-015).
 6. **A profile turns it on.** A profile's `contains[]` entry names the configuration and says `required`,
    `advisory` or `off`. **POL-014 — a profile holds no values for a policy configuration**; the entry
    carries no `settings`.

@@ -749,7 +749,7 @@ The request for a log store: how many days to keep messages by default, rules th
 
 ## Machine
 
-### Machine (2.8.0)
+### Machine (2.9.0)
 
 **Purpose:** Declares an OS-bearing machine — an image booted onto cpu, memory, disk and network — without saying whether it is a VM, a bare-metal host or a logical partition.
 
@@ -771,7 +771,7 @@ The most portable way to ask for a machine: how big, what image, which disks, wh
 - Bucket — the object-storage buckets its workloads use (`buckets`), each with a CredentialRef.
 - CredentialRef — an SSH key a local account accepts (`authorized_keys`), when held by reference.
 
-### Machine.BareMetalHost (0.18.1)
+### Machine.BareMetalHost (0.19.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -794,7 +794,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - NetworkInterface, StorageDevice, GPU, BMC — the host's components, as contained records.
 - Machine.VM — the guests the host runs.
 
-### Machine.LPAR (0.2.3)
+### Machine.LPAR (0.3.0)
 
 **Purpose:** Declares a logical partition on a partitioned system as one provisionable Machine.
 
@@ -813,7 +813,7 @@ The request for a slice of a big partitioned server: how much processor capacity
 - Volume — the disks served through virtual I/O.
 - VirtualNetwork — the network a virtual adapter attaches to.
 
-### Machine.VM (2.4.2)
+### Machine.VM (2.6.0)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -968,7 +968,7 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 
 ## SoftwareBillOfMaterials
 
-### SoftwareBillOfMaterials (0.3.0)
+### SoftwareBillOfMaterials (0.4.0)
 
 **Purpose:** Records one software bill of materials — which subject it describes, where the document is kept, and which packages it lists — so what a thing contains is a graph walk and the document stays where it is authoritative.
 
@@ -1362,7 +1362,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Volume
 
-### Volume (0.19.1)
+### Volume (0.20.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1386,7 +1386,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - Volume — the volume it replicates (`replica_of`), or the replicas that follow it.
 - Database — databases whose data directory it backs.
 
-### Volume.ZFS (0.9.1)
+### Volume.ZFS (0.10.0)
 
 **Purpose:** Models a ZFS dataset or zvol carved from a host-local pool — the mounted filesystem or block device host workloads use.
 

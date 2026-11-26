@@ -50,13 +50,8 @@
       "additionalProperties": false,
       "properties": {
         "state": {
-          "description": "Where the configuration is in its life. `proposed` is shadow mode: the policy runs on real traffic with these values and its output is logged, never applied (POL-004). `active` applies. `deprecated` still applies, with a replacement named and a warning on evaluation. `retired` is terminal. An unpublished configuration has no status; there is no `developing` (#723).",
-          "enum": [
-            "active",
-            "proposed",
-            "deprecated",
-            "retired"
-          ]
+          "$ref": "common-elements.schema.json#/$defs/policy_lifecycle_state",
+          "description": "Where the configuration is in its life. `proposed` is shadow mode: the policy runs on real traffic with these values and its output is logged, never applied (POL-004). `active` applies. `deprecated` still applies, with a replacement named and a warning on evaluation. `retired` is terminal. A configuration of a `proposed` policy stays `proposed` (POL-015)."
         },
         "deprecation_date": {
           "type": "string"
@@ -109,6 +104,7 @@
           "items": {
             "enum": [
               "initial_provisioning",
+              "adoption",
               "update",
               "rehydration",
               "decommission",

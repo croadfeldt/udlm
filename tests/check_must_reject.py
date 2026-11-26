@@ -156,8 +156,8 @@ def _policy_configurations(record):
 
 
 GATES = {
-    "check_policy_configurations": _policy_configurations,
     "check_provider_registration": _provider_registration,
+    "check_policy_configurations": _policy_configurations,
     "conformance": _conformance,
     "check_grant_derivation": _grant_derivation,
     "check_ownership_declaration": _ownership,

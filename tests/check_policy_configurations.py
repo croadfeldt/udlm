@@ -11,6 +11,8 @@ the three rules below are all about the other record:
   POL-013  a configuration's `parameters` satisfy the pinned policy's `parameter_schema`, it
            supplies no parameter the policy does not declare, and a policy that declares none
            takes none. A misspelled parameter would otherwise be carried and never read.
+  POL-015  a configuration of a `proposed` policy is itself `proposed`: provisional logic runs in
+           shadow mode and applies nowhere until the policy is `active`.
   POL-014  a profile turns a policy configuration on or off and holds no values for it: a
            `contains[]` entry that resolves to a policy is refused (a policy alone decides
            nothing), and so is one that resolves to a configuration and carries `settings`
@@ -102,6 +104,10 @@ def _configuration(rec, index):
     if (policy.get("status") or {}).get("state") == "retired":
         errs.append(f"POL-012 {who}: pins {policy.get('handle')}, which is retired. A retired policy "
                     f"cannot be configured")
+    state = (rec.get("status") or {}).get("state")
+    if (policy.get("status") or {}).get("state") == "proposed" and state in ("active", "deprecated"):
+        errs.append(f"POL-015 {who}: is {state} and pins {policy.get('handle')}, which is proposed. Provisional "
+                    f"logic runs in shadow mode only, so its configurations are proposed until the policy is active")
 
     schema, params = policy.get("parameter_schema"), rec.get("parameters")
     if schema is None:
@@ -166,9 +172,15 @@ def self_test():
             "version": "1.0.0", "policy_type": "placement"}
     good = {"record_type": "policy_configuration", "handle": "t/cfg", "configures": "t/gate@2.0.0",
             "parameters": {"zones": ["a"]}}
-    index = _index([policy, bare, good])
+    trial = {"record_type": "policy", "uuid": "33333333-3333-4333-8333-333333333333", "handle": "t/trial",
+             "version": "1.0.0", "policy_type": "validation", "status": {"state": "proposed"}}
+    shadow = {"record_type": "policy_configuration", "handle": "t/shadow", "configures": "t/trial@1.0.0",
+              "status": {"state": "proposed"}}
+    index = _index([policy, bare, good, trial, shadow])
     cases = [
         ("a correct configuration", good, None),
+        ("a proposed configuration of a proposed policy", shadow, None),
+        ("an active configuration of a proposed policy", {**shadow, "status": {"state": "active"}}, "POL-015"),
         ("pin to a version that is not there", {**good, "configures": "t/gate@1.0.0"}, "POL-012"),
         ("reference that resolves to nothing", {**good, "configures": "t/missing@1.0.0"}, "POL-012"),
         ("reference to a configuration", {**good, "configures": "t/cfg@1.0.0"}, "POL-012"),

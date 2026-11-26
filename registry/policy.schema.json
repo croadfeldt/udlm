@@ -47,12 +47,8 @@
       "additionalProperties": false,
       "properties": {
         "state": {
-          "description": "Where the policy is in its life. `active` may be configured. `deprecated` may still be configured, with a replacement named and a warning on evaluation. `retired` is terminal: no configuration may pin it. Shadow mode (`proposed`) is a configuration's state, because a trial runs with values. An unpublished policy has no status; there is no `developing` (#723).",
-          "enum": [
-            "active",
-            "deprecated",
-            "retired"
-          ]
+          "$ref": "common-elements.schema.json#/$defs/policy_lifecycle_state",
+          "description": "Where the policy is in its life. `proposed` is provisional logic: only a `proposed` configuration may pin it, so it runs in shadow mode and applies nowhere (POL-015). `active` may be configured to apply. `deprecated` may still be configured, with a replacement named and a warning on evaluation. `retired` is terminal: no configuration may pin it."
         },
         "deprecation_date": {
           "type": "string"

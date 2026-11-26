@@ -63,6 +63,7 @@ Every request into the control plane carries an `operation.type` that identifies
 | Operation Type | When it occurs | Description |
 |---------------|---------------|-------------|
 | `initial_provisioning` | Day 0 — first request for a new resource | Full pipeline: assembly, all policies, placement, dispatch |
+| `adoption` | An observed resource is brought under management (DCM ADR-017, ADR-030) | Adoption pipeline: a policy decides whether the observation counts and who owns it; reverse placement finds the claiming provider; a candidate intent is run dry through every policy, approved, then converged. Nothing is built or torn down before approval |
 | `update` | Day 2 — modify an existing operational resource, including a change of capacity | Partial pipeline: assembly with existing entity as base, policies evaluate changed fields |
 | `rehydration` | Rebuild from stored state (DR, migration, refresh) | Full pipeline: all current policies re-evaluate from intent or realized state |
 | `decommission` | Day N — request to remove a resource | Decommission pipeline: dependency checks, notification, revocation, provider teardown |
@@ -130,8 +131,8 @@ policy_configuration:
 | Policy Type | Default `lifecycle_scope.operations` | Rationale |
 |-------------|-------------------------------------|-----------|
 | Validation (compliance-class) | `all` | Compliance rules should always be checked |
-| Validation (structural-class) | `[initial_provisioning, update, rehydration]` | Structural validation on any data change |
-| Transformation | `[initial_provisioning, rehydration]` | Inject/enrich on new builds and rebuilds; skip on minor updates |
+| Validation (structural-class) | `[initial_provisioning, adoption, update, rehydration]` | Structural validation on any data change |
+| Transformation | `[initial_provisioning, adoption, rehydration]` | Inject/enrich on new builds, adoptions and rebuilds; skip on minor updates |
 | Recovery | `all` | Recovery posture always applicable |
 | Orchestration Flow | `[initial_provisioning, rehydration, decommission]` | Pipeline orchestration on major lifecycle transitions |
 | Governance Matrix Rule | `all` | Boundary controls always checked |
@@ -349,10 +350,14 @@ status; it is a draft in someone's working tree, not a record.
 | `deprecated` | Still active; replacement available; warning on evaluation. |
 | `retired` | Terminal; cannot be used. |
 
-A policy has three of the four: `active` (it may be configured), `deprecated` (it may still be
-configured, with a replacement named) and `retired` (no configuration may pin it). It has no
-`proposed`, because a trial runs with values, and the values are a configuration's. A new policy
-is tried by publishing it `active` and giving it a `proposed` configuration.
+A policy follows the same four statuses, and there they speak about the logic. A `proposed` policy
+is provisional logic. Only a `proposed` configuration may pin it, so it runs in shadow mode wherever
+it is tried and applies nowhere (`POL-015`). An `active` policy may be configured to apply. A
+`deprecated` one may still be configured, with a replacement named. A `retired` one may not be pinned.
+
+The two `proposed` states answer different questions. On a policy it says the logic is on trial. On a
+configuration it says one deployment's values are. A new rule is published `proposed`, tried through
+`proposed` configurations, and promoted to `active` by its author when the shadow results hold up.
 
 **Shadow mode (proposed status):** The policy evaluates against real traffic with the configuration's values. Its output is captured in the Validation Store. Platform admins review shadow results before promoting to active. This is the primary mechanism for safe policy change management.
 
@@ -727,6 +732,7 @@ Three relationships hold the two records and a profile together.
 | A configuration **configures** exactly one policy, at a pinned version | the configuration's `configures`, a pinned reference (identifier-scheme §9) | `POL-012` |
 | A configuration's parameters **satisfy** that policy's `parameter_schema` | the configuration's `parameters` | `POL-013` |
 | A profile **turns a configuration on or off** and holds no values for it | the profile's `contains[]` (`required`, `advisory`, `off`) | `POL-014` |
+| A configuration of a **proposed** policy is itself proposed | the `status.state` of both records | `POL-015` |
 
 **The pin.** A configuration names its policy with a version or a digest, never without. An
 unpinned reference follows the policy to its next version, so the logic a deployment runs would
@@ -1292,6 +1298,7 @@ For a single request, all active matching policies at all domain levels evaluate
 | `POL-012` | A policy configuration configures exactly one policy, pinned to a version or a digest. A new version of the policy reaches a deployment only when a new version of the configuration moves the pin. |
 | `POL-013` | A configuration's parameters satisfy the pinned policy's `parameter_schema`, and it supplies no parameter the policy does not declare. A policy that declares none takes none. |
 | `POL-014` | A profile turns a policy configuration on or off and holds no values for it. Each value has one home, the configuration. |
+| `POL-015` | A `proposed` policy is provisional logic. Only a `proposed` configuration may pin it, so it runs in shadow mode and applies nowhere until the policy is `active`. |
 
 ---
 

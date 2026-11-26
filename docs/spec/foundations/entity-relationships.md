@@ -54,7 +54,7 @@ dependencies:
 
   - target_handle: "vm/db-replica-b"     # equal HA partner
     edge_type: depends_on
-    strength: soft                       # orders but never blocks (DEP-006)
+    strength: soft                       # never orders, never blocks (service-dependencies §4)
     relation: cluster_peer
 
 # Resolved — the same edges at reserve, uuids filled in:
@@ -512,6 +512,11 @@ provider may satisfy or not, and an instance may carry edges no template lists (
 marked `enforcement: structural` is an invariant: its cardinality is enforced on instances (`REL-002`).
 An instance edge's `relation`, when present, must be a `name` some template in the chain declares
 (`REL-001`).
+
+A relation may be declared for several targets: one template per target, all with the same `name`. They
+are one relation with alternative targets, so the cardinality counts across them. `SoftwareBillOfMaterials`
+declares `describes` six times, once per kind of subject, each `1..1` and structural: a record carries one
+`describes` edge in all, never one per target (`REL-002`).
 
 ```yaml
 # schema: class.schema.json
